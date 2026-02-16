@@ -85,6 +85,9 @@
     <Filter Include="99. Component\03. Texture">
       <UniqueIdentifier>{f901d2b8-ed83-41d1-b248-ff0820f8b24a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. Component\08.Paticle">
+      <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GraphicDevice.h">

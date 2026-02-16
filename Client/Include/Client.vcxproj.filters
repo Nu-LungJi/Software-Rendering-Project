@@ -157,8 +157,17 @@
     <Filter Include="04. UI\SpeechBubble">
       <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Scene\02.DocheolScene">
+    <Filter Include="02. Scene\02. DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog">
+      <UniqueIdentifier>{d8682e5d-8943-47f9-b9e1-164439ae83b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogAttack">
+      <UniqueIdentifier>{a06f45c6-5593-482c-9eac-e8ed95066549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogEffect">
+      <UniqueIdentifier>{f0879c72-92fb-40aa-b302-02bd683ee229}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -325,10 +334,22 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DoCheolScene.h">
-      <Filter>02. Scene\02.DocheolScene</Filter>
+      <Filter>02. Scene\02. DocheolScene</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Augment.h">
       <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Cheonlog.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLAttack.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLEffect.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLcrystal.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -478,13 +499,25 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DoCheolScene.cpp">
-      <Filter>02. Scene\02.DocheolScene</Filter>
+      <Filter>02. Scene\02. DocheolScene</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Augment.cpp">
       <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Cheonlog.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLAttack.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLEffect.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLcrystal.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

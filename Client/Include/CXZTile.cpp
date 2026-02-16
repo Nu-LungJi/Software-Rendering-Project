@@ -96,7 +96,12 @@ VOID CXZTile::Render_GameObject()
 		GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
 		break;
 	case TILE_STATE::STATE_POTALEFFECT:
-		if (!m_pTileInfo->Get_PotalOpen())
+		if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
+		{
+			GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+			break;
+		}
+		if (m_pTileInfo->Get_PotalOpen())
 		{
 			GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
 		}
@@ -116,21 +121,29 @@ VOID CXZTile::Render_GameObject()
 			break;
 	case TILE_STATE::STATE_POTALGASI_EFFECT:
 		
-		if (!m_pTileInfo->Get_PotalOpen())
+		if (m_pTileInfo->Get_OnlyAnimation())
 		{
-		
-
-		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, Argb);
-		
-		GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-		GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-		GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
-		
-		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); //위에 두개 옵션 혼합해라
-		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
-		GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+			GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.png"));
+			break;
+		}
+		else if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1)
+		{
+			GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+			break;
+		}
+		else if (m_pTileInfo->Get_PotalOpen())
+		{
+			GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+			GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, Argb);
+			
+			GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+			GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+			
+			GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+			GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); //위에 두개 옵션 혼합해라
+			GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+			GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
 		}
 		else return;
 		break;
@@ -243,13 +256,13 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		//Tile_Gasi_Destory();
 		break;
 	case TILE_STATE::STATE_POTALGASI_BREAK:
-		Tile_Gasi_Destory();
+		Tile_Gasi_Destory(_DT);
 		break;
 	}
 	
 }
 
-void CXZTile::Tile_Animation(const FLOAT& _DT)
+void CXZTile::Tile_Animation(CONST FLOAT& _DT)
 {
 	//플레이어와 충돌 했고, 플레이어가 충돌한 상태에서 이동 했을때 true
 	if (m_pTileInfo->Get_OnlyAnimation())
@@ -289,7 +302,7 @@ void CXZTile::Tile_Animation(const FLOAT& _DT)
 	}
 
 }
-void CXZTile::Tile_Destory(const FLOAT& _DT)
+void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 {
 	_vec3 Pos, Scale, Rot;
 
@@ -322,13 +335,13 @@ void CXZTile::Tile_Destory(const FLOAT& _DT)
 		m_bStopFrame = false;
 	}
 }
-void CXZTile::Tile_Potal(const FLOAT& _DT)
+void CXZTile::Tile_Potal(CONST FLOAT& _DT)
 {
 	Transform*  pTransform = Crash_Player();
 		if(Crash_Player() != nullptr)
 			pTransform->Set_Pos(m_pTileInfo->Get_NextPos());
 }
-void CXZTile::Tile_Potal_Effect(const FLOAT& _DT)
+void CXZTile::Tile_Potal_Effect(CONST FLOAT& _DT)
 {
 	//몬스터가 다 잡히면 포탈을 랜더해라
 	if (m_pTileInfo->Get_PotalOpen())
@@ -356,7 +369,7 @@ void CXZTile::Tile_Trigger()
 	}
 
 }
-void CXZTile::Tile_Gasi_Destory()
+void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
 {
 	_vec3 Pos, Scale, Rot;
 	m_pTransform->Get_Info(INFO_POS, &Pos);
@@ -372,6 +385,12 @@ void CXZTile::Tile_Gasi_Destory()
 		// 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
 		m_bStopFrame = true;
+		m_pTileInfo->Set_OnlyAnimation(false);
+	}
+
+	if (m_bStopFrame)
+	{
+		Tile_Potal_Effect(_DT);
 	}
 }
 void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)

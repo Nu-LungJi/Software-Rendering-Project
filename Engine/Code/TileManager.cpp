@@ -39,7 +39,7 @@ HRESULT TileManager::Add_Tile(GameObject* pObject, _vec3 vPos, TILE_STAGE eStage
 _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot)
 {
 	_float fu, fv, ft(-1);
-	_float ftCheck = 129.f;
+	_float ftCheck = 0;
 	_int iState = (0), iMode(0), iTileN(0);
 	_vec3 vPos, vScale, vRot;
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
@@ -68,7 +68,7 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 					m_bCheck = true;
 				
 				}
-				if (m_bCheck && ftCheck > ft)
+				if (m_bCheck && ftCheck < ft)
 				{
 					iState = i;
 					iMode  = j;
@@ -240,7 +240,8 @@ void TileManager::Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STA
 	for (auto& iter : m_vecTileBuffer[eStage][eMode])
 		if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_POTALEFFECT ||
 			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_POTALGASI ||
-			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_POTALGASI_EFFECT)
+			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_POTALGASI_EFFECT||
+			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_POTALGASI_BREAK)
 		{
 			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_PotalOpen();
 		}
@@ -249,7 +250,7 @@ void TileManager::Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STA
 
 void TileManager::Save_Tile(HWND g_hWnd)
 {
-	HANDLE	hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
+	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
 		GENERIC_WRITE,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
 		NULL,				// 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
 		NULL,				// 보안 속성(기본값인 경우 NULL)

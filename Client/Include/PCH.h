@@ -63,6 +63,12 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
+
+
+#include "Cheonlog.h"
+#include "CLcrystal.h"
+#include "CLEffect.h"
+#include "CLAttack.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

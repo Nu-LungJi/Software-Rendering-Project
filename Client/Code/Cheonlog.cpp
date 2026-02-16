@@ -1,0 +1,383 @@
+#include "../Include/PCH.h"
+
+Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_StartAttack(false),m_EndEffect(true), m_vDebug(0,0,0),m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END){}
+Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
+Cheonlog::~Cheonlog() {}
+
+HRESULT Cheonlog::Ready_GameObject() {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+	
+	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Stand_R_0%d.png",    CL_IDELR);
+	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Jump_L_045_0%d.png", CL_LJUMP);
+	m_fPivot = 0.1f;
+	m_eCheck = IDEL;
+	m_eStatu = CL_IDELR;
+	return S_OK;
+}
+INT	Cheonlog::Update_GameObject(const _float& _DT)
+{
+
+	GameObject::Update_GameObject(_DT);
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+
+	return 0;
+}
+void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
+
+	GameObject::LateUpdate_GameObject(_DT);
+
+	Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
+	Monster::BillBoard(Component_Transform, GRPDEV);
+}
+void Cheonlog::Render_GameObject() {
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
+
+	Set_Statu();
+	Component_Buffer->Render_Buffer();
+
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+}
+HRESULT Cheonlog::Component_Initialize() {
+
+	Component_Buffer    = ADD_COMPONENT_RECTTEX;
+	Component_Transform = ADD_COMPONENT_TRANSFORM;
+
+	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
+	Component_Transform->Set_Scale(3.f, 3.f, 3.f);
+	Component_Transform->Set_Pos(0.f, 0.5f, 0.f);
+	//ÁÂ¿ì¹ÝÀü
+	//Component_Transform->Set_Scale(-2.f, 2.f, 2.f);
+
+	Component_Collider = ADD_COMPONENT_COLLIDER;
+	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+
+	return S_OK;
+}
+
+void Cheonlog::Texture_Initalize(_int iCnt, const _tchar* pName, CL_STATU CheongLog)
+{
+	for (int i = 1; i < iCnt + 1; ++i)
+	{
+		TCHAR   Name[128] = L"";
+		wsprintf(Name, pName, i);
+
+		auto tex = ResourceManager::GetInstance()->Find_Texture(Name);
+
+		if (tex == nullptr)
+			return;
+
+		tex->AddRef();
+
+		m_vecCheonlogTexture[CheongLog].push_back(tex);
+	}
+}
+
+void Cheonlog::Set_Statu()
+{
+	switch (m_eCheck)
+	{
+	case IDEL:
+		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
+		break;
+	case ATTACK:
+		break;
+
+	}
+}
+
+void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
+{
+	_vec3 vPos;
+	Component_Transform->Get_Info(INFO_POS, &vPos);
+
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_Z))
+	{
+		vPos.x += 0.5;
+		Component_Transform->Set_Pos(vPos);
+	}
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_X))
+	{
+		vPos.z += 0.5;
+		Component_Transform->Set_Pos(vPos);
+	}
+
+	switch (m_eCheck)
+	{
+	case IDEL:
+		m_frameTick += _DT;
+		if (m_frameTick > 0.1)
+		{
+			++m_iFrameCnt;
+			m_frameTick = 0;
+		}
+		if (m_iFrameCnt > iMaxCnt - 1)
+			m_iFrameCnt = 0;
+		
+		break;
+	case ATTACK:
+		//AttackLeaf_First(vPos);
+		break;
+	}
+
+	static _float fMin(-100), fMax(100);
+	ImGui::SetNextWindowSize({ 800,600 });
+	ImGui::Begin("CheonLogDebug", NULL, ImGuiWindowFlags_MenuBar);
+	ImGui::Text("CheonL");
+	ImGui::SameLine(100.f, 0.f);
+	ImGui::SliderFloat3("CL", m_vDebug, fMin, fMax);
+
+	Debug_Button("CLde", &m_vDebug, 10.f);
+
+	vPos += m_vDebug;
+	ImGui::End();
+
+	if(KeyManager::GetInstance()->Get_KeyState(DIK_K))
+		AttackLeaf_First(vPos);
+		
+}
+
+void Cheonlog::AttackLeaf_First(_vec3 vPos)
+{
+	//»Ô À§¿¡ÀÖ´Â ¼öÁ¤ + »Ô ÁÖº¯¿¡ÀÖ´Â Àü±â ÀÌÆåÆ®
+	Create_Crystal();
+	//³ª¹µÀÙ ½î±âÀü ÀÌÆåÆ®
+	if (m_EndEffect)
+	{
+		vPos += { 1.1f, 1.5f, 3.7f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_FIRST, vPos, TRUE));
+		m_EndEffect = false;
+	}
+	if (m_StartAttack)
+	{
+		Create_Leaf();
+		m_EndEffect = true;
+	}
+
+}
+
+
+
+void Cheonlog::Create_Crystal()
+{
+	if (!m_bCrystal)
+	{
+		_vec3 vPos, vCur;
+		Component_Transform->Get_Info(INFO_POS, &vPos);
+		vCur = vPos;
+		vCur += { 0.9f,1.f,3.1f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLcrystal::Create(GRPDEV, vCur));
+
+		//¿ÞÂÊ»Ô
+		vCur = vPos;
+		vCur += { 0.0f, 0.5f, 2.7f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEFT_HORN, vCur, FALSE));
+		
+		//¿À¸¥ÂÊ»Ô
+		vCur = vPos;
+		vCur += { 2.3f, 0.0f, 3.2f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::RIGHT_HORN, vCur, FALSE));
+
+		//¸öÅë
+		vCur = vPos;
+		vCur += { -1.2f, 0.2f, 0.8f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::CL_BODY, vCur, FALSE));
+
+		m_bCrystal = true;
+	}
+}
+void Cheonlog::Create_Leaf()
+{
+	_vec3 vPos, vPlayerPos, vLook, vLookReset;
+	_matrix RotY;
+	Component_Transform->Get_Info(INFO_POS, &vPos);
+	dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &vPlayerPos);
+	vPos += { 1.1f, 1.5f, 3.7f }; // ÇöÀç »Ô °¡¿îµ¥ À§Ä¡
+
+	vLook = vPlayerPos - vPos;    
+	D3DXVec3Normalize(&vLook, &vLook);
+
+	D3DXMatrixRotationY(&RotY, D3DXToRadian(15));
+	D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
+	CLAttack* pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_FIRST, vPos, vLook);
+
+	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	pAttack->Set_ObjectTag(L"CL_Leaf1");
+
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
+
+
+	vLookReset = {};
+	D3DXMatrixIdentity(&RotY);
+	D3DXMatrixRotationY(&RotY, D3DXToRadian(-15));
+	D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
+	pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_FIRST, vPos, vLook);
+	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	pAttack->Set_ObjectTag(L"CL_Leaf2");
+
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
+
+
+
+
+}
+void Cheonlog::Debug_ButtonStyle()
+{
+	ImGui::PushStyleColor(ImGuiCol_Button, D3DXCOLOR(0.0f, 0.f, 0.f, 1.f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.8f, 0.7f, 0.7f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.5f, 0.7f, 0.7f));
+}
+void Cheonlog::Debug_Button(const char pName[32], _vec3* vPivot, _float iLinePivot)
+{
+
+	char tXP[32] = "X", tYP[32] = "Y", tZP[32] = "Z", tXM[32] = "X", tYM[32] = "Y", tZM[32] = "Z",
+		tP[32] = "+", tM[32] = "-",
+		tfXP[32] = "FX", tfYP[32] = "FY", tfZP[32] = "FZ", tfXM[32] = "FX", tfYM[32] = "FY", tfZM[32] = "FZ";
+
+	strcat_s(tXP, 32, pName); strcat_s(tXP, 32, tP); strcat_s(tXM, 32, pName); strcat_s(tXM, 32, tM);
+	strcat_s(tYP, 32, pName); strcat_s(tYP, 32, tP); strcat_s(tYM, 32, pName); strcat_s(tYM, 32, tM);
+	strcat_s(tZP, 32, pName); strcat_s(tZP, 32, tP); strcat_s(tZM, 32, pName); strcat_s(tZM, 32, tM);
+
+	strcat_s(tfXP, 32, pName); strcat_s(tfXP, 32, tP); strcat_s(tfXM, 32, pName); strcat_s(tfXM, 32, tM);
+	strcat_s(tfYP, 32, pName); strcat_s(tfYP, 32, tP); strcat_s(tfYM, 32, pName); strcat_s(tfYM, 32, tM);
+	strcat_s(tfZP, 32, pName); strcat_s(tfZP, 32, tP); strcat_s(tfZM, 32, pName); strcat_s(tfZM, 32, tM);
+
+	///////////////Á¤¼ö/////////////////
+	{
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tXP))
+		{
+			vPivot->x += 1;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine((70.f + iLinePivot), 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tXM))
+		{
+			vPivot->x -= 1;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine((140.f + iLinePivot), 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tYP))
+		{
+			vPivot->y += 1;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::SameLine(210.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tYM))
+		{
+			vPivot->y -= 1;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::SameLine(280.f + iLinePivot, 0.f);
+		Debug_ButtonStyle();
+		if (ImGui::Button(tZP))
+		{
+			vPivot->z += 1;
+		}
+
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine(350.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tZM))
+		{
+			vPivot->z -= 1;
+		}
+		ImGui::PopStyleColor(3);
+	}
+
+	///////////////½Ç¼ö/////////////////
+	{
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfXP))
+		{
+			vPivot->x += m_fPivot;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine(70.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfXM))
+		{
+			vPivot->x -= m_fPivot;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine(140.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfYP))
+		{
+			vPivot->y += m_fPivot;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::SameLine(210.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfYM))
+		{
+			vPivot->y -= m_fPivot;
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::SameLine(280.f + iLinePivot, 0.f);
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfZP))
+		{
+			vPivot->z += m_fPivot;
+		}
+
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine(350.f + iLinePivot, 0.f);
+
+		Debug_ButtonStyle();
+		if (ImGui::Button(tfZM))
+		{
+			vPivot->z -= m_fPivot;
+		}
+		ImGui::PopStyleColor(3);
+	}
+}
+
+
+Cheonlog* Cheonlog::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+	Cheonlog* CL = new Cheonlog(_GRPDEV);
+	if (FAILED(CL->Ready_GameObject())) {
+		MSG_BOX("Cannot Create Cheonlog.");
+		Safe_Release(CL);
+		return nullptr;
+	}
+	return CL;
+}
+void Cheonlog::Free()
+{
+	for (_int i = 0; i < CL_END; ++i)
+	{
+		for (auto& iter : m_vecCheonlogTexture[i])
+		{
+			Safe_Release(iter);
+		}
+		m_vecCheonlogTexture[i].clear();
+	}
+
+	GameObject::Free();
+}
