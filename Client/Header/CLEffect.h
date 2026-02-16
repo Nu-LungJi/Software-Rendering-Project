@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h";
 
-enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST };
+enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST,LEAF_SECOND,LEAF_SECOND_E, LEAF_SECOND_B, LEAF_SECOND_C};
 
 class CLEffect : public GameObject {
 private:

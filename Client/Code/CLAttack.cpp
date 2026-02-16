@@ -15,32 +15,8 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook)
     dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS,&m_vPlayerPos);
 
     m_vLook = vLook;
-    m_fSpeed = 3.f;
+    m_fSpeed = 5.f;
     m_CLPos = vPos;
-    _vec3 up(0, 1, 0), vRight,vPlayerR, vPlayerL;
-    _matrix matWorld, RotZ;
-    vPlayerL = m_vLook - m_vPlayerPos;
-    
-    D3DXVec3Cross(&vRight, &up, &vLook);
-    D3DXVec3Normalize(&vRight, &vRight);
-    vPlayerR = vRight- m_vPlayerPos;
-    D3DXVec3Normalize(&vPlayerR, &vPlayerR);
-    D3DXVec3Normalize(&vPlayerL, &vPlayerL);
-
-    D3DXVec3Cross(&up, &vLook, &vRight);
-    D3DXVec3Normalize(&up, &up);
-
-    D3DXMatrixRotationAxis(&RotZ,&m_vLook,acosf(D3DXVec3Dot(&vPlayerR,&vPlayerL)));
-    
-    D3DXVec3TransformNormal(&vRight,&vRight,&RotZ);
-    D3DXVec3TransformNormal(&up, &up, &RotZ);
-    D3DXVec3TransformNormal(&m_vLook, &m_vLook, &RotZ);
-    memcpy(matWorld.m[0], &vRight,  sizeof(_vec3));
-    memcpy(matWorld.m[1], &up,      sizeof(_vec3));
-    memcpy(matWorld.m[2], &m_vLook, sizeof(_vec3));
-    memcpy(matWorld.m[3], &vPos,    sizeof(_vec3));
-    
-    Component_Transform->Set_World(&matWorld);
 
     switch (m_eLeaf)
     {
@@ -130,25 +106,24 @@ void CLAttack::Move_Leaf(const _float& _DT)
 
 void CLAttack::Leaf_First(const _float& _DT)
 {
-    _vec3 vUp, vRight, vCross, vLocal, _vPos, SetPos = {}, up{ 0,1,0 };
     _float fAngle;
-    _matrix RotZ, Axis, matWorld, matBill, matView;
+    _matrix matScale,RotZ, matWorld, matBill, matView;
     matWorld = *Component_Transform->Get_World();
     GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-    D3DXMatrixIdentity(&matBill);
-    
-    matBill._11 = matView._11;
-    matBill._13 = matView._13;
-    matBill._31 = matView._31;
-    matBill._33 = matView._33;
-    
-    matWorld =  matBill * matWorld;
+    D3DXMatrixInverse(&matBill, nullptr, &matView);
 
-    Component_Transform->Move_Pos(&m_vLook, m_fSpeed, _DT);
-    //memcpy(matWorld.m[3], &m_CLPos, sizeof(_vec3));
-    //
-    //Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
+    D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
+
+    fAngle = atan2f(m_vLook.z, m_vLook.x); // x 기준으로 z가 얼마나 돌아가있는지
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //그걸로 z만 돌리기
+
+    matWorld = matScale * RotZ * matBill; 
+
+    m_CLPos += m_vLook * m_fSpeed * _DT;
+    memcpy(matWorld.m[3], &m_CLPos, sizeof(_vec3));
+
     Component_Transform->Set_World(&matWorld);
+    Component_Transform->Set_Pos({ matWorld._41 , 0.5f , matWorld._43 });
 
 }
 

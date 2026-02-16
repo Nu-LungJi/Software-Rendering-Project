@@ -24,7 +24,18 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead) {
 		break;
 	case CL_EFFECT::LEAF_FIRST:
 		Make_TextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0");
-		
+		break;
+	case CL_EFFECT::LEAF_SECOND:
+		Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth0");
+		break;
+	case CL_EFFECT::LEAF_SECOND_E:
+		Make_TextureList(L"Spr_Cheonlog_BigExplosion_0");
+		break;
+	case CL_EFFECT::LEAF_SECOND_B:
+		Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosionToPlayer_0");
+		break;
+	case CL_EFFECT::LEAF_SECOND_C:
+		Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0");
 		break;
 	}
 	
@@ -85,7 +96,7 @@ void CLEffect::Move_Frame(const _float& _DT)
 			Set_ObjectDead(m_bDead);
 
 			Cheonlog* pCL = dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"));
-			pCL->Set_StartAttack(TRUE);
+
 		}
 	}
 		

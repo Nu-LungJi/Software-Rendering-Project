@@ -29,6 +29,7 @@ private:
 	_int						    m_TextureIndex;
 	_vec3							m_vLook;
 	_vec3							m_CLPos;
+	_vec3							m_vRight;
 	_vec3							m_vPlayerPos;
 	_bool					        m_bCheck;
 private:

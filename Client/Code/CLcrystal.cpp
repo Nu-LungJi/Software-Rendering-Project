@@ -61,6 +61,7 @@ void CLcrystal::Move_Frame(const _float& _DT)
 	if (m_TextureIndex > TextureList.size() - 1)
 	{
 		m_TextureIndex = 0;
+
 	}
 }
 
@@ -68,9 +69,20 @@ void CLcrystal::Chek_CLPos()
 {
 
 	_vec3 pPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
-	
-	pPos += { 0.9f, 1.f, 3.1f };
-	Component_Transform->Set_Pos(pPos.x, pPos.y , pPos.z);
+	Cheonlog* pCL = dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"));
+
+	if (pCL->Get_Statu() == CL_LJUMP)
+	{
+		pPos += { -1.4f, 1.3f, 2.9f };
+		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
+
+	}
+	else
+	{
+		pPos += { 0.9f, 1.f, 3.1f };
+		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
+	}
+
 }
 
 

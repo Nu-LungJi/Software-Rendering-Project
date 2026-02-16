@@ -25,14 +25,15 @@ private:
 	void        Texture_Initalize(_int iCnt, const _tchar* pName, CL_STATU CheongLog);
 	void		Set_Statu();
 	void	    Change_Statu(const _float& _DT, _int iMaxCnt);
-	void		AttackLeaf_First(_vec3 vPos);
+	void		AttackLeaf_First(const _float& _DT, _vec3 vPos);
 	void		Create_Crystal();
-	void		Create_Leaf();
-
+	_bool		Create_Leaf(const _float& _DT);
+	void		CL_Jump(const _float& _DT, _int iMaxCnt);
 public:
 	void		Set_Effect(_bool bEffect)     { m_EndEffect = bEffect; }
 	void        Set_StartAttack(_bool bStart) { m_StartAttack = bStart; }
 
+	CL_STATU		Get_Statu() { return m_eStatu; }
 public:
 	void        Debug_ButtonStyle();
 	void        Debug_Button(const char pName[32], _vec3* vPivot, _float iLinePivot);
@@ -50,11 +51,17 @@ private:
 
 
 	_float			m_frameTick;
+	_float			m_frameAttack;
 	_int			m_iFrameCnt;
+	_int			m_iSkillDelay;
+	_int			m_iSkillMaxCnt;
+	_int			m_iSkillCnt;
+	_int			m_iStatuCnt;
+	_int			m_iMaxStatuCnt;
 	UINT			m_frame; 
 
 
-
+	_bool			m_bMoveEffect;
 	_bool			m_StartAttack;
 	_bool			m_EndEffect;
 	_bool			m_bCrystal;
