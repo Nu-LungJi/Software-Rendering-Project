@@ -47,6 +47,9 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 				TXT->Visible = FALSE;
 				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = FALSE;
 				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = FALSE;
+
+				EquipMode = FALSE;
+				EquipObject = nullptr;
 			}
 
 			SavedItemIndex = 1;
@@ -214,8 +217,8 @@ HRESULT PlayerInven::Sprite_Initialize() {
 }
 HRESULT PlayerInven::Text_Initialize() {
 	//////////////////////////////////////////////////////// INVEN OPTION ///////////////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"버리기", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"선택"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
+	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"버리기", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
+	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"선택"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
@@ -584,10 +587,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 
 		if (Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_WEAPON ||
 			Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 0, 0, 255);
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 100, 100, 255);
 		}
 		else {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 255, 255, 255);
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
 		}
 	}
 	else if( FocusOn_SavedItem ){
