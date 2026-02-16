@@ -21,7 +21,6 @@ private:
 	virtual ~UIManager();
 
 public:
-
 	HRESULT		Ready_UIManager(LPDIRECT3DDEVICE9 _GRPDEV);
 	INT			Update_UIManager(CONST FLOAT& _DT);
 	VOID		LateUpdate_UIManager(CONST FLOAT& _DT);

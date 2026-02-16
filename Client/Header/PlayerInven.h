@@ -53,7 +53,8 @@ private:
 	vector<SpriteINFO*> ItemDictionary_InfoFrame;
 
 	BOOL			EquipMode;
-	ItemINFO*		EquipObject;
+	ItemINFO**		EquipObject;
+	ItemINFO*		JunkObject;
 
 private:
 	virtual	VOID		Free();

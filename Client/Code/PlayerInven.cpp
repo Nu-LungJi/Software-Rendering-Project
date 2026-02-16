@@ -28,14 +28,26 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
 	if (KEY_DOWN(DIK_B)) {
-		UIManager::GetInstance()->Get_Active() ? UIManager::GetInstance()->Set_Active(false) : UIManager::GetInstance()->Set_Active(true);
+		UIManager::GetInstance()->Get_Active() ? UIManager::GetInstance()->Set_Active(FALSE) : UIManager::GetInstance()->Set_Active(TRUE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			FocusOn_SavedItem = TRUE;
+
+			for (auto& TXT : ItemInfo_Text) {
+				TXT->Visible = TRUE;
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = TRUE;
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = TRUE;
+			}
 		}
 		else if (UIManager::GetInstance()->Get_Active() == FALSE){
 			FocusOn_SavedItem = FALSE;
 			FocusOn_EquipedItem = FALSE;
+
+			for (auto& TXT : ItemInfo_Text) {
+				TXT->Visible = FALSE;
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = FALSE;
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = FALSE;
+			}
 
 			SavedItemIndex = 1;
 			EquipedItemIndex = 1;
@@ -45,6 +57,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 	Selecting_SavedItem();
 	Selecting_EquipItem();
 	Display_ItemInfo();
+	Equip_Item();
 
 	return 0;
 }
@@ -60,8 +73,10 @@ VOID	PlayerInven::Render_GameObject() {
 		PlayerObject->Set_PlayerStop(FALSE);
 	}
 }	
+
 HRESULT PlayerInven::Component_Initialize() {
 	Component_Sprite = ADD_COMPONENT_SPRITE;
+
 	return S_OK;
 }
 HRESULT PlayerInven::Sprite_Initialize() {
@@ -132,6 +147,10 @@ HRESULT PlayerInven::Sprite_Initialize() {
 }
 		//////////////////////////////////////////////////////////////// INVENTORY ///////////////////////////////////////////////////////////////
 {
+		//////////////////////////////////////////////////////////// INV - BackGround ////////////////////////////////////////////////////////////
+{
+		Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_SavedSpace_BG.png", L"INV_BackGround", 810.f, 250.f, 393, 215, TRUE, 155);
+}
 		////////////////////////////////////////////////////////////// INV - Frame ///////////////////////////////////////////////////////////////
 {
 		Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_NonSelectFrame.png", L"INV_NormalFrame1", 835.f, 292.5f, 70, 70, TRUE, 255);
@@ -179,55 +198,157 @@ HRESULT PlayerInven::Sprite_Initialize() {
 		Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_Q.png", L"Inven_KEY_Q", 1000.f, 435.f, 20, 20, TRUE, 255);
 		Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_E.png", L"Inven_KEY_E", 1110.f, 435.f, 20, 20, TRUE, 255);
 }
-		//////////////////////////////////////////////////////////// INV - BackGround ////////////////////////////////////////////////////////////
-{
-		Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_SavedSpace_BG.png", L"INV_BackGround", 810.f, 250.f, 393, 215, TRUE, 155);
-}
+
 }
 		/////////////////////////////////////////////////////////////// INFORMATION //////////////////////////////////////////////////////////////
 {
-		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Top.png", L"INFO_BGTop", 140.f, 180.f, 335, 120, TRUE, 150));
-		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Mid.png", L"INFO_BGMid", 140.f, 300.f, 335, 110, TRUE, 150));
-		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Bot.png", L"INFO_BGBot", 140.f, 410.f, 335, 63, TRUE, 150));
+		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Top.png",	 L"INFO_BGTop", 140.f, 180.f, 335, 120, TRUE, 150));
+		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Mid.png",	 L"INFO_BGMid", 140.f, 300.f, 335, 110, TRUE, 150));
+		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Bot.png",	 L"INFO_BGBot", 140.f, 410.f, 335, 63, TRUE, 150));
 
-		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"", L"INFO_ItemSpace", 173.f, 223.f, 90, 90, TRUE, 200));
+		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"",						 L"INFO_ItemSpace", 173.f, 223.f, 90, 90, TRUE, 200));
 		ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Inven_ItemInfo_Frame.png", L"INFO_ItemFrame", 160.f, 210.f, 105, 105, TRUE, 200));
 }
 
 	return S_OK;
 }
-HRESULT  PlayerInven::Text_Initialize() {
+HRESULT PlayerInven::Text_Initialize() {
 	//////////////////////////////////////////////////////// INVEN OPTION ///////////////////////////////////////////////////////////////
 	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"버리기", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
 	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"선택"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////// INVEN INFO ///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC01" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 350.f }, 12, L"ITEM_DESC02" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 370.f }, 12, L"ITEM_DESC03" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 390.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
 HRESULT PlayerInven::Item_Initialize() {
 	wstring BaseFolder = L"../../UI/Inventory_UI/";
-	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png"	, L"DIC_InvenFrame_DarkBow"   , 0.f, 0.f, 60, 60, FALSE, 255));
-	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png"	, L"DIC_InvenFrame_GreenBow"  , 0.f, 0.f, 60, 60, FALSE, 255));
-	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png"		, L"DIC_InvenFrame_IceBow"	  , 0.f, 0.f, 60, 60, FALSE, 255));
-	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png"	, L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
 
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png"		, L"DIC_InfoFrame_DarkBow"	  , 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png"	, L"DIC_InfoFrame_GreenBow"  , 0.f, 0.f,  80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png"		, L"DIC_InfoFrame_IceBow"	  , 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png"	, L"DIC_InfoFrame_MichaelBow", 0.f, 0.f,  80, 80, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InvenFrame_DarkBow", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InvenFrame_GreenBow", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
+
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png",  L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
+
+	ItemINFO* it01 = new ItemINFO;
+	it01->ItemDesc = {
+		L"오동나무 활",
+		L"무기/희귀",
+
+		L"일반 공격",
+		L"일반 공격력 24 ~ 26",
+		L"공격 속도 2.5",
+
+		L"치명타 확률이 +3% 증가합니다.",
+
+		L"" ,
+
+		L"DIC_InvenFrame_MichaelBow",
+		L"DIC_InfoFrame_MichaelBow" 
+	};
+	it01->ItemPrice = 68;
+	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+
+	Append_Item(it01);
+
+	ItemINFO* it02 = new ItemINFO;
+	it02->ItemDesc = { 
+		L"풍수의 활", 
+		L"무기/희귀", 
+
+		L"일반 공격", 
+		L"이동 속도 + 20%", 
+		L"공격 속도 2.5", 
+
+		L"그냥 빨라집니다.", 
+
+		L"", 
+
+		L"DIC_InvenFrame_DarkBow", 
+		L"DIC_InfoFrame_DarkBow" 
+	};
+	it02->ItemPrice = 68;
+	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+
+	Append_Item(it02);
+
+	ItemINFO* it03 = new ItemINFO;
+	it03->ItemDesc = { 
+		L"풍수의 활", 
+		L"무기/희귀", 
+
+		L"일반 공격", 
+		L"이동 속도 + 20%", 
+		L"공격 속도 2.5", 
+		
+		L"그냥 빨라집니다.", 
+
+		L"", 
+
+		L"DIC_InvenFrame_GreenBow", 
+		L"DIC_InfoFrame_GreenBow" 
+	};
+	it03->ItemPrice = 68;
+	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+
+	Append_Item(it03);
+
+	ItemINFO* it04 = new ItemINFO;
+	it04->ItemDesc = { 
+		L"얼음 정령의 활", 
+		L"무기/희귀", 
+		
+		L"일반 공격", 
+		L"일반 공격력 14 - 16", 
+		L"공격 속도 2", 
+
+		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. 화살에 맞은 적에게 \n3초 간 빙결을 부여합니다.", 
+
+		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.", 
+
+		L"DIC_InvenFrame_IceBow", 
+		L"DIC_InfoFrame_IceBow" 
+	};
+	it04->ItemPrice = 68;
+	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
+	Append_Item(it04);
+
+	ItemINFO* it05 = new ItemINFO;
+	it05->ItemDesc = { L"얼음 정령의 활",
+		L"무기/희귀",
+
+		L"일반 공격",
+		L"일반 공격력 14 - 16",
+		L"공격 속도 2",
+
+		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. 화살에 맞은 적에게 \n3초 간 빙결을 부여합니다.",
+
+		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
+
+		L"DIC_InvenFrame_IceBow",
+		L"DIC_InfoFrame_IceBow"
+	};
+	it05->ItemPrice = 68;
+	it05->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+
+	Append_Item(it05);
+
 	return S_OK;
 }
+
 HRESULT PlayerInven::Selecting_SavedItem() {
 	if (FocusOn_SavedItem) {
 		if		(KEY_DOWN(DIK_W)) {
@@ -359,12 +480,31 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 }
 HRESULT PlayerInven::Equip_Item() {
 	if (EquipMode) {
+		Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(FALSE);
+		FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
+		FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"장착";
 		if (KEY_DOWN(DIK_E)){
 			if (FocusOn_SavedItem) {
-				Saved_ItemList[SavedItemIndex - 1] = EquipObject;
+				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
+				EquipObject = nullptr;
+				EquipMode = FALSE;
+				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"버리기";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"선택";
 			}
 			if (FocusOn_EquipedItem) {
-				Equip_ItemList[EquipedItemIndex - 1] = EquipObject;
+				if (((*EquipObject)->ItemType == (INT)ITEM_TYPE::NORMAL_WEAPON || (*EquipObject)->ItemType == (INT)ITEM_TYPE::RARE_WEAPON)
+					&& (EquipedItemIndex >= 5 && EquipedItemIndex <= 8)) return E_FAIL;
+				if (((*EquipObject)->ItemType == (INT)ITEM_TYPE::NORMAL_UTILITY || (*EquipObject)->ItemType == (INT)ITEM_TYPE::RARE_UTILITY)
+					&& (EquipedItemIndex >= 1 && EquipedItemIndex <= 4)) return E_FAIL;
+
+				swap(Equip_ItemList[EquipedItemIndex - 1], *EquipObject);
+				
+				EquipObject = nullptr;
+				EquipMode = FALSE;
+				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"버리기";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"선택";
 			}
 		}
 	}
@@ -372,13 +512,21 @@ HRESULT PlayerInven::Equip_Item() {
 	if (FocusOn_SavedItem) {
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
 			EquipMode = TRUE;
-			EquipObject = Saved_ItemList[SavedItemIndex - 1];
+			EquipObject = &Saved_ItemList[SavedItemIndex - 1];
+		}
+		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			JunkObject = Saved_ItemList[SavedItemIndex - 1];
+			Safe_Delete(Saved_ItemList[SavedItemIndex - 1]);
 		}
 	}
 	if (FocusOn_EquipedItem) {
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
 			EquipMode = TRUE;
-			EquipObject = Equip_ItemList[EquipedItemIndex - 1];
+			EquipObject = &Equip_ItemList[EquipedItemIndex - 1];
+		}
+		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			JunkObject = Equip_ItemList[EquipedItemIndex - 1];
+			Safe_Delete(Equip_ItemList[EquipedItemIndex - 1]);
 		}
 	}
 	
@@ -387,11 +535,14 @@ HRESULT PlayerInven::Equip_Item() {
 HRESULT PlayerInven::Display_ItemInfo() {
 	
 	for (INT IDX = 0; IDX < 8; ++IDX) {
-		if (Equip_ItemList[IDX] == nullptr) continue;
-		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[9])->TEXTURE;
+		if (Equip_ItemList[IDX] == nullptr) {
+			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
+			continue;
+		}
+		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[7])->TEXTURE;
 	}
 	if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && FocusOn_EquipedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[10])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[1];
@@ -400,19 +551,28 @@ HRESULT PlayerInven::Display_ItemInfo() {
 		ItemInfo_Text[4]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[4];
 		ItemInfo_Text[5]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[5];
 		ItemInfo_Text[6]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[6];
-		ItemInfo_Text[7]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[7];
-		ItemInfo_Text[8]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8];
+
+		if (Equip_ItemList[EquipedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_WEAPON ||
+			Equip_ItemList[EquipedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 100, 100, 255);
+		}
+		else {
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
+		}
 	}										
 	else if( FocusOn_EquipedItem ){
 		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = nullptr;
 	}
 
 	for (INT IDX = 0; IDX < 10; ++IDX) {
-		if (Saved_ItemList[IDX] == nullptr) continue;
-		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX +1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[9])->TEXTURE;
+		if (Saved_ItemList[IDX] == nullptr) {
+			Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
+			continue;
+		}
+		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX +1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[7])->TEXTURE;
 	}
 	if (Saved_ItemList[SavedItemIndex - 1] != nullptr && FocusOn_SavedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[10])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[8])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[1];
@@ -421,8 +581,14 @@ HRESULT PlayerInven::Display_ItemInfo() {
 		ItemInfo_Text[4]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[4];
 		ItemInfo_Text[5]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[5];
 		ItemInfo_Text[6]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[6];
-		ItemInfo_Text[7]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[7];
-		ItemInfo_Text[8]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[8];
+
+		if (Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_WEAPON ||
+			Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 0, 0, 255);
+		}
+		else {
+			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 255, 255, 255);
+		}
 	}
 	else if( FocusOn_SavedItem ){
 		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = nullptr;
@@ -458,8 +624,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 	}
 	return S_OK;
 }
+
 HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
-	if		(_ITEM->ItemType == (INT)ITEM_TYPE::WEAPON	) {
+	if		(_ITEM->ItemType == (INT)ITEM_TYPE::NORMAL_WEAPON ||
+			_ITEM->ItemType == (INT)ITEM_TYPE::RARE_WEAPON) {
 		for (INT IDX = 0; IDX < 4; ++IDX) {
 			if (Equip_ItemList[IDX] == nullptr) {
 				Equip_ItemList[IDX] = _ITEM;
@@ -475,7 +643,8 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 		}
 		return E_FAIL;
 	}
-	else if (_ITEM->ItemType == (INT)ITEM_TYPE::UTILITY	) {
+	else if (_ITEM->ItemType == (INT)ITEM_TYPE::NORMAL_UTILITY ||
+			_ITEM->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
 		for (INT IDX = 4; IDX < 8; ++IDX) {
 			if (Equip_ItemList[IDX] == nullptr) {
 				Equip_ItemList[IDX] = _ITEM;
@@ -493,6 +662,7 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 	}
 	return S_OK;
 }
+
 PlayerInven* PlayerInven::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	PlayerInven* MUI = new PlayerInven(_GRPDEV);
 	if (FAILED(MUI->Ready_GameObject())) {
