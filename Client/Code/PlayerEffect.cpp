@@ -113,18 +113,18 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	 
 	FrameTick += _DT;
-	Player* player = nullptr;
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 	switch (SKILL_TYPE)
 	{
 	case PLAYER_SKILL::ICE_CHARGING :
-		player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 		if (player->GetBowCharging() == 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::ICE_CHARGE:
 		if(!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::FAIRY_CHARGING:
-		if (!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
+		if (player->GetBowCharging() == 0) ObjectDead = true;
+		//if (!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
 		break;
 	}
 

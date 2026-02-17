@@ -206,7 +206,7 @@ void Bow::SetGrahpic()
 		wsprintfW(FileName, L"FairyBow.png");
 		break;
 	case BowType::IceBow:
-		wsprintfW(FileName, L"IceBow.png");
+		wsprintfW(FileName, L"IceBowL.png");
 		break;
 	case BowType::EvilHeadBow:
 		wsprintfW(FileName, L"EvilHeadBow.png");
@@ -287,7 +287,11 @@ void Bow::CreateArrow(const _float& _DT)
 			switch (_type)
 			{
 			case BowType::FairyBow :
-				MakeArrow(_arrowPos, dir2D);
+				if (KEY_HOLD(DIK_SPACE)) {
+					MakeArrow(_arrowPos, dir2D, true);
+				}
+				else
+					MakeArrow(_arrowPos, dir2D);
 				break;
 			case BowType::IceBow:
 				if (KEY_HOLD(DIK_SPACE)) {
@@ -302,6 +306,10 @@ void Bow::CreateArrow(const _float& _DT)
 					MakeArrow(rightPos, rightDir);
 					MakeArrow(leftPos, leftDir);
 				}
+				break;
+			case BowType::EvilHeadBow:
+				MakeArrow(_arrowPos, dir2D);
+				MakeArrow(_arrowPos, dir2D);
 				break;
 			default :
 				MakeArrow(_arrowPos, dir2D);
@@ -440,10 +448,10 @@ void Bow::CreateChargingEffect(const _float& _DT)
 			switch (_type)
 			{
 			case BowType::FairyBow:
-				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.3f, Size);
 				break;
 			case BowType::IceBow:
-				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.3f, Size);
 				break;
 			case BowType::EvilHeadBow:
 				break;

@@ -19,6 +19,8 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _arrowAtk = arrowAtk;
     _hp = 1;
     _EvilTime = 0.f;
+    _evilMoveTime = 0.f;
+    _sumEvilSpeed = 0.f;
 
     _angle = atan2f(_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -27,7 +29,8 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
         switch (_BOWTYPE)
         {
         case BowType::FairyBow :
-            _type = ArrowType::FairyArrow;
+            if (_LVEL == 3) _type = ArrowType::FairyCharging;
+            else _type = ArrowType::FairyArrow;
             _size = 0.8;
             break;
         case BowType::IceBow :
@@ -74,15 +77,27 @@ INT Arrow::Update_GameObject(const _float& _DT)
     _vec3		upDir, rightDir;
     upDir = { 0.f, 0.f, 1.f };
     rightDir = { 1.f, 0.f, 0.f };
-
-    _lifeTime += _DT;
     _frameDelay += _DT;
-
+    _evilMoveTime += _DT;
     // 죽을때
-    if (_lifeTime > 1.f)
+    _lifeTime += _DT;
+    float maxLifeTime = 1.f;
+    switch (_type)
+    {
+    case ArrowType::FairyCharging:
+        maxLifeTime = 3.f;
+        break;
+    case ArrowType::IceCharging:
+        maxLifeTime = 3.f;
+        break;
+    case ArrowType::EvilHead_Arrow:
+        maxLifeTime = 3.f;
+        break;
+    }
+    if (_lifeTime > maxLifeTime)
         return -1;
         
-
+    // 메트릭스
     {
         CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
         _vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
@@ -100,26 +115,55 @@ INT Arrow::Update_GameObject(const _float& _DT)
         D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
         D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
+        // 회전
         if (_type == ArrowType::IceCharging) _originAngle += _DT * D3DXToRadian(1.f) * 600;
         _matrix matRotZ;
+
+        // z축 회전
         D3DXMatrixRotationZ(&matRotZ, _originAngle);
-        if (_type == ArrowType::EvilHead_Arrow) {
-            _EvilTime += _DT;
-            if (_EvilTime <= 0.05)
-                _angle += D3DXToRadian(2.f);
-            else if (_EvilTime > 0.05 && _EvilTime <= 0.15f)
-                _angle -= D3DXToRadian(2.f);
-            else if (_EvilTime > 0.15f && _EvilTime <= 0.2f)
-                _angle += D3DXToRadian(2.f);
-            else
-                _EvilTime = 0.f;
-        }
+        if(_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
         _matrix matWorld = matSize * matRotZ * matBillboard;
 
+        // 속도
+        switch (_type)
+        {
+        case ArrowType::FairyCharging:
+            _speed = 5.f;
+            break;
+        case ArrowType::IceCharging:
+            _speed = 5.f;
+            break;
+        case ArrowType::EvilHead_Arrow:
+            _speed = 10.f;
+            break;
+        }
         _sumSpeed += _DT * _speed;
         matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
         matWorld._42 = _playerPos.y;
         matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
+
+        // 이동
+        switch (_type)
+        {
+        case ArrowType::EvilHead_Arrow:
+            _evilMoveTime += _DT;
+
+            float wavePower = 1.f;
+            float waveSpeed = 5.f;
+
+            float wave = sinf(_evilMoveTime * waveSpeed) * wavePower;
+
+            if (_evilCount % 2 == 1) {
+                matWorld._41 += -sinf(_angle) * wave;
+                matWorld._43 += -cosf(_angle) * wave;
+            }
+            else{
+                matWorld._41 -= -sinf(_angle) * wave;
+                matWorld._43 -= -cosf(_angle) * wave;
+            }
+            _evilCount++;
+            break;
+        }
 
         Component_Transform->Set_World(&matWorld);
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
@@ -165,12 +209,16 @@ void Arrow::SetGrahpic()
     TCHAR FileName[128] = L"";
 
 
-    if (_frameDelay > 0.06f) _frame++;
+    if (_frameDelay > 0.2f) { _frame++; _frameDelay = 0; }
        
     switch (_type) {
     case ArrowType::FairyArrow:
         _frame = 1;
         wsprintfW(FileName, L"FairyArrow.png");
+        break;
+    case ArrowType::FairyCharging:
+        if (_frame > 6) _frame = 1;
+        wsprintfW(FileName, L"Fairy_Charging%d.png", _frame);
         break;
     case ArrowType::IceArrow_LV1:
         if (_frame > 6) _frame = 1;

@@ -3,11 +3,14 @@
 
 enum class ArrowType {
 	FairyArrow,
+	FairyCharging,
 	IceArrow_LV1,
 	IceArrow_LV2,
 	IceCharging,
 	EvilHead_Arrow,
+	EvilHeadCharging,
 	Wind_Arrow,
+	WindCharging,
 
 	End
 };
@@ -59,6 +62,9 @@ private:
 	float		_speed;
 	float		_sumSpeed;
 	int			_arrowAtk;
+
+	float		_evilMoveTime;
+	float		_sumEvilSpeed;
 
 	float _EvilTime;
 };
