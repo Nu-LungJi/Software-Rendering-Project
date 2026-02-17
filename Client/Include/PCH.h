@@ -8,6 +8,7 @@
 
 //////////////////////////////////////////// Engine Import
 ////////////////////////////// IMGUIZMO Import
+
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
 #include "ImZoomSlider.h"
@@ -32,6 +33,7 @@
 #include "MainUI.h"
 #include "Inventory.h"
 #include "NPCTalk.h"
+#include "BossEffect.h"
 #include "PlayerEffect.h"
 #include "UIEffect.h"
 #include "NPC.h"
@@ -39,6 +41,8 @@
 
 #include "Monster.h"
 #include "MonsterEffect.h"
+#include "FinalBoss.h"
+#include "FSM.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
@@ -63,12 +67,15 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
+
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
 #include "DebugScene.h"
 #include "MapScene.h"
+
 //////////////////////////////////////////// Manager
+
 #include "FontManager.h"
 #include "GUIManager.h"
 #include "ResourceManager.h"
@@ -83,6 +90,7 @@
 #include "TimeManager.h"
 #include "GameManager.h"
 #include "TileManager.h"
+
 //////////////////////////////////////////// Global Variable
 
 extern HWND			hWnd;

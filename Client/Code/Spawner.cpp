@@ -116,14 +116,14 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene
-			<Bat>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
-		Bat* pBat = nullptr;
+		//SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene
+		//	<Bat>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
+		//Bat* pBat = nullptr;
+		//
+		//pBat = dynamic_cast<Bat*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
 
-		pBat = dynamic_cast<Bat*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
-
-		dynamic_cast<Transform*>(pBat->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
-		m_bSpawn = true;
+		//dynamic_cast<Transform*>(pBat->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
+		//m_bSpawn = true;
 	}
 	
 }

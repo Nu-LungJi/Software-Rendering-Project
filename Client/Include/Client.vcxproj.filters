@@ -88,9 +88,6 @@
     <Filter Include="03. GameObject\07. ProJectile">
       <UniqueIdentifier>{439bbeef-a25b-49de-a227-87dae46c6b96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\03. EnvEffect">
-      <UniqueIdentifier>{67951d9e-7d40-478f-8302-55c93ba9b870}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. UI\01. MainUI">
       <UniqueIdentifier>{c5ddb37a-c839-4e15-9417-7076814467ab}</UniqueIdentifier>
     </Filter>
@@ -159,6 +156,21 @@
     </Filter>
     <Filter Include="02. Scene\02.DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster">
+      <UniqueIdentifier>{ee57f866-6323-42e5-9cb1-5197f307d10f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\01. MidBoss">
+      <UniqueIdentifier>{2386c273-ae85-4301-9ecd-5c547055f3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss">
+      <UniqueIdentifier>{d57f7457-e1de-4708-b544-e425897f457c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\StateMachine">
+      <UniqueIdentifier>{2fb3d403-7a6d-406d-b1aa-cf37dc800bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\03. BossEffect">
+      <UniqueIdentifier>{167b9a35-bcb4-4383-9f4d-61d841e1a298}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -330,6 +342,15 @@
     <ClInclude Include="..\Header\Augment.h">
       <Filter>04. UI\AugmentUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\FinalBoss.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\FSM.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\BossEffect.h">
+      <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -485,6 +506,15 @@
     </ClCompile>
     <ClCompile Include="..\Code\Augment.cpp">
       <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FinalBoss.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FSM.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\BossEffect.cpp">
+      <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

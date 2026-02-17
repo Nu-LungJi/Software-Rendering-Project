@@ -174,9 +174,6 @@
     <ClInclude Include="..\Header\FontManager.h">
       <Filter>11. FontManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\NoCloneBuffer.h">
-      <Filter>99. Component\01. Buffer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDevice.cpp">
@@ -250,9 +247,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\FontManager.cpp">
       <Filter>11. FontManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\NoCloneBuffer.cpp">
-      <Filter>99. Component\01. Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
