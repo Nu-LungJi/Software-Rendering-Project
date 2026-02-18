@@ -64,29 +64,19 @@ INT Bow::Update_GameObject(const _float& _DT)
 			_Charge = 0;
 		}
 
-		POINT MousePoint{ 0, 0 };
-		GetCursorPos(&MousePoint);
-		ScreenToClient(hWnd, &MousePoint);
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		_vec3 MouseDir = player->Get_MouseDir();
 
-		_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-		_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-		_vec2 dir2D = mousePos - screenCenter;
+		_vec2 dir2D = { MouseDir.x, MouseDir.z };
 		D3DXVec2Normalize(&dir2D, &dir2D);
 
-		float angle = atan2f(dir2D.y, dir2D.x);
+		float angle = atan2f(-dir2D.y, dir2D.x);
 
 		float radius = 1.f;
 		if (_type == BowType::FairyBow) radius = 1.5f;
 
 		float offsetX = cosf(angle) * radius;
 		float offsetY = sinf(angle) * radius;
-
-		Component_Transform->Set_Pos({
-			(*_playerPos).x + offsetX,
-			(*_playerPos).y + offsetY,
-			(*_playerPos).z
-			});
 
 		_vec3 eye = { 0.f, 0.f, 0.f };
 		_vec3 at = _cameraDir;

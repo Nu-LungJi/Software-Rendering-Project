@@ -209,7 +209,7 @@ void Arrow::SetGrahpic()
     TCHAR FileName[128] = L"";
 
 
-    if (_frameDelay > 0.2f) { _frame++; _frameDelay = 0; }
+    if (_frameDelay > 0.05f) { _frame++; _frameDelay = 0; }
        
     switch (_type) {
     case ArrowType::FairyArrow:

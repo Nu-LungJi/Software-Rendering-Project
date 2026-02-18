@@ -127,7 +127,6 @@ public:
 
 	static Player* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	float	Get_Speed()				{ return _speed;}
-	////////////////////// 광윤 추가
 	void	Set_Speed(INT _value)	{ _speed = _value; }
 
 	int		Get_HP() { return _hp; }
@@ -150,7 +149,7 @@ public:
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
-	//////////////////////
+	_vec3			Get_MouseDir();
 private:
 	virtual VOID Free();
 

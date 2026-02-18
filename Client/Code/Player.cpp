@@ -1148,6 +1148,53 @@ Player* Player::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	}
 	return PLAYER;
 }
+_vec3 Player::Get_MouseDir()
+{
+	POINT MousePoint{ 0, 0 };
+	GetCursorPos(&MousePoint);
+	ScreenToClient(hWnd, &MousePoint);
+
+	_vec3 vMouse;
+	vMouse.x = (float)MousePoint.x;
+	vMouse.y = (float)MousePoint.y;
+	vMouse.z = 0.f;
+
+	D3DVIEWPORT9		viewport;
+	ZeroMemory(&viewport, sizeof(D3DVIEWPORT9));
+
+	GRPDEV->GetViewport(&viewport);
+
+	D3DXMATRIX		matProj;
+	ZeroMemory(&matProj, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMATRIX		matView;
+	ZeroMemory(&matView, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+
+	D3DXMATRIX matWorldIdentity;
+	D3DXMatrixIdentity(&matWorldIdentity);
+
+	vMouse.z = 0.f;
+	D3DXVECTOR3 vNear;
+	D3DXVec3Unproject(&vNear, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	vMouse.z = 1.f;
+	D3DXVECTOR3 vFar;
+	D3DXVec3Unproject(&vFar, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	_vec3 vDir = vFar - vNear;
+	D3DXVec3Normalize(&vDir, &vDir);
+
+	float t = -vNear.y / vDir.y;
+	_vec3 vPickPos = vNear + vDir * t;
+
+	_vec3 mouseDir = vPickPos - *Component_Transform->Get_Position();
+	mouseDir.y = 0.f;
+	D3DXVec3Normalize(&mouseDir, &mouseDir);
+
+	return mouseDir;
+}
 VOID	Player::Free() {
 	GameObject::Free();
 }
