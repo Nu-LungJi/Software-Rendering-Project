@@ -345,11 +345,11 @@
     <ClInclude Include="..\Header\FinalBoss.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\FSM.h">
-      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\BossEffect.h">
       <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\StateMachine.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -510,11 +510,11 @@
     <ClCompile Include="..\Code\FinalBoss.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\FSM.cpp">
-      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\BossEffect.cpp">
       <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StateMachine.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

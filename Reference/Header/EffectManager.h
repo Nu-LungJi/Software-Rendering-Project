@@ -26,7 +26,7 @@ public:
 private:
 	list<GameObject*>	Container_PlayerEffect;
 	list<GameObject*>	Container_MonsterEffect;
-	list<GameObject*>	Container_EnviromentEffect;
+	list<GameObject*>	Container_BossEffect;
 	list<GameObject*>	Container_UIEffect;
 public:
 	virtual			VOID	Free();

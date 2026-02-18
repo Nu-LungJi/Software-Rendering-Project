@@ -9,7 +9,7 @@
 #define		ANIMATION_RSWING_NORMAL_FRAMECOUNT	12
 #define		ANIMATION_RSWING_RAGE_FRAMECOUNT	11
 
-#define		ANIMATION_FSWING_RAGE_FRAMECOUNT	12
+#define		ANIMATION_FSWING_FRAMECOUNT			12
 
 #define		ANIMATION_STAND_NORMAL_FRAMECOUNT	14
 #define		ANIMATION_STAND_RAGE_FRAMECOUNT		16
@@ -50,11 +50,19 @@ private:
 
 private:
 	Player*			PlayerObject;
+	_vec3			PlayerPos;
 
 	FLOAT			BossHP;
 
 	BOOL			Invalidate_Mode;
 	BOOL			Rage_Mode;
+	BOOL			Action_Mode;
+	BOOL			Death_Mode;
+
+	INT				Action_Selector;
+	FLOAT			Action_Timer;
+
+	BOOL			DoubleSlam;
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;
@@ -85,13 +93,6 @@ private:
 	Texture*		Component_Texture;
 	Transform*		Component_Transform;
 	Collider*		Component_Collider;
-	StateMachine*	Component_StateMachine;
 
-public:
-	friend class AppearState;
-	friend class DeadState;
-	friend class RageUpState;
-	friend class RSwingState;
-	friend class SlamState;
-	friend class StandState;
+	StateMachine*	FSM;
 };

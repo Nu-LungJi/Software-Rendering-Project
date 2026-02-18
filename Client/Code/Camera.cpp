@@ -30,7 +30,7 @@ HRESULT CameraObject::Ready_GameObject() {
 INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_F2)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
+		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
 
@@ -99,7 +99,7 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 			_vec3 Length = *D3DXVec3Normalize(&SideVector, &SideVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
-		if (KEY_HOLD(DIK_SPACE)) {
+		if (KEY_HOLD(DIK_RCONTROL)) {
 			memcpy(&UpVector, &CameraMatrix.m[1][0], sizeof(_vec3));
 
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;

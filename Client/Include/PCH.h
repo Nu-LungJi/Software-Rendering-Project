@@ -41,8 +41,8 @@
 
 #include "Monster.h"
 #include "MonsterEffect.h"
+#include "StateMachine.h"
 #include "FinalBoss.h"
-#include "FSM.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"

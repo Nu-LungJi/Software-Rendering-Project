@@ -148,11 +148,11 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
 	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);				// 충돌체의 범위 조절
 
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
 
 	return S_OK;
 }

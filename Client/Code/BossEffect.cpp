@@ -12,21 +12,28 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 	if (_SKILLTYPE == BOSS_EFFECT::APPEAR_EFFECT_SPOOL)		{ Make_TextureList(L"Effect_Spool");			}
 	if (_SKILLTYPE == BOSS_EFFECT::APPEAR_EFFECT_ARM)		{ Make_TextureList(L"Effect_Appear_Arm");		}
 
+	if (_SKILLTYPE == BOSS_EFFECT::SLAM_EFFET)				{ Make_TextureList(L"Effect_Slam"); }
+
+	if (_SKILLTYPE == BOSS_EFFECT::RSWING_EFFECT)			{ Make_TextureList(L"Effect_RSwing"); }
+	if (_SKILLTYPE == BOSS_EFFECT::RSWING_PROJ_EFFECT)		{ Make_TextureList(L"Effect_FireBall"); }
+
 	EffectSize = _Size;
 	PlayTime = _PlayTime;
 
 	Component_Transform->Set_Pos(*_BossPOS);
 	Repeatable = _Repeatable;
 
-	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
+	//CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
+	//
+	//_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
+	//_vec3 planeDir = { 0.f, 1.f, 0.f };
+	//
+	//_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
+	//_float _cameraAngle = angle / D3DX_PI * 180.f;
 
-	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
-	_vec3 planeDir = { 0.f, 1.f, 0.f };
+	Transform* BossTransform = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 
-	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
-	angle = angle / D3DX_PI * 180.f;
-
-	Component_Transform->Rotation(ROT_X, 90.f - angle);
+	Component_Transform->Rotation(ROT_X, BossTransform->Get_Rotation()->x);
 
 	Component_Transform->Set_Scale(EffectSize.x, EffectSize.y, EffectSize.z);
 
@@ -47,6 +54,7 @@ HRESULT	BossEffect::Make_TextureList(wstring _FileName) {
 }
 INT		BossEffect::Update_GameObject(const _float& _DT) {
 	if (ObjectDead)	return 0;
+	
 	GameObject::Update_GameObject(_DT);
 
 	FrameTick += _DT;

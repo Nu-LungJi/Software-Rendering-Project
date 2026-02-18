@@ -110,7 +110,6 @@ private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;
 	Texture*		Component_Texture;
-	StateMachine*	Component_FSM;
 	Collider*		Component_Collider;
 public:
 	PSTATUS*		Get_Status()		{ return &_pStatus; }								// 플레이어 스테이터스

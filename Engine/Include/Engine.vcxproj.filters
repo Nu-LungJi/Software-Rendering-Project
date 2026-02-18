@@ -34,9 +34,6 @@
     <Filter Include="99. Component\02. Transform">
       <UniqueIdentifier>{a586d953-951b-41a4-aead-120984a11a0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Component\99. StateMachine">
-      <UniqueIdentifier>{818e8a07-c0d7-48c4-80fd-1a7761d25a68}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. SoundManager">
       <UniqueIdentifier>{1e3bd1a8-9ca5-4fde-9773-86836f586b6c}</UniqueIdentifier>
     </Filter>
@@ -138,9 +135,6 @@
     <ClInclude Include="..\Header\SoundManager.h">
       <Filter>04. SoundManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\StateMachine.h">
-      <Filter>99. Component\99. StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\KeyManager.h">
       <Filter>03. KeyManager</Filter>
     </ClInclude>
@@ -211,9 +205,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\SoundManager.cpp">
       <Filter>04. SoundManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\StateMachine.cpp">
-      <Filter>99. Component\99. StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\KeyManager.cpp">
       <Filter>03. KeyManager</Filter>

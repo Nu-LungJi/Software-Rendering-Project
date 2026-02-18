@@ -1,32 +1,49 @@
 #include "../Include/PCH.h"
 #include "FinalBoss.h"
-#include "FSM.h"
 
 FinalBoss::FinalBoss(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV)	{}
 FinalBoss::FinalBoss(CONST GameObject& _RHS)	: GameObject(_RHS)		{}
 FinalBoss::~FinalBoss()													{}
 
 HRESULT	FinalBoss::Ready_GameObject()						{
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
+	FSM = StateMachine::Create(GRPDEV);
+	FSM->FSM_StateInit(AppearState::GetInstance()->Instance());
+	FSM->FSM_SetOwner(this);
+
 	BossHP = 1000.f;
 
-	Invalidate_Mode = TRUE;
-	Rage_Mode		= FALSE;
+	Invalidate_Mode = TRUE;		// 피해 무효화
+	Rage_Mode		= FALSE;	// 폭주화 단계
+	Action_Mode		= TRUE;		// 다른 행동 간섭 방지
+	Death_Mode		= FALSE;
 
 	Animation_Timer		 = 0.f;
-	Animation_Interval	 = 0.15f;
+	Animation_Interval	 = 0.07f;
 	Animation_Index		 = 0;
-	Animation_FrameCount = ANIMATION_APPEAR_FRAMECOUNT;
+	Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
 
-	Animation_TexList = &Animation_Appear_TexList;
+	Animation_TexList = &Animation_Stand_Normal_TexList;
+
+	Invalidate_Mode = FALSE;		// 피해 무효화
+	Action_Mode = FALSE;		// 다른 행동 간섭 방지
+
+	Action_Selector = 0;
+	Action_Timer = 0.f;
+
+	DoubleSlam = TRUE;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 
@@ -43,37 +60,102 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	FSM->Update_GameObject(_DT);
 
-	//if (KEY_DOWN(DIK_I)) {
-	//	_vec3 a = { 2.f, 2.f, 2.f };
-	//	PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::APPEAR_EFFECT_EMBLEM, Component_Transform->Get_Position(), a, 0.5f);
-	//	PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::APPEAR_EFFECT_ARM, Component_Transform->Get_Position(), a, 0.5f);
-	//	PLAY_BOSS_EFFECT(BOSS_EFFECT::APPEAR_EFFECT_SPOOL, Component_Transform->Get_Position(), a, 0.5f);
-	//}
-
-	if (Animation_TexList == &Animation_Appear_TexList && Animation_Index == ANIMATION_APPEAR_FRAMECOUNT - 1) {
-		Animation_Index = 0;
-		Animation_TexList = &Animation_Stand_Normal_TexList;
-		Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
-		Component_StateMachine->FSM_StateChange(StandState::GetInstance()->Instance());
-	}
-
-	if (BossHP <= 0) {
-		Animation_Index = 0;
-		Animation_TexList = &Animation_Death_TexList;
-		Animation_FrameCount = ANIMATION_DEATH_FRAMECOUNT;
-		Component_StateMachine->FSM_StateChange(DeadState::GetInstance()->Instance());
-	}
-
-	if (BossHP <= 500 && Rage_Mode == FALSE) {
-		Animation_Index = 0;
-		Animation_TexList = &Animation_Death_TexList;
-		Animation_FrameCount = ANIMATION_DEATH_FRAMECOUNT;
-
-		Component_StateMachine->FSM_StateChange(RageUpState::GetInstance()->Instance());
-		Rage_Mode = TRUE;
-	}
 	Animation_Timer += _DT;
+	if (Invalidate_Mode == FALSE || Action_Mode == FALSE) {
+		Action_Timer += _DT;
+	}
+	
+	if (Action_Timer > 3.f) {
+		srand(time(NULL));
+		Action_Selector = 3;// rand() % 3 + 1;
+		Action_Timer = 0.f;
+	}
+
+	if (Rage_Mode == FALSE) {
+		// < Stand -> RSwing >
+		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 1) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_RSwing_Normal_TexList;
+			Animation_FrameCount = ANIMATION_RSWING_NORMAL_FRAMECOUNT;
+
+			FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
+			Action_Mode		= TRUE;
+			Action_Selector = 0;
+		}
+		// < Stand -> FSwing >
+		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 2) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_FSwing_TexList;
+			Animation_FrameCount = ANIMATION_FSWING_FRAMECOUNT;
+
+			FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
+		// < Stand -> Slam >
+		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 3) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_Slam_Normal_TexList;
+			Animation_FrameCount = ANIMATION_SLAM_NORMAL_FRAMECOUNT;
+
+			FSM->FSM_StateChange(SlamState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+			DoubleSlam = TRUE;
+		}
+		// < Double Slam >
+		if (DoubleSlam && Animation_Index == ANIMATION_SLAM_NORMAL_FRAMECOUNT - 1) {
+			Animation_Index = 0;
+			DoubleSlam = FALSE;
+		}
+		// < RSwing/FSwing/Slam -> Stand >
+		if ((Animation_TexList == &Animation_RSwing_Normal_TexList	&& Animation_Index == ANIMATION_RSWING_NORMAL_FRAMECOUNT - 1)
+			|| (Animation_TexList == &Animation_Slam_Normal_TexList && Animation_Index == ANIMATION_SLAM_NORMAL_FRAMECOUNT - 1) 
+			|| (Animation_TexList == &Animation_FSwing_TexList		&& Animation_Index == ANIMATION_FSWING_FRAMECOUNT - 1))			{
+			Animation_Index = 0;
+			Animation_TexList = &Animation_Stand_Normal_TexList;
+			Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
+
+			Action_Mode = FALSE;
+			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+		}
+
+		// < Appear -> Stand >
+		if (Animation_TexList == &Animation_Appear_TexList && Animation_Index == ANIMATION_APPEAR_FRAMECOUNT - 1) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_Stand_Normal_TexList;
+			Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
+
+			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+			Invalidate_Mode = FALSE;
+			Action_Mode		= FALSE;
+		}
+
+		// <<< RageMode >>>
+		if (BossHP <= 500 && Rage_Mode == FALSE) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_RageUp_TexList;
+			Animation_FrameCount = ANIMATION_RAGEUP_FRAMECOUNT;
+
+			FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
+			Invalidate_Mode = TRUE;
+			Rage_Mode = TRUE;
+		}
+	}
+	else if (Rage_Mode == TRUE) {
+		// < Death >
+		if (BossHP <= 0 && Death_Mode == FALSE) {
+			Animation_Index = 0;
+			Animation_TexList = &Animation_Death_TexList;
+			Animation_FrameCount = ANIMATION_DEATH_FRAMECOUNT;
+
+			Invalidate_Mode = TRUE;
+			Death_Mode = TRUE;
+			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
+		}
+	}
 
 	return 0;
 }
@@ -123,15 +205,11 @@ HRESULT	FinalBoss::Component_Initialize() {
 
 	Component_Transform		= ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Pos(5.f, 1.f, 5.f);
-	Component_Transform->Set_Scale(3.f, 3.f, 3.f);
+	Component_Transform->Set_Scale(8.f, 8.f, 8.f);
 
 	Component_Collider		= ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
-
-	Component_StateMachine	= ADD_COMPONENT_FSM;
-	
-	Component_StateMachine->FSM_StateInit(AppearState::GetInstance()->Instance());
 
 	return S_OK;
 }
@@ -163,7 +241,7 @@ HRESULT FinalBoss::Texture_Initialize() {
 		Animation_RSwing_Rage_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_FSWING_RAGE_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_FSWING_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_FullSwing" + to_wstring(PIC) + L".png";
 		Animation_FSwing_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
@@ -201,5 +279,6 @@ FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return FBS;
 }
 VOID		FinalBoss::Free() {
+	Safe_Release(FSM);
 	GameObject::Free();
 }

@@ -190,7 +190,7 @@ HRESULT Bow::Component_Initialize()
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Texture = ADD_COMPONENT_TEXTURE;
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Weapon/IceBow");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Weapon/IceBow");
 
 	//D3DXCreateTextureFromFile(g_pd3dDevice, L"image.png", &g_pTexture);
 	//D3DXCreateSprite(g_pd3dDevice, &g_pSprite);
