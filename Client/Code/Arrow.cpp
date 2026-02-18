@@ -22,7 +22,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _evilMoveTime = 0.f;
     _sumEvilSpeed = 0.f;
 
-    _angle = atan2f(_arrowDir.y, _arrowDir.x);
+    _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
 
     {

@@ -235,17 +235,13 @@ void Bow::CreateArrow(const _float& _DT)
 	if (mouseLB)
 	{
 		if (_attackDelay > 0.6) {
-			POINT MousePoint{ 0, 0 };
-			GetCursorPos(&MousePoint);
-			ScreenToClient(hWnd, &MousePoint);
+			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+			_vec3 MouseDir = player->Get_MouseDir();
 
-			_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-			_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-			_vec2 dir2D = mousePos - screenCenter;
+			_vec2 dir2D = { MouseDir.x, MouseDir.z };
 			D3DXVec2Normalize(&dir2D, &dir2D);
 
-			float angle = atan2f(dir2D.y, dir2D.x);
+			float angle = atan2f(-dir2D.y, dir2D.x);
 
 			float radius = 1.8f;
 
@@ -260,20 +256,15 @@ void Bow::CreateArrow(const _float& _DT)
 			_vec3 leftPos = _arrowPos;
 			float convergeAngle = D3DXToRadian(5.f);
 			_vec2 rightDir = {
-				cosf(angle - convergeAngle),
-				sinf(angle - convergeAngle)
+				cosf(angle + convergeAngle),
+				-sinf(angle + convergeAngle)
 			};
 			
 			_vec2 leftDir = {
-				cosf(angle + convergeAngle),
-				sinf(angle + convergeAngle)
+				cosf(angle - convergeAngle),
+				-sinf(angle - convergeAngle)
 			};
-			//GameObject* arrow = Arrow::Create(GRPDEV, ArrowType::IceArrow_LV1, &_arrowPos);
-			//
-			//arrow->Set_ObjectTag(L"PlayerArrow");									
-			//arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);					
-			//
-			//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow); // 오류나서 지웠습니다. 한 번 확인해주세요
+
 			switch (_type)
 			{
 			case BowType::FairyBow :
@@ -290,9 +281,9 @@ void Bow::CreateArrow(const _float& _DT)
 				else{
 					MakeArrow(_arrowPos, dir2D);
 					rightPos.x -= side.x * 1.5f;
-					rightPos.z -= side.y * 1.5f;
+					rightPos.z += side.y * 1.5f;
 					leftPos.x += side.x * 1.5f;
-					leftPos.z += side.y * 1.5f;
+					leftPos.z -= side.y * 1.5f;
 					MakeArrow(rightPos, rightDir);
 					MakeArrow(leftPos, leftDir);
 				}
