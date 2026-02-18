@@ -53,8 +53,8 @@ private:
 	BAT_STATE CurrState;
 	BAT_STATE PrevState;
 
-	VOID Change_State(BAT_STATE eState);
-	VOID State_Attacking(const _float& _DT);
+	//VOID Change_State(BAT_STATE eState);
+	//VOID State_Attacking(const _float& _DT);
 
 	_float Timer1;
 	_float Timer2;

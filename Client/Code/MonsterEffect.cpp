@@ -17,6 +17,7 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 vPos, BOOL 
 	case MONSTER_EFFECT::MONSTER_SUMMONS01:		Make_TextureList(L"Spr_Effect_MonsterSummons01");		break;
 	case MONSTER_EFFECT::MONSTER_SUMMONS02:		Make_TextureList(L"Spr_Effect_MonsterSummons02");		break;
 	case MONSTER_EFFECT::MONSTER_SUMMONS03:		Make_TextureList(L"Spr_Effect_MonsterSummons03");		break;
+	case MONSTER_EFFECT::MONSTER_CHARGE:		Make_TextureList(L"Spr_Bullet_Standard_Charge");		break;
 	case MONSTER_EFFECT::MONSTER_DEATH:			Make_TextureList(L"Spr_Effect_baseDeathEffect_B");		break;
 	case MONSTER_EFFECT::ALERT_CIRCLE:			TextureList.push_back(ResourceManager::GetInstance()->Find_Texture(L"AlertCircle.png")); break;
 	case MONSTER_EFFECT::SKILL_END:				default:		break;

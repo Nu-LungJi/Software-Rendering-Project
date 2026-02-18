@@ -15,7 +15,9 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 }
 INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 {
-	// <플레이어 업데이트 시점>
+	MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+
 	GameObject::Update_GameObject(_DT);
 
 	switch (m_tInfo.eState[0])
@@ -282,6 +284,7 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Dir(vDir);
 		
 		CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
+		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 
 		m_tInfo.pGameObj[1] = nullptr;
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);

@@ -1,6 +1,6 @@
 #include"GameObject.h"
 
-#define FRAMETICK 0.2f
+#define FRAMETICK 0.1f
 
 #pragma region Macros
 #define POS(GAMEOBJECT)			static_cast<Transform*>(GAMEOBJECT->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()
@@ -34,7 +34,7 @@
 #define BAT_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
 #pragma region Bullet_Standard
-#define	BULLET_STANDARD_SPEED  1.f
+#define	BULLET_STANDARD_SPEED  3.f
 #pragma endregion
 
 #pragma region ScorpionEvilSoul
@@ -53,6 +53,10 @@
 #define SCORPIONEVILSOUL_RUSHSPEED				2.f			//	CHANELING Áß ÀÌµ¿ ¼Óµµ
 
 #define SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
+#pragma endregion
+#pragma region ScorpionBullet
+#define SCORPIONBULLET_SPEED			3.f
+#define SCORPIONBULLET_CHAINBULLET_NUM	6
 #pragma endregion
 
 #pragma region ShotGunEvilSoul
@@ -128,7 +132,7 @@ typedef struct tagTextureInfo
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fStatistics{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f)				{}
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f), fHp(1.f), fAtk(1.f)			{}
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -142,7 +146,7 @@ typedef struct tagMonsterInfo {
 	BOOL						bTrigger[4];
 	MONSTER_STATE				eState[2];
 	_float						fTimer[4];
-	GameObject*					pGameObj[16];
+	GameObject*					pGameObj[4];
 
 	_vec3						vDirection;
 	_float						fSpeed;
@@ -165,7 +169,7 @@ public:
 public:
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
-	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vRight = { 1.f, 0.f,0.f });
+	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 // Ãæµ¹ °ü·Ã

@@ -18,7 +18,8 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
 
-	Component_Transform->Get_Position()->y = MYSCALE->y * 0.5f;
+	MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x* 0.5f, 1.f, MYSCALE->y*0.5f);
 
 	switch (m_tInfo.eState[0])
 	{
@@ -92,8 +93,19 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 		break;
 
 	case	MONSTER_STATE_CASTING:
-		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 
+		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Attack", &m_tInfo)))
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
+
+		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		{
+			if(m_tInfo.fTimer[0] <= FRAMETICK * 5.f || m_tInfo.fTimer[0] >= EVILSLIME_CASTING_TIME - FRAMETICK * 4.f)
+				++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+			m_tInfo.Textureinfo._frameTick = 0.f;
+		}
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:

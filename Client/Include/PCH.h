@@ -47,6 +47,8 @@
 #include "Bullet_Standard.h"
 #include "Fireball.h"
 #include "ScorpionBullet.h"
+#include "Bullet_Chain_Head.h"
+#include "Bullet_Chain.h"
 #include "ShotGunEvilSoul.h"
 #include "EvilSlime.h"
 

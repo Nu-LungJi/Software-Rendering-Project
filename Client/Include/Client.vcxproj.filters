@@ -79,9 +79,6 @@
     <Filter Include="03. GameObject\01. Player\00. Weapon">
       <UniqueIdentifier>{e6e37be2-21d9-4bae-9501-44337c752b3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\02. Monster\99. MonsterTest">
-      <UniqueIdentifier>{4e415e69-9a81-4ad9-95cf-47daa628d3d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\02. Monster\01. Boss\01. Docheol">
       <UniqueIdentifier>{85fcb151-c452-4026-b6ae-991bcb23747e}</UniqueIdentifier>
     </Filter>
@@ -114,9 +111,6 @@
     </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\01. Bat">
       <UniqueIdentifier>{47a98307-749c-40cc-a1ff-9d9504e380c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned">
-      <UniqueIdentifier>{33bbc5b6-90ed-40c6-b7f1-9e66c79c0b77}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
       <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
@@ -151,14 +145,14 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\04. EvilSlime">
       <UniqueIdentifier>{0b780999-08fa-451f-9e14-a7d3b1c136f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. Alert">
-      <UniqueIdentifier>{972b69e8-ba8b-4e8f-9b7a-88f61efefedd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. UI\SpeechBubble">
       <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Scene\02.DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
+      <UniqueIdentifier>{e95b52e2-480a-4c4e-86e1-3bfb56eabb61}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -261,9 +255,6 @@
     <ClInclude Include="..\Header\Bow.h">
       <Filter>03. GameObject\01. Player\00. Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\MonsterTest.h">
-      <Filter>03. GameObject\02. Monster\99. MonsterTest</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\UIEffect.h">
       <Filter>03. GameObject\06. Effect\04. UIEffect</Filter>
     </ClInclude>
@@ -329,6 +320,15 @@
     </ClInclude>
     <ClInclude Include="..\Header\Augment.h">
       <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Bullet_Chain_Head.h">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Bullet_Chain.h">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ShotGunEvilSoul.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -413,9 +413,6 @@
     <ClCompile Include="..\Code\Bow.cpp">
       <Filter>03. GameObject\01. Player\00. Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MonsterTest.cpp">
-      <Filter>03. GameObject\02. Monster\99. MonsterTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\UIEffect.cpp">
       <Filter>03. GameObject\06. Effect\04. UIEffect</Filter>
     </ClCompile>
@@ -485,6 +482,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Augment.cpp">
       <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Bullet_Chain_Head.cpp">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Bullet_Chain.cpp">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

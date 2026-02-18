@@ -17,9 +17,12 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 
+	MYPOS->y = 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
+
 	m_tInfo.fTimer[0] += _DT;
 
-	if (m_tInfo.fTimer[0] > 30.f)
+	if (m_tInfo.fTimer[0] > 10.f)
 		ObjectDead = true;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
