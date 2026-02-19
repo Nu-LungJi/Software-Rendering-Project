@@ -23,17 +23,23 @@ public:
 	void					 Move_Frame(const _float& _DT);
 	void					 Move_Leaf(const _float& _DT);
 	void					 Leaf_First(const _float& _DT);
+	void				     Leaf_Second(const _float& _DT);
+	void				     Leaf_Third(const _float& _DT);
 private:
 	_float							m_FrameTick;
+	_float							m_fAttackTick;
+
 	_float							m_fSpeed;
 	_int						    m_TextureIndex;
+	_int							m_iAttackIndex;
+	_int						    m_iRandCnt;
+
 	_vec3							m_vLook;
 	_vec3							m_CLPos;
 	_vec3							m_vRight;
 	_vec3							m_vPlayerPos;
 	_bool					        m_bCheck;
 private:
-
 	LEAF_ATTACK						m_eLeaf;
 private:
 	Buffer*							Component_Buffer;

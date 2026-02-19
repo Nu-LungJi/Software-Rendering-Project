@@ -240,6 +240,7 @@
     <ClInclude Include="..\Header\PlayerInven.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Header\Rain.h" />
     <ClInclude Include="..\Header\ScorpionBullet.h" />
     <ClInclude Include="..\Header\ScorpionEvilSoul.h" />
     <ClInclude Include="..\Header\ShopUI.h" />
@@ -366,6 +367,7 @@
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp" />
     <ClCompile Include="..\Code\PlayerInven.cpp" />
+    <ClCompile Include="..\Code\Rain.cpp" />
     <ClCompile Include="..\Code\ScorpionBullet.cpp" />
     <ClCompile Include="..\Code\ScorpionEvilSoul.cpp" />
     <ClCompile Include="..\Code\ShopUI.cpp" />

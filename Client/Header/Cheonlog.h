@@ -2,8 +2,8 @@
 #include "GameObject.h"
 
 
-enum  CL_CHECK { IDEL, ATTACK, CHECK_END };
-enum  CL_STATU { CL_IDELR, CL_LJUMP, CL_END};
+enum  CL_CHECK { IDEL, ATTACK_A, ATTACK_B, ATTACK_C, CHECK_END };
+enum  CL_STATU { CL_IDELR, CL_LJUMP, CL_RJUMP, CL_END};
 
 class Cheonlog : public GameObject
 {
@@ -26,9 +26,19 @@ private:
 	void		Set_Statu();
 	void	    Change_Statu(const _float& _DT, _int iMaxCnt);
 	void		AttackLeaf_First(const _float& _DT, _vec3 vPos);
+	void		AttackLeaf_Second(const _float& _DT, _vec3 vPos);
+	void		AttackLeaf_Third(const _float& _DT, _vec3 vPos);
+	void		AttackLeaf_Four(const _float& _DT, _vec3 vPos);
+
 	void		Create_Crystal();
 	_bool		Create_Leaf(const _float& _DT);
+	void		Create_Leaf_Third(_vec3 vPos);
+	void	    Create_Leaf_Third_S(_vec3 vPos);
+	void		Create_Leaf_Four(_vec3 vPos);
+
 	void		CL_Jump(const _float& _DT, _int iMaxCnt);
+	void		CL_JumpCenter(const _float& _DT, _int iMaxCnt);
+
 public:
 	void		Set_Effect(_bool bEffect)     { m_EndEffect = bEffect; }
 	void        Set_StartAttack(_bool bStart) { m_StartAttack = bStart; }
@@ -52,14 +62,16 @@ private:
 
 	_float			m_frameTick;
 	_float			m_frameAttack;
+	_float			m_fAttackSecondTick;
+	_float			m_fRotY;
+
 	_int			m_iFrameCnt;
 	_int			m_iSkillDelay;
 	_int			m_iSkillMaxCnt;
 	_int			m_iSkillCnt;
 	_int			m_iStatuCnt;
-	_int			m_iMaxStatuCnt;
+	_int			m_iBulletCnt;
 	UINT			m_frame; 
-
 
 	_bool			m_bMoveEffect;
 	_bool			m_StartAttack;

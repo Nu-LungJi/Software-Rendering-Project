@@ -20,6 +20,9 @@ public:
     void                    Set_Buffer(TILE_SIDE eid);
     void                    Frame_Move(CONST FLOAT& _DT);
     void                    Monster_Spawn();
+    void                    Monster_Spawn2();
+    void                    Monster_Spawn3();
+    void                    Monster_Spawn4();
     Transform*               Crash_Player();
 private:
     HRESULT			Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn );

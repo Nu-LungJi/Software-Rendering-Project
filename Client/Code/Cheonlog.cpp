@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_frameAttack(0.f), m_iSkillDelay(0), m_bMoveEffect(false),m_iStatuCnt(0),m_iMaxStatuCnt(0), m_iSkillMaxCnt(0),m_iSkillCnt(0), m_StartAttack(false),m_EndEffect(true), m_vDebug(0,0,0),m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END){}
+Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
 Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
 Cheonlog::~Cheonlog() {}
 
@@ -9,7 +9,7 @@ HRESULT Cheonlog::Ready_GameObject() {
 	
 	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Stand_R_0%d.png",    CL_IDELR);
 	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Jump_L_045_0%d.png", CL_LJUMP);
-	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_LU_135_0%d.png", CL_RJUMP);
+	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_RU_135_0%d.png",     CL_RJUMP);
 	m_fPivot = 0.1f;
 	m_eCheck = IDEL;
 	m_eStatu = CL_IDELR;
@@ -17,22 +17,18 @@ HRESULT Cheonlog::Ready_GameObject() {
 }
 INT	Cheonlog::Update_GameObject(const _float& _DT)
 {
-
 	GameObject::Update_GameObject(_DT);
-
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
-
 	return 0;
 }
 void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
-
 	Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 void Cheonlog::Render_GameObject() {
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -40,9 +36,9 @@ void Cheonlog::Render_GameObject() {
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 }
 HRESULT Cheonlog::Component_Initialize() {
-
 	Component_Buffer    = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
@@ -87,13 +83,15 @@ void Cheonlog::Set_Statu()
 	case CL_LJUMP:
 		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
 		break;
-
+	case CL_RJUMP:
+		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
+		break;
 	}
 }
 
 void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 {
-	_vec3 vPos;
+	_vec3 vPos,vScale;
 	Component_Transform->Get_Info(INFO_POS, &vPos);
 
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_Z))
@@ -106,12 +104,22 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		vPos.z += 0.5;
 		Component_Transform->Set_Pos(vPos);
 	}
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
+	//if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
+	//{
+	//	m_eCheck = ATTACK_B;
+	//}
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_L))
 	{
-		m_eCheck = ATTACK;
+		m_eStatu = CL_IDELR;
+		m_eCheck = ATTACK_C;
+		m_iFrameCnt = 0;
 	}
-	
-		
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_M))
+	{
+		m_eStatu = CL_IDELR;
+		m_eCheck = ATTACK_B;
+		m_iFrameCnt = 0;
+	}
 	//이동 모션 관련
 	switch (m_eStatu)
 	{
@@ -128,7 +136,9 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	case CL_LJUMP:
 		CL_Jump(_DT, iMaxCnt);
 		break;
-	
+	case CL_RJUMP:
+		CL_JumpCenter(_DT, iMaxCnt);
+		break;
 	}
 	
 	//공격 관련
@@ -136,9 +146,15 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	{
 	case IDEL:
 		break;
-	case ATTACK:
+	case ATTACK_A:
 		AttackLeaf_First(_DT, vPos);
-	break;
+		break;
+	case ATTACK_B:
+		AttackLeaf_Second(_DT, vPos);
+		break;
+	case ATTACK_C:
+		AttackLeaf_Third(_DT, vPos);
+		break;
 	}
 
 	static _float fMin(-100), fMax(100);
@@ -149,10 +165,17 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	ImGui::SliderFloat3("CL", m_vDebug, fMin, fMax);
 
 	Debug_Button("CLde", &m_vDebug, 10.f);
-
-	vPos += m_vDebug;
 	ImGui::End();
-		
+	
+
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
+	{
+		vPos = { 0,0,0 };
+	
+		m_eCheck = ATTACK_A;
+		m_EndEffect = true;
+	}
+
 }
 
 void Cheonlog::AttackLeaf_First(const _float& _DT, _vec3 vPos)
@@ -171,9 +194,138 @@ void Cheonlog::AttackLeaf_First(const _float& _DT, _vec3 vPos)
 
 	if (m_StartAttack)
 	{
-		Create_Leaf(_DT);	
+		Create_Leaf(_DT);
 	}
 
+}
+
+void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
+{
+	m_frameAttack += _DT;
+	if (m_frameAttack > 0.2)
+	{
+		++m_iSkillDelay;
+		m_frameAttack = 0;
+	}
+	if (m_iSkillDelay > 8)
+	{
+		m_iSkillDelay = 0;
+		m_EndEffect = true;
+		++m_iSkillCnt;
+	}
+	switch (m_iSkillCnt)
+	{
+	case 0:
+		if (m_EndEffect)
+		{
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, {vPos.x,-0.2f,vPos.z}, FALSE, {6,0,5}, {0,0,0}, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION, { vPos.x,2.f,vPos.z + 3.f }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			m_EndEffect = false;
+		}
+		break;
+	case 1:
+		if (m_EndEffect)
+		{
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x + 3 , -0.2f ,vPos.z }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION, { vPos.x + 3 , 2.f, vPos.z + 3.f }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x - 3,-0.2f,vPos.z }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION, { vPos.x - 3 , 2.f, vPos.z + 3.f }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x , -0.2f , vPos.z + 3 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION, { vPos.x ,2.f,  vPos.z + 6.f }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x , -0.2f , vPos.z - 3 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION, { vPos.x, 2.f, vPos.z - 2.f }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			m_EndEffect = false;
+		
+		}
+		break;
+	case 2:
+		if (m_EndEffect)
+		{
+			//좌
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x - 7 , -0.2f ,  vPos.z  }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x - 7 , 2.f, vPos.z + 1 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//좌상
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x - 5,  -0.2f,   vPos.z + 4}, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x - 5 , 2.f, vPos.z + 5 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//상
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x , -0.2f ,  vPos.z + 5 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x ,2.f,  vPos.z + 6 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//우상
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x + 5, -0.2f ,  vPos.z + 4 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,	      { vPos.x + 5, 2.f, vPos.z + 5 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//우
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x + 7 , -0.2f , vPos.z }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x + 7, 2.f, vPos.z + 1}, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//우하
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x + 5 , -0.2f , vPos.z - 3 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,	      { vPos.x + 5, 2.f, vPos.z - 4 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//하
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x , -0.2f , vPos.z - 4 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x, 2.f, vPos.z - 6 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+			//좌하하
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x - 5 , -0.2f , vPos.z - 3 }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.2f));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION,		  { vPos.x - 5, 2.f, vPos.z - 4 }, TRUE, { 1.5f,1.5f,1.5f }, { 45,0,0 }, 0.1f));
+
+			m_eCheck = IDEL;
+			m_iSkillCnt = 0;
+			m_EndEffect = false;
+		}
+		break;
+	}
+}
+
+void Cheonlog::AttackLeaf_Third(const _float& _DT, _vec3 vPos)
+{
+	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
+	_matrix RotY;
+	CLAttack* pAttack = nullptr;
+	if (m_EndEffect)
+	{
+		vPos += { 1.1f, 1.5f, 3.7f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_CHARGING, vPos, TRUE));
+		m_EndEffect = false;
+	}
+	
+	if (!m_EndEffect)
+	{
+		m_frameAttack += _DT;
+		m_fAttackSecondTick += _DT;
+		if (m_frameAttack > 0.09)
+		{
+			++m_iSkillCnt;
+			m_frameAttack = 0;
+			Create_Leaf_Third_S(vPos);
+		}
+		
+		if (m_fAttackSecondTick > 0.08)
+		{
+
+			Create_Leaf_Third(vPos);
+			m_fAttackSecondTick = 0.f;
+		}
+		
+		if (m_iSkillCnt > 20)
+		{
+			m_eCheck = IDEL;
+			m_iBulletCnt = 0;
+			m_fRotY = 0;
+			m_iSkillCnt = 0;
+			m_iSkillDelay = 0;
+		}
+	}
+}
+
+void Cheonlog::AttackLeaf_Four(const _float& _DT, _vec3 vPos)
+{
+	if (m_EndEffect)
+	{
+		vPos += { 1.1f, 1.5f, 3.7f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_SPIN, vPos, FALSE));
+		m_EndEffect = false;
+	}
 }
 
 
@@ -284,6 +436,55 @@ _bool Cheonlog::Create_Leaf(const _float& _DT)
 	}
 	return false;
 }
+void Cheonlog::Create_Leaf_Third(_vec3 vPos)
+{
+	//에반데 이거
+	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
+	_matrix RotY;
+	CLAttack* pAttack = nullptr;
+
+	vPos += { 1.1f, 1.5f, 3.7f };
+	TCHAR tChar[128] = {};
+	++m_iBulletCnt;
+
+	m_fRotY  += 60;
+	wsprintf(tChar, L"CL_Leaf%d", m_iBulletCnt);
+	D3DXVec3Normalize(&vLook, &vLook);
+	D3DXMatrixRotationY(&RotY, D3DXToRadian(m_fRotY));
+	D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
+	pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_SECOND, vPos, vLookReset);
+	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	pAttack->Set_ObjectTag(tChar);
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
+
+	
+	
+}
+void Cheonlog::Create_Leaf_Third_S(_vec3 vPos)
+{
+	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
+	_matrix RotY;
+	CLAttack* pAttack = nullptr;
+
+	vPos += { 1.1f, 1.5f, 3.7f };
+	TCHAR tChar[128] = {};
+	++m_iBulletCnt;
+	wsprintf(tChar, L"CL_Leaf%d", m_iBulletCnt);
+	m_fRotY +=45;
+	D3DXVec3Normalize(&vLook, &vLook);
+	D3DXMatrixRotationY(&RotY, D3DXToRadian(m_fRotY));
+	D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
+	pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_THIRD, vPos, vLookReset);
+	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	pAttack->Set_ObjectTag(tChar);
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
+
+}
+void Cheonlog::Create_Leaf_Four(_vec3 vPos)
+{
+
+}
+
 void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 {
 		_vec3 vRight,vUp(0,1,0);
@@ -294,6 +495,28 @@ void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 	vRight = { -1.f,0.f,(_float)iRand };
 
 	Component_Transform->Move_Pos(&vRight, 8.f, _DT);
+	if (m_frameTick > 0.1)
+	{
+		++m_iFrameCnt;
+		m_frameTick = 0;
+	}
+
+	if (m_iFrameCnt > iMaxCnt - 1)
+	{
+		m_iFrameCnt = 0;
+		m_eStatu = CL_IDELR;
+		m_iSkillDelay = 0;
+	}
+}
+void Cheonlog::CL_JumpCenter(const _float& _DT, _int iMaxCnt)
+{
+	_vec3 vLook, vPos, vCenter{ 2,0,2 };
+	Component_Transform->Get_Info(INFO_POS, &vPos);
+	
+	m_frameTick += _DT;
+	vLook = vCenter - vPos;
+
+	Component_Transform->Move_Pos(&vLook, 8.f, _DT);
 	if (m_frameTick > 0.1)
 	{
 		++m_iFrameCnt;

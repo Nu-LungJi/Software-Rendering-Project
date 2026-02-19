@@ -11,7 +11,7 @@ private:
 
 public:
 
-    virtual			HRESULT		Ready_GameObject(TILE_SIDE eid, TILE_STATE eState, FLOAT& X1 , FLOAT& X2 , FLOAT& Y1 , FLOAT& Y2 );
+    virtual			HRESULT		Ready_GameObject(TILE_SIDE eid, TILE_STATE eState);
     virtual			INT			Update_GameObject(CONST FLOAT& _DT);
     virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
     virtual			VOID		Render_GameObject();
@@ -29,7 +29,7 @@ public:
     Transform*              Crash_Player();
     Transform*              Crash_Arrow();
 private:
-    HRESULT			Component_Initialize(TILE_SIDE eid, TILE_STATE eState, FLOAT& X1, FLOAT& X2, FLOAT& Y1 , FLOAT& Y2);
+    HRESULT			Component_Initialize(TILE_SIDE eid, TILE_STATE eState);
     
     TileInfo*               m_pTileInfo;
     Transform*              m_pTransform;
@@ -47,7 +47,7 @@ private:
     DWORD                   m_Alpha;
 
 public:
-    static         CXZTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_STATE eState, FLOAT& X1, FLOAT& X2, FLOAT& Y1, FLOAT& Y2);
+    static         CXZTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_STATE eState);
 
 private:
    virtual  void            Free();

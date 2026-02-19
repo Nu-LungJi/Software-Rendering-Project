@@ -145,6 +145,7 @@ call Copy.bat</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Header\CDYBuffer.h" />
     <ClInclude Include="..\Header\Font.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -153,6 +154,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Header\CollisionManager.h" />
     <ClInclude Include="..\Header\Component.h" />
     <ClInclude Include="..\Header\EffectManager.h " />
+    <ClInclude Include="..\Header\ParticleRain.h" />
     <ClInclude Include="..\Header\TileInfo.h" />
     <ClInclude Include="..\Header\Engine_Define.h" />
     <ClInclude Include="..\Header\Engine_Enum.h" />
@@ -185,6 +187,7 @@ call Copy.bat</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Buffer.cpp" />
+    <ClCompile Include="..\Code\CDYBuffer.cpp" />
     <ClCompile Include="..\Code\Collider.cpp" />
     <ClCompile Include="..\Code\CollisionManager.cpp" />
     <ClCompile Include="..\Code\Component.cpp" />
@@ -195,6 +198,7 @@ call Copy.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\EffectManager.cpp" />
+    <ClCompile Include="..\Code\ParticleRain.cpp" />
     <ClCompile Include="..\Code\TileInfo.cpp" />
     <ClCompile Include="..\Code\KeyManager.cpp" />
     <ClCompile Include="..\Code\ResourceManager.cpp" />

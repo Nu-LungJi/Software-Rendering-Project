@@ -64,16 +64,17 @@
 #include "SpeechBubble.h"
 #include "Spawner.h"
 
-
 #include "Cheonlog.h"
 #include "CLcrystal.h"
 #include "CLEffect.h"
 #include "CLAttack.h"
+#include "Rain.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
 #include "DebugScene.h"
 #include "MapScene.h"
+#include "DoCheolScene.h"
 //////////////////////////////////////////// Manager
 #include "FontManager.h"
 #include "GUIManager.h"

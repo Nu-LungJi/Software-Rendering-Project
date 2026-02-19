@@ -77,6 +77,11 @@ void CLcrystal::Chek_CLPos()
 		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
 
 	}
+	else if (pCL->Get_Statu() == CL_RJUMP)
+	{
+		pPos += { 0.9f, 1.f, 3.1f };
+		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
+	}
 	else
 	{
 		pPos += { 0.9f, 1.f, 3.1f };

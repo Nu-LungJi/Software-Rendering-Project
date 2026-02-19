@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
+CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
 CLAttack::CLAttack(const GameObject& _RHS) : GameObject(_RHS) {}
 CLAttack::~CLAttack() {}
 
@@ -24,11 +24,13 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook)
         Make_TextureList(L"Spr_Bullet_LaulaStandardBullet_0");
         break;
     case LEAF_ATTACK::LEAF_SECOND:
+        Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_Black_0");
+        m_iRandCnt = 5 + rand() % 2;
         break;
-
     case LEAF_ATTACK::LEAF_THIRD:
+        Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0");
+        m_iRandCnt = 5 + rand() % 2;
         break;
-
     case LEAF_ATTACK::LEAF_FOUR:
         break;
     }
@@ -96,8 +98,10 @@ void CLAttack::Move_Leaf(const _float& _DT)
         Leaf_First(_DT);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
+        Leaf_Second(_DT);
         break;
     case LEAF_ATTACK::LEAF_THIRD:
+        Leaf_Third(_DT);
         break;
     case LEAF_ATTACK::LEAF_FOUR:
         break;
@@ -112,19 +116,101 @@ void CLAttack::Leaf_First(const _float& _DT)
     GRPDEV->GetTransform(D3DTS_VIEW, &matView);
     D3DXMatrixInverse(&matBill, nullptr, &matView);
 
-    D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
+    D3DXMatrixScaling(&matScale, 0.7f, 0.2f, 0.4f);
 
     fAngle = atan2f(m_vLook.z, m_vLook.x); // x 기준으로 z가 얼마나 돌아가있는지
     D3DXMatrixRotationZ(&RotZ, fAngle);    //그걸로 z만 돌리기
 
     matWorld = matScale * RotZ * matBill; 
-
+    m_vLook.y = 0.f;
     m_CLPos += m_vLook * m_fSpeed * _DT;
+  
     memcpy(matWorld.m[3], &m_CLPos, sizeof(_vec3));
 
     Component_Transform->Set_World(&matWorld);
-    Component_Transform->Set_Pos({ matWorld._41 , 0.5f , matWorld._43 });
+    Component_Transform->Set_Pos({ matWorld._41 , 0.1f , matWorld._43 });
 
+}
+
+void CLAttack::Leaf_Second(const _float& _DT)
+{
+    m_fAttackTick += _DT;
+
+    if (m_fAttackTick > 0.2)
+    {
+        m_fAttackTick = 0;
+        ++m_iAttackIndex;
+    }
+
+    if (m_iAttackIndex == m_iRandCnt)
+    {
+        _vec3 vPos, vCLPos;
+        Component_Transform->Get_Info(INFO_POS, &vPos);
+        dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &vCLPos);
+        vCLPos += { 0.9f, 1.f, 3.1f };
+        m_vLook = vCLPos - vPos;
+        D3DXVec3Normalize(&m_vLook, &m_vLook);
+    }
+
+    _float fAngle;
+    _matrix matScale, RotZ, matWorld, matBill, matView;
+    matWorld = *Component_Transform->Get_World();
+    GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+    D3DXMatrixInverse(&matBill, nullptr, &matView);
+
+    D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
+
+    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x 기준으로 z가 얼마나 돌아가있는지
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //그걸로 z만 돌리기
+
+    matWorld = matScale * RotZ * matBill;
+    m_vLook.y = 0;
+    m_CLPos += m_vLook * m_fSpeed * _DT;
+
+    memcpy(matWorld.m[3], &m_CLPos, sizeof(_vec3));
+
+    Component_Transform->Set_World(&matWorld);
+    Component_Transform->Set_Pos({ matWorld._41 , 0.1f, matWorld._43 });
+}
+
+void CLAttack::Leaf_Third(const _float& _DT)
+{
+    m_fAttackTick += _DT;
+
+    if (m_fAttackTick > 0.2)
+    {
+        m_fAttackTick = 0;
+        ++m_iAttackIndex;
+    }
+    if (m_iAttackIndex == m_iRandCnt)
+    {
+        _vec3 vPos, vCLPos;
+        Component_Transform->Get_Info(INFO_POS, &vPos);
+        dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &vCLPos);
+        vCLPos += { 0.9f, 1.f, 3.1f };
+        m_vLook = vCLPos - vPos;
+        D3DXVec3Normalize(&m_vLook, &m_vLook);
+    }
+
+    _float fAngle;
+    _matrix matScale, RotZ, matWorld, matBill, matView;
+    matWorld = *Component_Transform->Get_World();
+    GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+    D3DXMatrixInverse(&matBill, nullptr, &matView);
+
+    D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
+
+    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x 기준으로 z가 얼마나 돌아가있는지
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //그걸로 z만 돌리기
+
+    matWorld = matScale * RotZ * matBill;
+    m_vLook.y = 0;
+    m_CLPos += m_vLook * m_fSpeed * _DT;
+
+    memcpy(matWorld.m[3], &m_CLPos, sizeof(_vec3));
+
+    Component_Transform->Set_World(&matWorld);
+    Component_Transform->Set_Pos({ matWorld._41 , 0.1f , matWorld._43 });
 }
 
 

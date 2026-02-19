@@ -183,6 +183,12 @@
     <ClInclude Include="..\Header\Font.h">
       <Filter>99. Component\07. Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CDYBuffer.h">
+      <Filter>99. Component\08.Paticle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ParticleRain.h">
+      <Filter>99. Component\08.Paticle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDevice.cpp">
@@ -259,6 +265,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Font.cpp">
       <Filter>99. Component\07. Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CDYBuffer.cpp">
+      <Filter>99. Component\08.Paticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ParticleRain.cpp">
+      <Filter>99. Component\08.Paticle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

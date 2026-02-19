@@ -89,11 +89,10 @@ public:
     _vec3                  Get_NextPos()                 { return m_NextPos; }
     _bool                  Get_PotalOpen()               { return m_bPortal; }
     _bool                  Get_OnlyAnimation()           { return m_bOnlyAnimation; }
-    UvXY                   Get_Uv()                      { return m_Uv; }
     TILE_SPAWNER           Get_Spawner()                 { return m_eTileSpawner; }
+
     void                   Set_OnlyAnimation(_bool bAni) { m_bOnlyAnimation = bAni; }
     void                   Set_PotalOpen()               { m_bPortal = true; }
-    void                   Set_Uv(UvXY uv)               { m_Uv = uv; }
     void                   Set_TextureID(IDirect3DBaseTexture9* pTexture) { 
         
         auto iter = pTexture;
@@ -123,7 +122,6 @@ private:
     _vec3                  m_NextPos;
     _int                   m_iTileNumber;
     _int                   m_iTextureCount;
-    UvXY                   m_Uv;
 public:
     static          TileInfo* Create(LPDIRECT3DDEVICE9 pGraphicDev);
     virtual		    Component* Clone();

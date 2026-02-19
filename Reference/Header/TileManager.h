@@ -23,6 +23,10 @@ public:
 public:
     HRESULT         Add_Tile(GameObject* pObject, _vec3 vPos, TILE_STAGE eStage,TILEMODE_CHANGE eMode, TILE_SIDE eSid = TILE_SIDE::TILE_OTHER,_vec3 PivotHeight = { 0,0,0 }, _bool bAni=false);
     void            Delete_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir);
+    HRESULT         Stage_Update(const _float& fTimeDelta);
+    void            Stage_LateUpdate(const _float& fTimeDelta);
+    void            Stage_Render();
+
     HRESULT         Update_TileList(const _float& fTimeDetla);
     void            LateUpdate_Tile(const _float& fTimeDelta);
     void            Render_TileList();

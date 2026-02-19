@@ -5,9 +5,9 @@ CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) : m_fAlpha(0.f),m_fCount(0.f), m_fHe
 CXZTile::CXZTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CXZTile::~CXZTile() {  }
 
-HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState, FLOAT& X1, FLOAT& X2, FLOAT& Y1, FLOAT& Y2) {
+HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
 
-	if (FAILED(Component_Initialize(eid, eState,X1, X2, Y1,Y2))) return E_FAIL;
+	if (FAILED(Component_Initialize(eid, eState))) return E_FAIL;
 	m_fHeight = rand() % 4 + 1;
 
 	switch (static_cast<int>(m_fHeight))
@@ -463,7 +463,7 @@ Transform* CXZTile::Crash_Arrow()
 	}
 	return nullptr;
 }
-HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState, FLOAT& X1, FLOAT& X2, FLOAT& Y1, FLOAT& Y2) {
+HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
 
 	m_pTransform = ADD_COMPONENT_TRANSFORM;
 	m_pTileInfo  = ADD_COMPONENT_TILEINFO;
@@ -497,11 +497,11 @@ HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState, FLOAT& X
 	return S_OK;
 }
 
-CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState, FLOAT& X1 , FLOAT& X2 , FLOAT& Y1 , FLOAT& Y2) {
+CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState) {
 	
 	CXZTile* pCXZTile = new CXZTile(_GRPDEV);
 	
-	if (FAILED(pCXZTile->Ready_GameObject(eid, eState,X1 ,X2,Y1,Y2))) {
+	if (FAILED(pCXZTile->Ready_GameObject(eid, eState))) {
 		MSG_BOX("Cannot Create CXZTile.");
 		Safe_Release(pCXZTile);
 		return nullptr;

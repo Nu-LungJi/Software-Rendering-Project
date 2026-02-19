@@ -43,10 +43,10 @@
 
 #define SCORPIONEVILSOUL_TRACKINGDIS			5.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
 #define SCORPIONEVILSOUL_TRACKINGMIN			2.f			//  ÀÌ ÀÌ»ó °¡±î¿öÁö·ÁÇÏÁö ¾ÊÀ½
-#define SCORPIONEVILSOUL_TRACKING_TIME			3.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
+#define SCORPIONEVILSOUL_TRACKING_TIME			1.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
 #define SCORPIONEVILSOUL_LOST_TIME				2.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
 
-#define SCORPIONEVILSOUL_CASTING_TIME			1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
+#define SCORPIONEVILSOUL_CASTING_TIME			3.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
 
 #define SCORPIONEVILSOUL_CHANNELING_TIME		2.f			//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
 #define SCORPIONEVILSOUL_BULLET_NUM				5			//	ÃÑ¾Ë °¹¼ö

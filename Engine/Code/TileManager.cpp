@@ -185,13 +185,97 @@ void TileManager::Delete_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir)
 	
 }
 
-HRESULT TileManager::Update_TileList(const _float& fTimeDetla)
+HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 {
 	if (m_bStageChange) //스테이지 스왑용
 	{
 		m_eStage = m_eCurrent;
 		m_bStageChange = false;
 	}
+
+	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+	{
+		for (auto iter = m_vecTileBuffer[m_eStage][j].begin(); iter != m_vecTileBuffer[m_eStage][j].end();)
+		{
+			(*iter)->Update_GameObject(fTimeDelta);
+
+			if (iter != m_vecTileBuffer[m_eStage][j].end())
+				++iter;
+		}
+
+	}
+
+	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
+	{
+		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+		{
+			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
+			{
+
+				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
+					(*iter)->Update_GameObject(fTimeDelta);
+
+				if (iter != m_vecTileBuffer[i][j].end())
+					++iter;
+			}
+
+		}
+	}
+	return S_OK;
+}
+
+void TileManager::Stage_LateUpdate(const _float& fTimeDelta)
+{
+	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+	{
+		for (auto& iter : m_vecTileBuffer[m_eStage][j])
+			iter->LateUpdate_GameObject(fTimeDelta);
+	}
+
+	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
+	{
+		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+		{
+			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
+			{
+
+				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
+					(*iter)->LateUpdate_GameObject(fTimeDelta);
+
+				if (iter != m_vecTileBuffer[i][j].end())
+					++iter;
+			}
+
+		}
+	}
+}
+void TileManager::Stage_Render()
+{
+	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+	{
+		for (auto& iter : m_vecTileBuffer[m_eStage][j])
+			iter->Render_GameObject();
+	}
+	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
+	{
+		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+		{
+			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
+			{
+
+				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
+					(*iter)->Render_GameObject();
+
+				if (iter != m_vecTileBuffer[i][j].end())
+					++iter;
+			}
+
+		}
+	}
+}
+
+HRESULT TileManager::Update_TileList(const _float& fTimeDetla)
+{
 
 	for(size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{
@@ -279,7 +363,6 @@ void TileManager::Save_Tile(HWND g_hWnd)
 	_int			 iTileTextureCnt = 0;
 	_vec3		     vNextPos	     = {};
 	_bool			 bOnlyAni		 = {};
-	UvXY			 Uv				 = {};
 	TILE_SPAWNER     eSpawn			 = TILE_SPAWNER::SPAWN_END;
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{
@@ -300,7 +383,6 @@ void TileManager::Save_Tile(HWND g_hWnd)
 				iTileTextureCnt = dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureNumber();
 				vNextPos	= dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_NextPos();
 				ua_tcscpy_s(cTileName, 128, dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str());
-				Uv = dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Uv();
 				Scale		= *dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale();
 				Rotation	= *dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 				dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &Info);
@@ -318,7 +400,6 @@ void TileManager::Save_Tile(HWND g_hWnd)
 				WriteFile(hFile, &iTileTextureCnt, sizeof(_int),			&dwByte, NULL);
 				WriteFile(hFile, &vNextPos,		   sizeof(_vec3),			&dwByte, NULL);
 				WriteFile(hFile, &bOnlyAni,		   sizeof(_bool),			&dwByte, NULL);
-				WriteFile(hFile, &Uv,			   sizeof(UvXY),			&dwByte, NULL);
 				WriteFile(hFile, &eSpawn,		   sizeof(TILE_SPAWNER),	&dwByte, NULL);
 				
 			}
@@ -339,6 +420,8 @@ void TileManager::Reset_TileList()
 		{
 			for (auto& iter : m_vecTileBuffer[i][j])
 				Safe_Release(iter);
+
+			m_vecTileBuffer[i][j].clear();
 		}
 	}
 }

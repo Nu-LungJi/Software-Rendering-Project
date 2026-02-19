@@ -26,19 +26,7 @@ HRESULT Tile::Component_Initialize() {
 	m_vecName[TILE_STATE::STATE_POTAL].push_back	(L"../../Tile/Stage1/");
 	m_vecName[TILE_STATE::STATE_NORMAL].push_back(L"../../Tile/Stage2/");
 
-	_float fMax(128);
-	_float x = 1.f / 128.f;//0.2f / 2048.f;
-	_float y = 1.f / 128.f;
-	for (_int i = 0; i < 16; ++i)
-	{
-		for (_int j = 0; j < 16; ++j)
-		{
-			UvXY uv{ _float((j * fMax) / 2048.f) + x , _float((j + 1) * fMax / 2048.f) - x , 
-				     _float((i * fMax) / 2048.f) + y , _float((i + 1) * fMax / 2048.f) - y };
 
-			m_vecUVXY.push_back(uv);
-		}
-	}
 	return S_OK;
 }
 HRESULT Tile::Ready_GameObject() {
@@ -973,11 +961,11 @@ void Tile::Check_TilePoint()
 					}
 					else if (m_eTileState == STATE_UNDERTILE)
 					{
-						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState,  m_vecUVXY[(_int)m_iTileUnderNumber].x1, m_vecUVXY[(_int)m_iTileUnderNumber].x2, m_vecUVXY[(_int)m_iTileUnderNumber].y, m_vecUVXY[(_int)m_iTileUnderNumber].y2);
+						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState);
 					}
 					else if (m_eTileState != STATE_END)
 					{
-						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState, m_vecUVXY[(_int)m_iTileUnderNumber].x1, m_vecUVXY[(_int)m_iTileUnderNumber].x2, m_vecUVXY[(_int)m_iTileUnderNumber].y, m_vecUVXY[(_int)m_iTileUnderNumber].y2);
+						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState);
 					}
 					
 					break;
@@ -985,7 +973,7 @@ void Tile::Check_TilePoint()
 					pTile = CubeTile::Create(GRPDEV);
 					break;
 				case TILEMODE_CHANGE::MODE_OBJECT:
-					pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState, m_vecUVXY[(_int)m_iTileUnderNumber].x1, m_vecUVXY[(_int)m_iTileUnderNumber].x2, m_vecUVXY[(_int)m_iTileUnderNumber].y, m_vecUVXY[(_int)m_iTileUnderNumber].y2);
+					pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState);
 					break;
 				}
 				if (pTile != nullptr)

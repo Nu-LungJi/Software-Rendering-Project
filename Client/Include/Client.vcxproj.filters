@@ -169,6 +169,9 @@
     <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogEffect">
       <UniqueIdentifier>{f0879c72-92fb-40aa-b302-02bd683ee229}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\08.Rain">
+      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -351,6 +354,9 @@
     <ClInclude Include="..\Header\CLcrystal.h">
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Rain.h">
+      <Filter>03. GameObject\08.Rain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -518,6 +524,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\CLcrystal.cpp">
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Rain.cpp">
+      <Filter>03. GameObject\08.Rain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
