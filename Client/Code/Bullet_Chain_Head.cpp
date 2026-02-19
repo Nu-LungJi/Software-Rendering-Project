@@ -22,9 +22,16 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
+
 	m_tInfo.fTimer[0] += _DT;
-	if (m_tInfo.fTimer[0] >= 10.f)
+	if (m_tInfo.fTimer[0] >= 2.f)
 	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
 		ObjectDead = true;
 		return 0;
 	}
@@ -55,6 +62,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		MONBULLETINFO* pBulletinfo = static_cast<Bullet_Chain*>(m_tInfo.pGameObj[1])->Get_Info();
 		pBulletinfo->vDirection = m_tInfo.vDirection;
 		pBulletinfo->bTrigger[0] = m_tInfo.bTrigger[0];
+		pBulletinfo->pGameObj[0] = m_tInfo.pGameObj[0];
 
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
 
@@ -104,6 +112,19 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return MST;
+}
+BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
+{
+	switch (_Other->Get_ObjectType())
+	{
+	default:
+		break;
+	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
+
+		break;
+	}
+	return true;
 }
 VOID Bullet_Chain_Head::Free()
 {

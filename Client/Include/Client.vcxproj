@@ -172,6 +172,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\Docheol.h" />
+    <ClInclude Include="..\Header\DocheolAppearMark.h" />
     <ClInclude Include="..\Header\EvilSlime.h" />
     <ClInclude Include="..\Header\FieldApostle.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -277,6 +278,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Docheol.cpp" />
+    <ClCompile Include="..\Code\DocheolAppearMark.cpp" />
     <ClCompile Include="..\Code\EvilSlime.cpp" />
     <ClCompile Include="..\Code\FieldApostle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

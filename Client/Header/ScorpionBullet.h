@@ -27,7 +27,8 @@ private:
 
 public:
 
-	VOID			Set_Master(GameObject* pOwner) { pOwner = m_tInfo.pGameObj[0]; }
+
+	VOID			Set_Master(GameObject* pOwner) { m_tInfo.pGameObj[0] = pOwner; }
 	GameObject*		Get_Master() { return m_tInfo.pGameObj[0]; }
 
 	VOID			Set_Dir(_vec3 vDir) { m_tInfo.vDirection = vDir; }

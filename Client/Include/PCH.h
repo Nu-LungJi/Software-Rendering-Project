@@ -42,6 +42,8 @@
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
+
+#include "DocheolAppearMark.h"
 #include "Docheol.h"
 
 #include "Bullet_Standard.h"
