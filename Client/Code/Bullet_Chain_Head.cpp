@@ -64,7 +64,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		pBulletinfo->bTrigger[0] = m_tInfo.bTrigger[0];
 		pBulletinfo->pGameObj[0] = m_tInfo.pGameObj[0];
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 		m_tInfo.pGameObj[1] = nullptr;
 	}

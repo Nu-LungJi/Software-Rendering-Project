@@ -10,7 +10,7 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 
 	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
 	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
-	m_tInfo.fHp = 1.f;
+	m_tInfo.fStatistics[MONSTER_STAT_HP] = 1.f;
 
 	return S_OK;
 }

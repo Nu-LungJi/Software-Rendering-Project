@@ -130,7 +130,7 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 				static_cast<Bullet_Chain_Head*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 				static_cast<Bullet_Chain_Head*>(m_tInfo.pGameObj[1])->Set_Master(this);
 
-				Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+				Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 			}
 			m_tInfo.pGameObj[1] = nullptr;
 		}

@@ -8,7 +8,7 @@ HRESULT EvilSlime::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = EVILSLIME_HP;
+	m_tInfo.fStatistics[MONSTER_STAT_HP] = EVILSLIME_HP;
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 	return S_OK;
@@ -336,7 +336,7 @@ VOID EvilSlime::State_Channeling(const _float& _DT)
 
 			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
 		m_tInfo.pGameObj[1] = nullptr;
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);

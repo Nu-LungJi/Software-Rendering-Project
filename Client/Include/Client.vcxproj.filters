@@ -154,7 +154,10 @@
     <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
       <UniqueIdentifier>{e95b52e2-480a-4c4e-86e1-3bfb56eabb61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. DocheolAppearMark">
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle">
+      <UniqueIdentifier>{ed052ccf-fa03-4629-b716-d94adcf42eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark">
       <UniqueIdentifier>{72c1af4c-c6e5-4c66-9ace-ef7ac3c50387}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -334,7 +337,10 @@
       <Filter>03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DocheolAppearMark.h">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. DocheolAppearMark</Filter>
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Alert.h">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -496,7 +502,10 @@
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DocheolAppearMark.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. DocheolAppearMark</Filter>
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Alert.cpp">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

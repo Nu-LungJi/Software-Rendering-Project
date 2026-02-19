@@ -8,7 +8,7 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = SCORPIONEVILSOUL_HP;
+	m_tInfo.fStatistics[MONSTER_STAT_HP] = SCORPIONEVILSOUL_HP;
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 	return S_OK;
@@ -249,8 +249,19 @@ VOID ScorpoinEvilSoul::State_Casting(const _float& _DT)
 	m_tInfo.fTimer[0] += _DT;
 	m_tInfo.fSpeed = 0.f;
 
+	if (!m_tInfo.bTrigger[1])
+	{
+		m_tInfo.bTrigger[1] = true;
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, SCORPIONEVILSOUL_CASTING_TIME);
+
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	}
+
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CASTING_TIME)
 	{
+		m_tInfo.bTrigger[1] = false;
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
 	}
 }
@@ -272,9 +283,8 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_tInfo.pGameObj[1]->Set_ObjectTag(L"ScorpionBullet");
 
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(m_tInfo.pGameObj[1]);
-
-		//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, SCORPIONEVILSOUL_CHANNELING_TIME);
+		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(m_tInfo.pGameObj[1]);
 	}
 
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CHANNELING_TIME)
@@ -283,7 +293,10 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		D3DXVec3Normalize(&vDir, &vDir);
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Dir(vDir);
 		
-		CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
+		//CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
+
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 
 		m_tInfo.pGameObj[1] = nullptr;

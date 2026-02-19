@@ -8,7 +8,7 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = SHOTGUNEVILSOUL_HP;
+	m_tInfo.fStatistics[MONSTER_STAT_HP] = SHOTGUNEVILSOUL_HP;
 
 	return S_OK;
 }
@@ -256,7 +256,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			_float fRadian = fBaseRadian + fRandom * (D3DXToRadian(SHOTGUNEVILSOUL_SPREAD)) - D3DXToRadian(SHOTGUNEVILSOUL_SPREAD) * 0.5f;
 			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 			m_tInfo.pGameObj[1] = nullptr;
 		}

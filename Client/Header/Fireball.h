@@ -27,19 +27,16 @@ private:
 
 public:
 
-	VOID		Set_Master(GameObject* pOwner)		{ pOwner = m_pMaster; }
-	GameObject* Get_Master()						{ return m_pMaster; }
+	VOID			Set_Master(GameObject* pOwner)			{ m_tInfo.pGameObj[0] = pOwner; }
+	GameObject*		Get_Master()							{ return m_tInfo.pGameObj[0]; }
 
-	VOID	Set_Dir(_vec3 vDir)						{ m_vDir = vDir; }
-	VOID	Set_Dir(_float x, _float y, _float z)	{ m_vDir = { x,y,z }; }
-	_vec3*	Get_Dir()								{ return &m_vDir; }
+	VOID			Set_Dir(_vec3 vDir)						{ m_tInfo.vDirection = vDir; }
+	VOID			Set_Dir(_float x, _float y, _float z)	{ m_tInfo.vDirection = { x,y,z }; }
+	_vec3*			Get_Dir()								{ return &m_tInfo.vDirection; }
+
+	MONBULLETINFO* Get_Info() { return &m_tInfo; }
 
 private:
 
-	GameObject* m_pMaster;
-	_vec3		m_vDir;
-
-	_float		m_fSpeed;
-	_uint		_frame;
-	_float		_frameTick;
+	MONBULLETINFO	m_tInfo;
 };

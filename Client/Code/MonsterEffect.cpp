@@ -12,6 +12,7 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 vPos, BOOL 
 
 	m_eEffect = _SKILLTYPE;
 
+	Component_Transform->Set_Scale(2.f, 2.f, 2.f);
 	switch (_SKILLTYPE)
 	{
 	case MONSTER_EFFECT::MONSTER_SUMMONS01:		Make_TextureList(L"Spr_Effect_MonsterSummons01");		break;
@@ -25,7 +26,6 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 vPos, BOOL 
 	}
 
 
-	Component_Transform->Set_Scale(2.f, 2.f, 2.f);
 
 	Component_Transform->Set_Pos(vPos);
 	Repeatable = _Repeatable;

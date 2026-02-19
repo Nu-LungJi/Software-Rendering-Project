@@ -4,6 +4,7 @@
 
 #pragma region Macros
 #define POS(GAMEOBJECT)			static_cast<Transform*>(GAMEOBJECT->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()
+#define SCALE(GAMEOBJECT)		static_cast<Transform*>(GAMEOBJECT->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale()
 #define ROTATION(GAMEOBJECT)	static_cast<Transform*>(GAMEOBJECT->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation()
 #define MYPOS					Component_Transform->Get_Position()
 #define MYSCALE					Component_Transform->Get_Scale()
@@ -18,39 +19,37 @@
 #define MONSTER_DEATH_PLAYTTIME		1.f
 #pragma endregion
 #pragma region Bat
-#define BAT_SPEED					1.f			//	±âº» ÀÌµ¿ ¼Óµµ
-#define BAT_HP						100.f		//	±âº» Ã¼·Â
+#define BAT_SPEED					3.f			//	
+#define BAT_HP						100.f		//	
 
-#define BAT_TRACKINGDIS				5.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
-#define BAT_TRACKING_TIME			3.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
-#define BAT_LOST_TIME				2.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
+#define BAT_TRACKINGDIS				10.f		//	
+#define BAT_TRACKING_TIME			1.f			//	TRACKING	-> CASTING
+#define BAT_LOST_TIME				1.f			//	TRACKING	-> IDLE
 
 #define BAT_CASTING_TIME			1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
 
-#define BAT_CHANNELING_TIME			2.f			//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
+#define BAT_CHANNELING_TIME			1.f			//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
 #define BAT_BULLET_NUM				5			//	ÃÑ¾Ë °¹¼ö
-#define BAT_RUSHSPEED				2.f			//	CHANELING Áß ÀÌµ¿ ¼Óµµ
+#define BAT_RUSHSPEED				4.f			//	CHANELING Áß ÀÌµ¿ ¼Óµµ
 
 #define BAT_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
 #pragma region Bullet_Standard
-#define	BULLET_STANDARD_SPEED  3.f
+#define	BULLET_STANDARD_SPEED  5.f
 #pragma endregion
 
 #pragma region ScorpionEvilSoul
-#define SCORPIONEVILSOUL_SPEED					1.f			//	±âº» ÀÌµ¿ ¼Óµµ
+#define SCORPIONEVILSOUL_SPEED					2.f			//	±âº» ÀÌµ¿ ¼Óµµ
 #define SCORPIONEVILSOUL_HP						100.f		//	±âº» Ã¼·Â
 
-#define SCORPIONEVILSOUL_TRACKINGDIS			5.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
-#define SCORPIONEVILSOUL_TRACKINGMIN			2.f			//  ÀÌ ÀÌ»ó °¡±î¿öÁö·ÁÇÏÁö ¾ÊÀ½
-#define SCORPIONEVILSOUL_TRACKING_TIME			3.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
-#define SCORPIONEVILSOUL_LOST_TIME				2.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
+#define SCORPIONEVILSOUL_TRACKINGDIS			10.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
+#define SCORPIONEVILSOUL_TRACKINGMIN			5.f			//  ÀÌ ÀÌ»ó °¡±î¿öÁö·ÁÇÏÁö ¾ÊÀ½
+#define SCORPIONEVILSOUL_TRACKING_TIME			1.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
+#define SCORPIONEVILSOUL_LOST_TIME				1.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
 
-#define SCORPIONEVILSOUL_CASTING_TIME			1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
+#define SCORPIONEVILSOUL_CASTING_TIME			1.5f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
 
-#define SCORPIONEVILSOUL_CHANNELING_TIME		2.f			//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
-#define SCORPIONEVILSOUL_BULLET_NUM				5			//	ÃÑ¾Ë °¹¼ö
-#define SCORPIONEVILSOUL_RUSHSPEED				2.f			//	CHANELING Áß ÀÌµ¿ ¼Óµµ
+#define SCORPIONEVILSOUL_CHANNELING_TIME		0.5f
 
 #define SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
@@ -63,40 +62,48 @@
 #define SHOTGUNEVILSOUL_SPEED					1.f			//	±âº» ÀÌµ¿ ¼Óµµ
 #define SHOTGUNEVILSOUL_HP						100.f		//	±âº» Ã¼·Â
 
-#define SHOTGUNEVILSOUL_TRACKINGDIS				5.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
-#define SHOTGUNEVILSOUL_TRACKING_TIME			3.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
-#define SHOTGUNEVILSOUL_LOST_TIME				2.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
+#define SHOTGUNEVILSOUL_TRACKINGDIS				10.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
+#define SHOTGUNEVILSOUL_TRACKING_TIME			1.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
+#define SHOTGUNEVILSOUL_LOST_TIME				1.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
 
 #define SHOTGUNEVILSOUL_CASTING_TIME			1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
 
 #define SHOTGUNEVILSOUL_CHANNELING_TIME			0.5f		//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
-#define SHOTGUNEVILSOUL_BULLET_NUM				12			//	ÃÑ¾Ë °¹¼ö
+#define SHOTGUNEVILSOUL_BULLET_NUM				6			//	ÃÑ¾Ë °¹¼ö
 #define SHOTGUNEVILSOUL_SPREAD					30.f		//	ºÐ»ê ¹üÀ§
 
 #define SHOTGUNEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
 
 #pragma region EvilSlime
-#define EVILSLIME_SPEED						1.f			//	±âº» ÀÌµ¿ ¼Óµµ
+#define EVILSLIME_SPEED						2.f			//	±âº» ÀÌµ¿ ¼Óµµ
 #define EVILSLIME_HP						100.f		//	±âº» Ã¼·Â
 
-#define EVILSLIME_TRACKINGDIS				5.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
-#define EVILSLIME_TRACKING_TIME				3.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
-#define EVILSLIME_LOST_TIME					2.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
+#define EVILSLIME_TRACKINGDIS				10.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
+#define EVILSLIME_TRACKING_TIME				1.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
+#define EVILSLIME_LOST_TIME					1.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
 
-#define EVILSLIME_CASTING_TIME				3.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
-#define EVILSIME_JUMP_HEIGHT				1.f			//	Á¡ÇÁ °ø°Ý ³ôÀÌ
+#define EVILSLIME_CASTING_TIME				1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
+#define EVILSIME_JUMP_HEIGHT				10.f			//	Á¡ÇÁ °ø°Ý ³ôÀÌ
 
 #define EVILSLIME_CHANNELING_TIME			0.3f		//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
-#define EVILSLIME_BULLET_NUM				8			//	ÃÑ¾Ë °¹¼ö
-#define EVILSLIME_RUSHSPEED					2.f			//	CHANELING Áß ÀÌµ¿ ¼Óµµ
+#define EVILSLIME_BULLET_NUM				8				//	CHANELING Áß ÀÌµ¿ ¼Óµµ
 
 #define EVILSLIME_HORIZONTALFLIP_BUFFER		0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
 
 #pragma region Docheol
-#define DOCHEOLAPPEARMARK_FLOATDIS		0.5f
-#define DOCHEOLAPPEARMARK_FLOATTIME		1.f
+//#define DOCHEOLAPPEARMARK_FLOATDIS		0.5f
+//#define DOCHEOLAPPEARMARK_FLOATTIME		1.f
+//#define DOCHEOL_COOLDOWN				1.f
+//#define DOCHEOL_PUNCH_FIREBALL_NUM		5
+//#define DOCHEOL_PUNCH_FIREBALL_ANGLE	60
+//#define DOCHEOL_METEOR_NUM				5
+//
+#pragma endregion
+#pragma region Fireball
+#define FIREBALL_SPEED				3.f
+#pragma endregion
 
 enum MONSTER_STATE
 {
@@ -114,14 +121,13 @@ enum MONSTER_STATE
 	BOSS_DOCHEOL_APPEAR,
 	BOSS_DOCHEOL_IDLE,
 	BOSS_DOCHEOL_TRACKING,
+	BOSS_DOCHEOL_SLAM,
 	BOSS_DOCHEOL_PUNCH,
+	BOSS_DOCHEOL_METEOR,
 
 	MONSTER_STATE_END
 };
-enum MONSTER_TRIGGER {
-	MONSTER_TRIGGER_SUMMONSTER,
-	MONSTER_TRIGGER_END,
-};
+
 enum MONSTER_STATISTICS {
 	MONSTER_STAT_HP,
 	MONSTER_STAT_ATK,
@@ -145,7 +151,7 @@ typedef struct tagTextureInfo
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fStatistics{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f), fHp(1.f), fAtk(1.f)			{}
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f)		{}
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -168,9 +174,9 @@ typedef struct tagMonsterInfo {
 
 	_float						fStatistics[MONSTER_STAT_END];
 
-	_float						fHp;
-	_float						fAtk;
 }MONSTERINFO, MONINFO, MONBULLETINFO;
+
+
 class Monster
 {
 public:
@@ -185,13 +191,9 @@ public:
 	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
-// Ãæµ¹ °ü·Ã
-public:
 
-
-	//»ý¼º °ü·Ã
 public:
-	static VOID Add_Monster_to_Scene(GameObject* pMonster); // ¾À& ÄÝ¸®Àü ¿ÀºêÁ§Æ® ¸®½ºÆ®¿¡ ¿ÀºêÁ§Æ®¸¦ Ãß°¡, _TAG´Â Å¬·¡½º ÀÌ¸§
+	static VOID Add_Monster_to_Scene(GameObject* pMonster, GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
 	static uint64_t XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2);	// ·£´ý ºñÆ®¿¬»ê 
 
 	template<typename T>

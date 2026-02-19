@@ -154,6 +154,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Header\Alert.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Header\Arrow.h" />
     <ClInclude Include="..\Header\Bow.h" />
     <ClInclude Include="..\Header\Bat.h">
@@ -171,8 +174,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\Header\Docheol.h" />
-    <ClInclude Include="..\Header\DocheolAppearMark.h" />
+    <ClInclude Include="..\Header\Docheol.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Header\DocheolAppearMark.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Header\EvilSlime.h" />
     <ClInclude Include="..\Header\FieldApostle.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -260,6 +267,9 @@
     <ClInclude Include="ENUM.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Code\Alert.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Code\Arrow.cpp" />
     <ClCompile Include="..\Code\Bow.cpp" />
     <ClCompile Include="..\Code\Bat.cpp">
@@ -277,8 +287,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\Code\Docheol.cpp" />
-    <ClCompile Include="..\Code\DocheolAppearMark.cpp" />
+    <ClCompile Include="..\Code\Docheol.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Code\DocheolAppearMark.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Code\EvilSlime.cpp" />
     <ClCompile Include="..\Code\FieldApostle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -38,7 +38,9 @@
 #include "Object_Explain.h"
 
 #include "Monster.h"
+#include "Monster_FSM.h"
 #include "MonsterEffect.h"
+#include "Alert.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"

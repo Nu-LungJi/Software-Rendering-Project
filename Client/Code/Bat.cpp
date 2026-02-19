@@ -9,13 +9,13 @@ HRESULT Bat::Ready_GameObject() {
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 
-	m_tInfo.fHp = BAT_HP;
+	m_tInfo.fStatistics[MONSTER_STAT_HP] = BAT_HP;
 
 	return S_OK;
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
-	if (m_tInfo.fHp <= 0.f)
+	if (m_tInfo.fStatistics[MONSTER_STAT_HP] <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	GameObject::Update_GameObject(_DT);
@@ -49,20 +49,21 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		return 0;
 	}
 	if (KEY_DOWN(DIK_O)) {
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		return 0;
 	}
-	if (KEY_DOWN(DIK_P))
-	{
-		m_tInfo.Change_State(MONSTER_STATE_DEAD);
-	}
+	//if (KEY_DOWN(DIK_P))
+	//{
+	//	GameObject* test = Monster::Create<Docheol>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 1.f);
+	//	Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//}
 
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -277,7 +278,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		D3DXVec3Normalize(&vDir, &vDir);
 		pBullet->Set_Dir(vDir);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
 	}
 
