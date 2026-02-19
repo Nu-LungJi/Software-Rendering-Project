@@ -18,6 +18,9 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
 
+	if (m_tInfo.fHp <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
+
 	switch (m_tInfo.eState[0])
 	{
 	default:
@@ -151,6 +154,11 @@ ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
+	if (_Other->Get_ObjectTag() == L"PlayerArrow")
+	{
+		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		m_tInfo.fHp -= (_float)atk;
+	}
 	return TRUE;
 }
 BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other)

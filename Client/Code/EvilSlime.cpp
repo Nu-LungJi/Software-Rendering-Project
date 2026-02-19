@@ -11,6 +11,8 @@ HRESULT EvilSlime::Ready_GameObject() {
 	m_tInfo.fHp = EVILSLIME_HP;
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
+	ObjectTAG = L"Monster";
+
 	return S_OK;
 }
 INT	EvilSlime::Update_GameObject(const _float& _DT)
@@ -19,6 +21,9 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 	GameObject::Update_GameObject(_DT);
 
 	Component_Transform->Get_Position()->y = MYSCALE->y * 0.5f;
+
+	if (m_tInfo.fHp <= 0.f) 
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -145,6 +150,11 @@ EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 {
+	if (_Other->Get_ObjectTag() == L"PlayerArrow")
+	{
+		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		m_tInfo.fHp -= (_float)atk;
+	}
 	return TRUE;
 }
 BOOL EvilSlime::OnCollisionStay(GameObject* _Other)

@@ -117,7 +117,7 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster)
 	CONST TCHAR* pName = wcschr(Classname, L' ');
 
 	pName = (pName != nullptr) ? pName + 1 : Classname;
-	pMonster->Set_ObjectTag(pName);
+	pMonster->Set_ObjectTag(L"Monster");
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
 
 	CollisionManager::GetInstance()->Add_ColliderObject(pMonster);

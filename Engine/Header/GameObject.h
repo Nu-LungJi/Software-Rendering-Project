@@ -53,6 +53,8 @@ protected:
 	FLOAT							AlphaZValue;
 	FLOAT							AlphaYValue;
 
+	list<GameObject*>   CollisionList;
+
 protected:
 	virtual VOID		Free();
 };

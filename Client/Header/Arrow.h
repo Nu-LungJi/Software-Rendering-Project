@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
+static int			_evilCount = 1;
 enum class ArrowType {
 	FairyArrow,
 	FairyCharging,
@@ -43,6 +44,7 @@ public:
 	static Arrow*	Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir);
 	int				Get_Atk()	{ return _arrowAtk; }
 	BOOL			OnCollisionEnter(GameObject* _Other);
+	BOOL			OnCollisionStay(GameObject* _Other);
 private:
 	virtual VOID Free();
 
@@ -57,6 +59,7 @@ private:
 
 	int			_frame;
 	float		_frameDelay;
+	float		_effectDelay;
 
 	float		_lifeTime;
 	float		_speed;
@@ -65,6 +68,7 @@ private:
 
 	float		_evilMoveTime;
 	float		_sumEvilSpeed;
+	float		_ThunderDelay;
 
 	float _EvilTime;
 };

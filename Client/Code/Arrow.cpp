@@ -21,6 +21,8 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _EvilTime = 0.f;
     _evilMoveTime = 0.f;
     _sumEvilSpeed = 0.f;
+    _effectDelay = 0.f;
+    _ThunderDelay = 0.5f;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -39,8 +41,12 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
             else if(_LVEL == 3) _type = ArrowType::IceCharging;
             break;
         case BowType::EvilHeadBow:
-            _type = ArrowType::EvilHead_Arrow;
-            _size = 0.6;
+            if (_LVEL == 1) {
+                _size = 0.6;
+                _type = ArrowType::EvilHead_Arrow;
+            }
+            else if (_LVEL == 3) _type = ArrowType::EvilHeadCharging;
+            
             break;
         case BowType::WindBow:
             _type = ArrowType::Wind_Arrow;
@@ -57,15 +63,23 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 INT Arrow::Update_GameObject(const _float& _DT)
 {
     GameObject::Update_GameObject(_DT);
-    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
     if (_hp <= 0){
-        TCHAR FileName[128] = L"";
-        _vec3 Size = { 1.f, 1.f, 1.f };
+        _vec3 Size = { 1.5f, 1.5f, 1.5f };
+        _vec3 effectPos = *Component_Transform->Get_Position();
 
         switch (_type) {
-        case ArrowType::FairyArrow:
-            // PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size);
+        case ArrowType::FairyCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::IceCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::EvilHead_Arrow:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::EvilHeadCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         default:
             break;
@@ -77,25 +91,80 @@ INT Arrow::Update_GameObject(const _float& _DT)
     _vec3		upDir, rightDir;
     upDir = { 0.f, 0.f, 1.f };
     rightDir = { 1.f, 0.f, 0.f };
+
     _frameDelay += _DT;
     _evilMoveTime += _DT;
+    _effectDelay += _DT;
+
+    // 아이스 차징 에로우 이펙트
+    if (_type == ArrowType::IceCharging) {
+        if (_effectDelay > 0.1f) {
+            _vec3 Size = { 1.f, 1.f, 1.f };
+            _vec3 effectPos = *Component_Transform->Get_Position();
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
+            _effectDelay = 0.f;
+        }
+    }
+    // 에빌 차징 에로우 이펙트
+    if (_type == ArrowType::EvilHeadCharging) {
+        _ThunderDelay += _DT;
+
+        if (_effectDelay > 0.5f) {
+            _vec3 Size = { 1.5f, 1.5f, 1.5f };
+            _vec3 effectPos = *Component_Transform->Get_Position();
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_WAVE_EFFECT, &effectPos, 0.5f, Size, false);
+            _effectDelay = 0.f;
+        }
+        if (_ThunderDelay > 1.5f) {
+            _vec3 Size = { 3.f, 6.f, 3.f };
+            _vec3 effectPos = *Component_Transform->Get_Position();
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 1.f, Size, false);
+            _ThunderDelay = 0.f;
+        }
+    }
+
     // 죽을때
     _lifeTime += _DT;
     float maxLifeTime = 1.f;
     switch (_type)
     {
     case ArrowType::FairyCharging:
-        maxLifeTime = 3.f;
+        maxLifeTime = 2.f;
         break;
     case ArrowType::IceCharging:
-        maxLifeTime = 3.f;
+        maxLifeTime = 1.f;
         break;
     case ArrowType::EvilHead_Arrow:
+        maxLifeTime = 1.f;
+        break;
+    case ArrowType::EvilHeadCharging:
         maxLifeTime = 3.f;
         break;
     }
-    if (_lifeTime > maxLifeTime)
+    if (_lifeTime > maxLifeTime) {
+        _vec3 Size = { 1.5f, 1.5f, 1.5f };
+        _vec3 effectPos = *Component_Transform->Get_Position();
+
+        switch (_type) {
+        case ArrowType::FairyCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::IceCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::EvilHead_Arrow:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::EvilHeadCharging:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        default:
+            break;
+        }
+
         return -1;
+    }
+        
         
     // 메트릭스
     {
@@ -116,7 +185,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
         // 회전
-        if (_type == ArrowType::IceCharging) _originAngle += _DT * D3DXToRadian(1.f) * 600;
+        //if (_type == ArrowType::IceCharging) _originAngle += _DT * D3DXToRadian(1.f) * 400;
         _matrix matRotZ;
 
         // z축 회전
@@ -131,10 +200,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 5.f;
             break;
         case ArrowType::IceCharging:
-            _speed = 5.f;
+            _speed = 15.f;
             break;
         case ArrowType::EvilHead_Arrow:
             _speed = 10.f;
+            break;
+        case ArrowType::EvilHeadCharging:
+            _speed = 5.f - _evilMoveTime * 1.f;
             break;
         }
         _sumSpeed += _DT * _speed;
@@ -169,6 +241,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
     }
 
+    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
     return S_OK;
 }
 
@@ -197,9 +271,9 @@ HRESULT Arrow::Component_Initialize()
     Component_Buffer = ADD_COMPONENT_RECTTEX;
     Component_Transform = ADD_COMPONENT_TRANSFORM;
 
-    //Component_Collider = ADD_COMPONENT_COLLIDER;					
-    //Component_Collider->Set_CenterPos(Component_Transform);			
-    //Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);			
+    Component_Collider = ADD_COMPONENT_COLLIDER;					
+    Component_Collider->Set_CenterPos(Component_Transform);			
+    Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);			
 
     return S_OK;
 }
@@ -208,8 +282,17 @@ void Arrow::SetGrahpic()
 {
     TCHAR FileName[128] = L"";
 
-
-    if (_frameDelay > 0.05f) { _frame++; _frameDelay = 0; }
+    // 이펙트 속도
+    float effectSpeed = 0.05f;
+    switch (_type) {
+    case ArrowType::FairyCharging:
+        effectSpeed = 0.2f;
+        break;
+    case ArrowType::IceCharging:
+        effectSpeed = 0.05f;
+        break;
+    }
+    if (_frameDelay > effectSpeed) { _frame++; _frameDelay = 0; }
        
     switch (_type) {
     case ArrowType::FairyArrow:
@@ -225,11 +308,16 @@ void Arrow::SetGrahpic()
         wsprintfW(FileName, L"IceArrow_%d.png", _frame);
         break;
     case ArrowType::IceCharging:
-        wsprintfW(FileName, L"IceChargeShot.png");
+        if (_frame > 4) _frame = 1;
+        wsprintfW(FileName, L"IceChargeShot%d.png", _frame);
         break;
     case ArrowType::EvilHead_Arrow:
         if (_frame > 7) _frame = 1;
         wsprintfW(FileName, L"EvilHead_Arrow%d.png", _frame);
+        break;
+    case ArrowType::EvilHeadCharging:
+        if (_frame > 8) _frame = 1;
+        wsprintfW(FileName, L"EvilChargeShot%d.png", _frame);
         break;
     case ArrowType::Wind_Arrow:
         if (_frame > 6) _frame = 1;
@@ -257,11 +345,17 @@ Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int
 
 BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 {
-    if (_Other->Get_ObjectTag() == L"Bat")
+
+
+    return 0;
+}
+
+BOOL Arrow::OnCollisionStay(GameObject* _Other)
+{
+    if (_Other->Get_ObjectTag() == L"Monster")
     {
         _hp = 0;
     }
-
     return 0;
 }
 

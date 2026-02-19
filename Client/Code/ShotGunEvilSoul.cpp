@@ -10,12 +10,19 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 	m_tInfo.fHp = SHOTGUNEVILSOUL_HP;
 
+	ObjectTAG = L"Monster";
+
 	return S_OK;
 }
 INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
+
+	ObjectTAG = L"Monster";
+
+	if (m_tInfo.fHp <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -130,6 +137,11 @@ ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
+	if (_Other->Get_ObjectTag() == L"PlayerArrow")
+	{
+		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		m_tInfo.fHp -= (_float)atk;
+	}
 	return TRUE;
 }
 BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)

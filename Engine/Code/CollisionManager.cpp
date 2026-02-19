@@ -40,10 +40,10 @@ BOOL CollisionManager::AABB_Collision() {
 				if (SRC ->Get_CollisionState() == FALSE) 
 				{ SRC ->Set_CollisionState(TRUE); SOBJ->OnCollisionEnter(DOBJ); }
 				if (DEST->Get_CollisionState() == FALSE) { DEST->Set_CollisionState(TRUE); DOBJ->OnCollisionEnter(SOBJ); }
-
+	
 				SOBJ->OnCollisionStay(DOBJ);
 				DOBJ->OnCollisionStay(SOBJ);
-
+	
 				return TRUE;
 			}
 			else {
@@ -52,6 +52,8 @@ BOOL CollisionManager::AABB_Collision() {
 			}
 		}
 	}
+	
+	return FALSE;
 
 	return FALSE;
 }

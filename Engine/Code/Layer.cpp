@@ -5,6 +5,8 @@ Layer::Layer() {}
 Layer::~Layer() {}
 
 HRESULT		Layer::Ready_Layer() {
+	_isTimeSlow = false;
+	_sumTime = 0.f;
 	return S_OK;
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
@@ -61,4 +63,8 @@ Layer*		Layer::Create() {
 void		Layer::Free() {
 	for (auto& GOBJ : GameObjectList)
 		Safe_Release(GOBJ);
+}
+
+void Layer::TimeSlow()
+{
 }

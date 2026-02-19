@@ -38,6 +38,10 @@ public:
 	virtual BOOL		OnCollisionStay	(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionExit	(GameObject* _Other)	{ return TRUE; }
 
+	HRESULT   Search_CollisionObject(GameObject* _COL);
+	VOID   Add_CollisionObject(GameObject* _COL);
+	VOID   Delete_CollisionObject(GameObject* _COL);
+
 public:
 	VOID	AlphaSorting(CONST D3DXVECTOR3* _Vec);
 	VOID	AlphaYSorting(CONST D3DXVECTOR3* _Vec);
@@ -52,6 +56,8 @@ protected:
 
 	FLOAT							AlphaZValue;
 	FLOAT							AlphaYValue;
+
+	list<GameObject*>   CollisionList;
 
 protected:
 	virtual VOID		Free();

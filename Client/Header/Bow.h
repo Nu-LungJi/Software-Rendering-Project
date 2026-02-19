@@ -3,7 +3,6 @@
 #include "Player.h"
 
 static int			_arrowCount = 1;
-static int			_evilCount = 1;
 enum class BowType {
 	FairyBow,
 	IceBow,
