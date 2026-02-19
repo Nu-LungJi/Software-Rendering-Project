@@ -63,6 +63,7 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
+#include "ShopKeeper.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

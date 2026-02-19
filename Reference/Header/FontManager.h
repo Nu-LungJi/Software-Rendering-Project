@@ -51,6 +51,8 @@ public:
 		wstring _FontType, D3DCOLOR _Color = D3DCOLOR_ARGB(255, 255, 255, 255), _int TextWeight = 100, BOOL _Visible = TRUE, DWORD FORMAT = DT_CENTER);
 
 	FontObject* Find_FontObject(wstring _Text);
+
+	VOID		Render_FontLayer() {};
 private:
 	
 	ID3DXSprite*					DXSprite;
