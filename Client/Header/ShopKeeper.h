@@ -31,6 +31,7 @@ private:
 	GameObject* Player;
 	MainUI* PlayerUI;
 	NPCTalk* NPCTalkUI;
+	SpeechBubble* Speech_BubbleUI;
 
 	vector<IDirect3DTexture9*>	Shop_TextureList;
 

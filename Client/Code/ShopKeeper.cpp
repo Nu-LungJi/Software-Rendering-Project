@@ -29,6 +29,7 @@ INT	ShopKeeper::Update_GameObject(const _float& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	TalkWithShopKeeper(_DT);
+	dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"NPC_Shop"))->Set_SpeechPos(Component_Transform->Get_Position());
 
 	return 0;
 }
@@ -89,11 +90,12 @@ VOID ShopKeeper::Free() {
 BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	PlayerUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"));
 	NPCTalkUI = dynamic_cast<NPCTalk*>(SceneManager::GetInstance()->Get_GameObject(L"NPCTalk"));
+	Speech_BubbleUI = dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_GameObject(L"Speech_Bubble"));
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
 		PlayerUI->PopUp_Interaction_Notice(L"대화 - 상점주인", TRUE);
-
+		Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}
 	return FALSE;
@@ -107,6 +109,7 @@ BOOL ShopKeeper::OnCollisionStay(GameObject* _Other) {
 BOOL ShopKeeper::OnCollisionExit(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
 		PlayerUI->PopUp_Interaction_Notice(L"", FALSE);
+		Speech_BubbleUI->Set_Active(FALSE);
 		return TRUE;
 	}
 	return FALSE;
