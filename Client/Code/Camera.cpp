@@ -27,6 +27,8 @@ HRESULT CameraObject::Ready_GameObject() {
 
 	m_vVelocity = {0.f , 0.f, 0.f};
 
+	ObjectTAG = L"Camera";
+
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
@@ -56,26 +58,25 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		_vec3 targetEye = EyeVec;
 		_vec3 targetAt = AtVec;
 
+		_float moveAmount = distance - offset;
 		if (distance > offset)
 		{
-			_float moveAmount = (distance - offset) * 0.3f;
 			targetEye += dir * moveAmount;
 			targetAt += dir * moveAmount;
 		}
 
-		_float stiffness = 60.f;  
-		_float damping = 0.8f;  
+		_float stiffness = 40.f;
+		_float damping = 2.f * sqrtf(stiffness);
 
 		_vec3 toTarget = targetEye - EyeVec;
 
-		_vec3 acceleration = toTarget * stiffness;
+		_vec3 accel = toTarget * stiffness - m_vVelocity * damping;
 
-		m_vVelocity += acceleration * _DT;
+		if(moveAmount > 0.1f)
+			m_vVelocity += accel * _DT;
 
-		m_vVelocity *= damping;
-
-		EyeVec += m_vVelocity * _DT * 10.f;
-		AtVec += m_vVelocity * _DT * 10.f;
+		EyeVec += m_vVelocity * _DT;
+		AtVec += m_vVelocity * _DT;
 	}
 
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);

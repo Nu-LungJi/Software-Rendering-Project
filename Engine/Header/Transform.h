@@ -39,7 +39,10 @@ public:
 
 public:
 	_matrix*	Get_World()					{	return &WorldMatrix;		}
-	VOID		Set_World(_matrix* _World)	{	WorldMatrix = *_World;		}
+	VOID		Set_World(_matrix* _World)	{
+		WorldMatrix = *_World;
+		m_vInfo[INFO_POS] = { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 };
+	}
 
 	_vec3*		Get_Position()				{ return &m_vInfo[INFO_POS];	}
 	_vec3*		Get_Rotation()				{ return &m_vAngle;				}

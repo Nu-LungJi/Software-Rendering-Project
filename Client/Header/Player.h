@@ -2,6 +2,11 @@
 #include "GameObject.h"
 #include "Bow.h"
 
+enum class skillState {
+	STATE_TIMESLOW,
+
+	NONE
+};
 enum class pState
 {
 	STATE_IDLE,
@@ -158,6 +163,9 @@ public:
 	float*	Get_MaxArrow() { return &_maxArrow; }
 	void	Set_MaxArrow(int maxArrow) { _maxArrow = maxArrow; }
 
+	float*	Get_SlowTime() { return &_slowTime; }
+	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
+
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	_vec3			Get_MouseDir();
@@ -179,6 +187,9 @@ private:
 	bool			DEATH_STATE(const _float& _DT);
 	void			Idle_Final_Input(const _float& _DT);
 
+	void			SKILL_NONE(const _float& _DT);
+	void			SKILL_TIMESLOW(const _float& _DT);
+
 	void			SetGrahpic();
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
 	void			Set_Effect(const _float& _DT);
@@ -190,6 +201,7 @@ private:
 	pState			_pState;
 	eState			_eState;
 	pSee			_see;
+	skillState		_skillState;
 
 	_uint			_frame;
 	float			_frameTick;
@@ -206,6 +218,9 @@ private:
 	bool			_isStop;
 
 	float			_dashRefillTimer;
+	float			_skillTimer;
+	bool			_skillNPC_On;
+	_vec3			_NPC_Pos;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
@@ -221,7 +236,7 @@ private:
 	float			_arrowSize;		// 화살 크기 ex) 1.5면 1.5배 증가
 	float			_arrowSpeed;	// 화살 스피드 ex) 1.5면 1.5배 증가
 	float			_maxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
-
+	float			_slowTime;		// 시간 제어 스킬 지속시간 일단 4초 초기화
 
 	Bow*			_weaponSlot[4];
 	GameObject*		_artifactSlot[4];

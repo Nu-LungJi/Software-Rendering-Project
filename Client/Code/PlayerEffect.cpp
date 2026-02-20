@@ -30,6 +30,8 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::EVIL_CHARGE) { Make_TextureList(L"Evil_Charge"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::ARROW_HITEFFECT) { Make_TextureList(L"Arrow_HitEffect"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_AURA) { Make_TextureList(L"Wind_Aura"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW) { Make_TextureList(L"NPC_TimeSlow"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) { Make_TextureList(L"NPC_TimeSlow_Loof"); }
 
 	//if (!AngleChase)
 	//{
@@ -58,6 +60,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 		SKILL_TYPE = _SKILLTYPE;
 		Repeatable = _Repeatable;
 		_angleChase = PosChase;
+		_effectTimer = 0.f;
 		
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 		_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
@@ -98,6 +101,11 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	
 	PlayTime = _PlayTime;
 
+	ObjectTAG = L"Player_Effect";
+
+	if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW || _SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF)
+		ObjectTAG = L"NPC_TIMESLOW";
+
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
 
 	return S_OK;
@@ -122,7 +130,11 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	 
 	FrameTick += _DT;
+	_effectTimer += _DT;
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+
+
 	switch (SKILL_TYPE)
 	{
 	case PLAYER_SKILL::ICE_CHARGING :
@@ -145,6 +157,9 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		break;
 	case PLAYER_SKILL::WIND_PULSE:
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
+		break;
+	case PLAYER_SKILL::NPC_TIMESLOW_LOOF:
+		if (_effectTimer > (*player->Get_SlowTime()) - 1.f ) ObjectDead = true;
 		break;
 	}
 

@@ -32,7 +32,7 @@ HRESULT Bow::Ready_GameObject()
 INT Bow::Update_GameObject(const _float& _DT)
 {
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-
+	ObjectTAG = L"Bow";
 	_playerAtk = player->Get_Atk();
 	_playerCritical = player->Get_Critical();
 	_playerChargingSpeed = player->Get_ChargingSpeed();
@@ -51,7 +51,6 @@ INT Bow::Update_GameObject(const _float& _DT)
 
 	if (_isEquip) {
 		GameObject::Update_GameObject(_DT);
-		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
 		float alphaSpeed = 3.f;
 
@@ -112,6 +111,7 @@ INT Bow::Update_GameObject(const _float& _DT)
 		matWorld._43 = (*_bowPos).z - offsetY;
 
 		Component_Transform->Set_World(&matWorld);
+		//Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
 
 		if (KEY_HOLD(DIK_SPACE)) {
 			_ChargingTime += _DT;
@@ -164,6 +164,8 @@ INT Bow::Update_GameObject(const _float& _DT)
 			CreateEffect(_DT);
 			CreateArrow(_DT);
 		}
+
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 	}
 	else
 		_alphaRatio = 0.f;

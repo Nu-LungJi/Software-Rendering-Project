@@ -14,6 +14,7 @@ HRESULT Player::Ready_GameObject() {
 	_pState				= pState::STATE_IDLE;
 	_eState				= eState::STATE_STANDING;
 	_see				= pSee::SEE_DOWN;
+	_skillState			= skillState::NONE;
 	_defaultSpeed		= 6.f;
 	_dashStart			= false;
 	_dashTime			= 0.f;
@@ -24,6 +25,7 @@ HRESULT Player::Ready_GameObject() {
 	_frame = 1;
 	_arrowCount = 0;
 	_isStop = false;
+	_skillTimer = 0.f;
 
 	// UI
 	_hp					= 5;
@@ -38,6 +40,7 @@ HRESULT Player::Ready_GameObject() {
 	_range				= 1.f;
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
+	_slowTime			= 4.f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -91,7 +94,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
-		_frame = 0;
+		_frame = 1;
 		_pState = pState::STATE_DEATH;
 	}
 
@@ -111,6 +114,16 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		}
 	}
 
+	// 스킬
+
+	switch (_skillState) {
+	case skillState::STATE_TIMESLOW :
+		SKILL_TIMESLOW(_DT);
+		break;
+	case skillState::NONE :
+		SKILL_NONE(_DT);
+		break;
+	}
 	switch (_pState)
 	{
 	case pState::STATE_IDLE:
@@ -762,11 +775,13 @@ void Player::LANDING_STATE(const _float& _DT)
 bool Player::DEATH_STATE(const _float& _DT)
 {
 	_eState = eState::STATE_DEAD;
+	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 
 	if (KEY_DOWN(DIK_T)) {
 		Reset();
-		_frame = 0;
+		_frame = 1;
 		_pState = pState::STATE_LANDING;
+		_eState = eState::STATE_LAND;
 	}
 
 	return false;
@@ -790,6 +805,35 @@ void Player::Idle_Final_Input(const _float& _DT)
 	else if (KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_ATTACK;
 		_frame = 1;
+	}
+}
+
+void Player::SKILL_NONE(const _float& _DT)
+{
+	_skillTimer = 0.f;
+	if (KEY_DOWN(DIK_Q)) {
+		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+		_NPC_Pos = *Component_Transform->Get_Position();
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
+
+		_skillState = skillState::STATE_TIMESLOW;
+		_skillNPC_On = false;
+		SceneManager::GetInstance()->Set_TimeSlow(true);
+	}
+}
+
+void Player::SKILL_TIMESLOW(const _float& _DT)
+{
+	_skillTimer += _DT;
+	if (_skillTimer > 0.9f && !_skillNPC_On) {
+		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOF, &_NPC_Pos, 1.f, Size, false);
+		_skillNPC_On = true;
+	}
+
+	if (_skillTimer > _slowTime) {
+		_skillState = skillState::NONE;
+		SceneManager::GetInstance()->Set_TimeSlow(false);
 	}
 }
 
@@ -1039,7 +1083,7 @@ void Player::SetGrahpic()
 		Anim(FileName, 0.1f, 12);
 		break;
 	case eState::STATE_LAND:
-		if (_frame > 10) _frame = 10;
+		if (_frame > 10) _frame = 1;
 		wsprintfW(FileName, L"Player_Landing%d.png", _frame);
 		Anim(FileName, 0.1f, 10);
 		break;

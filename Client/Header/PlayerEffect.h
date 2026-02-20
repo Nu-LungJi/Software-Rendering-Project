@@ -43,5 +43,7 @@ private:
 	_vec3 _effectSize;
 	bool _angleChase;
 	float _angle;
+
+	float			_effectTimer;
 };
 
