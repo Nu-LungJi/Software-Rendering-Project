@@ -38,7 +38,6 @@
 #include "Object_Explain.h"
 
 #include "Monster.h"
-#include "Monster_FSM.h"
 #include "MonsterEffect.h"
 #include "Alert.h"
 
@@ -55,6 +54,8 @@
 #include "Bullet_Chain.h"
 #include "ShotGunEvilSoul.h"
 #include "EvilSlime.h"
+
+#include "CubeFloorTile.h"
 
 #include "Player.h"
 #include "Tile.h"
@@ -74,6 +75,8 @@
 #include "StartScene.h"
 #include "DebugScene.h"
 #include "MapScene.h"
+
+#include "MiniGameScene.h"
 //////////////////////////////////////////// Manager
 #include "FontManager.h"
 #include "GUIManager.h"

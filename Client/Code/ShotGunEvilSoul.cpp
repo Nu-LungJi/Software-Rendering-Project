@@ -8,7 +8,7 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fStatistics[MONSTER_STAT_HP] = SHOTGUNEVILSOUL_HP;
+	m_tInfo.fHP = SHOTGUNEVILSOUL_HP;
 
 	return S_OK;
 }
@@ -16,6 +16,10 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
+
+
+	if (m_tInfo.fHP <= 0.f)
+		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	switch (m_tInfo.eState[0])
 	{

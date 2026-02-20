@@ -160,6 +160,12 @@
     <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark">
       <UniqueIdentifier>{72c1af4c-c6e5-4c66-9ace-ef7ac3c50387}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\05. Tile\01. CubeFloor">
+      <UniqueIdentifier>{330c0100-08f5-4694-872c-f0a71d93aa7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\99. MiniGameScene">
+      <UniqueIdentifier>{7b40fad7-addf-4aa7-8e5d-9fe597019890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -342,6 +348,12 @@
     <ClInclude Include="..\Header\Alert.h">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\MiniGameScene.h">
+      <Filter>02. Scene\99. MiniGameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CubeFloorTile.h">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -506,6 +518,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Alert.cpp">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MiniGameScene.cpp">
+      <Filter>02. Scene\99. MiniGameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CubeFloorTile.cpp">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -114,6 +114,7 @@ enum MONSTER_STATE
 	MONSTER_STATE_CASTING,
 	MONSTER_STATE_CHANNELING,
 	MONSTER_STATE_HIT,
+	MONSTER_STATE_DISAPPEAR,
 	MONSTER_STATE_DEAD,
 
 	BOSS_DOCHEOL_SUMMON,
@@ -150,8 +151,8 @@ typedef struct tagTextureInfo
 
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
-		bTrigger{}, eState{}, fStatistics{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f)		{}
+		bTrigger{}, eState{}, fTimer{}, pGameObj{},
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f), fHP(1.f), fAtk(1.f)		{}
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -169,10 +170,10 @@ typedef struct tagMonsterInfo {
 
 	_vec3						vDirection;
 	_float						fSpeed;
-
+	_float						fHP;
+	_float						fAtk;
 	TEXINFO						Textureinfo;
 
-	_float						fStatistics[MONSTER_STAT_END];
 
 }MONSTERINFO, MONINFO, MONBULLETINFO;
 

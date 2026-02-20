@@ -8,7 +8,7 @@ HRESULT EvilSlime::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fStatistics[MONSTER_STAT_HP] = EVILSLIME_HP;
+	m_tInfo.fHP = EVILSLIME_HP;
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 	return S_OK;

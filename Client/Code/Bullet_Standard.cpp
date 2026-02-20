@@ -10,7 +10,7 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 
 	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
 	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
-	m_tInfo.fStatistics[MONSTER_STAT_HP] = 1.f;
+	m_tInfo.fHP = 1.f;
 
 	return S_OK;
 }
@@ -19,6 +19,9 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 
 	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
+
+	if (m_tInfo.fHP <= 0.f)
+		m_tInfo.fTimer[0] = 10.f;
 
 	m_tInfo.fTimer[0] += _DT;
 
