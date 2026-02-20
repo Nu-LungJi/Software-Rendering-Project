@@ -58,3 +58,4 @@ private:
 private:
 	virtual	VOID		Free();
 };
+

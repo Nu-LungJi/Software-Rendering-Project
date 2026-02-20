@@ -28,5 +28,10 @@ public:
 	static	Layer*		Create();
 private:
 	virtual VOID		Free() ;
+	// 플레이어 스킬용
+public:
+	void Set_TimeSlow(bool isSlow) { _isTimeSlow = isSlow;}
+private:
+	bool _isTimeSlow;
 };
 END

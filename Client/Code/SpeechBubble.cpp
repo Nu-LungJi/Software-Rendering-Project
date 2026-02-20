@@ -14,22 +14,41 @@ HRESULT	SpeechBubble::Ready_GameObject() {
 INT		SpeechBubble::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
+
 	return 0;
 }
+
+
 VOID	SpeechBubble::LateUpdate_GameObject(CONST FLOAT& _DT) {
 }
 VOID	SpeechBubble::Render_GameObject() {
-	Component_Sprite->Render_Sprite();
-
 	//FontObject* pContent = FontManager::GetInstance()->Find_FontObject(L"asd");
 	//if (pContent)
 	//{
 	//	pContent->Text = L"어서오세요!";
 	//	pContent->Visible = TRUE;
 	//}
+	if(isActive)
+	{
+		Component_Sprite->Render_Sprite();
+
+		FontObject* pContent = FontManager::GetInstance()->Find_FontObject(L"asd");
+		if (pContent && isActive)
+		{
+			pContent->Text = L"어서오세요!";
+			pContent->Visible = TRUE;
+		}
+	}
+	else 
+	{
+		FontObject* pContent = FontManager::GetInstance()->Find_FontObject(L"asd");
+		pContent->Visible = FALSE;
+	}
 }
 HRESULT SpeechBubble::Component_Initialize() {
 	Component_Sprite = ADD_COMPONENT_SPRITE;
+	Component_Transform = ADD_COMPONENT_TRANSFORM;
+	isActive = FALSE;
 	return S_OK;
 }
 HRESULT SpeechBubble::Sprite_Initialize() {

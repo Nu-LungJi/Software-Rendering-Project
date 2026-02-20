@@ -19,6 +19,11 @@ public:
 	VOID		LateUpdate_FontManager(CONST FLOAT& _DT);
 	VOID		Render_FontManager();
 
+	FontObject* Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, _vec2 _Position, _int _TextScale, wstring _FontTag,
+		wstring _FontType, D3DCOLOR _Color = D3DCOLOR_ARGB(255, 255, 255, 255), _int TextWeight = 100, BOOL _Visible = TRUE, DWORD FORMAT = DT_CENTER);
+
+	FontObject* Find_FontObject(wstring _Text);
+
 	VOID		Render_FontLayer() {};
 private:
 

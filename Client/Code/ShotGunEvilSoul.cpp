@@ -8,15 +8,21 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = SHOTGUNEVILSOUL_HP;
+	m_tInfo.fHP = SHOTGUNEVILSOUL_HP;
+
+	ObjectTAG = L"Monster";
 
 	return S_OK;
 }
 INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
-	// <ÇÃ·¹ÀÌ¾î ¾÷µ¥ÀÌÆ® ½ÃÁ¡>
+	// <Ã‡ÃƒÂ·Â¹Ã€ÃŒÂ¾Ã® Â¾Ã·ÂµÂ¥Ã€ÃŒÃ†Â® Â½ÃƒÃÂ¡>
 	GameObject::Update_GameObject(_DT);
 
+	ObjectTAG = L"Monster";
+
+	if (m_tInfo.fHp <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 	switch (m_tInfo.eState[0])
 	{
 	default:
@@ -40,6 +46,10 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 		ShotGunEvilSoul::State_Dead();
 		break;
 	}
+
+
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -130,6 +140,11 @@ ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
+	if (_Other->Get_ObjectTag() == L"PlayerArrow")
+	{
+		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		m_tInfo.fHp -= (_float)atk;
+	}
 	return TRUE;
 }
 BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
@@ -256,7 +271,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			_float fRadian = fBaseRadian + fRandom * (D3DXToRadian(SHOTGUNEVILSOUL_SPREAD)) - D3DXToRadian(SHOTGUNEVILSOUL_SPREAD) * 0.5f;
 			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 			m_tInfo.pGameObj[1] = nullptr;
 		}
@@ -266,5 +281,6 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 VOID ShotGunEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

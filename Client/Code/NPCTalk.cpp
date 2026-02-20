@@ -22,6 +22,7 @@ HRESULT		NPCTalk::Ready_GameObject() {
 
 	Sprite_Yeon = Component_Sprite->Get_Texture(L"NPCTalk_Yeon");
 	Sprite_Tif = Component_Sprite->Get_Texture(L"NPCTalk_Tif");
+	Sprite_Shop = Component_Sprite->Get_Texture(L"NPCTalk_Shop");
 
 	NameBar = Component_Sprite->Get_Texture(L"NameBar");
 	Square = Component_Sprite->Get_Texture(L"TalkPass_Square");
@@ -74,8 +75,24 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 			ContextPassing = 999;
 		}
 	}
-	else {
+	else if(_NPCC==NPC_CHARACTER::NPC_SHOP){
+		if (KEY_DOWN(DIK_E) && ShadowCast) { ContextPassing++; }
 
+		if (ContextPassing == 0) {
+			Name->Text = L"상점 주인";
+			Talk->Text = L"어서오세요! 처음 뵙네요!";
+		}
+		else if (ContextPassing == 1) {
+			Name->Text = L"상점 주인";
+			Talk->Text = L"없는 것 빼곤 다 있으니 천천히 골라보세요!";
+		}
+		else if (ContextPassing == 2) {
+			Name->Text = L"연";
+			Talk->Text = L"...";
+		}
+		else if (ContextPassing == 3) {
+			ContextPassing = 999;
+		}
 	}
 	if (ShadowCast && ContextPassing == 999) {
 		Timer01 += _DT;
@@ -96,7 +113,8 @@ BOOL NPCTalk::Shadow_FadeIn(FLOAT _Timer) {
 		GRD_Top->Set_Opacity(_Timer * 255);
 		GRD_Bottom->Set_Opacity(_Timer * 255);
 		Sprite_Yeon->Set_Opacity(_Timer * 255);
-		Sprite_Tif->Set_Opacity(_Timer * 255);
+		//Sprite_Tif->Set_Opacity(_Timer * 255);
+		Sprite_Shop->Set_Opacity(_Timer * 255);
 	}
 	else if (_Timer > 1.f && _Timer < 2.f) {
 		NameBar->Set_Visible(TRUE);
@@ -117,7 +135,8 @@ BOOL NPCTalk::Shadow_FadeOut(FLOAT _Timer) {
 		GRD_Top->Set_Opacity(255 - (_Timer * 255));
 		GRD_Bottom->Set_Opacity(255 - (_Timer * 255));
 		Sprite_Yeon->Set_Opacity(255 - (_Timer * 255));
-		Sprite_Tif->Set_Opacity(255 - (_Timer * 255));
+		//Sprite_Tif->Set_Opacity(255 - (_Timer * 255));
+		Sprite_Shop->Set_Opacity(255-(_Timer * 255));
 		Name->Set_Color(255 - 255 * (_Timer), 255, 255, 255);
 		Talk->Set_Color(150 - 150 * (_Timer), 255, 255, 255);
 	}
@@ -144,6 +163,7 @@ HRESULT  NPCTalk::Sprite_Initialize() {
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"NPCTalk_Yeon.png", L"NPCTalk_Yeon", -60.f, 100.f, 617, 1221, TRUE, 0);
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"FrameGradation.png", L"FrameGradation_Top", -150.f, -1150.f, 1620, 1280, TRUE, 0);
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"NPCTalk_Tif.png", L"NPCTalk_Tif", 797.f, 105.f, 520, 1221, TRUE, 0);
+	Component_Sprite->Import_SpriteEX(BaseFolder, L"NPCTalk_Shop.png", L"NPCTalk_Shop", 797.f, 105.f, 450, 990, TRUE, 0);
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"FrameGradation.png", L"FrameGradation_Bottom", -150.f, 450.f, 1620, 1620, TRUE, 0);
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"NameBar.png", L"NameBar", 565.f, 535.f, 150, 10, FALSE, 200);
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"TalkPass_Square.png", L"TalkPass_Square", 628.f, 660.f, 25, 25, FALSE, 200);

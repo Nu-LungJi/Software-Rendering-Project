@@ -39,6 +39,7 @@ HRESULT DebugScene::Ready_GameLogic_Layer() {
 	Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
 	//Add_GameObjectToScene<NPC>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC, L"NPC_Tif");
 	//Add_GameObjectToScene<Monster1>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Monster1");
+	//Add_GameObjectToScene<ShopKeeper>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC, L"NPC_Shop");
 	return S_OK;
 }
 HRESULT DebugScene::Ready_UserInterface_Layer() {

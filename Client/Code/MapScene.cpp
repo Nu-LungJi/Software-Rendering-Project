@@ -12,7 +12,7 @@ HRESULT	MapScene::Ready_Scene() {
 	Ready_GameLogic_Layer(L"GameLogic_Layer"); 
 	
 {
-	HANDLE	hFile = CreateFile(L"../../Data/Tile.dat", // 파일 이름이 포함된 경로
+	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
 		GENERIC_READ,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
 		NULL,				// 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
 		NULL,				// 보안 속성(기본값인 경우 NULL)
@@ -40,7 +40,7 @@ HRESULT	MapScene::Ready_Scene() {
 	_int		     iTileTextureCnt = 0;
 	_vec3			 vNextPos = {};
 	_bool		     bAni = false;
-    UvXY				 uv ={};
+	
 	TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
 	TileManager::GetInstance()->Render_TileList();
 	while (true)
@@ -57,18 +57,22 @@ HRESULT	MapScene::Ready_Scene() {
 		ReadFile(hFile, &iTileTextureCnt, sizeof(_int),			   &dwByte, NULL);
 		ReadFile(hFile, &vNextPos,		  sizeof(_vec3),		   &dwByte, NULL);
 		ReadFile(hFile, &bAni,			  sizeof(_bool),	       &dwByte, NULL);
-		ReadFile(hFile, &uv,			  sizeof(UvXY),			   &dwByte, NULL);
 		ReadFile(hFile, &eSpawn,		  sizeof(TILE_SPAWNER),    &dwByte, NULL);
 		
 	
 		
 		GameObject* GOBJ = nullptr;
 		//GRPDEV->AddRef();
-		GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState,uv.x1,uv.x2,uv.y,uv.y2);
+		if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
+		{
+			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
+		}else
+			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
+
 		GOBJ->Set_ObjectTag(L"CXZTile");
 		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
-		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
-		if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
+
+		 if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
 		else
 		{
@@ -77,6 +81,7 @@ HRESULT	MapScene::Ready_Scene() {
 				->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 		}
 		
+		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
@@ -86,21 +91,28 @@ HRESULT	MapScene::Ready_Scene() {
 			break;
 	}
 	
+	TileManager::GetInstance()->Set_StageCnt();
 	MSG_BOX("로드 성공");
 	CloseHandle(hFile);
 }
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	SoundManager::GetInstance()->Ready_SoundManager();
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
-	TileManager::GetInstance()->Update_TileList(_DT);
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_0) & 0x80)
+	{
+		DoCheolScene* pDocher = DoCheolScene::Create(GRPDEV);
+		SceneManager::GetInstance()->Set_CurrentScene(pDocher);
+	}
+	TileManager::GetInstance()->Stage_Update(_DT);
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
 VOID MapScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	Scene::LateUpdate_Scene(_DT);
-	TileManager::GetInstance()->LateUpdate_Tile(_DT);
+	TileManager::GetInstance()->Stage_LateUpdate(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 }
@@ -119,14 +131,16 @@ HRESULT MapScene::Ready_Enviroment_Layer(CONST TCHAR* _LTAG) {
 }
 HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 	
-	
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
-
+	Add_GameObjectToScene<Cheonlog>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"CheonLog");
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
-
+	//Rain* pObj = Rain::Create(GRPDEV);
+	//pObj->Set_ObjectTag(L"Rain");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+	
 	return S_OK;
 }
 HRESULT MapScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {

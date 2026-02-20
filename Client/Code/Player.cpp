@@ -14,36 +14,34 @@ HRESULT Player::Ready_GameObject() {
 	_pState				= pState::STATE_IDLE;
 	_eState				= eState::STATE_STANDING;
 	_see				= pSee::SEE_DOWN;
+	_skillState			= skillState::NONE;
 	_defaultSpeed		= 6.f;
 	_dashStart			= false;
 	_dashTime			= 0.f;
 	_dashG				= 30.f;
 	_speed				= 0.f;
-	///////////////////////// 광윤 추가 ~ 제가 추가한 변수들 초기화
+	_slideTime = 0.f;
+	_g = 30.f;
+	_frame = 1;
+	_arrowCount = 0;
+	_isStop = false;
+	_skillTimer = 0.f;
+
+	// UI
 	_hp					= 5;
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
 	_crystal			= 0;
 	_token				= 2;
-	/////////////////////////
-	_slideTime			= 0.f;
-	_g					= 30.f;
-	_frame				= 1;
-	_arrowCount			= 0;
-	_isStop				= false;
-	{
-		_pStatus.hp				= 6;
-		_pStatus.Dash_Count = 3;
-		_pStatus.Sado_Count = 2;
-		_pStatus.Key = 1;
-		_pStatus.Money			= 0;
-		_pStatus.UpgradeStone	= 0;
+	_atk				= 1;
+	_critical			= 0;
+	_chargingSpeed		= 1.f;
+	_range				= 1.f;
+	_arrowSize			= 1.f;
+	_arrowSpeed			= 1.f;
+	_slowTime			= 4.f;
 
-		_pStatus.atk			= 1;
-		_pStatus.critical		= 0.f;
-		_pStatus.maxBowRatio	= 1.f;
-	}
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
 
@@ -96,6 +94,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
 	}
 
 	//SetOnTerrain(); - 광윤 디버그
@@ -103,6 +103,27 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	_frameTick += _DT;
 	if (_isStop) return 0;
 
+	// 대시 리필
+	if (_dashstock == 3)
+		_dashRefillTimer = 0.f;
+	else {
+		_dashRefillTimer += _DT;
+		if (_dashRefillTimer > 3.f) {
+			_dashstock++;
+			_dashRefillTimer = 0.f;
+		}
+	}
+
+	// 스킬
+
+	switch (_skillState) {
+	case skillState::STATE_TIMESLOW :
+		SKILL_TIMESLOW(_DT);
+		break;
+	case skillState::NONE :
+		SKILL_NONE(_DT);
+		break;
+	}
 	switch (_pState)
 	{
 	case pState::STATE_IDLE:
@@ -116,6 +137,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		ATTACK_STATE(_DT);
 		break;
 	case pState::STATE_LANDING :
+		LANDING_STATE(_DT);
+		break;
+	case pState::STATE_DEATH:
+		DEATH_STATE(_DT);
 		break;
 	default:
 		break;
@@ -153,8 +178,48 @@ HRESULT Player::Component_Initialize() {
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
+}
+void Player::Reset()
+{
+	_defaultSpeed = 6.f;
+	_dashStart = false;
+	_dashTime = 0.f;
+	_dashG = 30.f;
+	_speed = 0.f;
+	_slideTime = 0.f;
+	_g = 30.f;
+	_frame = 1;
+	_arrowCount = 0;
+	_isStop = false;
+
+	// UI
+	_hp					= 5;
+	_dashstock			= 3;
+	_key				= 0;
+	_coin				= 0;
+	_crystal			= 0;
+	_token				= 2;
+	_equipNum			= 0; // 지금 장착한 무기 idx
+	_atk				= 1;
+	_critical			= 0;
+	_chargingSpeed		= 1.f;
+	_range				= 1.f;
+	_arrowSize			= 1.f;
+	_arrowSpeed			= 1.f;
+	_maxArrow			= 1.f;
+
+	for (int i = 1; i < 4; i++) {
+		if (_weaponSlot[i] != nullptr) {
+			_weaponSlot[i]->Set_Destroy();
+			_weaponSlot[i] = nullptr;
+		}
+	}
+
+	_weaponSlot[0]->Set_Bow_Equip(true);
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
@@ -177,7 +242,7 @@ void Player::IDLE_STATE(const _float& _DT)
 			}
 		}
 
-		bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+		//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
 		//if (!mouseLB && _frame > 8)
 		//	_frame = 1;
@@ -370,15 +435,6 @@ void Player::IDLE_STATE(const _float& _DT)
 			}
 		}
 	}
-	//if (MOUSE_LBUTTON)
-	//{
-	//	_vec3	vPickPos = RayOnTerrain();
-	//	_vec3	vDir = vPickPos - *Component_Transform->Get_Position();
-	//
-	//	//Component_Transform->Move_Pos(D3DXVec3Normalize(&vDir, &vDir), 10.f, _DT);
-	//	// vDir = (플레이어 -> 피킹 위치) 방향
-	//}
-	///////////////////////////////////////////////////////////////////////////////////////////////
 }
 void Player::DASH_STATE(const _float& _DT)
 {
@@ -482,12 +538,13 @@ void Player::DASH_STATE(const _float& _DT)
 		_pState = pState::STATE_IDLE;
 		_speed = 0;
 		_dashTime = 0.f;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
 	}
 		
 }
 void Player::ATTACK_STATE(const _float& _DT)
 {
-	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+	//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -499,11 +556,12 @@ void Player::ATTACK_STATE(const _float& _DT)
 	POINT point;
 	GetCursorPos(&point);
 	ScreenToClient(hWnd, &point);
-
-	if (MOUSE_RBUTTON) {
+	if (MOUSE_RBUTTON && _dashstock > 0 ) {
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
@@ -702,14 +760,40 @@ void Player::ATTACK_STATE(const _float& _DT)
 		Component_Transform->Move_Pos(D3DXVec3Normalize(&rightDir, &rightDir), _speed, _DT);
 	}
 }
+void Player::LANDING_STATE(const _float& _DT)
+{
+	_eState = eState::STATE_LAND;
+
+	if (_frame == 10) {
+		_pState = pState::STATE_IDLE;
+		_eState = eState::STATE_STANDING;
+		_see = pSee::SEE_DOWN;
+	}
+}
+bool Player::DEATH_STATE(const _float& _DT)
+{
+	_eState = eState::STATE_DEAD;
+	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+
+	if (KEY_DOWN(DIK_T)) {
+		Reset();
+		_frame = 1;
+		_pState = pState::STATE_LANDING;
+		_eState = eState::STATE_LAND;
+	}
+
+	return false;
+}
 void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	if (MOUSE_RBUTTON) {
+	if (MOUSE_RBUTTON && _dashstock > 0) {
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 	else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
@@ -719,6 +803,35 @@ void Player::Idle_Final_Input(const _float& _DT)
 	else if (KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_ATTACK;
 		_frame = 1;
+	}
+}
+
+void Player::SKILL_NONE(const _float& _DT)
+{
+	_skillTimer = 0.f;
+	if (KEY_DOWN(DIK_Q)) {
+		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+		_NPC_Pos = *Component_Transform->Get_Position();
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
+
+		_skillState = skillState::STATE_TIMESLOW;
+		_skillNPC_On = false;
+		SceneManager::GetInstance()->Set_TimeSlow(true);
+	}
+}
+
+void Player::SKILL_TIMESLOW(const _float& _DT)
+{
+	_skillTimer += _DT;
+	if (_skillTimer > 0.9f && !_skillNPC_On) {
+		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOF, &_NPC_Pos, 1.f, Size, false);
+		_skillNPC_On = true;
+	}
+
+	if (_skillTimer > _slowTime) {
+		_skillState = skillState::NONE;
+		SceneManager::GetInstance()->Set_TimeSlow(false);
 	}
 }
 
@@ -962,10 +1075,15 @@ void Player::SetGrahpic()
 		wsprintfW(FileName, L"Player_Dash_Right%d.png", _frame);
 		Anim(FileName, 0.1f, 8);
 		break;
-	default:
-		if (_frame > 8) _frame = 1;
-		wsprintfW(FileName, L"Player_Stand_Down%d.png", _frame);
-		Anim(FileName, 0.1f, 8);
+	case eState::STATE_DEAD:
+		if (_frame > 12) _frame = 12;
+		wsprintfW(FileName, L"Player_Death%d.png", _frame);
+		Anim(FileName, 0.1f, 12);
+		break;
+	case eState::STATE_LAND:
+		if (_frame > 10) _frame = 1;
+		wsprintfW(FileName, L"Player_Landing%d.png", _frame);
+		Anim(FileName, 0.1f, 10);
 		break;
 	}
 }
@@ -977,7 +1095,7 @@ void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 	{
 		if (_frameTick > delay)
 		{
-			if (++_frame > maxIdx)
+			if (++_frame > maxIdx && _pState != pState::STATE_DEATH)
 				_frame = 1;
 
 			_frameTick = 0.f;
@@ -1146,6 +1264,99 @@ Player* Player::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return PLAYER;
+}
+_vec3 Player::Get_MouseDir()
+{
+	POINT MousePoint{ 0, 0 };
+	GetCursorPos(&MousePoint);
+	ScreenToClient(hWnd, &MousePoint);
+
+	_vec3 vMouse;
+	vMouse.x = (float)MousePoint.x;
+	vMouse.y = (float)MousePoint.y;
+	vMouse.z = 0.f;
+
+	D3DVIEWPORT9		viewport;
+	ZeroMemory(&viewport, sizeof(D3DVIEWPORT9));
+
+	GRPDEV->GetViewport(&viewport);
+
+	D3DXMATRIX		matProj;
+	ZeroMemory(&matProj, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMATRIX		matView;
+	ZeroMemory(&matView, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+
+	D3DXMATRIX matWorldIdentity;
+	D3DXMatrixIdentity(&matWorldIdentity);
+
+	vMouse.z = 0.f;
+	D3DXVECTOR3 vNear;
+	D3DXVec3Unproject(&vNear, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	vMouse.z = 1.f;
+	D3DXVECTOR3 vFar;
+	D3DXVec3Unproject(&vFar, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	_vec3 vDir = vFar - vNear;
+	D3DXVec3Normalize(&vDir, &vDir);
+
+	float t = -vNear.y / vDir.y;
+	_vec3 vPickPos = vNear + vDir * t;
+
+	_vec3 mouseDir = vPickPos - *Component_Transform->Get_Position();
+	mouseDir.y = 0.f;
+	D3DXVec3Normalize(&mouseDir, &mouseDir);
+
+	return mouseDir;
+}
+_float Player::Get_MouseDistance()
+{
+	POINT MousePoint{ 0, 0 };
+	GetCursorPos(&MousePoint);
+	ScreenToClient(hWnd, &MousePoint);
+
+	_vec3 vMouse;
+	vMouse.x = (float)MousePoint.x;
+	vMouse.y = (float)MousePoint.y;
+	vMouse.z = 0.f;
+
+	D3DVIEWPORT9		viewport;
+	ZeroMemory(&viewport, sizeof(D3DVIEWPORT9));
+
+	GRPDEV->GetViewport(&viewport);
+
+	D3DXMATRIX		matProj;
+	ZeroMemory(&matProj, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMATRIX		matView;
+	ZeroMemory(&matView, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+
+	D3DXMATRIX matWorldIdentity;
+	D3DXMatrixIdentity(&matWorldIdentity);
+
+	vMouse.z = 0.f;
+	D3DXVECTOR3 vNear;
+	D3DXVec3Unproject(&vNear, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	vMouse.z = 1.f;
+	D3DXVECTOR3 vFar;
+	D3DXVec3Unproject(&vFar, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	_vec3 vDir = vFar - vNear;
+	D3DXVec3Normalize(&vDir, &vDir);
+
+	float t = -vNear.y / vDir.y;
+	_vec3 vPickPos = vNear + vDir * t;
+	_vec3 dis = vPickPos - *Component_Transform->Get_Position();
+
+	_float mouseDistance = D3DXVec3Length(&dis);
+	
+	return mouseDistance;
 }
 VOID	Player::Free() {
 	GameObject::Free();

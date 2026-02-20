@@ -12,18 +12,20 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 vPos, BOOL 
 
 	m_eEffect = _SKILLTYPE;
 
+	Component_Transform->Set_Scale(2.f, 2.f, 2.f);
 	switch (_SKILLTYPE)
 	{
 	case MONSTER_EFFECT::MONSTER_SUMMONS01:		Make_TextureList(L"Spr_Effect_MonsterSummons01");		break;
 	case MONSTER_EFFECT::MONSTER_SUMMONS02:		Make_TextureList(L"Spr_Effect_MonsterSummons02");		break;
 	case MONSTER_EFFECT::MONSTER_SUMMONS03:		Make_TextureList(L"Spr_Effect_MonsterSummons03");		break;
 	case MONSTER_EFFECT::MONSTER_DEATH:			Make_TextureList(L"Spr_Effect_baseDeathEffect_B");		break;
+	case MONSTER_EFFECT::BULLET_STANDARD_CHARGE:Make_TextureList(L"Spr_Bullet_Standard_Charge");		break;
+	case MONSTER_EFFECT::BULLET_STANDARD_DEATH:	Make_TextureList(L"Spr_Bullet_Standard_Death");			break;
 	case MONSTER_EFFECT::ALERT_CIRCLE:			TextureList.push_back(ResourceManager::GetInstance()->Find_Texture(L"AlertCircle.png")); break;
 	case MONSTER_EFFECT::SKILL_END:				default:		break;
 	}
 
 
-	Component_Transform->Set_Scale(2.f, 2.f, 2.f);
 
 	Component_Transform->Set_Pos(vPos);
 	Repeatable = _Repeatable;
@@ -72,7 +74,9 @@ HRESULT MonsterEffect::Make_TextureList(CONST TCHAR* _Filename)
 //}
 
 INT  MonsterEffect::Update_GameObject(CONST FLOAT& _DT) {
-	if (ObjectDead)	return 0;
+
+	if (ObjectDead)
+		return -1;
 	GameObject::Update_GameObject(_DT);
 
 	FrameTick += _DT;
@@ -102,10 +106,10 @@ VOID MonsterEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	switch (m_eEffect)
 	{
 	default:
-		Monster::BillBoard_Standard(GRPDEV, Component_Transform);
-		break;
+	case MONSTER_EFFECT::MONSTER_SUMMONS02:
+	case MONSTER_EFFECT::MONSTER_SUMMONS03:
 	case MONSTER_EFFECT::MONSTER_SUMMONS01:
-		Monster::BillBoard(Component_Transform, GRPDEV);
+		Monster::BillBoard_Standard(GRPDEV, Component_Transform);
 		break;
 	}
 }

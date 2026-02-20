@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "Collider.h"
 #include "TileInfo.h"
+#include "ParticleRain.h"
 
 BEGIN(Engine)
 class ENGINE_DLL ProtoManager : public Base {

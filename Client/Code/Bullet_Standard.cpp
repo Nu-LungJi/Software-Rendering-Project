@@ -10,17 +10,33 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 
 	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
 	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
-	m_tInfo.fHp = 1.f;
+	m_tInfo.fHP = 1.f;
 
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 
+	MYPOS->y = 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
+
+	if (m_tInfo.fHP <= 0.f)
+		m_tInfo.fTimer[0] = 10.f;
+
 	m_tInfo.fTimer[0] += _DT;
 
-	if (m_tInfo.fTimer[0] > 30.f)
+	if (m_tInfo.fTimer[0] > 10.f)
+	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
 		ObjectDead = true;
+		return 0;
+		ObjectDead = true;
+	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;

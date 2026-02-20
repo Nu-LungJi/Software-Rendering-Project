@@ -9,16 +9,23 @@ HRESULT Bat::Ready_GameObject() {
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 
-	m_tInfo.fHp = BAT_HP;
+	m_tInfo.fHP = BAT_HP;
+
+	ObjectTAG = L"Monster";
 
 	return S_OK;
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
-	if (m_tInfo.fHp <= 0.f)
+	if (m_tInfo.fHP <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	GameObject::Update_GameObject(_DT);
+
+	ObjectTAG = L"Monster";
+
+	if (m_tInfo.fHp <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -49,21 +56,24 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
-		return 0;
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 	}
 	if (KEY_DOWN(DIK_O)) {
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
-		return 0;
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 	}
 	if (KEY_DOWN(DIK_P))
 	{
-		m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 1.f);
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	}
 
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
@@ -110,16 +120,6 @@ VOID Bat::Render_GameObject() {
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
-//BOOL Bat::OnCollisionEnter(GameObject* _Other)				// OnCollisionEnter 정의가 2개라서 하나 지웠습니다. push > pull req 하시기 전에 컴파일까지 다 하고 올려주세요.
-//{
-//	if (_Other->Get_ObjectTag() == L"PlayerArrow")
-//	{
-//		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-//		_hp -= atk;
-//	}
-//
-//	return 0;
-//}
 HRESULT Bat::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
@@ -131,7 +131,7 @@ HRESULT Bat::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(0.289f, 1.f, 0.289f);
+	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
 
 	return S_OK;
 }
@@ -146,21 +146,21 @@ Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
+	return TRUE;
+}
+BOOL Bat::OnCollisionStay(GameObject* _Other)
+{
 	wstring Tag = _Other->Get_ObjectTag();
 	if (Tag == L"PlayerArrow")
 	{
-		Arrow* pArrow = static_cast<Arrow*>(_Other);
-		//m_tColInfo._hp -= pArrow->Get_Atk();  // ¾ø³×;;
+		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		m_tInfo.fHp -= (_float)atk;
 	}
 	else
 	{
 		return false;
 	}
 
-	return TRUE;
-}
-BOOL Bat::OnCollisionStay(GameObject* _Other)
-{
 	return TRUE;
 }
 BOOL Bat::OnCollisionExit(GameObject* _Other)
@@ -277,7 +277,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		D3DXVec3Normalize(&vDir, &vDir);
 		pBullet->Set_Dir(vDir);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
 	}
 
@@ -290,5 +290,6 @@ VOID Bat::State_Channeling(const _float& _DT)
 VOID Bat::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

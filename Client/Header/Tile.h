@@ -58,7 +58,7 @@ private:
     vector<const _tchar*>        m_vecName[TILE_STATE::STATE_END];
     vector<ImageFile>            m_vecImage[TILE_STATE::STATE_END];
     vector<RECT>                 m_vecTileUnder;
-    vector<UvXY>                 m_vecUVXY;
+  
     _bool                        m_bTileCheck;
     _bool                        m_bMouseClick;
     _bool                        m_bOnlyAnimation;

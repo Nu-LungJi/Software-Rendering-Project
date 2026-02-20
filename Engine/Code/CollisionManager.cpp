@@ -45,7 +45,7 @@ BOOL CollisionManager::AABB_Collision() {
 				}
 				SOBJ->OnCollisionStay(DOBJ);
 				DOBJ->OnCollisionStay(SOBJ);
-
+	
 				return TRUE;
 			}
 			else {
@@ -58,6 +58,8 @@ BOOL CollisionManager::AABB_Collision() {
 			}
 		}
 	}
+	
+	return FALSE;
 
 	return FALSE;
 }

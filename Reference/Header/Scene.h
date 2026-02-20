@@ -31,6 +31,8 @@ public:
 		return S_OK;
 	}
 
+	// ½ºÅ³¿ë
+	void Set_TimeSlow(bool isTimeSlow) {for (auto& LYR : LayerList) {LYR->Set_TimeSlow(isTimeSlow);}}
 protected:
 	vector<Layer*>				LayerList;
 	LPDIRECT3DDEVICE9			GRPDEV;

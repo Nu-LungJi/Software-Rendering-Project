@@ -33,7 +33,6 @@ VOID StartScene::Render_Scene() {
 	//
 	//if (nullptr == GOBJ)					return E_FAIL;
 	//if (FAILED(LYR->Add_GameObject(GOBJ)))	return E_FAIL;
-
 }
 HRESULT StartScene::Ready_Enviroment_Layer() {
 	Add_GameObjectToScene<Terrain>			(LAYER_TYPE::LAYER_STATIC_OBJECT , GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain"		);
@@ -44,10 +43,15 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 	Add_GameObjectToScene<Player>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER , L"Player"		);
 	//Add_GameObjectToScene<Bat>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
 	Add_GameObjectToScene<ScorpoinEvilSoul>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-	//Add_GameObjectToScene<FinalBoss>		(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
+	//GameObject* obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
+	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
+	//obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"ScorpoinEvilSoul"));
+	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
+
+
 	//Add_GameObjectToScene<Docheol>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
 	//Add_GameObjectToScene<Fireball>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
-	//<NPC>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC	  , L"NPC_Tif"		);
+	//Add_GameObjectToScene<NPC>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC	  , L"NPC_Tif"		);
 	return S_OK;
 }
 HRESULT StartScene::Ready_UserInterface_Layer() {
