@@ -32,6 +32,7 @@ public:
 private:
 	HRESULT			Component_Initialize();
 	void			SetGrahpic();
+	void			Destory_Tile();
 private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;

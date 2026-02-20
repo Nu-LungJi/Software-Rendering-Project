@@ -73,9 +73,6 @@
     <Filter Include="99. Component\06. Tile">
       <UniqueIdentifier>{4e2a987d-50f6-4e59-bd84-9e0016b96795}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Component\07. Font">
-      <UniqueIdentifier>{1b683c38-f84a-441e-9b76-42c8c2fd8f98}</UniqueIdentifier>
-    </Filter>
     <Filter Include="13. UIManager">
       <UniqueIdentifier>{06dba40a-cde8-4d74-a015-c5cfb226400f}</UniqueIdentifier>
     </Filter>
@@ -84,6 +81,9 @@
     </Filter>
     <Filter Include="99. Component\03. Texture">
       <UniqueIdentifier>{f901d2b8-ed83-41d1-b248-ff0820f8b24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Component\08. Paticle">
+      <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -180,8 +180,11 @@
     <ClInclude Include="..\Header\Font.h">
       <Filter>99. Component\07. Font</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\NoCloneBuffer.h">
-      <Filter>99. Component\01. Buffer</Filter>
+    <ClInclude Include="..\Header\CDYBuffer.h">
+      <Filter>99. Component\08. Paticle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ParticleRain.h">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -260,8 +263,11 @@
     <ClCompile Include="..\Code\Font.cpp">
       <Filter>99. Component\07. Font</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\NoCloneBuffer.cpp">
-      <Filter>99. Component\01. Buffer</Filter>
+    <ClCompile Include="..\Code\CDYBuffer.cpp">
+      <Filter>99. Component\08. Paticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ParticleRain.cpp">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

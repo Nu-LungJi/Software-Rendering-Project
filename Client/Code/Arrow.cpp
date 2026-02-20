@@ -107,7 +107,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     _evilMoveTime += _DT;
     _effectDelay += _DT;
 
-    // ¾ÆÀÌ½º Â÷Â¡ ¿¡·Î¿ì ÀÌÆåÆ®
+    // Â¾Ã†Ã€ÃŒÂ½Âº Ã‚Ã·Ã‚Â¡ Â¿Â¡Â·ÃÂ¿Ã¬ Ã€ÃŒÃ†Ã¥Ã†Â®
     if (_type == ArrowType::IceCharging) {
         if (_effectDelay > 0.1f) {
             _vec3 Size = { 1.f, 1.f, 1.f };
@@ -116,7 +116,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _effectDelay = 0.f;
         }
     }
-    // ¿¡ºô Â÷Â¡ ¿¡·Î¿ì ÀÌÆåÆ®
+    // Â¿Â¡ÂºÃ´ Ã‚Ã·Ã‚Â¡ Â¿Â¡Â·ÃÂ¿Ã¬ Ã€ÃŒÃ†Ã¥Ã†Â®
     if (_type == ArrowType::EvilHeadCharging) {
         _ThunderDelay += _DT;
 
@@ -136,7 +136,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         }
     }
 
-    // Á×À»¶§
+    // ÃÃ—Ã€Â»Â¶Â§
     _lifeTime += _DT;
     float maxLifeTime = 1.f;
     switch (_type)
@@ -181,7 +181,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     }
         
         
-    // ¸ŞÆ®¸¯½º
+    // Â¸ÃÃ†Â®Â¸Â¯Â½Âº
     {
         CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
         _vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
@@ -213,16 +213,16 @@ INT Arrow::Update_GameObject(const _float& _DT)
         D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
         D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
-        // È¸Àü
+        // ÃˆÂ¸Ã€Ã¼
         //if (_type == ArrowType::IceCharging) _originAngle += _DT * D3DXToRadian(1.f) * 400;
         _matrix matRotZ;
 
-        // zÃà È¸Àü
+        // zÃƒÃ  ÃˆÂ¸Ã€Ã¼
         D3DXMatrixRotationZ(&matRotZ, _originAngle);
         if(_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
         _matrix matWorld = matSize * matRotZ * matBillboard;
 
-        // ¼Óµµ
+        // Â¼Ã“ÂµÂµ
         switch (_type)
         {
         case ArrowType::FairyCharging:
@@ -243,7 +243,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         matWorld._42 = _playerPos.y;
         matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
 
-        // ÀÌµ¿
+        // Ã€ÃŒÂµÂ¿
         switch (_type)
         {
         case ArrowType::EvilHead_Arrow:
@@ -269,7 +269,6 @@ INT Arrow::Update_GameObject(const _float& _DT)
         Component_Transform->Set_World(&matWorld);
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
     }
-
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
     return S_OK;
@@ -278,6 +277,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
 VOID Arrow::LateUpdate_GameObject(const _float& _DT)
 {
     GameObject::LateUpdate_GameObject(_DT);
+
+    Destory_Tile();
 }
 
 VOID Arrow::Render_GameObject()
@@ -311,7 +312,7 @@ void Arrow::SetGrahpic()
 {
     TCHAR FileName[128] = L"";
 
-    // ÀÌÆåÆ® ¼Óµµ
+    // Ã€ÃŒÃ†Ã¥Ã†Â® Â¼Ã“ÂµÂµ
     float effectSpeed = 0.05f;
     switch (_type) {
     case ArrowType::FairyCharging:
@@ -359,6 +360,30 @@ void Arrow::SetGrahpic()
     }
     
     GRPDEV->SetTexture(0, (ResourceManager::GetInstance()->Find_Texture(FileName)));
+}
+
+void Arrow::Destory_Tile()
+{
+    _vec3 vPos, vScale, vTileScale, vTilePos{ 0,0,0 };
+   
+    Transform* pTile = nullptr;
+    vPos = *Component_Transform->Get_Position();
+    vScale = *Component_Transform->Get_Scale();
+    for (auto& iter : TileManager::GetInstance()->Get_DestoryTile_List())
+    {
+        if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_DESTORY||
+            dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_BOOM)
+        {
+            pTile = dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+            vTilePos   =  *pTile->Get_Position();
+          
+            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z -1 && vPos.z < vTilePos.z + 1 )
+            {
+                Set_ObjectDead(TRUE);
+                dynamic_cast<CXZTile*>(iter)->Set_Destory();
+            }
+        }
+    }
 }
 
 Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir)

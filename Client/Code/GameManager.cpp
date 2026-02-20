@@ -6,7 +6,7 @@ GameManager::~GameManager() { Free(); }
 
 HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI/Inventory_UI");
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
@@ -24,8 +24,9 @@ VOID	GameManager::LateUpdate_GameManager(CONST FLOAT& _DT) {
 }
 VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
+
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
-	
+	EffectManager::GetInstance()->Render_EffectManager(GRPDEV);
 	//TileManager::GetInstance()->Render_TileList();
 	//DEVCLASS->Render_End();
 }
@@ -54,8 +55,9 @@ HRESULT GameManager::Ready_DefaultSetting() {
 HRESULT GameManager::Ready_SceneSetting() {
 
 	Scene* EnterScene = StartScene::Create(GRPDEV);
-	//Scene* EnterScene = DebugScene::Create(GRPDEV);
-	//Scene* EnterScene = MapScene::Create(GRPDEV);
+  //Scene* EnterScene = DebugScene::Create(GRPDEV);
+  //Scene* EnterScene   = MapScene::Create(GRPDEV);
+
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
 

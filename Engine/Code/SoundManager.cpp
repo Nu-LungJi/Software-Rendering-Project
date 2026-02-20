@@ -14,6 +14,16 @@ HRESULT SoundManager::Ready_SoundManager() {
 VOID SoundManager::Update_SoundManager() {
 
 }
+HRESULT SoundManager::Play_Sound_Once(const TCHAR* _FilePath, CHANNELID eID, float fVolume)
+{
+	string RootPath = "../../Sound/";
+	wstring strUni = _FilePath;
+	auto iter = find_if(SoundMap.begin(), SoundMap.end(), CTag_Finder(_FilePath));
+	if (iter == SoundMap.end())
+		return E_FAIL;
+
+	return S_OK;
+}
 HRESULT SoundManager::Play_Sound(const TCHAR* _FilePath, CHANNELID _SoundChannel) {
 	Sound* SoundObject = nullptr;
 

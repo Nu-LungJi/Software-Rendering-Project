@@ -1,81 +1,56 @@
 #include "../Include/PCH.h"
 
-Fireball::Fireball(LPDIRECT3DDEVICE9 _GRPDEV) : 
-	GameObject(_GRPDEV),
-	m_pMaster(nullptr),
-	m_fSpeed(2.f)	{}
-Fireball::Fireball(const GameObject& _RHS) : 
-	GameObject(_RHS),
-	m_pMaster(nullptr),
-	m_fSpeed(2.f){}
+Fireball::Fireball(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+Fireball::Fireball(const GameObject& _RHS) : GameObject(_RHS) {}
 Fireball::~Fireball() {}
 
 HRESULT Fireball::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	m_tInfo.fSpeed = FIREBALL_SPEED;
 	return S_OK;
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
 {
-	// <플레이어 업데이트 시점>
-	_frameTick += _DT;
-
 	GameObject::Update_GameObject(_DT);
+
+	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
+	{
+		ObjectDead = true;
+		return 0;
+	}
+
+	m_tInfo.fTimer[0] += _DT;
+	if (m_tInfo.fTimer[0] >= 5.f)
+	{
+		ObjectDead = true;
+		return 0;
+	}
+	
+	//Component_Transform->Get_Position()->y = 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+
+	m_tInfo.Textureinfo._frameTick += _DT;
+	if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
 VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	//Component_Transform->Move_Pos(&m_vDir, m_fSpeed, _DT);
 
-	m_vDir = *POS(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")) - *MYPOS;
-	m_vDir.y = 0.f;
-	D3DXVec3Normalize(&m_vDir, &m_vDir);
-	Component_Transform->Move_Pos(&m_vDir, m_fSpeed, _DT);
+	//m_tInfo.vDirection.y = 0.f;
+	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	_matrix WorldMat;
-	GRPDEV->GetTransform(D3DTS_VIEW, &WorldMat);
-	D3DXMatrixInverse(&WorldMat, 0, &WorldMat);
+	Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 
-	_vec3 vRight = -m_vDir;
-	memcpy(&WorldMat.m[0][0], &vRight, sizeof(_vec3));
-	
-	_vec3 vLook;
-	memcpy(&vLook, &WorldMat.m[2][0], sizeof(_vec3));
-
-	_vec3 vUp;
-	D3DXVec3Cross(&vUp, &vLook, &vRight);
-	memcpy(&WorldMat.m[1][0], &vUp, sizeof(_vec3));
-
-	vLook -= *MYPOS;
-	AlphaZValue = D3DXVec3Length(&vLook);
-	D3DXVec3Normalize(&vLook, &vLook);
-
-	memcpy(&WorldMat.m[2][0], &vLook, sizeof(_vec3));
-	memcpy(&WorldMat.m[3][0], *MYPOS, sizeof(_vec3));
-
-	//D3DXMatrixScaling(&WorldMat, MYSCALE->x * -1.f, MYSCALE->y, MYSCALE->z);
-
-	Component_Transform->Set_World(&WorldMat);
 }
 VOID Fireball::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	//if (_frameTick > 0.1f)
-	//{
-	//	++_frame;
-	//	_frameTick = 0.0f;
-	//}
-
-	//if (_frame>10)
-	//{
-	//	_frame = 1;
-	//}
-	//TCHAR FileName[256] = L"";
-	//wsprintfW(FileName, L"d%02d",_frame);
-
-	GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"Spr_Weapon_No65_RoyalIceSpiritArrow_01.png"));
+	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -86,12 +61,10 @@ HRESULT Fireball::Component_Initialize() {
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
-	Component_Transform->Set_Pos(0.f, 0.5f, 0.f);
+	Component_Transform->Set_Scale(0.396f, 0.184f, 1.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
 
 	return S_OK;
 }

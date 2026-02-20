@@ -9,7 +9,7 @@ HRESULT Bat::Ready_GameObject() {
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 
-	m_tInfo.fHp = BAT_HP;
+	m_tInfo.fHP = BAT_HP;
 
 	ObjectTAG = L"Monster";
 
@@ -17,7 +17,7 @@ HRESULT Bat::Ready_GameObject() {
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
-	if (m_tInfo.fHp <= 0.f)
+	if (m_tInfo.fHP <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	GameObject::Update_GameObject(_DT);
@@ -56,21 +56,24 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
-		return 0;
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 	}
 	if (KEY_DOWN(DIK_O)) {
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
-		Monster::Add_Monster_to_Scene(test);
-		return 0;
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 	}
 	if (KEY_DOWN(DIK_P))
 	{
-		m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 1.f);
+		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	}
 
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
@@ -274,7 +277,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		D3DXVec3Normalize(&vDir, &vDir);
 		pBullet->Set_Dir(vDir);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
 	}
 
@@ -287,5 +290,6 @@ VOID Bat::State_Channeling(const _float& _DT)
 VOID Bat::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

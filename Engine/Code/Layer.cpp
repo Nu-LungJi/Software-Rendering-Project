@@ -10,7 +10,7 @@ HRESULT		Layer::Ready_Layer() {
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	if (!_isTimeSlow) {
-		// ¿ø·¡ ÄÚµå
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
 			int ObjectResult = (*iter)->Update_GameObject(_DT);
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
@@ -23,7 +23,7 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 		}
 	}
 	else {
-		// Å¸ÀÓ½½·Î¿ì
+		// Å¸ï¿½Ó½ï¿½ï¿½Î¿ï¿½
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
 			int ObjectResult = 0;
 			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"

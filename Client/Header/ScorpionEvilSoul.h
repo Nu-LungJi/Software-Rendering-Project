@@ -41,9 +41,11 @@ private:
 	MONINFO m_tInfo;
 
 	VOID State_Summon(const _float& _DT);
+	VOID State_Appear(const _float& _DT);
 	VOID State_Idle(const _float& _DT);
 	VOID State_Tracking(const _float& _DT);
 	VOID State_Casting(const _float& _DT);
 	VOID State_Channeling(const _float& _DT);
+	VOID State_Disappear(const _float& _DT);
 	VOID State_Dead();
 };
