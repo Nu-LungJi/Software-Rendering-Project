@@ -24,7 +24,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 
 	ObjectTAG = L"Monster";
 
-	if (m_tInfo.fHp <= 0.f)
+	if (m_tInfo.fHP <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
@@ -52,7 +52,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		break;
 	}
 
-	if (KEY_DOWN(DIK_Q)) {
+	if (KEY_DOWN(DIK_P)) {
 		//Set_ObjectDead(TRUE);
 		//Bat::Change_State(BAT_SUMMON);
 		GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)}, 3.f);
@@ -66,11 +66,11 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
 	}
-	if (KEY_DOWN(DIK_P))
-	{
-		GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 1.f);
-		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	}
+	//if (KEY_DOWN(DIK_P))
+	//{
+	//	GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 1.f);
+	//	Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//}
 
 	if (ObjectDead)
 		return -1;
@@ -154,7 +154,7 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 	if (Tag == L"PlayerArrow")
 	{
 		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-		m_tInfo.fHp -= (_float)atk;
+		m_tInfo.fHP -= (_float)atk;
 	}
 	else
 	{

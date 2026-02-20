@@ -36,7 +36,7 @@ private:
 	vector<FontObject*>	ItemInfo_Text;
 
 	BOOL			isActive;
-	ItemINFO* m_pShopItem;
+	ItemINFO*		m_pShopItem;
 
 private:
 	virtual	VOID		Free();

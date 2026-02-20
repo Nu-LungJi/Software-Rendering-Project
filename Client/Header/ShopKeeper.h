@@ -1,5 +1,8 @@
 #pragma once
 #include "GameObject.h"
+#include "MainUI.h"
+#include "NPCTalk.h"
+#include "SpeechBubble.h"
 
 class ShopKeeper : public GameObject
 {
@@ -21,6 +24,8 @@ public:
 	virtual			BOOL		OnCollisionExit(GameObject* _Other);
 
 	VOID			TalkWithShopKeeper(FLOAT _DT);
+public:
+	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
 private:
 	HRESULT			Component_Initialize();
@@ -30,12 +35,6 @@ private:
 	Transform* Component_Transform;
 	Collider* Component_Collider;
 	Texture* Component_Texture;
-
-public:
-	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-	BOOL			OnCollisionEnter(GameObject* _Other)	override;
-	BOOL			OnCollisionStay(GameObject* _Other)		override;
-	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	GameObject* Player;
 	MainUI* PlayerUI;
@@ -50,8 +49,6 @@ public:
 
 	BOOL	Interaction_Possible;
 
-public:
-	static ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	virtual VOID Free();
 };

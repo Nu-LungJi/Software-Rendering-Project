@@ -162,7 +162,7 @@
     </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Supporter">
       <UniqueIdentifier>{30667666-39cc-42e0-b5ff-f65cdef8fcc2}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02. Scene\02. DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
     </Filter>
@@ -389,7 +389,7 @@
     </ClInclude>
     <ClInclude Include="..\Header\Supporter.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Header\Cheonlog.h">
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClInclude>
@@ -441,6 +441,7 @@
     <ClInclude Include="..\Header\ShopKeeper.h">
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\MonsterTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -594,7 +595,7 @@
     <ClCompile Include="..\Code\MainMenu.cpp">
       <Filter>04. UI\01. MainUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MainMenuButton.cpp">    
+    <ClCompile Include="..\Code\MainMenuButton.cpp">
       <Filter>04. UI\01. MainUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MainMenuLogo.cpp">
@@ -605,7 +606,7 @@
     </ClCompile>
     <ClCompile Include="..\Code\Supporter.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Code\Cheonlog.cpp">
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClCompile>
@@ -654,6 +655,7 @@
     <ClCompile Include="..\Code\ShopKeeper.cpp">
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\MonsterTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

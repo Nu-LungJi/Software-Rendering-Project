@@ -26,7 +26,7 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 
 	GameObject::Update_GameObject(_DT);
 
-	if (m_tInfo.fHp <= 0.f)
+	if (m_tInfo.fHP <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
@@ -195,7 +195,7 @@ BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
 	if (_Other->Get_ObjectTag() == L"PlayerArrow")
 	{
 		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-		m_tInfo.fHp -= (_float)atk;
+		m_tInfo.fHP -= (_float)atk;
 	}
 	return TRUE;
 }

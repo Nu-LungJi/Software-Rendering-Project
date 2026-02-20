@@ -54,7 +54,7 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 		});
 	for (auto& _OBJ : RenderGroup[RENDER_ALPHA]) {
 		if(_OBJ->Get_ObjectDead() == FALSE)
-p			_OBJ->Render_GameObject();
+			_OBJ->Render_GameObject();
 	}
 
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);

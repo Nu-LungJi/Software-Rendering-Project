@@ -115,7 +115,6 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, GAMEOBJECT_TYPE eType)
 
 	pName = (pName != nullptr) ? pName + 1 : Classname;
 	pMonster->Set_ObjectTag(L"Monster");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
 
 
 	pMonster->Set_ObjectType(eType);

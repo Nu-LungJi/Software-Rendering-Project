@@ -563,7 +563,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
-	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
+	else if (!MOUSE_LBUTTON && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
 	}
 
