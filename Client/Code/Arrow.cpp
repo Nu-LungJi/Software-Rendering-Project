@@ -46,7 +46,6 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
                 _type = ArrowType::EvilHead_Arrow;
             }
             else if (_LVEL == 3) _type = ArrowType::EvilHeadCharging;
-            
             break;
         case BowType::WindBow:
             _type = ArrowType::Wind_Arrow;
@@ -57,6 +56,8 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
         }
     }
 
+    if (_type == ArrowType::IceCharging) _size = 1.5f;
+
     return S_OK;
 }
 
@@ -65,10 +66,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
     GameObject::Update_GameObject(_DT);
 
     if (_hp <= 0){
-        _vec3 Size = { 1.5f, 1.5f, 1.5f };
+        _vec3 Size = { 2.f, 2.f, 2.f };
         _vec3 effectPos = *Component_Transform->Get_Position();
 
         switch (_type) {
+        case ArrowType::FairyArrow:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ARROW_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
         case ArrowType::FairyCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
@@ -142,7 +146,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         break;
     }
     if (_lifeTime > maxLifeTime) {
-        _vec3 Size = { 1.5f, 1.5f, 1.5f };
+        _vec3 Size = { 2.f, 2.f, 2.f };
         _vec3 effectPos = *Component_Transform->Get_Position();
 
         switch (_type) {

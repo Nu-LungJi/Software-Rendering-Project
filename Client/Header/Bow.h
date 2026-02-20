@@ -36,7 +36,7 @@ public:
 	virtual			VOID		Render_GameObject();
 
 public:
-	void			Set_PlayerPos(_vec3* pos) { _playerPos = pos; }
+	void			Set_PlayerPos(_vec3* pos) { _bowPos = pos; }
 	void			Set_Destroy() { _isDestroied = true; }
 
 private:
@@ -65,7 +65,7 @@ public:
 private:
 	virtual VOID Free();
 private:
-	_vec3*		_playerPos;
+	_vec3*		_bowPos;
 	_float		_cameraAngle;
 	_vec3		_cameraDir;
 private:
@@ -85,5 +85,7 @@ private:
 	_int		_Charge;
 	_int		_Charging;
 	_float		_ChargingTime;
+
+	_float		_chargingTime;
 };
 

@@ -25,6 +25,8 @@ HRESULT CameraObject::Ready_GameObject() {
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
 
+	m_vVelocity = {0.f , 0.f, 0.f};
+
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
@@ -36,16 +38,44 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 	if (!Camera_Move)
 	{
-		GameObject* player = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
-			Get_GameObject(L"Player"));
+		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 
+
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
+
+		_float distance = player->Get_MouseDistance();
+		_vec3 dir = player->Get_MouseDir();
+		_float offset = 2.f;
+
+		_vec3 targetEye = EyeVec;
+		_vec3 targetAt = AtVec;
+
+		if (distance > offset)
+		{
+			_float moveAmount = (distance - offset) * 0.3f;
+			targetEye += dir * moveAmount;
+			targetAt += dir * moveAmount;
+		}
+
+		_float stiffness = 60.f;  
+		_float damping = 0.8f;  
+
+		_vec3 toTarget = targetEye - EyeVec;
+
+		_vec3 acceleration = toTarget * stiffness;
+
+		m_vVelocity += acceleration * _DT;
+
+		m_vVelocity *= damping;
+
+		EyeVec += m_vVelocity * _DT * 10.f;
+		AtVec += m_vVelocity * _DT * 10.f;
 	}
 
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);

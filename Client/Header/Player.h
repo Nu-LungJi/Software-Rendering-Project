@@ -8,6 +8,7 @@ enum class pState
 	STATE_DASH,
 	STATE_ATTACK,
 	STATE_LANDING,
+	STATE_DEATH,
 
 	End
 };
@@ -150,6 +151,7 @@ public:
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	_vec3			Get_MouseDir();
+	_float			Get_MouseDistance();
 private:
 	virtual VOID Free();
 
@@ -163,6 +165,7 @@ private:
 	void			IDLE_STATE(const _float& _DT);
 	void			DASH_STATE(const _float& _DT);
 	void			ATTACK_STATE(const _float& _DT);
+	bool			DEATH_STATE(const _float& _DT);
 	void			Idle_Final_Input(const _float& _DT);
 
 	void			SetGrahpic();

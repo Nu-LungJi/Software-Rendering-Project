@@ -25,12 +25,15 @@ HRESULT Bow::Ready_GameObject()
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
 	_Charging = 0;
+	_chargingTime = 2.f;
 
 	return S_OK;
 }
 
 INT Bow::Update_GameObject(const _float& _DT)
 {
+	if (_isDestroied) return -1;
+
 	if (_lateReady) {
 		Late_Ready();
 		_lateReady = false;
@@ -41,11 +44,10 @@ INT Bow::Update_GameObject(const _float& _DT)
 		GameObject::Update_GameObject(_DT);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
-		if (_isDestroied) return -1;
-
 		float alphaSpeed = 3.f;
 
 		bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
 		if (mouseLB || KEY_HOLD(DIK_SPACE)) {
 			if (_alphaRatio < 1.f)
 				_alphaRatio += _DT * alphaSpeed;
@@ -96,15 +98,16 @@ INT Bow::Update_GameObject(const _float& _DT)
 
 		_matrix matWorld = matSize * matRotZ * matBillboard;
 
-		matWorld._41 = (*_playerPos).x + offsetX;
-		matWorld._42 = (*_playerPos).y;
-		matWorld._43 = (*_playerPos).z - offsetY;
+		matWorld._41 = (*_bowPos).x + offsetX;
+		matWorld._42 = (*_bowPos).y;
+		matWorld._43 = (*_bowPos).z - offsetY;
 
 		Component_Transform->Set_World(&matWorld);
 
-
 		if (KEY_HOLD(DIK_SPACE)) {
-			if (_ChargingTime < 1.f) {
+			_ChargingTime += _DT;
+			if (_ChargingTime > _chargingTime) _Charging++;
+			if (_ChargingTime < _chargingTime) {
 				if (_Charge++ == 0) {
 					float pulseRadius = 1.f;
 					if (_type == BowType::FairyBow) pulseRadius = 1.1f;
@@ -115,32 +118,32 @@ INT Bow::Update_GameObject(const _float& _DT)
 					float offsetX = cosf(angle) * pulseRadius;
 					float offsetY = sinf(angle) * pulseRadius;
 
-					_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+					_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 					_vec3 Size = { 1.f, 1.f, 1.f };
 					
 					switch (_type) {
 					case BowType::FairyBow :
-						PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
 						break;
 					case BowType::IceBow:
-						PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.1f, Size, true);
 						break;
 					case BowType::EvilHeadBow:
 						Size = { 1.5f, 1.5f, 1.5f };
-						PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.f, Size, true);
+						break;
+					case BowType::WindBow:
+						Size = { 1.f, 1.f, 1.f };
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 1.f, Size, true);
 						break;
 					}
 				}
-
-				_ChargingTime += _DT;
 				_Charging = 0;
 			}
-			else
-				_Charging++;
 
 			CreateChargingEffect(_DT);
 
-			if (_ChargingTime > 1.f && MOUSE_LBUTTON) {
+			if (_ChargingTime > _chargingTime && MOUSE_LBUTTON) {
 				CreateEffect(_DT);
 				CreateArrow(_DT);
 				_ChargingTime = 0.f;
@@ -261,7 +264,7 @@ void Bow::CreateArrow(const _float& _DT)
 			float offsetX = cosf(angle) * radius;
 			float offsetY = sinf(angle) * radius;
 
-			_arrowPos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+			_arrowPos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 			_vec2 side = { dir2D.y, dir2D.x };
 			D3DXVec2Normalize(&side, &side);
@@ -343,7 +346,7 @@ void Bow::CreateEffect(const _float& _DT)
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 	if (mouseLB)
 	{
@@ -394,7 +397,7 @@ void Bow::CreateChargingArrow(const _float& _DT)
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_arrowPos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_arrowPos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 	_vec2 side = { -dir2D.y, dir2D.x };
 	D3DXVec2Normalize(&side, &side);
@@ -413,6 +416,7 @@ void Bow::CreateChargingEffect(const _float& _DT)
 
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 	_vec3 MouseDir = player->Get_MouseDir();
+	_vec3 playerPos = *(dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 
 	_vec2 dir2D = { MouseDir.x, MouseDir.z };
 	D3DXVec2Normalize(&dir2D, &dir2D);
@@ -428,12 +432,12 @@ void Bow::CreateChargingEffect(const _float& _DT)
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 	_vec3 Size = { 1.f, 1.f, 1.f };
 	if (_Charging == 1)
 	{
-		//if (_ChargingTime > 1.f)
+		if (_ChargingTime > _chargingTime)
 		{
 			// 이펙트
 			_vec3 Size = { 1.f, 1.f, 1.f };
@@ -449,10 +453,8 @@ void Bow::CreateChargingEffect(const _float& _DT)
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::WindBow:
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.6f, Size, true);
+				Size = { 1.2f, 1.2f, 1.2f };
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.6f, Size, true);
 				break;
 			}
 		}

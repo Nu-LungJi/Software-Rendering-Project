@@ -94,8 +94,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-	if (KEY_DOWN(DIK_Y)) {
+	if (KEY_DOWN(DIK_N)) {
 		//Set_ObjectDead(TRUE);
+		_frame = 0;
+		_pState = pState::STATE_DEATH;
 	}
 
 	//SetOnTerrain(); - 광윤 디버그
@@ -116,6 +118,14 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		ATTACK_STATE(_DT);
 		break;
 	case pState::STATE_LANDING :
+		break;
+	case pState::STATE_DEATH:
+		//for (Bow* obj : _weaponSlot) {
+		//	obj->Set_Destroy();
+		//}
+		if (DEATH_STATE(_DT)) {
+			
+		}
 		break;
 	default:
 		break;
@@ -153,6 +163,7 @@ HRESULT Player::Component_Initialize() {
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
 
 	return S_OK;
 }
@@ -703,6 +714,15 @@ void Player::ATTACK_STATE(const _float& _DT)
 		Component_Transform->Move_Pos(D3DXVec3Normalize(&rightDir, &rightDir), _speed, _DT);
 	}
 }
+bool Player::DEATH_STATE(const _float& _DT)
+{
+	_eState = eState::STATE_DEAD;
+
+	if (_frame == 12)
+		return true;
+
+	return false;
+}
 void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
@@ -963,10 +983,10 @@ void Player::SetGrahpic()
 		wsprintfW(FileName, L"Player_Dash_Right%d.png", _frame);
 		Anim(FileName, 0.1f, 8);
 		break;
-	default:
-		if (_frame > 8) _frame = 1;
-		wsprintfW(FileName, L"Player_Stand_Down%d.png", _frame);
-		Anim(FileName, 0.1f, 8);
+	case eState::STATE_DEAD:
+		if (_frame > 12) _frame = 12;
+		wsprintfW(FileName, L"Player_Death%d.png", _frame);
+		Anim(FileName, 0.1f, 12);
 		break;
 	}
 }
@@ -978,7 +998,7 @@ void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 	{
 		if (_frameTick > delay)
 		{
-			if (++_frame > maxIdx)
+			if (++_frame > maxIdx && _pState != pState::STATE_DEATH)
 				_frame = 1;
 
 			_frameTick = 0.f;
@@ -1194,6 +1214,52 @@ _vec3 Player::Get_MouseDir()
 	D3DXVec3Normalize(&mouseDir, &mouseDir);
 
 	return mouseDir;
+}
+_float Player::Get_MouseDistance()
+{
+	POINT MousePoint{ 0, 0 };
+	GetCursorPos(&MousePoint);
+	ScreenToClient(hWnd, &MousePoint);
+
+	_vec3 vMouse;
+	vMouse.x = (float)MousePoint.x;
+	vMouse.y = (float)MousePoint.y;
+	vMouse.z = 0.f;
+
+	D3DVIEWPORT9		viewport;
+	ZeroMemory(&viewport, sizeof(D3DVIEWPORT9));
+
+	GRPDEV->GetViewport(&viewport);
+
+	D3DXMATRIX		matProj;
+	ZeroMemory(&matProj, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMATRIX		matView;
+	ZeroMemory(&matView, sizeof(D3DVIEWPORT9));
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+
+	D3DXMATRIX matWorldIdentity;
+	D3DXMatrixIdentity(&matWorldIdentity);
+
+	vMouse.z = 0.f;
+	D3DXVECTOR3 vNear;
+	D3DXVec3Unproject(&vNear, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	vMouse.z = 1.f;
+	D3DXVECTOR3 vFar;
+	D3DXVec3Unproject(&vFar, &vMouse, &viewport, &matProj, &matView, &matWorldIdentity);
+
+	_vec3 vDir = vFar - vNear;
+	D3DXVec3Normalize(&vDir, &vDir);
+
+	float t = -vNear.y / vDir.y;
+	_vec3 vPickPos = vNear + vDir * t;
+	_vec3 dis = vPickPos - *Component_Transform->Get_Position();
+
+	_float mouseDistance = D3DXVec3Length(&dis);
+	
+	return mouseDistance;
 }
 VOID	Player::Free() {
 	GameObject::Free();

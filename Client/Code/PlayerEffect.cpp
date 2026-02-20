@@ -28,6 +28,8 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::EVIL_THUNDER) { Make_TextureList(L"Evil_Thunder"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::EVIL_CHARGING) { Make_TextureList(L"EvilCharging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::EVIL_CHARGE) { Make_TextureList(L"Evil_Charge"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ARROW_HITEFFECT) { Make_TextureList(L"Arrow_HitEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::WIND_AURA) { Make_TextureList(L"Wind_Aura"); }
 
 	//if (!AngleChase)
 	//{
@@ -127,7 +129,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::ICE_CHARGE:
-		if(!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
+		if(!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::FAIRY_CHARGING:
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
@@ -136,10 +138,13 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::EVIL_CHARGE:
-		if (!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
+		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::WIND_CHARGING:
-		if (!(KEY_HOLD(DIK_SPACE))) ObjectDead = true;
+		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
+		break;
+	case PLAYER_SKILL::WIND_PULSE:
+		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
 		break;
 	}
 
