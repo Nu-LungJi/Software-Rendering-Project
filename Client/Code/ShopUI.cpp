@@ -10,20 +10,25 @@ HRESULT	ShopUI::Ready_GameObject() {
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	if (FAILED(Item_Initialize()))			return E_FAIL;
-	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 		
 	return S_OK;
 }
 INT		ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
+
+	if (KEY_DOWN(DIK_F1)) {
+		isActive = TRUE;
+		Display_ShopItemInfo(m_pShopItem);
+	}
 	return 0;
 }
 VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
 }
 VOID	ShopUI::Render_GameObject() {
-	Component_Sprite->Render_Sprite();
+	if(isActive)
+		Component_Sprite->Render_Sprite();
 }
 
 HRESULT	ShopUI::Component_Initialize() {
@@ -35,14 +40,17 @@ HRESULT	ShopUI::Component_Initialize() {
 }
 HRESULT	ShopUI::Sprite_Initialize() {
 	wstring BaseFolder = L"../../UI/Shop/";
+
 	////////////////////////////////////////////COIN////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Coin2.png", L"COIN", 280.f, 435.f, 20, 20, TRUE);
 	////////////////////////////////////////////ITEM_INFO////////////////////////////////////////////
-	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Top.png", L"INFO_BGTop", 140.f, 180.f, 335, 120, TRUE, 150));
-	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Mid.png", L"INFO_BGMid", 153.f, 300.f, 305, 110, TRUE, 150));
-	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Bottom.png", L"INFO_BGBot", 140.f, 410.f, 335, 63, TRUE, 150));
+	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Spr_UI_Icon_2.png", L"INFO_BGPaw", 298.f, 170.f, 25, 25, TRUE, 255));
+	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Top.png", L"INFO_BGTop", 140.f, 180.f, 335, 120, TRUE, 175));
+	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Mid.png", L"INFO_BGMid", 153.f, 300.f, 305, 110, TRUE, 175));
+	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Bottom.png", L"INFO_BGBot", 140.f, 410.f, 335, 63, TRUE, 175));
 	////////////////////////////////////////////ITEM_SPRITE//////////////////////////////////////////
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png", L"DIC_Field_DarkBow", 0.f, 0.f, 60, 60, TRUE, 255);
+	
 	return S_OK;
 }
 HRESULT	ShopUI::Effect_Initialize() {
@@ -64,31 +72,70 @@ HRESULT	ShopUI::Text_Initialize() {
 	return S_OK;
 }
 
-HRESULT ShopUI::Item_Initialize() {
-	wstring BaseFolder = L"../../UI/Inventory_UI/";
-		
-	ItemINFO* m_pShopItem = new ItemINFO;
+HRESULT ShopUI::Item_Initialize() {		
+//	m_pShopItem = new ItemINFO;
+//
+//	m_pShopItem->ItemDesc = {
+//		
+//			L"인내의 활",
+//			L"무기/희귀",
+//	
+//			L"",
+//			L"",
+//			L"",
+//	
+//			L"차징시간이 길수록 데미지가 증가합니다.",
+//	
+//			L"때를 기다려라... \n단 한 순간에 적의 숨통을 끊을 수 있도록..",
+//	
+//			L"",
+//			L"DIC_InfoFrame"
+//	};
+//	m_pShopItem->ItemPrice = 68;
+//	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+	
+	//Display_ShopItemInfo(m_pShopItem);
+	ItemINFO* pItem1 = new ItemINFO;
+	pItem1->ItemDesc = { L"인내의 활", L"무기/희귀", L"", L"", L"",
+											 L"차징시간이 길수록 데미지가 증가합니다.",
+											 L"때를 기다려라...", L"", L"DIC_DarkBow" };
+	pItem1->ItemPrice = 68;
+	pItem1->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+	Item_Index.push_back(pItem1);
 
-	m_pShopItem->ItemDesc = {
-		
-			L"인내의 활",
-			L"무기/희귀",
+	ItemINFO* pItem2 = new ItemINFO;
+	pItem2->ItemDesc = { L"Home", L"소모품",L"",L"",L"",
+											 L"10시가돼면 피곤함이 늘어납니다.",
+											 L"소모품",L"",L"DIC_HOME"};
+	pItem2->ItemPrice = 10;
+	pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
+	Item_Index.push_back(pItem2);
 
-			L"",
-			L"",
-			L"",
+	ItemINFO* pItem3 = new ItemINFO;
+	pItem3->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
+											 L"잃은 체력을 한 칸 회복합니다.",
+											 L"소모품", L"", L"DIC_HEART"};
+	pItem3->ItemPrice = 15;
+	pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
+	Item_Index.push_back(pItem3);
 
-			L"차징시간이 길수록 데미지가 증가합니다.",
+	ItemINFO* pItem4 = new ItemINFO;
+	pItem4->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
+											L"현재 사용중인 활의 화살을 전부 충전합니다.",
+											L"소모품", L"", L"DIC_ARROW" };
+	pItem4->ItemPrice = 15;
+	pItem4->ItemType = (int)ITEM_TYPE::SUPPLY;
+	Item_Index.push_back(pItem4);
 
-			L"때를 기다려라... \n단 한 순간에 적의 숨통을 끊을 수 있도록..",
+	ItemINFO* pItem5 = new ItemINFO;
+	pItem5->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
+											L"사도의 가호를 하나 회복합니다.",
+											L"소모품", L"", L"DIC_GAHO" };
+	pItem5->ItemPrice = 15;
+	pItem5->ItemType = (int)ITEM_TYPE::SUPPLY;
+	Item_Index.push_back(pItem5);
 
-			L"",
-			L"DIC_InfoFrame"
-	};
-	m_pShopItem->ItemPrice = 68;
-	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
-	Display_ShopItemInfo(m_pShopItem);
+	ItemINFO* pItem6 = new ItemINFO;
 
 	return S_OK;
 }
@@ -120,24 +167,28 @@ ShopUI* ShopUI::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	
 VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 {
-	if (nullptr == _pItem) {
-		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
-		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
-		return;
+	if(isActive)
+	{ 
+		if (nullptr == _pItem) {
+			for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
+			for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
+			return;
+		}
+
+		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(TRUE);
+		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(TRUE);
+
+		ItemInfo_Text[0]->Text = _pItem->ItemDesc[0];
+		ItemInfo_Text[1]->Text = _pItem->ItemDesc[1];
+		ItemInfo_Text[2]->Text = _pItem->ItemDesc[2];
+		ItemInfo_Text[3]->Text = _pItem->ItemDesc[3];
+		ItemInfo_Text[4]->Text = _pItem->ItemDesc[4];
+		ItemInfo_Text[5]->Text = _pItem->ItemDesc[5];
+		ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
 	}
-
-	for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(TRUE);
-	for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(TRUE);
-
-	ItemInfo_Text[0]->Text = _pItem->ItemDesc[0];
-	ItemInfo_Text[1]->Text = _pItem->ItemDesc[1];
-	ItemInfo_Text[2]->Text = _pItem->ItemDesc[2];
-	ItemInfo_Text[3]->Text = _pItem->ItemDesc[3];
-	ItemInfo_Text[4]->Text = _pItem->ItemDesc[4];
-	ItemInfo_Text[5]->Text = _pItem->ItemDesc[5];
-	ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
 }
 
 VOID	ShopUI::Free() {
+
 	GameObject::Free();
 }

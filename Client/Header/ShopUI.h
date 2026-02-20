@@ -35,9 +35,8 @@ private:
 	vector<SpriteINFO*> ItemInfo_Screen;
 	vector<FontObject*>	ItemInfo_Text;
 
+	BOOL			isActive;
 	ItemINFO* m_pShopItem;
-	Player* PlayerObject;
-
 
 private:
 	virtual	VOID		Free();
