@@ -190,7 +190,6 @@ void CLAttack::Leaf_Third(const _float& _DT)
     }
     else
     {
-
         m_fSpeed = 7.f;
         Leaf_Bill(_DT);
     }

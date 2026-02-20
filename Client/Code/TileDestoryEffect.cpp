@@ -17,10 +17,16 @@ HRESULT TileDestoryEffect::Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3
 	switch (m_eDestory)
 	{
 		case OBJECT_DESTORY::STONE:
-		Add_Effect(OBJECT_DESTORY::STONE, L"StoneBox_Destruction_%d.png", iCnt);
+		Add_Effect(OBJECT_DESTORY::STONE, L"StoneBox_Destruction_");
 		break;
 		case OBJECT_DESTORY::POTALEFFECT:
-		Add_Effect(OBJECT_DESTORY::POTALEFFECT, L"Spr_InfectionThorns_DestructionEffect_0%d.png", iCnt);
+		Add_Effect(OBJECT_DESTORY::POTALEFFECT, L"Spr_InfectionThorns_DestructionEffect_0");
+		break;
+		case OBJECT_DESTORY::BOOM_F:
+		Add_Effect(OBJECT_DESTORY::BOOM_F, L"DangerArea0");
+		break;
+		case OBJECT_DESTORY::BOOM_S:
+		Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");
 		break;
 	}
 		
@@ -46,12 +52,10 @@ VOID TileDestoryEffect::Render_GameObject()
 	
 	if (m_bEffect)
 	{
-
 		GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 		GRPDEV->SetTexture(0, m_vecTileEffectList[static_cast<int>(m_eDestory)][m_fFrame]);
 
 		m_pTileEffectBuff->Render_Buffer();
-		
 	}
 
 }
@@ -59,35 +63,49 @@ VOID TileDestoryEffect::Render_GameObject()
 
 void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 { 
+	_vec3 Pos, Scale, Rot;
+	m_pTransform->Get_Info(INFO_POS, &Pos);
+	Scale = *m_pTransform->Get_Scale();
+	Rot = *m_pTransform->Get_Rotation();
+	m_fTime += _DT;
 	if (m_bEffect)
 	{
 
 		switch (m_eDestory)
 		{
 		case OBJECT_DESTORY::STONE:
-			
-				m_fTime += _DT;		 //지난 시간
-				if (m_fTime > 0.1f) //0.1초가 지나면
-				{
-					++m_fFrame;     //프레임 증가
-					m_fTime = 0.f;	//시간 초기화
-
-					if (m_fFrame >= m_iCnt-1)
-					{
-						//m_fFrame = 1.f;
-						m_bEffect = false;
-						Set_ObjectDead(TRUE);
-					}
-				}
+			Frame_Normal(_DT);
 			break;
 		case OBJECT_DESTORY::POTALEFFECT:
-			m_fTime += _DT;		 //지난 시간
+			Frame_Normal(_DT);
+			break;
+		case OBJECT_DESTORY::BOOM_F:
+		 //지난 시간
 			if (m_fTime > 0.1f) //0.1초가 지나면
 			{
 				++m_fFrame;     //프레임 증가
 				m_fTime = 0.f;	//시간 초기화
 
-				if (m_fFrame >= m_iCnt - 1)
+				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+				{
+					//m_fFrame = 1.f;
+					m_bEffect = false;
+					Pos.y += 2.f;
+					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, {5.f,5.f,5.f}, Rot));
+
+					Set_ObjectDead(TRUE);
+				}
+			}
+			break;
+		case OBJECT_DESTORY::BOOM_S:
+			if (m_fTime > 0.1f) 
+			{
+				++m_fFrame; 
+				Scale += {0.2f, 0.2f, 0.2f};
+				m_pTransform->Set_Scale(Scale);
+				m_fTime = 0.f;	
+
+				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
 				{
 					//m_fFrame = 1.f;
 					m_bEffect = false;
@@ -95,29 +113,42 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 				}
 			}
 			break;
+		
 		}
+	
+	
 	}
 	
 	
 }
 
-void TileDestoryEffect::Add_Effect(OBJECT_DESTORY eid, const _tchar* pName, _int iCnt)
-{
-	for (_int i = 1; i < iCnt+1; ++i)
+void TileDestoryEffect::Frame_Normal(const FLOAT& _DT)
+{	 //지난 시간
+	if (m_fTime > 0.1f) //0.1초가 지나면
 	{
-		TCHAR   Name[128] = L"";
-		wsprintf(Name, pName, i);
-		auto Tex = ResourceManager::GetInstance()->Find_Texture(Name);
-		if (Tex != nullptr)
-		{
-			Tex->AddRef();
-			m_vecTileEffectList[static_cast<int>(eid)].push_back(Tex);
-		}
+		++m_fFrame;     //프레임 증가
+		m_fTime = 0.f;	//시간 초기화
 
-		
+		if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+		{
+			m_fFrame = 1.f;
+			m_bEffect = false;
+			Set_ObjectDead(TRUE);
+		}
 	}
-	m_iCnt = iCnt;
-	
+}
+
+void TileDestoryEffect::Add_Effect(OBJECT_DESTORY eid, const _tchar* pName)
+{
+	INT FRAME = 0;
+
+	while (++FRAME) {
+		wstring FileName = pName + to_wstring(FRAME) + L".png";
+		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
+		if (TEX == nullptr) break;
+		else { TEX->AddRef();  m_vecTileEffectList[static_cast<int>(eid)].push_back(TEX); }
+	}
+
 }
 
 

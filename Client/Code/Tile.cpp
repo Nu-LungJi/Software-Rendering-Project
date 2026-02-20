@@ -330,7 +330,7 @@ void Tile::Imgui_ModeChanger()
 	_bool bSetTexture = false;
 	_int  iChoice(0);
 	static const char* cTile[]	         = { "TILE_FRONT","TILE_RIGHT","TILE_LEFT","TILE_OTHER"};
-	static const char* cTileStater[]     = { "NORMAL", "COLLISION", "TRIGGER","ANIMATION","DESTORY","POTAL","POTALEFFECT","POTALGASI","POTALGASIEFFECT","UNDERTILE","GASIBREAK","END"};
+	static const char* cTileStater[]     = { "NORMAL", "COLLISION", "TRIGGER","ANIMATION","DESTORY","POTAL","POTALEFFECT","POTALGASI","POTALGASIEFFECT","UNDERTILE","GASIBREAK","BOOM","END"};
 	static const char* cTileMode[]	     = { "TILE","CUBE","OBJECT","END" };
 	static const char* cTileStage[]      = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS", "END" };
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
@@ -457,7 +457,8 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_State, cTileStater[8]))   m_eTileState = TILE_STATE::STATE_POTALGASI_EFFECT;
 						else if (!strcmp(cSelect_State, cTileStater[9]))   m_eTileState = TILE_STATE::STATE_UNDERTILE;
 						else if (!strcmp(cSelect_State, cTileStater[10]))  m_eTileState = TILE_STATE::STATE_POTALGASI_BREAK;
-						else if (!strcmp(cSelect_State, cTileStater[11]))  m_eTileState = TILE_STATE::STATE_END;
+						else if (!strcmp(cSelect_State, cTileStater[11]))  m_eTileState = TILE_STATE::STATE_BOOM;
+						else if (!strcmp(cSelect_State, cTileStater[12]))  m_eTileState = TILE_STATE::STATE_END;
 					}
 					if (bSelect)
 						ImGui::SetItemDefaultFocus();
@@ -1172,14 +1173,14 @@ void Tile::Move_Tile()
 	// 
 	if (MOUSE_LBUTTON && !m_bMouseClick)
 	{
-		if(TileManager::GetInstance()->Choice_Tile(&m_iStge, &m_iMode, &m_iNumber, vOrigin, vDirection, &m_vOriginal, &m_vScalePivot, &m_vOriginRotation))
+		if(TileManager::GetInstance()->Choice_Tile(&m_iStge, &m_iMode, &m_iNumber, vOrigin, vDirection, &m_vOriginal, &m_vScalePivot, &m_vOriginRotation,&m_bOnlyAnimation))
 			m_bMouseClick = true;
 			//해당 타일이 클릭되면 true
 	}
 	//타일 움직이기
 	if (m_bMouseClick)
 	{
-		TileManager::GetInstance()->Set_Tile(m_vOriginal, m_vScalePivot, m_vOriginRotation, m_iStge,m_iMode,m_iNumber);
+		TileManager::GetInstance()->Set_Tile(m_vOriginal, m_vScalePivot, m_vOriginRotation, m_iStge,m_iMode,m_iNumber, m_bOnlyAnimation);
 	}
 	//우클릭시 해당 위치에 타일 놓기
 	if (MOUSE_RBUTTON)

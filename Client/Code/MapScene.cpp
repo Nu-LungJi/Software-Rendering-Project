@@ -97,6 +97,7 @@ HRESULT	MapScene::Ready_Scene() {
 }
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	SoundManager::GetInstance()->Ready_SoundManager();
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {

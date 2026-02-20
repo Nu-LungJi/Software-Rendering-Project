@@ -38,7 +38,14 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 	case CL_EFFECT::LEAF_SPIN_DEATH:
 		Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlower_Death_0");
 		break;
+	case CL_EFFECT::SPAWN_BOOM:
+		Make_TextureList(L"Spr_Effect_Cheonlog_Appear_Electric01_0");
+		break;
+	case CL_EFFECT::SPAWN_THUNDER:
+		Make_TextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Birth01_0");
+		break;
 	}
+
 	m_vScale = vScale;
 	Component_Transform->Set_Pos(vPos);
 	Component_Transform->Set_Rotation(vRot);
@@ -78,16 +85,18 @@ void CLEffect::LateUpdate_GameObject(const _float& _DT) {
 void CLEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_STENCILENABLE,FALSE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE,FALSE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
 	GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
 
 	Component_Buffer->Render_Buffer();
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	GRPDEV->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	GRPDEV->SetRenderState(D3DRS_LIGHTING, FALSE);
 }
+
 void CLEffect::Move_Normal(const _float& _DT)
 {
 	if (m_FrameTick > m_fFrame)
@@ -201,6 +210,12 @@ void CLEffect::Move_Frame(const _float& _DT)
 		Effect_Bill();
 		Effect_Dead_After(LEAF_ATTACK::LEAF_SECOND, m_vLook,true);
 		Effect_Dead_After(LEAF_ATTACK::LEAF_THIRD,  *D3DXVec3TransformNormal(&vRot, &m_vLook,D3DXMatrixRotationY(&matRotY,D3DXToRadian(90))), true);
+		break;
+	case CL_EFFECT::SPAWN_BOOM:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::SPAWN_THUNDER:
+		Move_Normal(_DT);
 		break;
 	}
 }

@@ -55,7 +55,7 @@ namespace Engine
 		_vec3		vVelocity;  // 파티클 속도 보통은 초당 이동단위로 기록
 		_vec3		vAcceleration; // 파티클의 가속 보통은 초당 단위로 기록
 		_float		fLifeTime;   // 파티클이 소멸할때까지 유지되는 시간
-		_float		fAge;		 // 파티클의 현재 나이???
+		_float		fAge;		 // 파티클의 현재 나이
 		_ulong		dwColor;	 // 파티클의 컬러
 		_ulong		dwColorFade; // 파티클의 컬러가 시간의 흐름에 따라 퇴색하는 방법
 		_bool		bIsAlive;  // 파티클이 생존한 경우 True 소멸한 경우 False

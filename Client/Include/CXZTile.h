@@ -26,6 +26,8 @@ public:
     void                    Tile_Trigger      ();
     void                    Tile_Gasi_Destory(CONST FLOAT& _DT);
     void                    Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid);
+    void                    Tile_Boom(CONST FLOAT& _DT);
+    void                    Set_Destory()   { m_bDestroy = true; }
     Transform*              Crash_Player();
     Transform*              Crash_Arrow();
 private:
@@ -43,7 +45,10 @@ private:
     _float                  m_fCount;
     _float                  m_fFrame;
     _float                  m_fTime;
+
+    _bool                   m_bEffect;
     _bool                   m_bStopFrame;
+    _bool                   m_bDestroy;
     DWORD                   m_Alpha;
 
 public:

@@ -1,7 +1,7 @@
 #include "CXZTile.h"
 #include "../Include/PCH.h"
 
-CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) : m_fAlpha(0.f),m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
+CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEffect(false), m_bDestroy(false),m_fAlpha(0.f),m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
 CXZTile::CXZTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CXZTile::~CXZTile() {  }
 
@@ -167,6 +167,9 @@ VOID CXZTile::Render_GameObject()
 		else
 			return;
 		break;
+	case TILE_STATE::STATE_BOOM:
+		GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+		break;
 	}
 
 	
@@ -236,8 +239,6 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
 		//Tile_Destory(_DT);
-		//Crash_Arrow();
-		Crash_Player();
 		break;
 	case TILE_STATE::STATE_POTAL:
 		Tile_Potal(_DT);
@@ -255,6 +256,9 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_STATE::STATE_POTALGASI_BREAK:
 		Tile_Gasi_Destory(_DT);
+		break;
+	case TILE_STATE::STATE_BOOM:
+		Tile_Boom(_DT);
 		break;
 	}
 	
@@ -307,14 +311,13 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 	m_pTransform->Get_Info(INFO_POS, &Pos);
 	Scale = *m_pTransform->Get_Scale();
 	Rot = *m_pTransform->Get_Rotation();
-	Transform* pTransform = Crash_Arrow();
 
-	if (pTransform != nullptr)
+	if (m_bDestroy)
 	{
 		m_bStopFrame = true;
 	}
 
-	if(pTransform != nullptr && m_pTileInfo->Get_OnlyAnimation() && m_fFrame < 1)
+	if(m_bDestroy && m_pTileInfo->Get_OnlyAnimation() && m_fFrame < 1)
 	{
 		Scale.x *= 2.5;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale , Rot));
@@ -322,14 +325,18 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 		++m_fFrame;
 	}
 	
-	if (m_bStopFrame && pTransform != nullptr && m_fFrame < m_pTileInfo->Get_TileTextureNumber() - 1.f)
+	if (m_bStopFrame && m_bDestroy && m_fFrame < m_pTileInfo->Get_TileTextureNumber() - 1.f)
 	{
 		// 애니메이션 터트린후 프레임 ++
 		// 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
-		if(!m_pTileInfo->Get_OnlyAnimation())
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos,Scale * 2,Rot));
+		if (!m_pTileInfo->Get_OnlyAnimation())
+		{
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
+			//SoundManager::GetInstance()->Play_Sound(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01);
+		}
+			
 		++m_fFrame;
-		//Set_ObjectDead(TRUE);
+		Set_ObjectDead(TRUE);
 		m_bStopFrame = false;
 	}
 }
@@ -415,6 +422,70 @@ void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
 	}
 	else return;
 }
+void CXZTile::Tile_Boom(const FLOAT& _DT)
+{
+	
+	if (!m_bDestroy)
+	{
+		_vec3 vPos;
+		m_pTransform->Get_Info(INFO_POS, &vPos);
+
+		m_fTime += _DT;					//지난 시간
+		if (m_fTime > 0.35f) //0.1초가 지나면
+		{
+			m_fCount += 0.01f;
+			m_fTime = 0.f;	//시간 초기화
+
+			if (m_fCount > m_fHeight)
+			{
+				m_fCount = 0;
+				m_fHeightSpeed *= -1;
+			}
+		}
+
+		vPos.y += m_fHeightSpeed;
+
+		m_pTransform->Set_Pos(vPos);
+
+	}
+	if (m_bDestroy)
+	{
+		if (!m_bEffect)
+		{
+
+			_vec3 Pos, Scale, Rot;
+			m_pTransform->Get_Info(INFO_POS, &Pos);
+			Scale = *m_pTransform->Get_Scale();
+			Rot = *m_pTransform->Get_Rotation();
+
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, {5.f,5.f,5.f}, Rot));
+			m_bEffect = true;
+		}
+		if (!m_bStopFrame)
+		{
+			if (m_fHeightSpeed < 0)
+				m_fHeightSpeed *= -1;
+
+			_vec3 vPos;
+			m_pTransform->Get_Info(INFO_POS, &vPos);
+
+			m_fTime += _DT;				
+			if (m_fTime > 0.35f) 
+			{
+				m_fCount += 0.01f;
+				m_fTime = 0.f;	
+
+				if (vPos.y <= 0 )
+				{
+					vPos.y = 0;
+					m_bStopFrame = true;
+				}
+			}
+			vPos.y -= m_fHeightSpeed;
+		}
+		
+	}
+}
 Transform* CXZTile::Crash_Player()
 {
 	_vec3 vPos{}, vTilePos{},vScale,vRot,vPlayerScale;
@@ -432,8 +503,8 @@ Transform* CXZTile::Crash_Player()
 	_float fWidth = fabsf(vPos.x  - vTilePos.x);
 	_float fHeight = fabsf(vPos.z - vTilePos.z);
 
-	_float fTileX = (vScale.x * D3DXToRadian(vRot.x) + vPlayerScale.x) * 0.5f;
-	_float fTileZ = (vScale.z * D3DXToRadian(vRot.z) + vPlayerScale.z) * 0.5f;
+	_float fTileX = (vScale.x + vPlayerScale.x) * 0.5f;
+	_float fTileZ = (vScale.z + vPlayerScale.z) * 0.5f;
 
 	if (fTileX >= fWidth && fTileZ >= fHeight)
 	{

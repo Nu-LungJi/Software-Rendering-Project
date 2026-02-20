@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h";
 enum class LEAF_ATTACK;
-enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING,LEAF_SPIN, LEAF_SPIN_DEATH
+enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING,LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM,SPAWN_THUNDER
 };
 
 class CLEffect : public GameObject {
@@ -23,7 +23,9 @@ public:
 	HRESULT						Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook);
 	HRESULT						Make_TextureList(wstring _FileName);
 	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1});
+
 public:
+
 	void						Move_Normal(const _float& _DT);
 	void						Move_Frame(const _float& _DT);
 	void						Move_Pos();
@@ -51,7 +53,7 @@ private:
 	_float							m_fAngle;
 
 	BOOL							m_Repeatable;
-
+				
 	Buffer*							Component_Buffer;
 	Transform*						Component_Transform;
 	Texture*						Component_Texture;

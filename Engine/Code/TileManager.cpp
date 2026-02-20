@@ -36,12 +36,13 @@ HRESULT TileManager::Add_Tile(GameObject* pObject, _vec3 vPos, TILE_STAGE eStage
 
 	return S_OK;
 }
-_bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot)
+_bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot,_bool* bAni)
 {
 	_float fu, fv, ft(-1);
 	_float ftCheck = 0;
 	_int iState = (0), iMode(0), iTileN(0);
 	_vec3 vPos, vScale, vRot;
+	_bool bAi = false;
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
@@ -81,6 +82,10 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 					vRot = *dynamic_cast<Transform*>
 						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 					ftCheck = ft;
+					
+					bAi = dynamic_cast<TileInfo*>
+						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
+
 				}
 
 				
@@ -96,20 +101,23 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 		*eMode	     = iMode;
 		*iTileNumber = iTileN;
 		*returnScale = vScale;
+		*bAni		 = bAi;
 		m_bCheck = false;
 		return true;
 	}
 		
 	return false;
 }
-void TileManager::Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber)
+void TileManager::Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni)
 {
 	Component* pComponent = m_vecTileBuffer[eStage][eMode][TileNumber]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM);
 	Transform* pTransform = dynamic_cast<Transform*>(pComponent);
+	TileInfo* pTileInfo = dynamic_cast<TileInfo*>(m_vecTileBuffer[eStage][eMode][TileNumber]->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO));
 	_vec3 Pos;
 	pTransform->Set_Pos(vPos.x, vPos.y, vPos.z);
 	pTransform->Set_Scale(returnPos.x, returnPos.y, returnPos.z);
 	pTransform->Set_Rotation(returnRot.x, returnRot.y, returnRot.z);
+	pTileInfo->Set_OnlyAnimation(bAni);
 }
 void TileManager::Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir)
 {
@@ -192,6 +200,7 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 		m_eStage = m_eCurrent;
 		m_bStageChange = false;
 	}
+
 	if (m_StageCntArray[m_eStage] == 0)
 		Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
@@ -200,6 +209,12 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 		for (auto iter = m_vecTileBuffer[m_eStage][j].begin(); iter != m_vecTileBuffer[m_eStage][j].end();)
 		{
 			(*iter)->Update_GameObject(fTimeDelta);
+			
+			if ((*iter)->Get_ObjectDead() == TRUE)
+			{
+				Safe_Release((*iter));
+				iter = m_vecTileBuffer[m_eStage][j].erase(iter);
+			}
 
 			if (iter != m_vecTileBuffer[m_eStage][j].end())
 				++iter;

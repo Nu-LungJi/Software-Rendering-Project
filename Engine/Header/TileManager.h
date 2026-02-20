@@ -18,8 +18,12 @@ public:
     vector<GameObject*>& Get_TileList(TILE_STAGE eStage, TILEMODE_CHANGE eid) {
        
             return m_vecTileBuffer[eStage][eid];
-        }
+     }
+    vector<GameObject*>& Get_DestoryTile_List() {
 
+        _int a = Get_Stage();
+        return m_vecTileBuffer[Get_Stage()][0];
+    }
     void                    Set_StageCnt() 
     { 
         for (_int i = 0; i < TILE_STAGE::STAGE_END; ++i)
@@ -58,11 +62,14 @@ public:
     _int                    Set_StageArray() { return --m_StageCntArray[m_eStage]; }
     void                    Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STATE eState);
 
+    TILE_STAGE              Get_Stage() { return m_eStage; };
+    TILEMODE_CHANGE         Get_Mode() { return m_eMode; }
+
     void                    Save_Tile(HWND g_hWnd);
     void                    Load_TilePush(GameObject* pGame,TILE_STAGE eStage, TILEMODE_CHANGE eMod) { m_vecTileBuffer[eStage][eMod].push_back(pGame); }
 
-    _bool                   Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber, _vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot);
-    void                    Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber);
+    _bool                   Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber, _vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot, _bool* bAni);
+    void                    Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni);
     void                    Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir);
     void                    Change_Stage(TILE_STAGE eStage) { m_eCurrent = eStage; m_bStageChange = true; }
     void                    Reset_TileList();

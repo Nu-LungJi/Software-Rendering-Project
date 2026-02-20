@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-enum class OBJECT_DESTORY { STONE, GRASS,POTALEFFECT, DESTORY_END };
+enum class OBJECT_DESTORY { STONE, GRASS,POTALEFFECT,BOOM_F,BOOM_S, DESTORY_END };
 class TileDestoryEffect :
     public GameObject
 {
@@ -20,7 +20,8 @@ public:
     
 public:
     void            Frame_Move(CONST FLOAT& _DT);
-    void            Add_Effect(OBJECT_DESTORY eid,const _tchar* pName,_int iCnt);
+    void            Frame_Normal(CONST FLOAT& _DT);
+    void            Add_Effect(OBJECT_DESTORY eid,const _tchar* pName);
 private:
     HRESULT			                Component_Initialize();
     

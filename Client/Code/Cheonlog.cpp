@@ -112,15 +112,14 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_L))
 	{
 		vPos += { 1.1f, 1.5f, 3.3f };
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_SPIN, vPos, FALSE, { 1.0f,1.0f,1.0f }, { 45,0,0 },0.08));
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_BOOM, vPos, TRUE));
 		m_EndEffect = true;
 		m_iFrameCnt = 0;
 	}
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_M))
 	{
-		m_eStatu = CL_IDELR;
-		m_eCheck = ATTACK_D;
-		m_iFrameCnt = 0;
+		vPos += { 1.1f, 1.5f, 3.3f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, vPos, TRUE, { 1.5f,6.5f,0.5f }, { 55,0,0 }));
 	}
 	//이동 모션 관련
 	switch (m_eStatu)
