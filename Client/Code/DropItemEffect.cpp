@@ -1,17 +1,17 @@
 #include "../Include/PCH.h"
 
-DropItem::DropItem(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-DropItem::DropItem(const GameObject& _RHS) : GameObject(_RHS) {}
-DropItem::~DropItem() {}
+DropItemEffect::DropItemEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+DropItemEffect::DropItemEffect(const GameObject& _RHS) : GameObject(_RHS) {}
+DropItemEffect::~DropItemEffect() {}
 
-HRESULT DropItem::Ready_GameObject(ItemINFO* _ItemInfo) {
+HRESULT DropItemEffect::Ready_GameObject(ItemINFO* _ItemInfo) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_pInfo = _ItemInfo;
 
 	return S_OK;
 }
-INT	DropItem::Update_GameObject(const _float& _DT)
+INT	DropItemEffect::Update_GameObject(const _float& _DT)
 {
 	if (ObjectDead)
 		return -1;
@@ -23,12 +23,12 @@ INT	DropItem::Update_GameObject(const _float& _DT)
 
 	return 0;
 }
-VOID DropItem::LateUpdate_GameObject(const _float& _DT) {
+VOID DropItemEffect::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
-VOID DropItem::Render_GameObject() {
+VOID DropItemEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -39,7 +39,7 @@ VOID DropItem::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-HRESULT DropItem::Component_Initialize() {
+HRESULT DropItemEffect::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
@@ -54,28 +54,17 @@ HRESULT DropItem::Component_Initialize() {
 
 	return S_OK;
 }
-DropItem* DropItem::Create(LPDIRECT3DDEVICE9 _GRPDEV, ItemINFO* _ItemInfo ) {
-	DropItem* MST = new DropItem(_GRPDEV);
+DropItemEffect* DropItemEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, ItemINFO* _ItemInfo) {
+	DropItemEffect* MST = new DropItemEffect(_GRPDEV);
 	if (FAILED(MST->Ready_GameObject(_ItemInfo))) {
-		MSG_BOX("Cannot Create DropItem.");
+		MSG_BOX("Cannot Create DropItemEffect.");
 		Safe_Release(MST);
 		return nullptr;
 	}
 	return MST;
 }
-BOOL DropItem::OnCollisionEnter(GameObject* _Other)
-{
-	return TRUE;
-}
-BOOL DropItem::OnCollisionStay(GameObject* _Other)
-{
-	return TRUE;
-}
-BOOL DropItem::OnCollisionExit(GameObject* _Other)
-{
-	return TRUE;
-}
-VOID DropItem::Free() {
+
+VOID DropItemEffect::Free() {
 
 	GameObject::Free();
 }

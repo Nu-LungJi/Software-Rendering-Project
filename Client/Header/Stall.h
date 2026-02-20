@@ -1,15 +1,15 @@
 #pragma once
 #include "GameObject.h"
 
-class DropItem : public GameObject
+class Stall : public GameObject
 {
 public:
-	explicit DropItem(LPDIRECT3DDEVICE9 _GRPDEV);
-	explicit DropItem(CONST GameObject& _RHS);
-	virtual ~DropItem();
+	explicit Stall(LPDIRECT3DDEVICE9 _GRPDEV);
+	explicit Stall(CONST GameObject& _RHS);
+	virtual ~Stall();
 
 public:
-	virtual			HRESULT		Ready_GameObject(ItemINFO* _ItemInfo);
+	virtual			HRESULT		Ready_GameObject();
 	virtual			INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		Render_GameObject();
@@ -24,14 +24,19 @@ private:
 	Texture*	Component_Texture;
 
 public:
-	static			DropItem* Create(LPDIRECT3DDEVICE9 _GRPDEV, ItemINFO* _Info = nullptr);
+	static	Stall*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	GameObject*		Get_Item()		{ return m_pItem; }
+	GameObject*		Get_Effect()	{ return m_pEffect; }
+
+
 	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 	BOOL			OnCollisionStay(GameObject* _Other)		override;
 	BOOL			OnCollisionExit(GameObject* _Other)		override;
-	ItemINFO*		Get_Info() { return m_pInfo; }
+
 private:
 	virtual VOID Free();
 
-	ItemINFO*			m_pInfo;
+	GameObject* m_pItem;
+	GameObject* m_pEffect;
 
 };

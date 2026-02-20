@@ -37,15 +37,16 @@
 #include "NPC.h"
 #include "Object_Explain.h"
 
+#pragma region Monster
 #include "Monster.h"
 #include "MonsterEffect.h"
-#include "Alert.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
 
-#include "DocheolAppearMark.h"
-#include "Docheol.h"
+//#include "DocheolAppearMark.h"
+//#include "Docheol.h"
+//#include "Alert.h"
 
 #include "Bullet_Standard.h"
 #include "Fireball.h"
@@ -55,8 +56,23 @@
 #include "ShotGunEvilSoul.h"
 #include "EvilSlime.h"
 
+#pragma endregion
+
+
+#pragma region MiniGame
 #include "CubeFloorTile.h"
 
+#pragma endregion
+
+#pragma region Shop
+
+#include "ShopKeeper.h"
+#include "SupplyBigCat.h"
+#include "Stall.h"
+#include "DropItem.h"
+#include "DropItemEffect.h"
+
+#pragma endregion
 #include "Player.h"
 #include "Tile.h"
 #include "CubeTile.h"
@@ -70,6 +86,8 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
+
+
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

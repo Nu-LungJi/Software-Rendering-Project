@@ -1,17 +1,16 @@
 #include "../Include/PCH.h"
 
-DropItem::DropItem(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-DropItem::DropItem(const GameObject& _RHS) : GameObject(_RHS) {}
-DropItem::~DropItem() {}
+ShopKeeper::ShopKeeper(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+ShopKeeper::ShopKeeper(const GameObject& _RHS) : GameObject(_RHS) {}
+ShopKeeper::~ShopKeeper() {}
 
-HRESULT DropItem::Ready_GameObject(ItemINFO* _ItemInfo) {
+HRESULT ShopKeeper::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_pInfo = _ItemInfo;
 
 	return S_OK;
 }
-INT	DropItem::Update_GameObject(const _float& _DT)
+INT	ShopKeeper::Update_GameObject(const _float& _DT)
 {
 	if (ObjectDead)
 		return -1;
@@ -23,12 +22,12 @@ INT	DropItem::Update_GameObject(const _float& _DT)
 
 	return 0;
 }
-VOID DropItem::LateUpdate_GameObject(const _float& _DT) {
+VOID ShopKeeper::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
-VOID DropItem::Render_GameObject() {
+VOID ShopKeeper::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -39,7 +38,7 @@ VOID DropItem::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-HRESULT DropItem::Component_Initialize() {
+HRESULT ShopKeeper::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
@@ -54,28 +53,28 @@ HRESULT DropItem::Component_Initialize() {
 
 	return S_OK;
 }
-DropItem* DropItem::Create(LPDIRECT3DDEVICE9 _GRPDEV, ItemINFO* _ItemInfo ) {
-	DropItem* MST = new DropItem(_GRPDEV);
-	if (FAILED(MST->Ready_GameObject(_ItemInfo))) {
-		MSG_BOX("Cannot Create DropItem.");
+ShopKeeper* ShopKeeper::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+	ShopKeeper* MST = new ShopKeeper(_GRPDEV);
+	if (FAILED(MST->Ready_GameObject())) {
+		MSG_BOX("Cannot Create ShopKeeper.");
 		Safe_Release(MST);
 		return nullptr;
 	}
 	return MST;
 }
-BOOL DropItem::OnCollisionEnter(GameObject* _Other)
+BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other)
 {
 	return TRUE;
 }
-BOOL DropItem::OnCollisionStay(GameObject* _Other)
+BOOL ShopKeeper::OnCollisionStay(GameObject* _Other)
 {
 	return TRUE;
 }
-BOOL DropItem::OnCollisionExit(GameObject* _Other)
+BOOL ShopKeeper::OnCollisionExit(GameObject* _Other)
 {
 	return TRUE;
 }
-VOID DropItem::Free() {
+VOID ShopKeeper::Free() {
 
 	GameObject::Free();
 }

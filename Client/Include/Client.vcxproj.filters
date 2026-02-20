@@ -166,6 +166,24 @@
     <Filter Include="02. Scene\99. MiniGameScene">
       <UniqueIdentifier>{7b40fad7-addf-4aa7-8e5d-9fe597019890}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop">
+      <UniqueIdentifier>{c9dc8ca7-5450-415f-b97d-495f792bcf2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\01. ShopKeeper">
+      <UniqueIdentifier>{73118245-8c6b-424a-ad1a-6f568d7c0e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\00. Shop">
+      <UniqueIdentifier>{6e02d8f9-d6ef-44c2-ba10-c8ef03fce255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\02. Stall">
+      <UniqueIdentifier>{cac3daa3-02e5-4da5-b443-898c2d593c85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\03. DropItem">
+      <UniqueIdentifier>{6e20169a-f86b-4124-9a9f-76e5c02f61bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\04. DropItemEffect">
+      <UniqueIdentifier>{9fd12251-ffa4-4d9d-8467-7920e29ac2c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -355,7 +373,19 @@
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DropItem.h">
-      <Filter>03. GameObject\03. NPC</Filter>
+      <Filter>03. GameObject\03. NPC\01. Shop\03. DropItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\SupplyBigCat.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\01. ShopKeeper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Stall.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\02. Stall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DropItemEffect.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\04. DropItemEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ShopKeeper.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -529,7 +559,19 @@
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DropItem.cpp">
-      <Filter>03. GameObject\03. NPC</Filter>
+      <Filter>03. GameObject\03. NPC\01. Shop\03. DropItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SupplyBigCat.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\01. ShopKeeper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Stall.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\02. Stall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DropItemEffect.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\04. DropItemEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ShopKeeper.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

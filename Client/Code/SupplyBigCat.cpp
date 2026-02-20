@@ -1,17 +1,16 @@
 #include "../Include/PCH.h"
 
-DropItem::DropItem(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-DropItem::DropItem(const GameObject& _RHS) : GameObject(_RHS) {}
-DropItem::~DropItem() {}
+SupplyBigCat::SupplyBigCat(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+SupplyBigCat::SupplyBigCat(const GameObject& _RHS) : GameObject(_RHS) {}
+SupplyBigCat::~SupplyBigCat() {}
 
-HRESULT DropItem::Ready_GameObject(ItemINFO* _ItemInfo) {
+HRESULT SupplyBigCat::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_pInfo = _ItemInfo;
 
 	return S_OK;
 }
-INT	DropItem::Update_GameObject(const _float& _DT)
+INT	SupplyBigCat::Update_GameObject(const _float& _DT)
 {
 	if (ObjectDead)
 		return -1;
@@ -23,12 +22,12 @@ INT	DropItem::Update_GameObject(const _float& _DT)
 
 	return 0;
 }
-VOID DropItem::LateUpdate_GameObject(const _float& _DT) {
+VOID SupplyBigCat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
-VOID DropItem::Render_GameObject() {
+VOID SupplyBigCat::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -39,7 +38,7 @@ VOID DropItem::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-HRESULT DropItem::Component_Initialize() {
+HRESULT SupplyBigCat::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
@@ -54,28 +53,28 @@ HRESULT DropItem::Component_Initialize() {
 
 	return S_OK;
 }
-DropItem* DropItem::Create(LPDIRECT3DDEVICE9 _GRPDEV, ItemINFO* _ItemInfo ) {
-	DropItem* MST = new DropItem(_GRPDEV);
-	if (FAILED(MST->Ready_GameObject(_ItemInfo))) {
-		MSG_BOX("Cannot Create DropItem.");
+SupplyBigCat* SupplyBigCat::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+	SupplyBigCat* MST = new SupplyBigCat(_GRPDEV);
+	if (FAILED(MST->Ready_GameObject())) {
+		MSG_BOX("Cannot Create SupplyBigCat.");
 		Safe_Release(MST);
 		return nullptr;
 	}
 	return MST;
 }
-BOOL DropItem::OnCollisionEnter(GameObject* _Other)
+BOOL SupplyBigCat::OnCollisionEnter(GameObject* _Other)
 {
 	return TRUE;
 }
-BOOL DropItem::OnCollisionStay(GameObject* _Other)
+BOOL SupplyBigCat::OnCollisionStay(GameObject* _Other)
 {
 	return TRUE;
 }
-BOOL DropItem::OnCollisionExit(GameObject* _Other)
+BOOL SupplyBigCat::OnCollisionExit(GameObject* _Other)
 {
 	return TRUE;
 }
-VOID DropItem::Free() {
+VOID SupplyBigCat::Free() {
 
 	GameObject::Free();
 }
