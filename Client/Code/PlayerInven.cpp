@@ -247,19 +247,19 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
-		L"?¤ë™?˜ë¬´ ??,
-		L"ë¬´ê¸°/?¬ê?",
+		L"¿Àµ¿³ª¹« È°",
+		L"¹«±â/Èñ±Í",
 
-		L"?¼ë°˜ ê³µê²©",
-		L"?¼ë°˜ ê³µê²©??24 ~ 26",
-		L"ê³µê²© ?ë„ 2.5",
+		L"ÀÏ¹Ý °ø°Ý",
+		L"ÀÏ¹Ý °ø°Ý·Â 24 ~ 26",
+		L"°ø°Ý ¼Óµµ 2.5",
 
-		L"ì¹˜ëª…?€ ?•ë¥ ??+3% ì¦ê??©ë‹ˆ??",
+		L"Ä¡¸íÅ¸ È®·üÀÌ +3% Áõ°¡ÇÕ´Ï´Ù.",
 
 		L"" ,
 
 		L"DIC_InvenFrame_MichaelBow",
-		L"DIC_InfoFrame_MichaelBow" 
+		L"DIC_InfoFrame_MichaelBow"
 	};
 	it01->ItemPrice = 68;
 	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
@@ -267,20 +267,20 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it01);
 
 	ItemINFO* it02 = new ItemINFO;
-	it02->ItemDesc = { 
-		L"?ìˆ˜????, 
-		L"ë¬´ê¸°/?¬ê?", 
+	it02->ItemDesc = {
+		L"Ç³¼öÀÇ È°",
+		L"¹«±â/Èñ±Í",
 
-		L"?¼ë°˜ ê³µê²©", 
-		L"?´ë™ ?ë„ + 20%", 
-		L"ê³µê²© ?ë„ 2.5", 
+		L"ÀÏ¹Ý °ø°Ý",
+		L"ÀÌµ¿ ¼Óµµ + 20%",
+		L"°ø°Ý ¼Óµµ 2.5",
 
-		L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆ??", 
+		L"±×³É »¡¶óÁý´Ï´Ù.",
 
-		L"", 
+		L"",
 
-		L"DIC_InvenFrame_DarkBow", 
-		L"DIC_InfoFrame_DarkBow" 
+		L"DIC_InvenFrame_DarkBow",
+		L"DIC_InfoFrame_DarkBow"
 	};
 	it02->ItemPrice = 68;
 	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
@@ -288,20 +288,20 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it02);
 
 	ItemINFO* it03 = new ItemINFO;
-	it03->ItemDesc = { 
-		L"?ìˆ˜????, 
-		L"ë¬´ê¸°/?¬ê?", 
+	it03->ItemDesc = {
+		L"Ç³¼öÀÇ È°",
+		L"¹«±â/Èñ±Í",
 
-		L"?¼ë°˜ ê³µê²©", 
-		L"?´ë™ ?ë„ + 20%", 
-		L"ê³µê²© ?ë„ 2.5", 
-		
-		L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆ??", 
+		L"ÀÏ¹Ý °ø°Ý",
+		L"ÀÌµ¿ ¼Óµµ + 20%",
+		L"°ø°Ý ¼Óµµ 2.5",
 
-		L"", 
+		L"±×³É »¡¶óÁý´Ï´Ù.",
 
-		L"DIC_InvenFrame_GreenBow", 
-		L"DIC_InfoFrame_GreenBow" 
+		L"",
+
+		L"DIC_InvenFrame_GreenBow",
+		L"DIC_InfoFrame_GreenBow"
 	};
 	it03->ItemPrice = 68;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
@@ -309,20 +309,20 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it03);
 
 	ItemINFO* it04 = new ItemINFO;
-	it04->ItemDesc = { 
-		L"?¼ìŒ ?•ë ¹????, 
-		L"ë¬´ê¸°/?¬ê?", 
-		
-		L"?¼ë°˜ ê³µê²©", 
-		L"?¼ë°˜ ê³µê²©??14 - 16", 
-		L"ê³µê²© ?ë„ 2", 
+	it04->ItemDesc = {
+		L"¾óÀ½ Á¤·ÉÀÇ È°",
+		L"¹«±â/Èñ±Í",
 
-		L"?¼ìŒ???”ì‚´ : 3 ë°œì˜ ?¼ìŒ???”ì‚´??ë°œì‚¬?©ë‹ˆ?? \n?”ì‚´??ë§žì? ?ì—ê²?3ì´?ê°?ë¹™ê²°??ë¶€?¬í•©?ˆë‹¤.", 
+		L"ÀÏ¹Ý °ø°Ý",
+		L"ÀÏ¹Ý °ø°Ý·Â 14 - 16",
+		L"°ø°Ý ¼Óµµ 2",
 
-		L"\"?¼ìŒ?•ë ¹???˜ì´ ?´ê¸´ ?? ì¥ê³  ?ˆìŒ ?ì´ ?¼ì–´ë²„ë¦´ ê²?ê°™ë‹¤.", 
+		L"¾óÀ½ÀÇ È­»ì : 3 ¹ßÀÇ ¾óÀ½ÀÇ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù. \nÈ­»ì¿¡ ¸ÂÀº Àû¿¡°Ô 3ÃÊ °£ ºù°áÀ» ºÎ¿©ÇÕ´Ï´Ù.",
 
-		L"DIC_InvenFrame_IceBow", 
-		L"DIC_InfoFrame_IceBow" 
+		L"\"¾óÀ½Á¤·ÉÀÇ ÈûÀÌ ´ã±ä È°. Áã°í ÀÖÀ½ ¼ÕÀÌ ¾ó¾î¹ö¸± °Í °°´Ù.",
+
+		L"DIC_InvenFrame_IceBow",
+		L"DIC_InfoFrame_IceBow"
 	};
 	it04->ItemPrice = 68;
 	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
@@ -330,16 +330,16 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it04);
 
 	ItemINFO* it05 = new ItemINFO;
-	it05->ItemDesc = { L"?¼ìŒ ?•ë ¹????,
-		L"ë¬´ê¸°/?¬ê?",
+	it05->ItemDesc = { L"¾óÀ½ Á¤·ÉÀÇ È°",
+		L"¹«±â/Èñ±Í",
 
-		L"?¼ë°˜ ê³µê²©",
-		L"?¼ë°˜ ê³µê²©??14 - 16",
-		L"ê³µê²© ?ë„ 2",
+		L"ÀÏ¹Ý °ø°Ý",
+		L"ÀÏ¹Ý °ø°Ý·Â 14 - 16",
+		L"°ø°Ý ¼Óµµ 2",
 
-		L"?¼ìŒ???”ì‚´ : 3 ë°œì˜ ?¼ìŒ???”ì‚´??ë°œì‚¬?©ë‹ˆ?? ?”ì‚´??ë§žì? ?ì—ê²?\n3ì´?ê°?ë¹™ê²°??ë¶€?¬í•©?ˆë‹¤.",
+		L"¾óÀ½ÀÇ È­»ì : 3 ¹ßÀÇ ¾óÀ½ÀÇ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù. È­»ì¿¡ ¸ÂÀº Àû¿¡°Ô \n3ÃÊ °£ ºù°áÀ» ºÎ¿©ÇÕ´Ï´Ù.",
 
-		L"\"?¼ìŒ?•ë ¹???˜ì´ ?´ê¸´ ?? ì¥ê³  ?ˆìŒ ?ì´ ?¼ì–´ë²„ë¦´ ê²?ê°™ë‹¤.",
+		L"\"¾óÀ½Á¤·ÉÀÇ ÈûÀÌ ´ã±ä È°. Áã°í ÀÖÀ½ ¼ÕÀÌ ¾ó¾î¹ö¸± °Í °°´Ù.",
 
 		L"DIC_InvenFrame_IceBow",
 		L"DIC_InfoFrame_IceBow"

@@ -19,7 +19,7 @@ public:		// Trigger Function
 	VOID			Player_MoneyModify();
 	VOID			Player_CrystalModify();
 	VOID			Player_UseSkill();
-	VOID			PopUp_Interaction_Notice(wstring _Text, BOOL _Vis);
+	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
 

@@ -62,9 +62,9 @@ HRESULT Augment::Sprite_Initialize() {
 }
 HRESULT Augment::Text_Initialize() {
 	///////////////////////////////////////FONT//////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 선택", { 625.f, 90.f }, 30, L"Testing", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 625.f,500.f }, 30, L"Testing2", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 이름", { 600.f,415.f }, 20, L"Testing3", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 선택", { 625.f, 90.f }, 30, L"Testing", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 625.f,500.f }, 30, L"Testing2", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 이름", { 600.f,415.f }, 20, L"Testing3", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
 
 	return S_OK;
 }

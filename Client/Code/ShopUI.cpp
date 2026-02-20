@@ -58,15 +58,15 @@ HRESULT	ShopUI::Effect_Initialize() {
 }
 HRESULT	ShopUI::Text_Initialize() {
 	/////////////////////////////////////////////////////// ITEM INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_Add", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"50", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_Add", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+							
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"50", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	return S_OK;
@@ -101,7 +101,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"때를 기다려라...", L"", L"DIC_DarkBow" };
 	pItem1->ItemPrice = 68;
 	pItem1->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-	Item_Index.push_back(pItem1);
+	//Item_Index.push_back(pItem1);
 
 	ItemINFO* pItem2 = new ItemINFO;
 	pItem2->ItemDesc = { L"Home", L"소모품",L"",L"",L"",
@@ -109,7 +109,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"소모품",L"",L"DIC_HOME"};
 	pItem2->ItemPrice = 10;
 	pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
-	Item_Index.push_back(pItem2);
+	//Item_Index.push_back(pItem2);
 
 	ItemINFO* pItem3 = new ItemINFO;
 	pItem3->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
@@ -117,7 +117,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"소모품", L"", L"DIC_HEART"};
 	pItem3->ItemPrice = 15;
 	pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
-	Item_Index.push_back(pItem3);
+	//Item_Index.push_back(pItem3);
 
 	ItemINFO* pItem4 = new ItemINFO;
 	pItem4->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
@@ -125,7 +125,7 @@ HRESULT ShopUI::Item_Initialize() {
 											L"소모품", L"", L"DIC_ARROW" };
 	pItem4->ItemPrice = 15;
 	pItem4->ItemType = (int)ITEM_TYPE::SUPPLY;
-	Item_Index.push_back(pItem4);
+	//Item_Index.push_back(pItem4);
 
 	ItemINFO* pItem5 = new ItemINFO;
 	pItem5->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
@@ -133,9 +133,11 @@ HRESULT ShopUI::Item_Initialize() {
 											L"소모품", L"", L"DIC_GAHO" };
 	pItem5->ItemPrice = 15;
 	pItem5->ItemType = (int)ITEM_TYPE::SUPPLY;
-	Item_Index.push_back(pItem5);
+	//Item_Index.push_back(pItem5);
 
 	ItemINFO* pItem6 = new ItemINFO;
+
+	// 02.21 일자 Merge - Item_Index 정의가 없어서 주석쳐놨습니다.
 
 	return S_OK;
 }

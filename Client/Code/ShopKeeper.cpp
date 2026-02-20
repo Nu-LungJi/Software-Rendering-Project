@@ -1,5 +1,5 @@
 #include"../Include/PCH.h"
-#include"ShopKeeper.h"
+#include "ShopKeeper.h"
 
 ShopKeeper::ShopKeeper(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
 ShopKeeper::ShopKeeper(const GameObject& _RHS) : GameObject(_RHS) {}
@@ -98,7 +98,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
-		PlayerUI->PopUp_Interaction_Notice(L"´ëÈ­ - »óÁ¡ÁÖÀÎ", TRUE);
+		PlayerUI->PopUp_Interaction_Notice(L"대화하기", TRUE);
 		Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}

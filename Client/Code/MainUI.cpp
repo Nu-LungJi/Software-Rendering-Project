@@ -99,7 +99,7 @@ VOID MainUI::Player_UseSkill() {
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 	}
 }
-VOID MainUI::PopUp_Interaction_Notice(wstring _Text, BOOL _Vis) {
+VOID MainUI::PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis) {
 	SpriteINFO* KeyBoard = Component_Sprite->Get_Texture(L"KEY_E");
 	SpriteINFO* InterBG = Component_Sprite->Get_Texture(L"Interaction_BG");
 	FontObject* FO = UIManager::GetInstance()->Find_FontObject(L"Interaction_Text");

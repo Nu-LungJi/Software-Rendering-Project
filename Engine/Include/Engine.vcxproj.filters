@@ -75,7 +75,7 @@
     </Filter>
     <Filter Include="11. UIManager">
       <UniqueIdentifier>{06dba40a-cde8-4d74-a015-c5cfb226400f}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="99. Component\08. Paticle">
       <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
     </Filter>
@@ -165,12 +165,6 @@
     <ClInclude Include="..\Header\Collider.h">
       <Filter>99. Component\05. Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\FontManager.h">
-      <Filter>11. FontManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Font.h">
-      <Filter>99. Component\07. Font</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\CDYBuffer.h">
       <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
@@ -244,12 +238,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\TileInfo.cpp">
       <Filter>99. Component\06. Tile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\FontManager.cpp">
-      <Filter>11. FontManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Font.cpp">
-      <Filter>99. Component\07. Font</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CDYBuffer.cpp">
       <Filter>99. Component\08. Paticle</Filter>
