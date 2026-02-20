@@ -91,7 +91,7 @@ BOOL NPC::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 		
-		PlayerUI->PopUp_Interaction_Notice(L"��ȭ - Ƽ��", TRUE);
+		PlayerUI->PopUp_Interaction_Notice(L"´ëÈ­ - Æ¼ÇÁ", TRUE);
 		
 		return TRUE;
 	}

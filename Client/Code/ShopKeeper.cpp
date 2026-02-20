@@ -7,7 +7,7 @@ ShopKeeper::~ShopKeeper() {}
 
 HRESULT ShopKeeper::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
-	Timer_Shop = 0.f;
+  Timer_Shop = 0.f;
 	Shop_AnimIDX = 1;
 
 	Interaction_Possible = FALSE;
@@ -25,6 +25,8 @@ HRESULT ShopKeeper::Ready_GameObject() {
 	return S_OK;
 }
 INT	ShopKeeper::Update_GameObject(const _float& _DT) {
+  if (ObjectDead)
+		return -1;
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -45,7 +47,7 @@ VOID ShopKeeper::Render_GameObject() {
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	GRPDEV->SetTexture(0, Shop_TextureList[Shop_AnimIDX]);
+	//GRPDEV->SetTexture(0, Shop_TextureList[Shop_AnimIDX]);
 
 	Component_Buffer->Render_Buffer();
 
@@ -55,6 +57,15 @@ HRESULT ShopKeeper::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
+
+	Component_Transform->Set_Pos(10.f, 0.112f, 10.f);
+	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
+	Component_Transform->Set_Scale(0.5f, 0.5f, 1.f);
+
+	Component_Collider = ADD_COMPONENT_COLLIDER;
+	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Scale(0.5f, 1.f, 0.5f);
+
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 
@@ -63,14 +74,7 @@ HRESULT ShopKeeper::Component_Initialize() {
 	for (INT PIC = 1; PIC <= 8; ++PIC) {
 		wstring Base = L"SupplyCrew" + to_wstring(PIC) + L".png";
 		Shop_TextureList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
-
 	}
-
-	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
-
-	Component_Transform->Set_Pos(10.f, 1.f, 5.f);
-	Component_Transform->Set_Scale(0.4f, 1.0f, 1.f);
 
 	return S_OK;
 }
@@ -94,7 +98,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
-		PlayerUI->PopUp_Interaction_Notice(L"´ëÈ­ - »óÁ¡ÁÖÀÎ", TRUE);
+		PlayerUI->PopUp_Interaction_Notice(L"Â´Ã«ÃˆÂ­ - Â»Ã³ÃÂ¡ÃÃ–Ã€ÃŽ", TRUE);
 		Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}

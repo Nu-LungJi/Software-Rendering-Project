@@ -214,18 +214,18 @@ HRESULT PlayerInven::Sprite_Initialize() {
 }
 HRESULT PlayerInven::Text_Initialize() {
 	//////////////////////////////////////////////////////// INVEN OPTION ///////////////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"¹ö¸®±â", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(255, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"¼±ÅÃ"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(255, 255, 255, 255));
+	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"ë²„ë¦¬ê¸°", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(255, 255, 255, 255));
+	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"ì„ íƒ"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(255, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
@@ -244,14 +244,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
-		L"¿Àµ¿³ª¹« È°",
-		L"¹«±â/Èñ±Í",
+		L"ì˜¤ë™ë‚˜ë¬´ í™œ",
+		L"ë¬´ê¸°/í¬ê·€",
 
-		L"ÀÏ¹İ °ø°İ",
-		L"ÀÏ¹İ °ø°İ·Â 24 ~ 26",
-		L"°ø°İ ¼Óµµ 2.5",
+		L"ì¼ë°˜ ê³µê²©",
+		L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26",
+		L"ê³µê²© ì†ë„ 2.5",
 
-		L"Ä¡¸íÅ¸ È®·üÀÌ +3% Áõ°¡ÇÕ´Ï´Ù.",
+		L"ì¹˜ëª…íƒ€ í™•ë¥ ì´ +3% ì¦ê°€í•©ë‹ˆë‹¤.",
 
 		L"" ,
 
@@ -265,14 +265,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it02 = new ItemINFO;
 	it02->ItemDesc = { 
-		L"Ç³¼öÀÇ È°", 
-		L"¹«±â/Èñ±Í", 
+		L"í’ìˆ˜ì˜ í™œ", 
+		L"ë¬´ê¸°/í¬ê·€", 
 
-		L"ÀÏ¹İ °ø°İ", 
-		L"ÀÌµ¿ ¼Óµµ + 20%", 
-		L"°ø°İ ¼Óµµ 2.5", 
+		L"ì¼ë°˜ ê³µê²©", 
+		L"ì´ë™ ì†ë„ + 20%", 
+		L"ê³µê²© ì†ë„ 2.5", 
 
-		L"±×³É »¡¶óÁı´Ï´Ù.", 
+		L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆë‹¤.", 
 
 		L"", 
 
@@ -286,14 +286,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = { 
-		L"Ç³¼öÀÇ È°", 
-		L"¹«±â/Èñ±Í", 
+		L"í’ìˆ˜ì˜ í™œ", 
+		L"ë¬´ê¸°/í¬ê·€", 
 
-		L"ÀÏ¹İ °ø°İ", 
-		L"ÀÌµ¿ ¼Óµµ + 20%", 
-		L"°ø°İ ¼Óµµ 2.5", 
+		L"ì¼ë°˜ ê³µê²©", 
+		L"ì´ë™ ì†ë„ + 20%", 
+		L"ê³µê²© ì†ë„ 2.5", 
 		
-		L"±×³É »¡¶óÁı´Ï´Ù.", 
+		L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆë‹¤.", 
 
 		L"", 
 
@@ -307,16 +307,16 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it04 = new ItemINFO;
 	it04->ItemDesc = { 
-		L"¾óÀ½ Á¤·ÉÀÇ È°", 
-		L"¹«±â/Èñ±Í", 
+		L"ì–¼ìŒ ì •ë ¹ì˜ í™œ", 
+		L"ë¬´ê¸°/í¬ê·€", 
 		
-		L"ÀÏ¹İ °ø°İ", 
-		L"ÀÏ¹İ °ø°İ·Â 14 - 16", 
-		L"°ø°İ ¼Óµµ 2", 
+		L"ì¼ë°˜ ê³µê²©", 
+		L"ì¼ë°˜ ê³µê²©ë ¥ 14 - 16", 
+		L"ê³µê²© ì†ë„ 2", 
 
-		L"¾óÀ½ÀÇ È­»ì : 3 ¹ßÀÇ ¾óÀ½ÀÇ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù. \nÈ­»ì¿¡ ¸ÂÀº Àû¿¡°Ô 3ÃÊ °£ ºù°áÀ» ºÎ¿©ÇÕ´Ï´Ù.", 
+		L"ì–¼ìŒì˜ í™”ì‚´ : 3 ë°œì˜ ì–¼ìŒì˜ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤. \ní™”ì‚´ì— ë§ì€ ì ì—ê²Œ 3ì´ˆ ê°„ ë¹™ê²°ì„ ë¶€ì—¬í•©ë‹ˆë‹¤.", 
 
-		L"\"¾óÀ½Á¤·ÉÀÇ ÈûÀÌ ´ã±ä È°. Áã°í ÀÖÀ½ ¼ÕÀÌ ¾ó¾î¹ö¸± °Í °°´Ù.", 
+		L"\"ì–¼ìŒì •ë ¹ì˜ í˜ì´ ë‹´ê¸´ í™œ. ì¥ê³  ìˆìŒ ì†ì´ ì–¼ì–´ë²„ë¦´ ê²ƒ ê°™ë‹¤.", 
 
 		L"DIC_InvenFrame_IceBow", 
 		L"DIC_InfoFrame_IceBow" 
@@ -327,16 +327,16 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it04);
 
 	ItemINFO* it05 = new ItemINFO;
-	it05->ItemDesc = { L"¾óÀ½ Á¤·ÉÀÇ È°",
-		L"¹«±â/Èñ±Í",
+	it05->ItemDesc = { L"ì–¼ìŒ ì •ë ¹ì˜ í™œ",
+		L"ë¬´ê¸°/í¬ê·€",
 
-		L"ÀÏ¹İ °ø°İ",
-		L"ÀÏ¹İ °ø°İ·Â 14 - 16",
-		L"°ø°İ ¼Óµµ 2",
+		L"ì¼ë°˜ ê³µê²©",
+		L"ì¼ë°˜ ê³µê²©ë ¥ 14 - 16",
+		L"ê³µê²© ì†ë„ 2",
 
-		L"¾óÀ½ÀÇ È­»ì : 3 ¹ßÀÇ ¾óÀ½ÀÇ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù. È­»ì¿¡ ¸ÂÀº Àû¿¡°Ô \n3ÃÊ °£ ºù°áÀ» ºÎ¿©ÇÕ´Ï´Ù.",
+		L"ì–¼ìŒì˜ í™”ì‚´ : 3 ë°œì˜ ì–¼ìŒì˜ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤. í™”ì‚´ì— ë§ì€ ì ì—ê²Œ \n3ì´ˆ ê°„ ë¹™ê²°ì„ ë¶€ì—¬í•©ë‹ˆë‹¤.",
 
-		L"\"¾óÀ½Á¤·ÉÀÇ ÈûÀÌ ´ã±ä È°. Áã°í ÀÖÀ½ ¼ÕÀÌ ¾ó¾î¹ö¸± °Í °°´Ù.",
+		L"\"ì–¼ìŒì •ë ¹ì˜ í˜ì´ ë‹´ê¸´ í™œ. ì¥ê³  ìˆìŒ ì†ì´ ì–¼ì–´ë²„ë¦´ ê²ƒ ê°™ë‹¤.",
 
 		L"DIC_InvenFrame_IceBow",
 		L"DIC_InfoFrame_IceBow"
@@ -482,15 +482,15 @@ HRESULT PlayerInven::Equip_Item() {
 	if (EquipMode) {
 		Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(FALSE);
 		FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
-		FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ÀåÂø";
+		FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì¥ì°©";
 		if (KEY_DOWN(DIK_E)){
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"¹ö¸®±â";
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"¼±ÅÃ";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"ë²„ë¦¬ê¸°";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì„ íƒ";
 			}
 			if (FocusOn_EquipedItem) {
 				if (((*EquipObject)->ItemType == (INT)ITEM_TYPE::NORMAL_WEAPON || (*EquipObject)->ItemType == (INT)ITEM_TYPE::RARE_WEAPON)
@@ -503,8 +503,8 @@ HRESULT PlayerInven::Equip_Item() {
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"¹ö¸®±â";
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"¼±ÅÃ";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"ë²„ë¦¬ê¸°";
+				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì„ íƒ";
 			}
 		}
 	}
@@ -634,7 +634,7 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 				return S_OK;
 			}
 		}
-		// ¸ğµç Equip Ä­ÀÌ Ã¤¿öÁ® ÀÖ´Â °æ¿ì
+		// ëª¨ë“  Equip ì¹¸ì´ ì±„ì›Œì ¸ ìˆëŠ” ê²½ìš°
 		for (INT IDX = 0; IDX < 10; ++IDX) {
 			if (Saved_ItemList[IDX] == nullptr) {
 				Saved_ItemList[IDX] = _ITEM;
@@ -651,7 +651,7 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 				return S_OK;
 			}
 		}
-		// ¸ğµç Equip Ä­ÀÌ Ã¤¿öÁ® ÀÖ´Â °æ¿ì
+		// ëª¨ë“  Equip ì¹¸ì´ ì±„ì›Œì ¸ ìˆëŠ” ê²½ìš°
 		for (INT IDX = 0; IDX < 10; ++IDX) {
 			if (Saved_ItemList[IDX] == nullptr) {
 				Saved_ItemList[IDX] = _ITEM;

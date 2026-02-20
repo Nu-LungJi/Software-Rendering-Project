@@ -1,14 +1,17 @@
 #pragma once
 #include "GameObject.h"
+
 class ShopKeeper : public GameObject
 {
-private:
+public:
 	explicit ShopKeeper(LPDIRECT3DDEVICE9 _GRPDEV);
-	explicit ShopKeeper(const GameObject& _RHS);
+	explicit ShopKeeper(CONST GameObject& _RHS);
+
 	virtual ~ShopKeeper();
 
 public:
 	virtual			HRESULT		Ready_GameObject();
+
 	virtual			INT			Update_GameObject(const _float& _DT);
 	virtual			VOID		LateUpdate_GameObject(const _float& _DT);
 	virtual			VOID		Render_GameObject();
@@ -25,8 +28,14 @@ private:
 private:
 	Buffer* Component_Buffer;
 	Transform* Component_Transform;
-	Texture* Component_Texture;
 	Collider* Component_Collider;
+	Texture* Component_Texture;
+
+public:
+	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+	BOOL			OnCollisionStay(GameObject* _Other)		override;
+	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	GameObject* Player;
 	MainUI* PlayerUI;

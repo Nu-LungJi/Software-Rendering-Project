@@ -13,7 +13,7 @@ HRESULT	StartScene::Ready_Scene() {
 	if (FAILED( Ready_UserInterface_Layer()	))		return E_FAIL;
 
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
-	//CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
 	return S_OK;
 }
@@ -47,7 +47,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 
 	//Add_GameObjectToScene<Docheol>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
 	//Add_GameObjectToScene<Fireball>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
-	Add_GameObjectToScene<NPC>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC	  , L"NPC_Tif"		);
+	//Add_GameObjectToScene<NPC>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC	  , L"NPC_Tif"		);
 	return S_OK;
 }
 HRESULT StartScene::Ready_UserInterface_Layer() {
@@ -55,10 +55,10 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
 	Add_GameObjectToScene<MainMenu>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  ,	L"MainMenu"		);
 	Add_GameObjectToScene<MainUI>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"MainUI"		);
 
-	Add_GameObjectToScene<PlayerInven>		(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"PlayerInven"	);
+	//Add_GameObjectToScene<PlayerInven>		(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"PlayerInven"	);
 	//Add_GameObjectToScene<Augment>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"Augment"		);
 
-	Add_GameObjectToScene<NPCTalk>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"NPCTalk"		);
+	//Add_GameObjectToScene<NPCTalk>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"NPCTalk"		);
 	//Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
 	return S_OK;
 }
