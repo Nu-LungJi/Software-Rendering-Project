@@ -53,9 +53,8 @@ HRESULT GameManager::Ready_DefaultSetting() {
 }
 HRESULT GameManager::Ready_SceneSetting() {
 
-	//Scene* EnterScene = StartScene::Create(GRPDEV);
-	//Scene* EnterScene = DebugScene::Create(GRPDEV);
 	Scene* EnterScene = StartScene::Create(GRPDEV);
+  //Scene* EnterScene = DebugScene::Create(GRPDEV);
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
 

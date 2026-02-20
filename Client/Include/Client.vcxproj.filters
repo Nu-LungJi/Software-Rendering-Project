@@ -148,7 +148,7 @@
     <Filter Include="04. UI\SpeechBubble">
       <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Scene\02.DocheolScene">
+    <Filter Include="02. Scene\02. DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
@@ -346,7 +346,7 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DoCheolScene.h">
-      <Filter>02. Scene\02.DocheolScene</Filter>
+      <Filter>02. Scene\02. DocheolScene</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Augment.h">
       <Filter>04. UI\AugmentUI</Filter>
@@ -532,7 +532,7 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DoCheolScene.cpp">
-      <Filter>02. Scene\02.DocheolScene</Filter>
+      <Filter>02. Scene\02. DocheolScene</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>

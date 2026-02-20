@@ -86,7 +86,8 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
-
+#include "ShopKeeper.h"
+#include "ShopUI.h"
 
 //////////////////////////////////////////// Scene List
 
