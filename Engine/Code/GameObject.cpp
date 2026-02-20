@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "RenderManager.h"
 
 GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV)
 	: GRPDEV(_GRPDEV)	 , ObjectTAG(L""), ObjectDead(FALSE), ObjectTYPE(), AlphaZValue(0.f)
@@ -25,6 +26,15 @@ VOID		GameObject::LateUpdate_GameObject(const FLOAT& _DT) {
 		if (COM == nullptr)	 continue;
 		COM->LateUpdate_Component(_DT);
 	}
+}
+INT GameObject::Update_GameObject_Component(const FLOAT& _DT)
+{
+	for (auto& COM : ComponentList) {
+		if (COM == nullptr)	 continue;
+		COM->Update_Component(_DT);
+	}
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	return 0;
 }
 VOID GameObject::AlphaSorting(const D3DXVECTOR3* _Vec) {
 	D3DXMATRIX WorldMat;

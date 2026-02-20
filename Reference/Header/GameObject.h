@@ -33,6 +33,8 @@ public:
 	virtual VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
 	virtual VOID		Render_GameObject() = 0;
 
+	// ½ºÅ³¿ë
+	INT			Update_GameObject_Component(CONST FLOAT& _DT);
 public:
 	virtual BOOL		OnCollisionEnter(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionStay	(GameObject* _Other)	{ return TRUE; }
@@ -52,6 +54,8 @@ protected:
 
 	FLOAT							AlphaZValue;
 	FLOAT							AlphaYValue;
+
+	list<GameObject*>   CollisionList;
 
 protected:
 	virtual VOID		Free();

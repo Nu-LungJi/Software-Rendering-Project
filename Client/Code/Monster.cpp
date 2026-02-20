@@ -114,7 +114,9 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, GAMEOBJECT_TYPE eType)
 	CONST TCHAR* pName = wcschr(Classname, L' ');
 
 	pName = (pName != nullptr) ? pName + 1 : Classname;
-	pMonster->Set_ObjectTag(pName);
+	pMonster->Set_ObjectTag(L"Monster");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+
 
 	pMonster->Set_ObjectType(eType);
 
@@ -149,22 +151,22 @@ VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_
 
 	D3DXMatrixIdentity(&matBill);
 
-	//XÃà
+	//XÃƒÃ 
 	matBill._11 = matView._11;
 	matBill._12 = matView._12;
 	matBill._13 = matView._13;
-	//YÃà
+	//YÃƒÃ 
 	matBill._21 = matView._21;
 	matBill._22 = matView._22;
 	matBill._23 = matView._23;
-	//ZÃà
+	//ZÃƒÃ 
 	matBill._31 = matView._31;
 	matBill._32 = matView._32;
 	matBill._33 = matView._33;
 
 	D3DXMatrixInverse(&matBill, 0, &matBill);
 
-	// ÁÖÀÇ ÇÒ °Í
+	// ÃÃ–Ã€Ã‡ Ã‡Ã’ Â°Ã
 	matWorld = matBill * matWorld;
 
 	Component_Transform->Set_World(&matWorld);

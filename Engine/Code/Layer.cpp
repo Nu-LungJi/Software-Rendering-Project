@@ -5,41 +5,48 @@ Layer::Layer() {}
 Layer::~Layer() {}
 
 HRESULT		Layer::Ready_Layer() {
+	_isTimeSlow = false;
 	return S_OK;
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
-	for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
-
-		int ObjectResult = (*iter)->Update_GameObject(_DT);
-
-		if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
-			CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-			Safe_Release((*iter));
-			iter = GameObjectList.erase(iter);
-			continue;
+	if (!_isTimeSlow) {
+		// ���� �ڵ�
+		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
+			int ObjectResult = (*iter)->Update_GameObject(_DT);
+			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
+				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+				Safe_Release((*iter));
+				iter = GameObjectList.erase(iter);
+				continue;
+			}
+			else { ++iter; }
 		}
-		else { ++iter; }
-
-		// KJJ Suggest
-		// 
-		//if ((*iter)->Get_ObjectDead()) {
-		//	CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-		//	Safe_Release((*iter));
-		//	iter = GameObjectList.erase(iter);
-		//	continue;
-		//}
-		//else {
-		//	if ((*iter)->Update_GameObject(_DT) == -1)
-		//		(*iter)->Set_ObjectDead(true);
-		//	++iter; 
-		//}
-	
 	}
+	else {
+		// Ÿ�ӽ��ο�
+		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
+			int ObjectResult = 0;
+			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"
+				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
+				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI)
+				ObjectResult = (*iter)->Update_GameObject(_DT);
+			else
+				ObjectResult = (*iter)->Update_GameObject_Component(_DT);
+			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
+				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+				Safe_Release((*iter));
+				iter = GameObjectList.erase(iter);
+				continue;
+			}
+			else { ++iter; }
+		}
+	}
+
 	return 0;
 }
 VOID		Layer::LateUpdate_Layer(const FLOAT& _DT) {
 	for (auto& GOBJ : GameObjectList) {
-		if (!GOBJ->Get_ObjectDead())
+		if (!GOBJ->Get_ObjectDead() && (!_isTimeSlow))
 			GOBJ->LateUpdate_GameObject(_DT);
 	}
 }

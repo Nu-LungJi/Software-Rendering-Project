@@ -1,13 +1,17 @@
 #pragma once
 #include "GameObject.h"
 
+static int			_evilCount = 1;
 enum class ArrowType {
 	FairyArrow,
+	FairyCharging,
 	IceArrow_LV1,
 	IceArrow_LV2,
 	IceCharging,
 	EvilHead_Arrow,
+	EvilHeadCharging,
 	Wind_Arrow,
+	WindCharging,
 
 	End
 };
@@ -41,13 +45,19 @@ public:
 	static Arrow*	Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir);
 	int				Get_Atk()	{ return _arrowAtk; }
 	BOOL			OnCollisionEnter(GameObject* _Other);
+	BOOL			OnCollisionStay(GameObject* _Other);
 private:
 	virtual VOID Free();
 
 private:
 	ArrowType	_type;
+	BowType		_bowType;
 	int			_hp;
 	_float		_originAngle;
+
+	float*		_playerRange;
+	float*		_playerArrowSize;
+	float*		_playerArrowSpeed;
 
 	_vec3		_playerPos;
 	float		_angle;
@@ -55,11 +65,16 @@ private:
 
 	int			_frame;
 	float		_frameDelay;
+	float		_effectDelay;
 
 	float		_lifeTime;
 	float		_speed;
 	float		_sumSpeed;
 	int			_arrowAtk;
+
+	float		_evilMoveTime;
+	float		_sumEvilSpeed;
+	float		_ThunderDelay;
 
 	float _EvilTime;
 };

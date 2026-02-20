@@ -31,6 +31,18 @@ HRESULT Bow::Ready_GameObject()
 
 INT Bow::Update_GameObject(const _float& _DT)
 {
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+	ObjectTAG = L"Bow";
+	_playerAtk = player->Get_Atk();
+	_playerCritical = player->Get_Critical();
+	_playerChargingSpeed = player->Get_ChargingSpeed();
+
+	_Stat.maxArrow *= (*player->Get_MaxArrow());
+	_chargingTime = 2.f;
+	_chargingTime *= *_playerChargingSpeed;
+
+	if (_isDestroied) return -1;
+
 	if (_lateReady) {
 		Late_Ready();
 		_lateReady = false;
@@ -39,13 +51,11 @@ INT Bow::Update_GameObject(const _float& _DT)
 
 	if (_isEquip) {
 		GameObject::Update_GameObject(_DT);
-		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
-
-		if (_isDestroied) return -1;
 
 		float alphaSpeed = 3.f;
 
 		bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
 		if (mouseLB || KEY_HOLD(DIK_SPACE)) {
 			if (_alphaRatio < 1.f)
 				_alphaRatio += _DT * alphaSpeed;
@@ -64,29 +74,19 @@ INT Bow::Update_GameObject(const _float& _DT)
 			_Charge = 0;
 		}
 
-		POINT MousePoint{ 0, 0 };
-		GetCursorPos(&MousePoint);
-		ScreenToClient(hWnd, &MousePoint);
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		_vec3 MouseDir = player->Get_MouseDir();
 
-		_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-		_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-		_vec2 dir2D = mousePos - screenCenter;
+		_vec2 dir2D = { MouseDir.x, MouseDir.z };
 		D3DXVec2Normalize(&dir2D, &dir2D);
 
-		float angle = atan2f(dir2D.y, dir2D.x);
+		float angle = atan2f(-dir2D.y, dir2D.x);
 
 		float radius = 1.f;
 		if (_type == BowType::FairyBow) radius = 1.5f;
 
 		float offsetX = cosf(angle) * radius;
 		float offsetY = sinf(angle) * radius;
-
-		Component_Transform->Set_Pos({
-			(*_playerPos).x + offsetX,
-			(*_playerPos).y + offsetY,
-			(*_playerPos).z
-			});
 
 		_vec3 eye = { 0.f, 0.f, 0.f };
 		_vec3 at = _cameraDir;
@@ -106,39 +106,53 @@ INT Bow::Update_GameObject(const _float& _DT)
 
 		_matrix matWorld = matSize * matRotZ * matBillboard;
 
-		matWorld._41 = (*_playerPos).x + offsetX;
-		matWorld._42 = (*_playerPos).y;
-		matWorld._43 = (*_playerPos).z - offsetY;
+		matWorld._41 = (*_bowPos).x + offsetX;
+		matWorld._42 = (*_bowPos).y;
+		matWorld._43 = (*_bowPos).z - offsetY;
 
 		Component_Transform->Set_World(&matWorld);
-
+		//Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
 
 		if (KEY_HOLD(DIK_SPACE)) {
-			if (_ChargingTime < 1.f) {
+			_ChargingTime += _DT;
+			if (_ChargingTime > _chargingTime) _Charging++;
+			if (_ChargingTime < _chargingTime) {
 				if (_Charge++ == 0) {
-					float radius = 1.f;
-					if (_type == BowType::FairyBow) radius = 1.1f;
-					else if (_type == BowType::IceBow) radius = 1.6f;
-					else if (_type == BowType::EvilHeadBow) radius = 1.0f;
-					else if (_type == BowType::WindBow) radius = 1.6f;
+					float pulseRadius = 1.f;
+					if (_type == BowType::FairyBow) pulseRadius = 1.1f;
+					else if (_type == BowType::IceBow) pulseRadius = 1.6f;
+					else if (_type == BowType::EvilHeadBow) pulseRadius = 2.f;
+					else if (_type == BowType::WindBow) pulseRadius = 1.6f;
+					
+					float offsetX = cosf(angle) * pulseRadius;
+					float offsetY = sinf(angle) * pulseRadius;
 
-					float offsetX = cosf(angle) * radius;
-					float offsetY = sinf(angle) * radius;
-
-					_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+					_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 					_vec3 Size = { 1.f, 1.f, 1.f };
-					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.f, Size);
+					
+					switch (_type) {
+					case BowType::FairyBow :
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
+						break;
+					case BowType::IceBow:
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.1f, Size, true);
+						break;
+					case BowType::EvilHeadBow:
+						Size = { 1.5f, 1.5f, 1.5f };
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.f, Size, true);
+						break;
+					case BowType::WindBow:
+						Size = { 1.f, 1.f, 1.f };
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 1.f, Size, true);
+						break;
+					}
 				}
-
-				_ChargingTime += _DT;
 				_Charging = 0;
 			}
-			else
-				_Charging++;
 
 			CreateChargingEffect(_DT);
 
-			if (_ChargingTime > 1.f && MOUSE_LBUTTON) {
+			if (_ChargingTime > _chargingTime && MOUSE_LBUTTON) {
 				CreateEffect(_DT);
 				CreateArrow(_DT);
 				_ChargingTime = 0.f;
@@ -150,6 +164,8 @@ INT Bow::Update_GameObject(const _float& _DT)
 			CreateEffect(_DT);
 			CreateArrow(_DT);
 		}
+
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 	}
 	else
 		_alphaRatio = 0.f;
@@ -206,7 +222,7 @@ void Bow::SetGrahpic()
 		wsprintfW(FileName, L"FairyBow.png");
 		break;
 	case BowType::IceBow:
-		wsprintfW(FileName, L"IceBow.png");
+		wsprintfW(FileName, L"IceBowL.png");
 		break;
 	case BowType::EvilHeadBow:
 		wsprintfW(FileName, L"EvilHeadBow.png");
@@ -221,6 +237,7 @@ void Bow::SetGrahpic()
 		255, 255, 255
 	);
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
@@ -245,24 +262,20 @@ void Bow::CreateArrow(const _float& _DT)
 	if (mouseLB)
 	{
 		if (_attackDelay > 0.6) {
-			POINT MousePoint{ 0, 0 };
-			GetCursorPos(&MousePoint);
-			ScreenToClient(hWnd, &MousePoint);
+			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+			_vec3 MouseDir = player->Get_MouseDir();
 
-			_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-			_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-			_vec2 dir2D = mousePos - screenCenter;
+			_vec2 dir2D = { MouseDir.x, MouseDir.z };
 			D3DXVec2Normalize(&dir2D, &dir2D);
 
-			float angle = atan2f(dir2D.y, dir2D.x);
+			float angle = atan2f(-dir2D.y, dir2D.x);
 
 			float radius = 1.8f;
 
 			float offsetX = cosf(angle) * radius;
 			float offsetY = sinf(angle) * radius;
 
-			_arrowPos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+			_arrowPos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 			_vec2 side = { dir2D.y, dir2D.x };
 			D3DXVec2Normalize(&side, &side);
@@ -270,24 +283,23 @@ void Bow::CreateArrow(const _float& _DT)
 			_vec3 leftPos = _arrowPos;
 			float convergeAngle = D3DXToRadian(5.f);
 			_vec2 rightDir = {
-				cosf(angle - convergeAngle),
-				sinf(angle - convergeAngle)
+				cosf(angle + convergeAngle),
+				-sinf(angle + convergeAngle)
 			};
 			
 			_vec2 leftDir = {
-				cosf(angle + convergeAngle),
-				sinf(angle + convergeAngle)
+				cosf(angle - convergeAngle),
+				-sinf(angle - convergeAngle)
 			};
-			//GameObject* arrow = Arrow::Create(GRPDEV, ArrowType::IceArrow_LV1, &_arrowPos);
-			//
-			//arrow->Set_ObjectTag(L"PlayerArrow");									
-			//arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);					
-			//
-			//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow); // 오류나서 지웠습니다. 한 번 확인해주세요
+
 			switch (_type)
 			{
 			case BowType::FairyBow :
-				MakeArrow(_arrowPos, dir2D);
+				if (KEY_HOLD(DIK_SPACE)) {
+					MakeArrow(_arrowPos, dir2D, true);
+				}
+				else
+					MakeArrow(_arrowPos, dir2D);
 				break;
 			case BowType::IceBow:
 				if (KEY_HOLD(DIK_SPACE)) {
@@ -296,11 +308,20 @@ void Bow::CreateArrow(const _float& _DT)
 				else{
 					MakeArrow(_arrowPos, dir2D);
 					rightPos.x -= side.x * 1.5f;
-					rightPos.z -= side.y * 1.5f;
+					rightPos.z += side.y * 1.5f;
 					leftPos.x += side.x * 1.5f;
-					leftPos.z += side.y * 1.5f;
+					leftPos.z -= side.y * 1.5f;
 					MakeArrow(rightPos, rightDir);
 					MakeArrow(leftPos, leftDir);
+				}
+				break;
+			case BowType::EvilHeadBow:
+				if (KEY_HOLD(DIK_SPACE)) {
+					MakeArrow(_arrowPos, dir2D, true);
+				}
+				else {
+					MakeArrow(_arrowPos, dir2D);
+					MakeArrow(_arrowPos, dir2D);
 				}
 				break;
 			default :
@@ -319,17 +340,13 @@ void Bow::CreateEffect(const _float& _DT)
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
-	POINT MousePoint{ 0, 0 };
-	GetCursorPos(&MousePoint);
-	ScreenToClient(hWnd, &MousePoint);
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+	_vec3 MouseDir = player->Get_MouseDir();
 
-	_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-	_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-	_vec2 dir2D = mousePos - screenCenter;
+	_vec2 dir2D = { MouseDir.x, MouseDir.z };
 	D3DXVec2Normalize(&dir2D, &dir2D);
 
-	float angle = atan2f(dir2D.y, dir2D.x);
+	float angle = atan2f(-dir2D.y, dir2D.x);
 
 	float radius = 1.f;
 	if (_type == BowType::FairyBow) radius = 1.1f;
@@ -340,7 +357,7 @@ void Bow::CreateEffect(const _float& _DT)
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 	if (mouseLB)
 	{
@@ -350,21 +367,21 @@ void Bow::CreateEffect(const _float& _DT)
 			switch (_type)
 			{
 			case BowType::FairyBow :
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_PULSE, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_PULSE, &_pulsepos, 0.2f, Size, true);
 				break;
 			case BowType::IceBow:
 				Size = { 1.5f, 1.5f, 1.5f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f, Size, true);
 				break;
 			case BowType::EvilHeadBow:
 				Size = { 2.f, 2.2f, 2.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVILHEAD_PULSE, &_pulsepos, 0.5f, Size);
+				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVILHEAD_PULSE, &_pulsepos, 0.5f, Size, true);
 				break;
 			case BowType::WindBow:
 				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size);
+				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
 				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.6f, Size);
+				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.6f, Size, true);
 				break;
 			}
 			
@@ -378,20 +395,20 @@ void Bow::CreateChargingArrow(const _float& _DT)
 	GetCursorPos(&MousePoint);
 	ScreenToClient(hWnd, &MousePoint);
 
-	_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-	_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+	_vec3 MouseDir = player->Get_MouseDir();
 
-	_vec2 dir2D = mousePos - screenCenter;
+	_vec2 dir2D = { MouseDir.x, MouseDir.z };
 	D3DXVec2Normalize(&dir2D, &dir2D);
 
-	float angle = atan2f(dir2D.y, dir2D.x);
+	float angle = atan2f(-dir2D.y, dir2D.x);
 
 	float radius = 1.8f;
 
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_arrowPos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_arrowPos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
 	_vec2 side = { -dir2D.y, dir2D.x };
 	D3DXVec2Normalize(&side, &side);
@@ -408,17 +425,14 @@ void Bow::CreateChargingEffect(const _float& _DT)
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
-	POINT MousePoint{ 0, 0 };
-	GetCursorPos(&MousePoint);
-	ScreenToClient(hWnd, &MousePoint);
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+	_vec3 MouseDir = player->Get_MouseDir();
+	_vec3 playerPos = *(dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 
-	_vec2 mousePos = { (float)MousePoint.x, (float)MousePoint.y };
-	_vec2 screenCenter = { WINCX * 0.5f, WINCY * 0.5f };
-
-	_vec2 dir2D = mousePos - screenCenter;
+	_vec2 dir2D = { MouseDir.x, MouseDir.z };
 	D3DXVec2Normalize(&dir2D, &dir2D);
 
-	float angle = atan2f(dir2D.y, dir2D.x);
+	float angle = atan2f(-dir2D.y, dir2D.x);
 
 	float radius = 1.f;
 	if (_type == BowType::FairyBow) radius = 1.6f;
@@ -429,29 +443,29 @@ void Bow::CreateChargingEffect(const _float& _DT)
 	float offsetX = cosf(angle) * radius;
 	float offsetY = sinf(angle) * radius;
 
-	_pulsepos = { _playerPos->x + offsetX , _playerPos->y, _playerPos->z - offsetY };
+	_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
+	_vec3 Size = { 1.f, 1.f, 1.f };
 	if (_Charging == 1)
 	{
-		if (_ChargingTime > 1.f)
+		if (_ChargingTime > _chargingTime)
 		{
 			// 이펙트
-			_vec3 Size = { 1.5f, 1.5f, 1.5f };
+			_vec3 Size = { 1.f, 1.f, 1.f };
 			switch (_type)
 			{
 			case BowType::FairyBow:
-				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::IceBow:
-				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.2f, Size);
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::EvilHeadBow:
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::WindBow:
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size);
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.6f, Size);
+				Size = { 1.2f, 1.2f, 1.2f };
+				PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.6f, Size, true);
 				break;
 			}
 		}
@@ -500,12 +514,9 @@ void Bow::Late_Ready()
 		break;
 	}
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	PSTATUS* playerStatus = player->Get_Status();
-
+	
 	// 최대 화살 수
-	_Stat.maxArrow *= playerStatus->maxBowRatio;
-	_Stat.minAtk += playerStatus->atk;
-	_Stat.maxAtk += playerStatus->atk;
+	_Stat.maxArrow *= (*player->Get_MaxArrow());
 }
 
 void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
@@ -515,7 +526,9 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	std::random_device rd;
 	std::uniform_int_distribution<int> distribution(0, 100);
 
-	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk;
+	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk + *_playerAtk;
+
+	if (distribution(rd) % 100 < *_playerCritical) arrowAtk *= 2;
 
 	GameObject* arrow = nullptr;
 
@@ -530,6 +543,7 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	arrow->Set_ObjectTag(L"PlayerArrow");
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
+	CollisionManager::GetInstance()->Add_ColliderObject(arrow);
 }
 
 Bow* Bow::Create(LPDIRECT3DDEVICE9 _GRPDEV)

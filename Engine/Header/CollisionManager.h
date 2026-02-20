@@ -25,7 +25,7 @@ private:
 	list<GameObject*>		SceneObjectList;
 
 	BOOL					CollisionLine_Visibility;
-
+	BOOL					ret;
 private:
 	virtual VOID	Free();
 };

@@ -51,10 +51,12 @@ private:
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
 
-	GameObject* Player;
+	//GameObject* Player;
 
 	bool		Camera_Show;
 	bool		Camera_Move;
+
+	_vec3		m_vVelocity;
 
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);
