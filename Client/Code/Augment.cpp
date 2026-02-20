@@ -69,6 +69,7 @@ HRESULT Augment::Text_Initialize() {
 	return S_OK;
 }
 HRESULT Augment::Item_Initialize() {
+	wstring BaseFolder = L"../../UI/Inventory_UI/";
 	return S_OK;
 }
 Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

@@ -64,6 +64,7 @@
 #include "SpeechBubble.h"
 #include "Spawner.h"
 #include "ShopKeeper.h"
+#include "ShopUI.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

@@ -234,7 +234,9 @@
     </ClInclude>
     <ClInclude Include="..\Header\ScorpionBullet.h" />
     <ClInclude Include="..\Header\ScorpionEvilSoul.h" />
-    <ClInclude Include="..\Header\ShopKeeper.h" />
+    <ClInclude Include="..\Header\ShopKeeper.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Header\ShopUI.h" />
     <ClInclude Include="..\Header\SpeechBubble.h" />
     <ClInclude Include="..\Header\Spawner.h" />
@@ -353,7 +355,9 @@
     <ClCompile Include="..\Code\PlayerInven.cpp" />
     <ClCompile Include="..\Code\ScorpionBullet.cpp" />
     <ClCompile Include="..\Code\ScorpionEvilSoul.cpp" />
-    <ClCompile Include="..\Code\ShopKeeper.cpp" />
+    <ClCompile Include="..\Code\ShopKeeper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Code\ShopUI.cpp" />
     <ClCompile Include="..\Code\ShotGunEvilSoul.cpp" />
     <ClCompile Include="..\Code\SpeechBubble.cpp" />
