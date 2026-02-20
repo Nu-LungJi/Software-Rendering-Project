@@ -77,17 +77,17 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		Monster_Spawn();
+		//Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
+		//Monster_Spawn2();
 		break;
-
 	case TILE_SPAWNER::MONSTER_SPAWN3:
+		//Monster_Spawn3();
 		break;
-
 	case TILE_SPAWNER::MONSTER_SPAWN4:
+		//Monster_Spawn4();
 		break;
-
 	case TILE_SPAWNER::ITEM_SPAWN1:
 		break;
 
@@ -111,21 +111,44 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 
 void Spawner::Monster_Spawn()
 {
-
 	if (!m_bSpawn)
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene
-			<Bat>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
-		Bat* pBat = nullptr;
-
-		pBat = dynamic_cast<Bat*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
-
-		dynamic_cast<Transform*>(pBat->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos));
 		m_bSpawn = true;
 	}
-	
+}
+
+void Spawner::Monster_Spawn2()
+{
+	if (!m_bSpawn)
+	{
+		_vec3 vPos;
+		m_pTransform->Get_Info(INFO_POS, &vPos);
+		Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos,1.5f));
+		m_bSpawn = true;
+	}
+}
+void Spawner::Monster_Spawn3()
+{
+	if (!m_bSpawn)
+	{
+		_vec3 vPos;
+		m_pTransform->Get_Info(INFO_POS, &vPos);
+		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, vPos));
+		m_bSpawn = true;
+	}
+}
+void Spawner::Monster_Spawn4()
+{
+	if (!m_bSpawn)
+	{
+		_vec3 vPos;
+		m_pTransform->Get_Info(INFO_POS, &vPos);
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos));
+		m_bSpawn = true;
+	}
 }
 
 Transform* Spawner::Crash_Player()

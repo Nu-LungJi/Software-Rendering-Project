@@ -124,13 +124,14 @@ INT Arrow::Update_GameObject(const _float& _DT)
         Component_Transform->Set_World(&matWorld);
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
     }
-
     return S_OK;
 }
 
 VOID Arrow::LateUpdate_GameObject(const _float& _DT)
 {
     GameObject::LateUpdate_GameObject(_DT);
+
+    Destory_Tile();
 }
 
 VOID Arrow::Render_GameObject()
@@ -194,6 +195,30 @@ void Arrow::SetGrahpic()
     }
     
     GRPDEV->SetTexture(0, (ResourceManager::GetInstance()->Find_Texture(FileName)));
+}
+
+void Arrow::Destory_Tile()
+{
+    _vec3 vPos, vScale, vTileScale, vTilePos{ 0,0,0 };
+   
+    Transform* pTile = nullptr;
+    vPos = *Component_Transform->Get_Position();
+    vScale = *Component_Transform->Get_Scale();
+    for (auto& iter : TileManager::GetInstance()->Get_DestoryTile_List())
+    {
+        if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_DESTORY||
+            dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_BOOM)
+        {
+            pTile = dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+            vTilePos   =  *pTile->Get_Position();
+          
+            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z -1 && vPos.z < vTilePos.z + 1 )
+            {
+                Set_ObjectDead(TRUE);
+                dynamic_cast<CXZTile*>(iter)->Set_Destory();
+            }
+        }
+    }
 }
 
 Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir)

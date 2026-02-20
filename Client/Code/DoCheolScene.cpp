@@ -12,7 +12,7 @@ HRESULT	DoCheolScene::Ready_Scene() {
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 
 	{
-		HANDLE	hFile = CreateFile(L"../../Data/Tile.dat", // 파일 이름이 포함된 경로
+		HANDLE	hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
 			GENERIC_READ,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
 			NULL,				// 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
 			NULL,				// 보안 속성(기본값인 경우 NULL)
@@ -40,9 +40,9 @@ HRESULT	DoCheolScene::Ready_Scene() {
 		_int		     iTileTextureCnt = 0;
 		_vec3			 vNextPos = {};
 		_bool		     bAni = false;
-		UvXY				 uv = {};
-		TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
-		TileManager::GetInstance()->Render_TileList();
+		TILE_SPAWNER	 eSpawn = TILE_SPAWNER::SPAWN_END;
+
+		TileManager::GetInstance()->Reset_TileList();
 		while (true)
 		{
 			ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
@@ -57,17 +57,20 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			ReadFile(hFile, &iTileTextureCnt, sizeof(_int), &dwByte, NULL);
 			ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
 			ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
-			ReadFile(hFile, &uv, sizeof(UvXY), &dwByte, NULL);
 			ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
 
-
-
 			GameObject* GOBJ = nullptr;
-			//GRPDEV->AddRef();
-			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState, uv.x1, uv.x2, uv.y, uv.y2);
+
+			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
+			{
+				GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
+			}
+			else
+				GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
+
 			GOBJ->Set_ObjectTag(L"CXZTile");
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
-			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
+
 			if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
 			else
@@ -76,7 +79,8 @@ HRESULT	DoCheolScene::Ready_Scene() {
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 					->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 			}
-
+			
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
@@ -85,10 +89,12 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			if (0 == dwByte)
 				break;
 		}
-
+		TileManager::GetInstance()->Set_StageCnt();
 		MSG_BOX("로드 성공");
 		CloseHandle(hFile);
 	}
+
+	TileManager::GetInstance()->Change_Stage(TILE_STAGE::TILE_DOCHER1);
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 	return S_OK;

@@ -42,12 +42,14 @@
 #define SCORPIONEVILSOUL_SPEED					2.f			//	±âº» ÀÌµ¿ ¼Óµµ
 #define SCORPIONEVILSOUL_HP						100.f		//	±âº» Ã¼·Â
 
+
 #define SCORPIONEVILSOUL_TRACKINGDIS			10.f			//	ÇÃ·¹ÀÌ¾î °¨Áö ¹üÀ§
 #define SCORPIONEVILSOUL_TRACKINGMIN			5.f			//  ÀÌ ÀÌ»ó °¡±î¿öÁö·ÁÇÏÁö ¾ÊÀ½
 #define SCORPIONEVILSOUL_TRACKING_TIME			1.f			//	°ø°Ý ÄðÅ¸ÀÓ					TRACKING	-> CASTING
 #define SCORPIONEVILSOUL_LOST_TIME				1.f			//	ÃßÀû ³õÄ¡´Â ½Ã°£				TRACKING	-> IDLE
 
 #define SCORPIONEVILSOUL_CASTING_TIME			1.5f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
+
 
 #define SCORPIONEVILSOUL_CHANNELING_TIME		0.5f
 

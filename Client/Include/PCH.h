@@ -86,6 +86,11 @@
 #include "Augment.h"
 #include "SpeechBubble.h"
 #include "Spawner.h"
+#include "Cheonlog.h"
+#include "CLcrystal.h"
+#include "CLEffect.h"
+#include "CLAttack.h"
+#include "Rain.h"
 #include "ShopKeeper.h"
 #include "ShopUI.h"
 
@@ -95,7 +100,9 @@
 #include "DebugScene.h"
 #include "MapScene.h"
 
+#include "DoCheolScene.h"
 #include "MiniGameScene.h"
+
 //////////////////////////////////////////// Manager
 #include "FontManager.h"
 #include "GUIManager.h"
