@@ -19,31 +19,26 @@ HRESULT Player::Ready_GameObject() {
 	_dashTime			= 0.f;
 	_dashG				= 30.f;
 	_speed				= 0.f;
-	///////////////////////// 광윤 추가 ~ 제가 추가한 변수들 초기화
+	_slideTime = 0.f;
+	_g = 30.f;
+	_frame = 1;
+	_arrowCount = 0;
+	_isStop = false;
+
+	// UI
 	_hp					= 5;
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
 	_crystal			= 0;
 	_token				= 2;
-	/////////////////////////
-	_slideTime			= 0.f;
-	_g					= 30.f;
-	_frame				= 1;
-	_arrowCount			= 0;
-	_isStop				= false;
-	{
-		_pStatus.hp				= 6;
-		_pStatus.Dash_Count = 3;
-		_pStatus.Sado_Count = 2;
-		_pStatus.Key = 1;
-		_pStatus.Money			= 0;
-		_pStatus.UpgradeStone	= 0;
+	_atk				= 1;
+	_critical			= 0;
+	_chargingSpeed		= 1.f;
+	_range				= 1.f;
+	_arrowSize			= 1.f;
+	_arrowSpeed			= 1.f;
 
-		_pStatus.atk			= 1;
-		_pStatus.critical		= 0.f;
-		_pStatus.maxBowRatio	= 1.f;
-	}
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
 
@@ -94,7 +89,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-	if (KEY_DOWN(DIK_N)) {
+	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
 		_frame = 0;
 		_pState = pState::STATE_DEATH;
@@ -104,6 +99,17 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_frameTick += _DT;
 	if (_isStop) return 0;
+
+	// 대시 리필
+	if (_dashstock == 3)
+		_dashRefillTimer = 0.f;
+	else {
+		_dashRefillTimer += _DT;
+		if (_dashRefillTimer > 3.f) {
+			_dashstock++;
+			_dashRefillTimer = 0.f;
+		}
+	}
 
 	switch (_pState)
 	{
@@ -118,14 +124,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		ATTACK_STATE(_DT);
 		break;
 	case pState::STATE_LANDING :
+		LANDING_STATE(_DT);
 		break;
 	case pState::STATE_DEATH:
-		//for (Bow* obj : _weaponSlot) {
-		//	obj->Set_Destroy();
-		//}
-		if (DEATH_STATE(_DT)) {
-			
-		}
+		DEATH_STATE(_DT);
 		break;
 	default:
 		break;
@@ -164,8 +166,47 @@ HRESULT Player::Component_Initialize() {
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
+}
+void Player::Reset()
+{
+	_defaultSpeed = 6.f;
+	_dashStart = false;
+	_dashTime = 0.f;
+	_dashG = 30.f;
+	_speed = 0.f;
+	_slideTime = 0.f;
+	_g = 30.f;
+	_frame = 1;
+	_arrowCount = 0;
+	_isStop = false;
+
+	// UI
+	_hp					= 5;
+	_dashstock			= 3;
+	_key				= 0;
+	_coin				= 0;
+	_crystal			= 0;
+	_token				= 2;
+	_equipNum			= 0; // 지금 장착한 무기 idx
+	_atk				= 1;
+	_critical			= 0;
+	_chargingSpeed		= 1.f;
+	_range				= 1.f;
+	_arrowSize			= 1.f;
+	_arrowSpeed			= 1.f;
+	_maxArrow			= 1.f;
+
+	for (int i = 1; i < 4; i++) {
+		if (_weaponSlot[i] != nullptr) {
+			_weaponSlot[i]->Set_Destroy();
+			_weaponSlot[i] = nullptr;
+		}
+	}
+
+	_weaponSlot[0]->Set_Bow_Equip(true);
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
@@ -382,15 +423,6 @@ void Player::IDLE_STATE(const _float& _DT)
 			}
 		}
 	}
-	//if (MOUSE_LBUTTON)
-	//{
-	//	_vec3	vPickPos = RayOnTerrain();
-	//	_vec3	vDir = vPickPos - *Component_Transform->Get_Position();
-	//
-	//	//Component_Transform->Move_Pos(D3DXVec3Normalize(&vDir, &vDir), 10.f, _DT);
-	//	// vDir = (플레이어 -> 피킹 위치) 방향
-	//}
-	///////////////////////////////////////////////////////////////////////////////////////////////
 }
 void Player::DASH_STATE(const _float& _DT)
 {
@@ -494,6 +526,7 @@ void Player::DASH_STATE(const _float& _DT)
 		_pState = pState::STATE_IDLE;
 		_speed = 0;
 		_dashTime = 0.f;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
 	}
 		
 }
@@ -512,10 +545,12 @@ void Player::ATTACK_STATE(const _float& _DT)
 	GetCursorPos(&point);
 	ScreenToClient(hWnd, &point);
 
-	if (MOUSE_RBUTTON) {
+	if (MOUSE_RBUTTON && _dashstock > 0 ) {
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
@@ -714,12 +749,25 @@ void Player::ATTACK_STATE(const _float& _DT)
 		Component_Transform->Move_Pos(D3DXVec3Normalize(&rightDir, &rightDir), _speed, _DT);
 	}
 }
+void Player::LANDING_STATE(const _float& _DT)
+{
+	_eState = eState::STATE_LAND;
+
+	if (_frame == 10) {
+		_pState = pState::STATE_IDLE;
+		_eState = eState::STATE_STANDING;
+		_see = pSee::SEE_DOWN;
+	}
+}
 bool Player::DEATH_STATE(const _float& _DT)
 {
 	_eState = eState::STATE_DEAD;
 
-	if (_frame == 12)
-		return true;
+	if (KEY_DOWN(DIK_T)) {
+		Reset();
+		_frame = 0;
+		_pState = pState::STATE_LANDING;
+	}
 
 	return false;
 }
@@ -727,10 +775,12 @@ void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	if (MOUSE_RBUTTON) {
+	if (MOUSE_RBUTTON && _dashstock > 0) {
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 	else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
@@ -987,6 +1037,11 @@ void Player::SetGrahpic()
 		if (_frame > 12) _frame = 12;
 		wsprintfW(FileName, L"Player_Death%d.png", _frame);
 		Anim(FileName, 0.1f, 12);
+		break;
+	case eState::STATE_LAND:
+		if (_frame > 10) _frame = 10;
+		wsprintfW(FileName, L"Player_Landing%d.png", _frame);
+		Anim(FileName, 0.1f, 10);
 		break;
 	}
 }

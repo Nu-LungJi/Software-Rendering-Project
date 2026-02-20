@@ -85,7 +85,10 @@ private:
 	_int		_Charge;
 	_int		_Charging;
 	_float		_ChargingTime;
-
 	_float		_chargingTime;
+
+	int*		_playerAtk;
+	int*		_playerCritical;
+	float*		_playerChargingSpeed;
 };
 

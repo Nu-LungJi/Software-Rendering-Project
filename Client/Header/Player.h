@@ -55,6 +55,7 @@ enum class eState
 	STATE_SLIDE,
 	STATE_VICTORY,
 	STATE_DEAD,
+	STATE_LAND,
 
 	End
 };
@@ -80,18 +81,6 @@ enum class mousePos
 
 	End
 };
-typedef struct playerStatus {
-	_uint	hp;
-	_uint	Dash_Count;
-	_uint	Sado_Count;
-	_uint	Key;
-	_uint	Money;
-	_uint	UpgradeStone;
-
-	_uint	atk;
-	_float	critical;
-	float	maxBowRatio;
-}PSTATUS;
 
 class Player : public GameObject {
 private:
@@ -107,6 +96,7 @@ public:
 
 private:
 	HRESULT			Component_Initialize();
+	void			Reset();
 private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;
@@ -114,7 +104,6 @@ private:
 	StateMachine*	Component_FSM;
 	Collider*		Component_Collider;
 public:
-	PSTATUS*		Get_Status()		{ return &_pStatus; }								// 플레이어 스테이터스
 	BowType			Get_Weapon_Type()	{ return _weaponSlot[_equipNum]->Get_Bow_Type(); }	// 현재 장착한 활 타입
 	BowStat*		Get_CurBow_Stat()	{ return _weaponSlot[_equipNum]->Get_Bow_Stat(); }	// 현재 장착한 활 스텟
 
@@ -148,6 +137,27 @@ public:
 	int		Get_Token() { return _token; }
 	void	Set_Token(INT _value) { _token = _value; }
 
+	int*	Get_Atk() { return &_atk; }
+	void	Set_Atk(int atk) { _atk = atk; }
+
+	int*	Get_Critical() { return &_critical; }
+	void	Set_Critical(int critical) { _critical = critical; }
+
+	float*	Get_ChargingSpeed() { return &_chargingSpeed; }
+	void	Set_ChargingSpeed(int chargingSpeed) { _chargingSpeed = chargingSpeed; }
+
+	float*	Get_Range() { return &_range; }
+	void	Set_Range(int range) { _range = range; }
+
+	float*	Get_ArrowSize() { return &_arrowSize; }
+	void	Set_ArrowSize(int arrowSize) { _arrowSize = arrowSize; }
+
+	float*	Get_ArrowSpeed() { return &_arrowSpeed; }
+	void	Set_ArrowSpeed(int arrowSpeed) { _arrowSpeed = arrowSpeed; }
+
+	float*	Get_MaxArrow() { return &_maxArrow; }
+	void	Set_MaxArrow(int maxArrow) { _maxArrow = maxArrow; }
+
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	_vec3			Get_MouseDir();
@@ -165,6 +175,7 @@ private:
 	void			IDLE_STATE(const _float& _DT);
 	void			DASH_STATE(const _float& _DT);
 	void			ATTACK_STATE(const _float& _DT);
+	void			LANDING_STATE(const _float& _DT);
 	bool			DEATH_STATE(const _float& _DT);
 	void			Idle_Final_Input(const _float& _DT);
 
@@ -176,34 +187,41 @@ private:
 	bool			Debug;
 	float			_cameraAngle;
 
-	PSTATUS			_pStatus;
 	pState			_pState;
 	eState			_eState;
 	pSee			_see;
 
 	_uint			_frame;
 	float			_frameTick;
-
 	bool			_dashStart;
 	float			_defaultSpeed;
 	float			_dashTime;
 	float			_dashG;
 	float			_speed;
-	////////////////////// 광윤 추가
+	float			_g;
+	float			_slideTime;
+	_vec3			_pulsepos;
+	float			_attackDelay;
+	int				_arrowCount;
+	bool			_isStop;
+
+	float			_dashRefillTimer;
+
+	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
 	int				_key;			// 플레이어 key
 	int				_coin;			// 플레이어 coin
 	int				_crystal;		// 플레이어 crystal
 	int				_token;			// 플레이어 스킬 횟수(다이아몬드 모양)
-	bool			_isStop;
-	/////////////////////
-	float			_g;
-	float			_slideTime;
+	int				_atk;			// 공격력
+	int				_critical;		// 크리티컬확율 ex) 30퍼면 30
+	float			_chargingSpeed; // 차징 스피드 ex) 0.5면 2배 빨라짐, 왠만하면 0.5로 차징 애니메이션 때문에
+	float			_range;			// 사거리 ex) 1.5면 1.5배 증가
+	float			_arrowSize;		// 화살 크기 ex) 1.5면 1.5배 증가
+	float			_arrowSpeed;	// 화살 스피드 ex) 1.5면 1.5배 증가
+	float			_maxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
 
-	_vec3			_pulsepos;
-	float			_attackDelay;
-	int				_arrowCount;
 
 	Bow*			_weaponSlot[4];
 	GameObject*		_artifactSlot[4];

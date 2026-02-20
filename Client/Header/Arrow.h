@@ -50,8 +50,13 @@ private:
 
 private:
 	ArrowType	_type;
+	BowType		_bowType;
 	int			_hp;
 	_float		_originAngle;
+
+	float*		_playerRange;
+	float*		_playerArrowSize;
+	float*		_playerArrowSpeed;
 
 	_vec3		_playerPos;
 	float		_angle;

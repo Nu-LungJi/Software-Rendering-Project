@@ -25,13 +25,22 @@ HRESULT Bow::Ready_GameObject()
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
 	_Charging = 0;
-	_chargingTime = 2.f;
 
 	return S_OK;
 }
 
 INT Bow::Update_GameObject(const _float& _DT)
 {
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+	_playerAtk = player->Get_Atk();
+	_playerCritical = player->Get_Critical();
+	_playerChargingSpeed = player->Get_ChargingSpeed();
+
+	_Stat.maxArrow *= (*player->Get_MaxArrow());
+	_chargingTime = 2.f;
+	_chargingTime *= *_playerChargingSpeed;
+
 	if (_isDestroied) return -1;
 
 	if (_lateReady) {
@@ -503,12 +512,9 @@ void Bow::Late_Ready()
 		break;
 	}
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	PSTATUS* playerStatus = player->Get_Status();
-
+	
 	// 최대 화살 수
-	_Stat.maxArrow *= playerStatus->maxBowRatio;
-	_Stat.minAtk += playerStatus->atk;
-	_Stat.maxAtk += playerStatus->atk;
+	_Stat.maxArrow *= (*player->Get_MaxArrow());
 }
 
 void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
@@ -518,7 +524,9 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	std::random_device rd;
 	std::uniform_int_distribution<int> distribution(0, 100);
 
-	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk;
+	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk + *_playerAtk;
+
+	if (distribution(rd) % 100 < *_playerCritical) arrowAtk *= 2;
 
 	GameObject* arrow = nullptr;
 

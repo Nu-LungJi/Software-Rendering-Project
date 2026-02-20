@@ -9,6 +9,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 {
     if (FAILED(Component_Initialize())) return E_FAIL;
 
+    _bowType = _BOWTYPE;
     _speed = 15.f;
     _sumSpeed = 0.f;
     _lifeTime = 0.f;
@@ -58,6 +59,12 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 
     if (_type == ArrowType::IceCharging) _size = 1.5f;
 
+    Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+    _playerRange = player->Get_Range();
+    _playerArrowSize = player->Get_ArrowSize();
+    _playerArrowSpeed = player->Get_ArrowSpeed();
+
     return S_OK;
 }
 
@@ -68,7 +75,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     if (_hp <= 0){
         _vec3 Size = { 2.f, 2.f, 2.f };
         _vec3 effectPos = *Component_Transform->Get_Position();
-
+        Size *= (*_playerArrowSize);
         switch (_type) {
         case ArrowType::FairyArrow:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ARROW_HITEFFECT, &effectPos, 0.5f, Size, false);
@@ -115,12 +122,14 @@ INT Arrow::Update_GameObject(const _float& _DT)
 
         if (_effectDelay > 0.5f) {
             _vec3 Size = { 1.5f, 1.5f, 1.5f };
+            Size *= (*_playerArrowSize);
             _vec3 effectPos = *Component_Transform->Get_Position();
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_WAVE_EFFECT, &effectPos, 0.5f, Size, false);
             _effectDelay = 0.f;
         }
         if (_ThunderDelay > 1.5f) {
             _vec3 Size = { 3.f, 6.f, 3.f };
+            Size *= (*_playerArrowSize);
             _vec3 effectPos = *Component_Transform->Get_Position();
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 1.f, Size, false);
             _ThunderDelay = 0.f;
@@ -145,8 +154,10 @@ INT Arrow::Update_GameObject(const _float& _DT)
         maxLifeTime = 3.f;
         break;
     }
+    maxLifeTime = maxLifeTime * (*_playerRange) / (*_playerArrowSpeed);
     if (_lifeTime > maxLifeTime) {
         _vec3 Size = { 2.f, 2.f, 2.f };
+        Size *= (*_playerArrowSize);
         _vec3 effectPos = *Component_Transform->Get_Position();
 
         switch (_type) {
@@ -180,6 +191,20 @@ INT Arrow::Update_GameObject(const _float& _DT)
         _vec3 at = cameraDir;
         _vec3 up = { 0.f, 1.f, 0.f };
 
+        switch (_bowType)
+        {
+        case BowType::FairyBow:
+            _size = 0.8f;
+            break;
+        case BowType::EvilHeadBow:
+            _size = 0.6f;
+            break;
+        default:
+            _size = 1.f;
+            break;
+        }
+        _size *= (*_playerArrowSize);
+        Component_Collider->Set_Scale(_size * 0.5f, _size * 0.5f, _size * 0.5f);
         _matrix matSize;
         D3DXMatrixIdentity(&matSize);
         D3DXMatrixScaling(&matSize, _size, _size, _size);
@@ -213,7 +238,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 5.f - _evilMoveTime * 1.f;
             break;
         }
-        _sumSpeed += _DT * _speed;
+        _sumSpeed += _DT * _speed * (*_playerArrowSpeed);
         matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
         matWorld._42 = _playerPos.y;
         matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
@@ -225,7 +250,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _evilMoveTime += _DT;
 
             float wavePower = 1.f;
-            float waveSpeed = 5.f;
+            float waveSpeed = 5.f * (*_playerArrowSpeed);
 
             float wave = sinf(_evilMoveTime * waveSpeed) * wavePower;
 
