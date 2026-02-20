@@ -19,11 +19,9 @@ HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
 		m_fHeight = 0.03f;
 		break;
 	case 3:
-
 		m_fHeight = 0.024f;
 		break;
 	case 4:
-
 		m_fHeight = 0.035f;
 		break;
 	}
@@ -87,7 +85,6 @@ VOID CXZTile::Render_GameObject()
 		break; 
 	case TILE_STATE::STATE_DESTORY:
 		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
-
 		break;
 	case TILE_STATE::STATE_ANIMATION:
 		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
@@ -240,6 +237,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 	case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
 		//Tile_Destory(_DT);
 		//Crash_Arrow();
+		Crash_Player();
 		break;
 	case TILE_STATE::STATE_POTAL:
 		Tile_Potal(_DT);
@@ -364,10 +362,7 @@ void CXZTile::Tile_Trigger()
 	if (Crash_Player() != nullptr)
 	{
 		TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
-		TileManager::GetInstance()->Set_Trigger(m_pTileInfo->Get_TileStage(),
-			m_pTileInfo->Get_TileMode(), TILE_STATE::STATE_POTALEFFECT);
 	}
-
 }
 void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
 {
@@ -377,7 +372,6 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
 	Rot = *m_pTransform->Get_Rotation();
 	Transform* pTransform = Crash_Player();
 	TileDestoryEffect* pEffect = nullptr;
-	
 	
 	if (m_pTileInfo->Get_PotalOpen() && !m_bStopFrame)
 	{
@@ -395,7 +389,7 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
 }
 void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
 {
-
+	//둥둥 떠다니는 오브젝트
 	if (eid == TILE_STAGE::TILE_DOCHER1 || eid == TILE_STAGE::TILE_DOCHER2 || eid == TILE_STAGE::TILE_DOCHERBOSS)
 	{
 		_vec3 vPos;
@@ -414,8 +408,6 @@ void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
 			}
 		}
 		
-
-
 		vPos.y += m_fHeightSpeed;
 
 		m_pTransform->Set_Pos(vPos);
@@ -425,7 +417,7 @@ void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
 }
 Transform* CXZTile::Crash_Player()
 {
-	_vec3 vPos{}, vTilePos{};
+	_vec3 vPos{}, vTilePos{},vScale,vRot,vPlayerScale;
 	//플레이어와 부딪히면 다음 좌표로 이동
 	Transform* pPlayer = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 	Player* OriginPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
@@ -433,19 +425,62 @@ Transform* CXZTile::Crash_Player()
 	pPlayer->Get_Info(INFO_POS, &vPos);
 	
 	m_pTransform->Get_Info(INFO_POS, &vTilePos);
+	vScale = *m_pTransform->Get_Scale();
+	vRot = *m_pTransform->Get_Rotation();
+	vPlayerScale = *pPlayer->Get_Scale();
+		
+	_float fWidth = fabsf(vPos.x  - vTilePos.x);
+	_float fHeight = fabsf(vPos.z - vTilePos.z);
 
-	if (vPos.x  > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z  < vTilePos.z + 1 && vTilePos.y < 2)
+	_float fTileX = (vScale.x * D3DXToRadian(vRot.x) + vPlayerScale.x) * 0.5f;
+	_float fTileZ = (vScale.z * D3DXToRadian(vRot.z) + vPlayerScale.z) * 0.5f;
+
+	if (fTileX >= fWidth && fTileZ >= fHeight)
 	{
+		if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_COLLISION || m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_DESTORY || m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_POTALEFFECT)
+		{
+			_float fHalfx = fTileX - fWidth;
+			_float fHalfz = fTileZ - fHeight;
+
+			if (fHalfx > fHalfz)
+			{
+				if (vPos.z < vTilePos.z)
+				{
+					vPos.z -= fHalfz + 0.01f;
+					pPlayer->Set_Pos(vPos);
+				}
+				else
+				{
+					vPos.z += fHalfz + 0.01f;
+					pPlayer->Set_Pos(vPos);
+				}
+			}
+			else
+			{
+
+				if (vPos.x < vTilePos.x)
+				{
+					vPos.x -= fHalfx + 0.01f;
+					pPlayer->Set_Pos(vPos);
+				}
+				else
+				{
+					vPos.x += fHalfx + 0.01f;
+					pPlayer->Set_Pos(vPos);
+				}
+			}
+			return pPlayer;
+		}
 		return pPlayer;
 	}
-
-
+	else
 	return nullptr;
+
+	
 }
 Transform* CXZTile::Crash_Arrow()
 {
 	_vec3 vPos{}, vTilePos{};
-	//플레이어와 부딪히면 다음 좌표로 이동
 	Arrow* pPArrow = nullptr;
 	pPArrow = dynamic_cast<Arrow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerArrow"));
 	if (pPArrow == nullptr)

@@ -10,7 +10,7 @@ private:
 	virtual ~CLAttack();
 
 public:
-	virtual			HRESULT		Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook);
+	virtual			HRESULT		Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin);
 	virtual			INT			Update_GameObject(const _float& _DT);
 	virtual			void		LateUpdate_GameObject(const _float& _DT);
 	virtual			void		Render_GameObject();
@@ -25,6 +25,9 @@ public:
 	void					 Leaf_First(const _float& _DT);
 	void				     Leaf_Second(const _float& _DT);
 	void				     Leaf_Third(const _float& _DT);
+	void					 Leaf_Four(const _float& _DT);
+	void					 Leaf_Bill(const _float& _DT);
+
 private:
 	_float							m_FrameTick;
 	_float							m_fAttackTick;
@@ -39,6 +42,7 @@ private:
 	_vec3							m_vRight;
 	_vec3							m_vPlayerPos;
 	_bool					        m_bCheck;
+	_bool							m_bSpin;
 private:
 	LEAF_ATTACK						m_eLeaf;
 private:
@@ -49,7 +53,7 @@ private:
 	vector<IDirect3DBaseTexture9*>	TextureList;
 
 public:
-	static CLAttack* Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook);
+	static CLAttack* Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin = false);
 	BOOL			 OnCollisionEnter(GameObject* _Other);
 private:
 	virtual void Free();

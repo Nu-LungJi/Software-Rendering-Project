@@ -290,5 +290,6 @@ VOID Bat::State_Channeling(const _float& _DT)
 VOID Bat::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

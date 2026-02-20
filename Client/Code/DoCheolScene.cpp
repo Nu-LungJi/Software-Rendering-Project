@@ -40,7 +40,7 @@ HRESULT	DoCheolScene::Ready_Scene() {
 		_int		     iTileTextureCnt = 0;
 		_vec3			 vNextPos = {};
 		_bool		     bAni = false;
-		TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
+		TILE_SPAWNER	 eSpawn = TILE_SPAWNER::SPAWN_END;
 
 		TileManager::GetInstance()->Reset_TileList();
 		while (true)
@@ -89,6 +89,7 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			if (0 == dwByte)
 				break;
 		}
+		TileManager::GetInstance()->Set_StageCnt();
 		MSG_BOX("로드 성공");
 		CloseHandle(hFile);
 	}

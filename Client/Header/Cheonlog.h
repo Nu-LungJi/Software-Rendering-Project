@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 
-enum  CL_CHECK { IDEL, ATTACK_A, ATTACK_B, ATTACK_C, CHECK_END };
+enum  CL_CHECK { IDEL, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHECK_END };
 enum  CL_STATU { CL_IDELR, CL_LJUMP, CL_RJUMP, CL_END};
 
 class Cheonlog : public GameObject
@@ -25,6 +25,9 @@ private:
 	void        Texture_Initalize(_int iCnt, const _tchar* pName, CL_STATU CheongLog);
 	void		Set_Statu();
 	void	    Change_Statu(const _float& _DT, _int iMaxCnt);
+	void		Change_Pattern(const _float& _DT);
+	void		Reset_Pattern(CL_CHECK eCheck, CL_STATU eStatu);
+
 	void		AttackLeaf_First(const _float& _DT, _vec3 vPos);
 	void		AttackLeaf_Second(const _float& _DT, _vec3 vPos);
 	void		AttackLeaf_Third(const _float& _DT, _vec3 vPos);
@@ -34,7 +37,7 @@ private:
 	_bool		Create_Leaf(const _float& _DT);
 	void		Create_Leaf_Third(_vec3 vPos);
 	void	    Create_Leaf_Third_S(_vec3 vPos);
-	void		Create_Leaf_Four(_vec3 vPos);
+	void		Create_Leaf_Four(_vec3 vPos, _float fRot);
 
 	void		CL_Jump(const _float& _DT, _int iMaxCnt);
 	void		CL_JumpCenter(const _float& _DT, _int iMaxCnt);
@@ -47,7 +50,7 @@ public:
 public:
 	void        Debug_ButtonStyle();
 	void        Debug_Button(const char pName[32], _vec3* vPivot, _float iLinePivot);
-
+			
 private:
 	Buffer*		Component_Buffer;
 	Transform*  Component_Transform;
@@ -62,10 +65,12 @@ private:
 
 	_float			m_frameTick;
 	_float			m_frameAttack;
+	_float			m_framePattern;
 	_float			m_fAttackSecondTick;
 	_float			m_fRotY;
 
-	_int			m_iFrameCnt;
+	_int			m_iFrameCnt;			
+	_int			m_iNextSkill;
 	_int			m_iSkillDelay;
 	_int			m_iSkillMaxCnt;
 	_int			m_iSkillCnt;

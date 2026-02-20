@@ -80,8 +80,7 @@ HRESULT	MapScene::Ready_Scene() {
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 				->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 		}
-		if (eSpawn == TILE_SPAWNER::MONSTER_SPAWN1)
-			int i = 0;
+		
 		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
@@ -92,6 +91,7 @@ HRESULT	MapScene::Ready_Scene() {
 			break;
 	}
 	
+	TileManager::GetInstance()->Set_StageCnt();
 	MSG_BOX("로드 성공");
 	CloseHandle(hFile);
 }
@@ -129,7 +129,6 @@ HRESULT MapScene::Ready_Enviroment_Layer(CONST TCHAR* _LTAG) {
 	return S_OK;
 }
 HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
-	
 	
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");

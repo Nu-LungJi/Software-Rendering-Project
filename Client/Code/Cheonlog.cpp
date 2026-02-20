@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
+Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
 Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
 Cheonlog::~Cheonlog() {}
 
@@ -24,6 +24,7 @@ INT	Cheonlog::Update_GameObject(const _float& _DT)
 void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
+	//Change_Pattern(_DT);
 	Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
@@ -110,14 +111,15 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	//}
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_L))
 	{
-		m_eStatu = CL_IDELR;
-		m_eCheck = ATTACK_C;
+		vPos += { 1.1f, 1.5f, 3.3f };
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_SPIN, vPos, FALSE, { 1.0f,1.0f,1.0f }, { 45,0,0 },0.08));
+		m_EndEffect = true;
 		m_iFrameCnt = 0;
 	}
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_M))
 	{
 		m_eStatu = CL_IDELR;
-		m_eCheck = ATTACK_B;
+		m_eCheck = ATTACK_D;
 		m_iFrameCnt = 0;
 	}
 	//이동 모션 관련
@@ -155,6 +157,9 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	case ATTACK_C:
 		AttackLeaf_Third(_DT, vPos);
 		break;
+	case ATTACK_D:
+		AttackLeaf_Four(_DT, vPos);
+		break;
 	}
 
 	static _float fMin(-100), fMax(100);
@@ -178,6 +183,63 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 
 }
 
+void Cheonlog::Change_Pattern(const _float& _DT)
+{
+	if (m_iNextSkill < 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		m_framePattern += _DT;
+		if (m_framePattern > 4)
+		{
+			Reset_Pattern(ATTACK_A, CL_IDELR);
+			return;
+		}
+	}
+	
+	if (m_iNextSkill == 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		m_framePattern += _DT;
+		if (m_framePattern > 3)
+		{
+			Reset_Pattern(IDEL, CL_RJUMP);
+			return;
+		}
+	}
+	if (m_iNextSkill == 4 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		m_framePattern += _DT;
+		if (m_framePattern > 2)
+		{
+			Reset_Pattern(ATTACK_B, CL_IDELR);
+			return;
+		}
+	}
+	if (m_iNextSkill == 5 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		m_framePattern += _DT;
+		if (m_framePattern > 8)
+		{
+			Reset_Pattern(ATTACK_C, CL_IDELR);
+			return;
+		}
+	}
+	if (m_iNextSkill == 6 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		if (m_framePattern > 5)
+		{
+			m_framePattern = 0.f;
+			m_iNextSkill = 0;
+		}
+	}
+}
+void Cheonlog::Reset_Pattern(CL_CHECK eCheck, CL_STATU eStatu)
+{
+	m_iFrameCnt = 0;
+	m_EndEffect = true;
+	m_eCheck = eCheck;
+	m_eStatu = eStatu;
+	++m_iNextSkill;
+}
+
 void Cheonlog::AttackLeaf_First(const _float& _DT, _vec3 vPos)
 {
 	//뿔 위에있는 수정 + 뿔 주변에있는 전기 이펙트
@@ -198,7 +260,6 @@ void Cheonlog::AttackLeaf_First(const _float& _DT, _vec3 vPos)
 	}
 
 }
-
 void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 {
 	m_frameAttack += _DT;
@@ -276,7 +337,6 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 		break;
 	}
 }
-
 void Cheonlog::AttackLeaf_Third(const _float& _DT, _vec3 vPos)
 {
 	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
@@ -322,13 +382,25 @@ void Cheonlog::AttackLeaf_Four(const _float& _DT, _vec3 vPos)
 {
 	if (m_EndEffect)
 	{
-		vPos += { 1.1f, 1.5f, 3.7f };
+		vPos += { 1.1f, 1.5f, 3.3f };
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_SPIN, vPos, FALSE));
 		m_EndEffect = false;
 	}
+
+	if (!m_EndEffect)
+	{
+		m_frameAttack += _DT;
+		if (m_frameAttack > 0.3)
+		{
+			m_frameAttack = 0;
+			Create_Leaf_Four(vPos, 90);
+			Create_Leaf_Four(vPos, 180);
+			Create_Leaf_Four(vPos, 270);
+		}
+
+	}
+
 }
-
-
 
 void Cheonlog::Create_Crystal()
 {
@@ -480,9 +552,24 @@ void Cheonlog::Create_Leaf_Third_S(_vec3 vPos)
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
 
 }
-void Cheonlog::Create_Leaf_Four(_vec3 vPos)
+void Cheonlog::Create_Leaf_Four(_vec3 vPos, _float fRot)
 {
+	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
+	_matrix RotY;
+	CLAttack* pAttack = nullptr;
 
+	vPos += { 1.1f, 1.5f, 3.3f };
+	TCHAR tChar[128] = {};
+	++m_iBulletCnt;
+	m_fRotY += 3;
+	wsprintf(tChar, L"CL_Leaf%d", m_iBulletCnt);
+	D3DXVec3Normalize(&vLook, &vLook);
+	D3DXMatrixRotationY(&RotY, D3DXToRadian(fRot+ m_fRotY));
+	D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
+	pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_FOUR, vPos, vLookReset);
+	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	pAttack->Set_ObjectTag(tChar);
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
 }
 
 void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
@@ -491,7 +578,11 @@ void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 
 	Component_Transform->Get_Info(INFO_POS, &vRight);
 	m_frameTick += _DT;
-	_int iRand = rand() % 3;
+	_int iRand   = rand() % 3;
+	_int iRandPM = rand() % 2;
+
+	if(iRandPM == 0) iRand *= -1;
+	
 	vRight = { -1.f,0.f,(_float)iRand };
 
 	Component_Transform->Move_Pos(&vRight, 8.f, _DT);

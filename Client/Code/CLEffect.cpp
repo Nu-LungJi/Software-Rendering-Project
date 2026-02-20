@@ -1,17 +1,14 @@
 #include "../Include/PCH.h"
 
-CLEffect::CLEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_TextureIndex(0), m_iCnt(0), m_FrameTick(0.f), m_bDead(false){}
+CLEffect::CLEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_iBulletCnt(0),m_fRotY(0.f), m_fAngle(0.f), m_TextureIndex(0), m_iCnt(0), m_FrameTick(0.f), m_bDead(false){}
 CLEffect::CLEffect(const GameObject& _RHS) : GameObject(_RHS), m_TextureIndex(0), m_FrameTick(0.f) {}
 CLEffect::~CLEffect() {}
 
-HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame) {
+HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook) {
 	if (FAILED(Component_Initialize(eEffect))) return E_FAIL;
 
 	_bool AngleChase = true;
 
-	m_eEffect = eEffect;
-	m_bDead = bDead;
-	m_fFrame = fFrame;
 	switch (eEffect)
 	{
 	case CL_EFFECT::LEFT_HORN:
@@ -36,13 +33,21 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 		Make_TextureList(L"Spr_Effect_Cheonlog_ChargeAccelReturn_Birth01_0");
 		break;
 	case CL_EFFECT::LEAF_SPIN:
-		Make_TextureList(L"Spr_Effect_No033_Cheonlog'sHornHitEffect_0");
+		Make_TextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Loop_0");
+		break;
+	case CL_EFFECT::LEAF_SPIN_DEATH:
+		Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlower_Death_0");
 		break;
 	}
 	m_vScale = vScale;
 	Component_Transform->Set_Pos(vPos);
 	Component_Transform->Set_Rotation(vRot);
 	Component_Transform->Set_Scale(vScale);
+	m_vPos = vPos;
+	m_vLook = vLook;
+	m_eEffect = eEffect;
+	m_bDead = bDead;
+	m_fFrame = fFrame;
 	return S_OK;
 }
 
@@ -63,9 +68,11 @@ INT  CLEffect::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 	Move_Frame(_DT);
 	Move_Pos();
+
 	return 0;
 }
 void CLEffect::LateUpdate_GameObject(const _float& _DT) {
+
 
 }
 void CLEffect::Render_GameObject() {
@@ -81,13 +88,10 @@ void CLEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_STENCILENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
-void CLEffect::Move_Frame(const _float& _DT)
+void CLEffect::Move_Normal(const _float& _DT)
 {
-	m_FrameTick += _DT;
-
-	if (m_FrameTick > m_fFrame && CL_EFFECT::LEAF_EXPLOSION_CIRCLE != m_eEffect)
+	if (m_FrameTick > m_fFrame)
 	{
-
 		++m_TextureIndex;
 		m_FrameTick = 0.f;
 		if (m_eEffect == CL_EFFECT::LEAF_CHARGING)
@@ -102,53 +106,102 @@ void CLEffect::Move_Frame(const _float& _DT)
 			if (m_bDead)
 			{
 				Set_ObjectDead(m_bDead);
-				Cheonlog* pCL = dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"));
 			}
 		}
 	}
-
-	if (CL_EFFECT::LEAF_EXPLOSION_CIRCLE == m_eEffect && m_bDead == FALSE)
+}
+void CLEffect::Move_Frame(const _float& _DT)
+{
+	m_FrameTick += _DT;
+	_vec3 vRot, vPos, vScale;
+	_matrix matRotZ, matWorld,matRotY, matScale,matInverse,matBill;
+	vRot = *Component_Transform->Get_Rotation();
+	switch (m_eEffect)
 	{
-		if (m_FrameTick > m_fFrame)
+	case CL_EFFECT::LEAF_FIRST:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::CL_BODY:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::LEFT_HORN:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::RIGHT_HORN:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::LEAF_EXPLOSION:
+		Move_Normal(_DT);
+		Component_Transform->Get_Info(INFO_POS, &vPos);
+		if (m_TextureIndex == 16)
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,-0.2f,vPos.z - 3 }, TRUE, { 6,0,5 }, { 20,0,0 }, 0.1f));
+		if (m_TextureIndex == 25)
+			Component_Transform->Set_Scale(5.f, 5.f, 5.f);
+		break;
+	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
+		if (m_bDead == FALSE)
+		{
+			if (m_FrameTick > m_fFrame)
+			{
+				++m_TextureIndex;
+				m_FrameTick = 0.f;
+				++m_iCnt;
+			}
+			if (m_TextureIndex > TextureList.size() - 1)
+			{
+				m_TextureIndex = TextureList.size() - 1;
+			}
+			if (m_iCnt > 17)
+				Set_ObjectDead(TRUE);
+		}
+		else if (m_bDead == TRUE)
 		{
 			++m_TextureIndex;
 			m_FrameTick = 0.f;
-			++m_iCnt;
-		}
 
-		if (m_TextureIndex > TextureList.size() - 1)
-		{
-			m_TextureIndex = TextureList.size() - 1;
-		}
-		if(m_iCnt > 17)
-			Set_ObjectDead(TRUE);
-	}
-	else if (CL_EFFECT::LEAF_EXPLOSION_CIRCLE == m_eEffect && m_bDead == TRUE)
-	{
-		++m_TextureIndex;
-		m_FrameTick = 0.f;
-
-		if (m_TextureIndex > TextureList.size() - 1)
-		{
-			m_TextureIndex = 0;
-
-			if (m_bDead)
+			if (m_TextureIndex > TextureList.size() - 1)
 			{
-				Set_ObjectDead(m_bDead);
+				m_TextureIndex = 0;
+
+				if (m_bDead)
+				{
+					Set_ObjectDead(m_bDead);
+				}
 			}
 		}
-	}
+		break;
+	case CL_EFFECT::LEAF_SPIN:
+		if (m_FrameTick > m_fFrame && CL_EFFECT::LEAF_SPIN == m_eEffect && m_TextureIndex != 5)
+		{
+			m_FrameTick = 0.f;
+			m_vScale += {0.3f, 0.3f, 0.3f};
+			Component_Transform->Set_Scale(m_vScale);
+			++m_TextureIndex;
+		}
+		else
+		{
+			m_fAngle += 3.f;
+			vScale = *Component_Transform->Get_Scale();
+			D3DXMatrixScaling(&matScale, vScale.x, vScale.y, vScale.z);
+			D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(m_fAngle));
 
-	if (CL_EFFECT::LEAF_EXPLOSION == m_eEffect)
-	{
-		_vec3 vPos;
-		Component_Transform->Get_Info(INFO_POS, &vPos);
-		if(m_TextureIndex == 16)
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE,{ vPos.x,-0.2f,vPos.z-3 }, TRUE, {6,0,5}, {20,0,0}, 0.1f));
+			matWorld = *Component_Transform->Get_World();
+			GRPDEV->GetTransform(D3DTS_VIEW, &matInverse);
+			D3DXMatrixInverse(&matBill, nullptr, &matInverse);
 
-		if (m_TextureIndex == 25)
-			Component_Transform->Set_Scale(5.f, 5.f, 5.f);
-		
+			matWorld = matScale * matRotZ * matBill;
+			memcpy(matWorld.m[3], m_vPos, sizeof(_vec3));
+
+			Component_Transform->Set_World(&matWorld);
+			Component_Transform->Set_Pos(matWorld._41, matWorld._42, matWorld._43);
+		}
+		break;
+	case CL_EFFECT::LEAF_SPIN_DEATH:
+		Move_Normal(_DT);
+		Effect_Bill();
+		Effect_Dead_After(LEAF_ATTACK::LEAF_SECOND, m_vLook,true);
+		Effect_Dead_After(LEAF_ATTACK::LEAF_THIRD,  *D3DXVec3TransformNormal(&vRot, &m_vLook,D3DXMatrixRotationY(&matRotY,D3DXToRadian(90))), true);
+		break;
 	}
 }
 
@@ -169,6 +222,35 @@ void CLEffect::Move_Pos()
 		break;
 	}
 
+}
+void CLEffect::Effect_Bill()
+{
+	_matrix matScale, RotZ, matWorld, matBill, matView;
+
+	matWorld = *Component_Transform->Get_World();
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+	D3DXMatrixInverse(&matBill, nullptr, &matView);
+
+	D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
+
+	matWorld = matScale * matBill;
+
+	memcpy(matWorld.m[3], m_vPos, sizeof(_vec3));
+	Component_Transform->Set_World(&matWorld);
+	Component_Transform->Set_Pos({ matWorld._41 , matWorld._42, matWorld._43 });
+}
+void CLEffect::Effect_Dead_After(LEAF_ATTACK eid, _vec3 vLook, _bool bSpin)
+{
+	if (Get_ObjectDead() == TRUE)
+	{
+		CLAttack* pAttack = nullptr;
+		TCHAR tChar[128] = {};
+		wsprintf(tChar, L"CL_Leaf%d", m_iBulletCnt);
+		pAttack = CLAttack::Create(GRPDEV, eid, m_vPos, vLook, bSpin);
+		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+		pAttack->Set_ObjectTag(tChar);
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
+	}
 }
 void CLEffect::Pos_Check(_float x, _float y, _float z)
 {
@@ -196,9 +278,9 @@ HRESULT	CLEffect::Component_Initialize(CL_EFFECT eEffect) {
 
 	return S_OK;
 }
-CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale , _vec3 vRot, FLOAT fFrame) {
+CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale , _vec3 vRot, FLOAT fFrame, _vec3 vLook) {
 	CLEffect* EFT = new CLEffect(_GRPDEV);
-	if (FAILED(EFT->Ready_Effect(eEffect, vPos, bDead, vScale, vRot, fFrame))) {
+	if (FAILED(EFT->Ready_Effect(eEffect, vPos, bDead, vScale, vRot, fFrame, vLook))) {
 		MSG_BOX("Cannot Create Effect.");
 		Safe_Release(EFT);
 		return nullptr;

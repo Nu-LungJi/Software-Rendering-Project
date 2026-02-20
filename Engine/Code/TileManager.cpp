@@ -3,7 +3,7 @@
 #include "Component.h"
 
 IMPLEMENT_SINGLETON(TileManager)
-TileManager::TileManager() : m_eMode(TILEMODE_CHANGE::MODE_END), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false){}
+TileManager::TileManager() : m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false){}
 TileManager::~TileManager()
 {
 	Free();
@@ -192,6 +192,8 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 		m_eStage = m_eCurrent;
 		m_bStageChange = false;
 	}
+	if (m_StageCntArray[m_eStage] == 0)
+		Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
 	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
 	{
@@ -230,8 +232,8 @@ void TileManager::Stage_LateUpdate(const _float& fTimeDelta)
 	{
 		for (auto& iter : m_vecTileBuffer[m_eStage][j])
 			iter->LateUpdate_GameObject(fTimeDelta);
-	}
 
+	}
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
@@ -255,6 +257,7 @@ void TileManager::Stage_Render()
 	{
 		for (auto& iter : m_vecTileBuffer[m_eStage][j])
 			iter->Render_GameObject();
+		
 	}
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{

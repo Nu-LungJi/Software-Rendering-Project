@@ -97,13 +97,13 @@ HRESULT	CLcrystal::Component_Initialize() {
 	return S_OK;
 }
 CLcrystal* CLcrystal::Create(LPDIRECT3DDEVICE9 _GRPDEV,  _vec3 vPos) {
-	CLcrystal* EFT = new CLcrystal(_GRPDEV);
-	if (FAILED(EFT->Ready_Effect( vPos))) {
+	CLcrystal* CLcry = new CLcrystal(_GRPDEV);
+	if (FAILED(CLcry->Ready_Effect( vPos))) {
 		MSG_BOX("Cannot Create Effect.");
-		Safe_Release(EFT);
+		Safe_Release(CLcry);
 		return nullptr;
 	}
-	return EFT;
+	return CLcry;
 }
 void CLcrystal::Free() {
 	for (auto& iter : TextureList)

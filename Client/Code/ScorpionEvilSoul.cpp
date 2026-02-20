@@ -60,7 +60,10 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
 	//}
 
-
+	if (KEY_DOWN(DIK_P))
+	{
+		m_tInfo.Change_State(MONSTER_STATE_DEAD);
+	}
 	return 0;
 }
 VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
@@ -290,5 +293,6 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpoinEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

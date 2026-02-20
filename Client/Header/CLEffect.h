@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h";
-
-enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING,LEAF_SPIN
+enum class LEAF_ATTACK;
+enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING,LEAF_SPIN, LEAF_SPIN_DEATH
 };
 
 class CLEffect : public GameObject {
@@ -20,12 +20,15 @@ public:
 	virtual			 BOOL		OnCollisionStay(GameObject* _Other)  { return 0; };
 	virtual			 BOOL		OnCollisionExit(GameObject* _Other)  { return 0; };
 public:
-	HRESULT						Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame);
+	HRESULT						Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook);
 	HRESULT						Make_TextureList(wstring _FileName);
-	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f);
+	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1});
 public:
+	void						Move_Normal(const _float& _DT);
 	void						Move_Frame(const _float& _DT);
 	void						Move_Pos();
+	void						Effect_Bill();
+	void						Effect_Dead_After(LEAF_ATTACK eid, _vec3 vLook, _bool bSpin = false);
 	void						Pos_Check(_float x ,_float y, _float z);
 private:
 	HRESULT						Component_Initialize(CL_EFFECT eEffect);
@@ -37,11 +40,16 @@ private:
 	_bool							m_bDead;
 	vector<IDirect3DBaseTexture9*>	TextureList;
 
-	INT								m_TextureIndex;
-	INT							    m_iCnt;
-	FLOAT							m_FrameTick;
-	FLOAT							m_PlayTime;
-	FLOAT						    m_fFrame;
+	_int							m_TextureIndex;
+	_int							m_iCnt;
+	_int							m_iBulletCnt;
+
+	_float							m_fRotY;
+	_float							m_FrameTick;
+	_float							m_PlayTime;
+	_float						    m_fFrame;
+	_float							m_fAngle;
+
 	BOOL							m_Repeatable;
 
 	Buffer*							Component_Buffer;
@@ -50,7 +58,8 @@ private:
 	Collider*						Component_Collider;
 
 	
+	_vec3							m_vPos;
 	_vec3							m_vScale;
-
+	_vec3						    m_vLook;
 };
 
