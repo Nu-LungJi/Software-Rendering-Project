@@ -26,6 +26,8 @@
 //		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * (m_tInfo.fTimer[1] / m_tInfo.fTimer[0]);
 //	}
 //
+//if (ObjectDead)
+//return -1;
 //	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 //
 //	return 0;

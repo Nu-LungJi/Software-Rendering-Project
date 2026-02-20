@@ -74,7 +74,9 @@ HRESULT MonsterEffect::Make_TextureList(CONST TCHAR* _Filename)
 //}
 
 INT  MonsterEffect::Update_GameObject(CONST FLOAT& _DT) {
-	if (ObjectDead)	return 0;
+
+	if (ObjectDead)
+		return -1;
 	GameObject::Update_GameObject(_DT);
 
 	FrameTick += _DT;

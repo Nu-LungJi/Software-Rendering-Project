@@ -56,11 +56,16 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 		break;
 	}
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
 	if (KEY_DOWN(DIK_K)) {
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
 	}
+
+	if (ObjectDead)
+		return -1;
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+
 
 	return 0;
 }

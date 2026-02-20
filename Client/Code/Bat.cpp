@@ -65,6 +65,8 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		Monster::Add_Monster_to_Scene(test, GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	}
 
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;

@@ -354,6 +354,9 @@
     <ClInclude Include="..\Header\CubeFloorTile.h">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\DropItem.h">
+      <Filter>03. GameObject\03. NPC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -524,6 +527,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\CubeFloorTile.cpp">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DropItem.cpp">
+      <Filter>03. GameObject\03. NPC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

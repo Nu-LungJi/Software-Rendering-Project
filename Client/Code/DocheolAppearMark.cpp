@@ -56,6 +56,8 @@
 //		return 0;
 //	}
 //
+//if (ObjectDead)
+//return -1;
 //	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 //
 //	return 0;
