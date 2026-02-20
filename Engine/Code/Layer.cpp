@@ -9,7 +9,9 @@ HRESULT		Layer::Ready_Layer() {
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
+
 		int ObjectResult = (*iter)->Update_GameObject(_DT);
+
 		if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
 			CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
 			Safe_Release((*iter));
@@ -17,6 +19,21 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 			continue;
 		}
 		else { ++iter; }
+
+		// KJJ Suggest
+		// 
+		//if ((*iter)->Get_ObjectDead()) {
+		//	CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+		//	Safe_Release((*iter));
+		//	iter = GameObjectList.erase(iter);
+		//	continue;
+		//}
+		//else {
+		//	if ((*iter)->Update_GameObject(_DT) == -1)
+		//		(*iter)->Set_ObjectDead(true);
+		//	++iter; 
+		//}
+	
 	}
 	return 0;
 }

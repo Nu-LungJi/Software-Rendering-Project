@@ -7,23 +7,37 @@ ScorpoinEvilSoul::~ScorpoinEvilSoul() {}
 HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = SCORPIONEVILSOUL_HP;
+	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
+
+	m_tInfo.fHP = SCORPIONEVILSOUL_HP;
+
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 	return S_OK;
 }
 INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 {
-	// <플레이어 업데이트 시점>
+	MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+
+
+	if (m_tInfo.fHP <= 0.f)
+		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
+
 	GameObject::Update_GameObject(_DT);
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
 		break;
-	case MONSTER_STATE_SUMMON:
-		ScorpoinEvilSoul::State_Summon(_DT);
+	//case MONSTER_STATE_SUMMON:
+	//	ScorpoinEvilSoul::State_Summon(_DT);
+	//	break;
+	case MONSTER_STATE_APPEAR:
+		ScorpoinEvilSoul::State_Appear(_DT);
+		break;
+	case MONSTER_STATE_DISAPPEAR:
+
 		break;
 	case MONSTER_STATE_IDLE:
 		ScorpoinEvilSoul::State_Idle(_DT);
@@ -42,23 +56,15 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 		break;
 	}
 
+	if (KEY_DOWN(DIK_K)) {
+		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
+	}
+
+	if (ObjectDead)
+		return -1;
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-	//if (KEY_DOWN(DIK_Q)) {
-	//	//Set_ObjectDead(TRUE);
-	//	//Bat::Change_State(BAT_SUMMON);
-	//	GameObject* test = Monster::Create<Bat>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) }, 3.f);
-	//	Monster::Add_Monster_to_Scene(test);
-	//	test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 30), 0.5f, (_float)(rand() % 10) }, 3.f);
-	//	Monster::Add_Monster_to_Scene(test);
-	//	test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 30), 0.5f, (_float)(rand() % 10) }, 3.f);
-	//	Monster::Add_Monster_to_Scene(test);
-	//	return 0;
-	//}
-	//if (KEY_DOWN(DIK_P))
-	//{
-	//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
-	//}
 
 	if (KEY_DOWN(DIK_P))
 	{
@@ -104,6 +110,33 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 		break;
 
 	case MONSTER_STATE_APPEAR:
+		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueScorpionEvilSoul_appear", &m_tInfo)))
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
+
+
+		break;
+	case MONSTER_STATE_DISAPPEAR:
+		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueScorpionEvilSoul_disappear", &m_tInfo)))
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
+
+		m_tInfo.Textureinfo._frameTick += _DT;
+		if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
+		{
+			m_tInfo.Textureinfo._frameTick = 0.f;
+			++m_tInfo.Textureinfo._frame;
+
+			if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
+			{
+				ObjectDead = true;
+			}
+		}
+		break;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:
 		break;
@@ -111,22 +144,25 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID ScorpoinEvilSoul::Render_GameObject() {
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-
-	switch (m_tInfo.eState[0])
+	if (!ObjectDead)
 	{
-	default:
-		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
-		Component_Buffer->Render_Buffer();
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DEAD:
-		break;
-	}
 
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
+
+		switch (m_tInfo.eState[0])
+		{
+		default:
+			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+			break;
+		case MONSTER_STATE_SUMMON:
+		case MONSTER_STATE_DEAD:
+			break;
+		}
+
+		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
 }
 HRESULT ScorpoinEvilSoul::Component_Initialize() {
 
@@ -199,6 +235,20 @@ VOID ScorpoinEvilSoul::State_Summon(const _float& _DT)
 		}
 }
 
+VOID ScorpoinEvilSoul::State_Appear(const _float& _DT)
+{
+	m_tInfo.Textureinfo._frameTick += _DT;
+	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
+	{
+		m_tInfo.Textureinfo._frameTick = 0.f;
+
+		if (++m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
+		{
+			m_tInfo.Change_State(MONSTER_STATE_IDLE);
+		}
+	}
+}
+
 VOID ScorpoinEvilSoul::State_Idle(const _float& _DT)
 {
 	if (m_tInfo.pGameObj[0] == nullptr)
@@ -250,8 +300,19 @@ VOID ScorpoinEvilSoul::State_Casting(const _float& _DT)
 	m_tInfo.fTimer[0] += _DT;
 	m_tInfo.fSpeed = 0.f;
 
+	if (!m_tInfo.bTrigger[1])
+	{
+		m_tInfo.bTrigger[1] = true;
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, SCORPIONEVILSOUL_CASTING_TIME);
+
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	}
+
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CASTING_TIME)
 	{
+		m_tInfo.bTrigger[1] = false;
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
 	}
 }
@@ -273,9 +334,8 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_tInfo.pGameObj[1]->Set_ObjectTag(L"ScorpionBullet");
 
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(m_tInfo.pGameObj[1]);
-
-		//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, SCORPIONEVILSOUL_CHANNELING_TIME);
+		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(m_tInfo.pGameObj[1]);
 	}
 
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CHANNELING_TIME)
@@ -284,7 +344,11 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		D3DXVec3Normalize(&vDir, &vDir);
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Dir(vDir);
 		
-		CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
+		//CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
+
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
+		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 
 		m_tInfo.pGameObj[1] = nullptr;
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);

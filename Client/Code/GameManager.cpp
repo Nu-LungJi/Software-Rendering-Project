@@ -6,7 +6,7 @@ GameManager::~GameManager() { Free(); }
 
 HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI/Inventory_UI");
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
@@ -54,9 +54,10 @@ HRESULT GameManager::Ready_DefaultSetting() {
 }
 HRESULT GameManager::Ready_SceneSetting() {
 
-	//Scene* EnterScene = StartScene::Create(GRPDEV);
-	//Scene* EnterScene = DebugScene::Create(GRPDEV);
-	Scene* EnterScene   = MapScene::Create(GRPDEV);
+	Scene* EnterScene = StartScene::Create(GRPDEV);
+  //Scene* EnterScene = DebugScene::Create(GRPDEV);
+  //Scene* EnterScene   = MapScene::Create(GRPDEV);
+
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
 

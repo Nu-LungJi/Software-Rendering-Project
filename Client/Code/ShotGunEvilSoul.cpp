@@ -8,7 +8,7 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHp = SHOTGUNEVILSOUL_HP;
+	m_tInfo.fHP = SHOTGUNEVILSOUL_HP;
 
 	return S_OK;
 }
@@ -16,6 +16,10 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
+
+
+	if (m_tInfo.fHP <= 0.f)
+		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	switch (m_tInfo.eState[0])
 	{
@@ -40,6 +44,10 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 		ShotGunEvilSoul::State_Dead();
 		break;
 	}
+
+
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -256,7 +264,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			_float fRadian = fBaseRadian + fRandom * (D3DXToRadian(SHOTGUNEVILSOUL_SPREAD)) - D3DXToRadian(SHOTGUNEVILSOUL_SPREAD) * 0.5f;
 			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1]);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 			m_tInfo.pGameObj[1] = nullptr;
 		}
