@@ -35,8 +35,8 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 
 			for (auto& TXT : ItemInfo_Text) {
 				TXT->Visible = TRUE;
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = TRUE;
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = TRUE;
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = TRUE;
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = TRUE;
 			}
 		}
 		else if (UIManager::GetInstance()->Get_Active() == FALSE){
@@ -45,8 +45,11 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 
 			for (auto& TXT : ItemInfo_Text) {
 				TXT->Visible = FALSE;
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = FALSE;
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = FALSE;
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = FALSE;
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = FALSE;
+
+				EquipMode = FALSE;
+				EquipObject = nullptr;
 			}
 
 			SavedItemIndex = 1;
@@ -214,18 +217,18 @@ HRESULT PlayerInven::Sprite_Initialize() {
 }
 HRESULT PlayerInven::Text_Initialize() {
 	//////////////////////////////////////////////////////// INVEN OPTION ///////////////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"버리기", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"선택"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"������", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE ����", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"����"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE ����", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 255, 255, 255)));
 
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE ����", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE ����", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
@@ -244,14 +247,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
-		L"오동나무 활",
-		L"무기/희귀",
+		L"?�동?�무 ??,
+		L"무기/?��?",
 
-		L"일반 공격",
-		L"일반 공격력 24 ~ 26",
-		L"공격 속도 2.5",
+		L"?�반 공격",
+		L"?�반 공격??24 ~ 26",
+		L"공격 ?�도 2.5",
 
-		L"치명타 확률이 +3% 증가합니다.",
+		L"치명?� ?�률??+3% 증�??�니??",
 
 		L"" ,
 
@@ -265,14 +268,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it02 = new ItemINFO;
 	it02->ItemDesc = { 
-		L"풍수의 활", 
-		L"무기/희귀", 
+		L"?�수????, 
+		L"무기/?��?", 
 
-		L"일반 공격", 
-		L"이동 속도 + 20%", 
-		L"공격 속도 2.5", 
+		L"?�반 공격", 
+		L"?�동 ?�도 + 20%", 
+		L"공격 ?�도 2.5", 
 
-		L"그냥 빨라집니다.", 
+		L"그냥 빨라집니??", 
 
 		L"", 
 
@@ -286,14 +289,14 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = { 
-		L"풍수의 활", 
-		L"무기/희귀", 
+		L"?�수????, 
+		L"무기/?��?", 
 
-		L"일반 공격", 
-		L"이동 속도 + 20%", 
-		L"공격 속도 2.5", 
+		L"?�반 공격", 
+		L"?�동 ?�도 + 20%", 
+		L"공격 ?�도 2.5", 
 		
-		L"그냥 빨라집니다.", 
+		L"그냥 빨라집니??", 
 
 		L"", 
 
@@ -307,16 +310,16 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it04 = new ItemINFO;
 	it04->ItemDesc = { 
-		L"얼음 정령의 활", 
-		L"무기/희귀", 
+		L"?�음 ?�령????, 
+		L"무기/?��?", 
 		
-		L"일반 공격", 
-		L"일반 공격력 14 - 16", 
-		L"공격 속도 2", 
+		L"?�반 공격", 
+		L"?�반 공격??14 - 16", 
+		L"공격 ?�도 2", 
 
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.", 
+		L"?�음???�살 : 3 발의 ?�음???�살??발사?�니?? \n?�살??맞�? ?�에�?3�?�?빙결??부?�합?�다.", 
 
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.", 
+		L"\"?�음?�령???�이 ?�긴 ?? 쥐고 ?�음 ?�이 ?�어버릴 �?같다.", 
 
 		L"DIC_InvenFrame_IceBow", 
 		L"DIC_InfoFrame_IceBow" 
@@ -327,16 +330,16 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it04);
 
 	ItemINFO* it05 = new ItemINFO;
-	it05->ItemDesc = { L"얼음 정령의 활",
-		L"무기/희귀",
+	it05->ItemDesc = { L"?�음 ?�령????,
+		L"무기/?��?",
 
-		L"일반 공격",
-		L"일반 공격력 14 - 16",
-		L"공격 속도 2",
+		L"?�반 공격",
+		L"?�반 공격??14 - 16",
+		L"공격 ?�도 2",
 
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. 화살에 맞은 적에게 \n3초 간 빙결을 부여합니다.",
+		L"?�음???�살 : 3 발의 ?�음???�살??발사?�니?? ?�살??맞�? ?�에�?\n3�?�?빙결??부?�합?�다.",
 
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
+		L"\"?�음?�령???�이 ?�긴 ?? 쥐고 ?�음 ?�이 ?�어버릴 �?같다.",
 
 		L"DIC_InvenFrame_IceBow",
 		L"DIC_InfoFrame_IceBow"
@@ -481,16 +484,16 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 HRESULT PlayerInven::Equip_Item() {
 	if (EquipMode) {
 		Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(FALSE);
-		FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
-		FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"장착";
+		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
+		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"����";
 		if (KEY_DOWN(DIK_E)){
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"버리기";
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"선택";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"������";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"����";
 			}
 			if (FocusOn_EquipedItem) {
 				if (((*EquipObject)->ItemType == (INT)ITEM_TYPE::NORMAL_WEAPON || (*EquipObject)->ItemType == (INT)ITEM_TYPE::RARE_WEAPON)
@@ -503,8 +506,8 @@ HRESULT PlayerInven::Equip_Item() {
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				FontManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"버리기";
-				FontManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"선택";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"������";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"����";
 			}
 		}
 	}
@@ -554,10 +557,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 
 		if (Equip_ItemList[EquipedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_WEAPON ||
 			Equip_ItemList[EquipedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 100, 100, 255);
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 100, 100, 255);
 		}
 		else {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
 		}
 	}										
 	else if( FocusOn_EquipedItem ){
@@ -584,10 +587,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 
 		if (Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_WEAPON ||
 			Saved_ItemList[SavedItemIndex - 1]->ItemType == (INT)ITEM_TYPE::RARE_UTILITY) {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 0, 0, 255);
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 100, 100, 255);
 		}
 		else {
-			FontManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(150, 255, 255, 255);
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
 		}
 	}
 	else if( FocusOn_SavedItem ){
@@ -634,7 +637,7 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 				return S_OK;
 			}
 		}
-		// 모든 Equip 칸이 채워져 있는 경우
+		// 모든 Equip 칸이 채워???�는 경우
 		for (INT IDX = 0; IDX < 10; ++IDX) {
 			if (Saved_ItemList[IDX] == nullptr) {
 				Saved_ItemList[IDX] = _ITEM;
@@ -651,7 +654,7 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 				return S_OK;
 			}
 		}
-		// 모든 Equip 칸이 채워져 있는 경우
+		// 모든 Equip 칸이 채워???�는 경우
 		for (INT IDX = 0; IDX < 10; ++IDX) {
 			if (Saved_ItemList[IDX] == nullptr) {
 				Saved_ItemList[IDX] = _ITEM;

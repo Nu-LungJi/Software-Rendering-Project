@@ -8,6 +8,7 @@
 
 //////////////////////////////////////////// Engine Import
 ////////////////////////////// IMGUIZMO Import
+
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
 #include "ImZoomSlider.h"
@@ -29,17 +30,20 @@
 
 #include "Camera.h"
 #include "Terrain.h"
-#include "MainUI.h"
 #include "Inventory.h"
-#include "NPCTalk.h"
+
+#include "BossEffect.h"
 #include "PlayerEffect.h"
 #include "UIEffect.h"
-#include "NPC.h"
+
 #include "Object_Explain.h"
 
 #pragma region Monster
 #include "Monster.h"
 #include "MonsterEffect.h"
+#include "StateMachine.h"
+#include "FinalBoss.h"
+#include "Supporter.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
@@ -74,6 +78,9 @@
 
 #pragma endregion
 #include "Player.h"
+#include "MainUI.h"
+#include "NPCTalk.h"
+#include "NPC.h"
 #include "Tile.h"
 #include "CubeTile.h"
 #include "CXZTile.h"
@@ -104,7 +111,7 @@
 #include "MiniGameScene.h"
 
 //////////////////////////////////////////// Manager
-#include "FontManager.h"
+
 #include "GUIManager.h"
 #include "ResourceManager.h"
 #include "CollisionManager.h"
@@ -118,6 +125,7 @@
 #include "TimeManager.h"
 #include "GameManager.h"
 #include "TileManager.h"
+
 //////////////////////////////////////////// Global Variable
 
 extern HWND			hWnd;

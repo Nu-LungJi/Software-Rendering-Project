@@ -106,7 +106,6 @@ private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;
 	Texture*		Component_Texture;
-	StateMachine*	Component_FSM;
 	Collider*		Component_Collider;
 public:
 	BowType			Get_Weapon_Type()	{ return _weaponSlot[_equipNum]->Get_Bow_Type(); }	// 현재 장착한 활 타입

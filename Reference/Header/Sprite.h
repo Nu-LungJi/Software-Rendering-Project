@@ -49,8 +49,6 @@ struct ENGINE_DLL ItemINFO {
 	_int					ItemType;
 
 	ItemINFO() : TEXTURE(nullptr), ItemDesc{}, ItemPrice(0), ItemType(0) { ItemDesc.resize((LONG)ITINFO::INFFRAME + 1); }
-	//ItemINFO(LPDIRECT3DTEXTURE9 _TXT, wstring _ItemKey, wstring _ItemName, wstring _ItemClass, wstring* _ItemEffect, wstring _ItemDesc, wstring _ItemExDesc, _int _ItemPrice)
-	//	: TEXTURE(_TXT), ItemKey(_ItemKey), ItemName(_ItemName), ItemClass(_ItemClass), ItemEffect{_ItemEffect}, ItemDesc(_ItemDesc), ItemExDesc(_ItemExDesc), ItemPrice(_ItemPrice) {}
 };
 
 class ENGINE_DLL SpriteObject: public Component {

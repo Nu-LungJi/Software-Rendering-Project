@@ -10,8 +10,8 @@ VOID Texture::Set_Texture(CONST TCHAR* _FileName)	{
 	if (iter == TextureList.end())	return;
 	GRPDEV->SetTexture(0, iter->second);
 }
-IDirect3DTexture9* Texture::Find_Texture(const TCHAR* _FileName){
-	auto iter = find_if(TextureList.begin(), TextureList.end(), CTag_Finder(_FileName));
+IDirect3DTexture9* Texture::Find_Texture(wstring _FileName){
+	auto iter = find_if(TextureList.begin(), TextureList.end(), CTag_Finder(_FileName.c_str()));
 	if (iter == TextureList.end())	return nullptr;
 	return iter->second;
 }

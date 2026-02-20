@@ -44,6 +44,10 @@ public:
 	VOID	AlphaSorting(CONST D3DXVECTOR3* _Vec);
 	VOID	AlphaYSorting(CONST D3DXVECTOR3* _Vec);
 
+	BOOL	Search_CollisionObject(GameObject* _COL);
+	VOID	Add_CollisionObject(GameObject* _COL);
+	VOID	Delete_CollisionObject(GameObject* _COL);
+
 protected:
 	vector<Component*>				ComponentList;
 	LPDIRECT3DDEVICE9				GRPDEV;
@@ -55,7 +59,7 @@ protected:
 	FLOAT							AlphaZValue;
 	FLOAT							AlphaYValue;
 
-	list<GameObject*>   CollisionList;
+	list<GameObject*>				CollisionList;
 
 protected:
 	virtual VOID		Free();

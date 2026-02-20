@@ -111,6 +111,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	return S_OK;
 }
 
+
 HRESULT PlayerEffect::Make_TextureList(wstring _FileName) {
 	INT FRAME = 0;
 	while (++FRAME){

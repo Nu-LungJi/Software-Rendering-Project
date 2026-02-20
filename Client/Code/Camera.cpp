@@ -14,6 +14,9 @@ HRESULT CameraObject::Ready_GameObject() {
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
+	Shake_Strength = 0;
+	Shake_Time = 0.f;
+
 	MouseCheck = FALSE;
 
 	Camera_Show = TRUE;
@@ -34,19 +37,18 @@ HRESULT CameraObject::Ready_GameObject() {
 INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_F2)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
+		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-
 	if (!Camera_Move)
 	{
+
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
-
+	
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
-
 
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
@@ -78,10 +80,26 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		EyeVec += m_vVelocity * _DT;
 		AtVec += m_vVelocity * _DT;
 	}
+	_vec3 OriginEye = { 0.f, 0.f, 0.f };
+	_vec3 OriginAt = { 0.f, 0.f, 0.f };
+	if (Shake_Time > 0.f) {
+		Shake_Time -= _DT;
+		OriginEye = EyeVec;
+		OriginAt = AtVec;
 
+
+		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+
+		EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
+		AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
+	}
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
-
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
+
+	EyeVec = OriginEye;
+	AtVec = OriginAt;
 	return 0;
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
@@ -130,7 +148,7 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 			_vec3 Length = *D3DXVec3Normalize(&SideVector, &SideVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
-		if (KEY_HOLD(DIK_SPACE)) {
+		if (KEY_HOLD(DIK_RCONTROL)) {
 			memcpy(&UpVector, &CameraMatrix.m[1][0], sizeof(_vec3));
 
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
@@ -179,6 +197,11 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 			AtVec = EyeVec + LookVec;
 		}
 	}
+}
+
+VOID CameraObject::Camera_Shaking(INT _Strength, FLOAT _Time) {
+	Shake_Strength = _Strength;
+	Shake_Time = _Time;
 }
 
 

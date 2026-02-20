@@ -29,6 +29,7 @@ INT	NPC::Update_GameObject(const _float& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	TalkWithNPC(_DT);
+	Timer_Tif += _DT;
 
 	return 0;
 }
