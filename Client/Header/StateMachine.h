@@ -77,8 +77,15 @@ public:
 	virtual VOID FSM_StateUpdate(GameObject* _Owner);
 	virtual VOID FSM_StateExit(GameObject* _Owner);
 };
-class SlamState : public State {
-	DECLARE_FSM_SINGLETON(SlamState);
+class NormalSlamState : public State {
+	DECLARE_FSM_SINGLETON(NormalSlamState);
+public:
+	virtual VOID FSM_StateEnter(GameObject* _Owner);
+	virtual VOID FSM_StateUpdate(GameObject* _Owner);
+	virtual VOID FSM_StateExit(GameObject* _Owner);
+};
+class MeteorSlamState : public State {
+	DECLARE_FSM_SINGLETON(MeteorSlamState);
 public:
 	virtual VOID FSM_StateEnter(GameObject* _Owner);
 	virtual VOID FSM_StateUpdate(GameObject* _Owner);

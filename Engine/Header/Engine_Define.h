@@ -12,6 +12,7 @@
 #include <string>
 #include <unordered_map>
 #include <ctime>
+#include <memory>
 #include <io.h>
 
 #include "Engine_Enum.h"

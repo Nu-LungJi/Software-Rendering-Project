@@ -42,6 +42,7 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 		break;
 	}
 
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	//if (KEY_DOWN(DIK_Q)) {

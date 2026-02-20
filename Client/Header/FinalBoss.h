@@ -1,6 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "Player.h"
+#include "StateMachine.h"
+
+#define		ANIMATION_NONANIM_FRAMECOUNT		3
 
 #define		ANIMATION_APPEAR_FRAMECOUNT			39
 #define		ANIMATION_DEATH_FRAMECOUNT			27
@@ -37,11 +40,27 @@ public:
 	HRESULT	Component_Initialize();
 	HRESULT Texture_Initialize();
 
-	INT		Get_Animation_Index()				{ return Animation_Index;		}
-	VOID	Set_Animation_Index(INT _IDX)		{ Animation_Index = _IDX;		}
+	VOID	Animation_Appear_Staging(CONST FLOAT& _DT);
 
-	INT		Get_Animation_Interval()			{ return Animation_Interval;	}
-	VOID	Set_Animation_Interval(FLOAT _ITV)	{ Animation_Interval = _ITV;	}
+	INT		Get_Animation_CurrentIndex()				{ return Animation_CurrentIndex;  }
+	VOID	Set_Animation_CurrentIndex(INT _IDX)		{ Animation_CurrentIndex = _IDX;  }
+
+	INT		Get_Animation_PreviousIndex()				{ return Animation_PreviousIndex; }
+	VOID	Set_Animation_PreviousIndex(INT _IDX)		{ Animation_PreviousIndex = _IDX; }
+
+	INT		Get_Animation_Interval()					{ return Animation_Interval;	  }
+	VOID	Set_Animation_Interval(FLOAT _ITV)			{ Animation_Interval = _ITV;	  }
+
+	_vec3	Get_PlayerPosition()						{ return PlayerPos;		}
+	VOID	Set_PlayerPosition(_vec3 _PPos)				{ PlayerPos = _PPos;	}
+
+	INT		Get_EnableGroundExp()						{ return Enable_GroundExplosion; }
+	VOID	Set_EnableGroundExp(BOOL _EXP)				{ Enable_GroundExplosion = _EXP; }
+
+	INT		Get_EnableQuadGroundExp()					{ return Enable_QuadGroundExplosion; }
+	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_QuadGroundExplosion = _EXP; }
+
+	VOID	Skill_GroundExplosion(CONST FLOAT& _DT);
 
 	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -52,6 +71,8 @@ private:
 	Player*			PlayerObject;
 	_vec3			PlayerPos;
 
+	CameraObject*	Camera;
+
 	FLOAT			BossHP;
 
 	BOOL			Invalidate_Mode;
@@ -59,16 +80,29 @@ private:
 	BOOL			Action_Mode;
 	BOOL			Death_Mode;
 
+	FLOAT			Staging_Timer;
+	BOOL			Enable_Staging;
+	BOOL			STAGING_TRIGGER[20];
+	enum class STAGING {SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
+						WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE};
+
 	INT				Action_Selector;
 	FLOAT			Action_Timer;
 
 	BOOL			DoubleSlam;
 
+	BOOL			Enable_GroundExplosion;
+	BOOL			Enable_QuadGroundExplosion;
+	FLOAT			Explosion_Timer;
+
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;
 	FLOAT						Animation_Interval;
-	INT							Animation_Index;
+	INT							Animation_CurrentIndex;
+	INT							Animation_PreviousIndex;
 	INT							Animation_FrameCount;
+
+	vector<LPDIRECT3DTEXTURE9>	Animation_NonAnim_TexList;
 
 	vector<LPDIRECT3DTEXTURE9>	Animation_Appear_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Death_TexList;

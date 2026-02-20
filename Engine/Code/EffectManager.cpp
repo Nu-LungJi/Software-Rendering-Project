@@ -100,6 +100,13 @@ GameObject* EffectManager::Get_Effect(EFFECT_OWNER _Owner, wstring _TAG) {
 			}
 		}
 	}
+	else if (_Owner == EFFECT_OWNER::BOSS) {
+		for (auto& BE : Container_BossEffect) {
+			if (BE->Get_ObjectTag() == _TAG) {
+				return BE;
+			}
+		}
+	}
 	return nullptr;
 }
 list<GameObject*>* EffectManager::Get_EffectLst(EFFECT_OWNER _Owner) {

@@ -20,10 +20,10 @@ VOID	FieldApostle::LateUpdate_GameObject(CONST FLOAT& _DT) {
 }
 VOID	FieldApostle::Render_GameObject() {
 	Component_Sprite->Render_Sprite();
-	FontManager::GetInstance()->Render_FontManager();
+	//FontManager::GetInstance()->Render_FontManager();
 }
 HRESULT FieldApostle::Text_Initialize(){
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 350.f,200.f }, 30, L"Choose_Apostle", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
+	//FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 350.f,200.f }, 30, L"Choose_Apostle", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
 	
 	return S_OK;
 }

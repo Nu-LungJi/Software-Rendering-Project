@@ -30,19 +30,19 @@
 
 #include "Camera.h"
 #include "Terrain.h"
-#include "MainUI.h"
 #include "Inventory.h"
-#include "NPCTalk.h"
+
 #include "BossEffect.h"
 #include "PlayerEffect.h"
 #include "UIEffect.h"
-#include "NPC.h"
+
 #include "Object_Explain.h"
 
 #include "Monster.h"
 #include "MonsterEffect.h"
 #include "StateMachine.h"
 #include "FinalBoss.h"
+#include "Supporter.h"
 
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
@@ -55,6 +55,9 @@
 #include "EvilSlime.h"
 
 #include "Player.h"
+#include "MainUI.h"
+#include "NPCTalk.h"
+#include "NPC.h"
 #include "Tile.h"
 #include "CubeTile.h"
 #include "CXZTile.h"
@@ -76,7 +79,6 @@
 
 //////////////////////////////////////////// Manager
 
-#include "FontManager.h"
 #include "GUIManager.h"
 #include "ResourceManager.h"
 #include "CollisionManager.h"

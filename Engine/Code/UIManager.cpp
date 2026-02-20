@@ -2,76 +2,78 @@
 
 IMPLEMENT_SINGLETON(UIManager)
 
-UIManager::UIManager() : Sprite(nullptr), isActive(FALSE) {}
+UIManager::UIManager() : DXSprite(nullptr), isActive(FALSE) {}
 UIManager::~UIManager() { Free(); }
 
 HRESULT UIManager::Ready_UIManager(LPDIRECT3DDEVICE9 _GRPDEV) {
     
-	D3DXCreateSprite(_GRPDEV, &Sprite);
-    Make_ItemList();
+    if (FAILED(D3DXCreateSprite(_GRPDEV, &DXSprite)))   return E_FAIL;
+
 	return S_OK;
 }
 INT UIManager::Update_UIManager(const FLOAT& _DT) {
 	return 0;
 }
 VOID UIManager::LateUpdate_UIManager(const FLOAT& _DT) {
-	
 }
 VOID UIManager::Render_UIManager(LPDIRECT3DDEVICE9 _GRPDEV) {
-	_GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
-	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
-
-	//for (auto& SPR : TextureList)
-	//	Sprite->Draw(SPR.second, NULL, NULL, &SPR.POS, D3DCOLOR_ARGB(SPR.OPACITY, 255, 255, 255));
-
-	Sprite->End();
-	_GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
-HRESULT UIManager::Import_UISprite(LPDIRECT3DDEVICE9 _GRPDEV, UIType _uitype, CONST TCHAR* _PATH, UINT _WIDTH,
-  UINT _HEIGHT, FLOAT _POSX, FLOAT _POSY, BOOL _VIS, INT _OPACITY)
-{
-  vecList.push_back({ _uitype, {SpriteINFO(_PATH,_WIDTH,_HEIGHT,_POSX,_POSY,_VIS,_OPACITY)} });
+FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, _vec2 _Position, _int _TextScale, wstring _FontTag, wstring _FontType, D3DCOLOR _Color, _int TextWeight, BOOL _Visible, DWORD FORMAT) {
 
-  D3DXCreateTextureFromFileExW(_GRPDEV, _PATH, vecList.back().second.back().WIDTH, vecList.back().second.back().HEIGHT,
-    1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&vecList.back().second.back().TEXTURE);
+    FontObject* FO = new FontObject(_Position, _Text, _TextScale, TextWeight, _FontTag, _FontType, _Color, _Visible, FORMAT);
 
-  return S_OK;
+    D3DXFONT_DESCW FontInfo;
+    ZeroMemory(&FontInfo, sizeof(FontInfo));
+
+    FontInfo.Height = FO->TextScale;
+    FontInfo.Weight = FO->TextWeight;
+    FontInfo.CharSet = HANGUL_CHARSET;
+    FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
+    FontInfo.Quality = DEFAULT_QUALITY;
+    FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
+
+    lstrcpyW(FontInfo.FaceName, FO->FontType.c_str());
+
+    if (FAILED(D3DXCreateFontIndirectW(_GRPDEV, &FontInfo, &FO->DXFont))) {
+        MSG_BOX("Cannot Create FontObject.");
+        return nullptr;
+    }
+
+    FontList.insert({ FO->FontTag.c_str(), FO });
+
+    return FO;
 }
-
-VOID UIManager::Make_ItemList() {
+FontObject* UIManager::Find_FontObject(wstring _Text) {
+    auto iter = find_if(FontList.begin(), FontList.end(), CTag_Finder(_Text.c_str()));
+    if (iter == FontList.end())	return nullptr;
+    return iter->second;
 }
-
 ItemINFO* UIManager::Find_Item(wstring _TAG) {
     auto iter = find_if(ItemList.begin(), ItemList.end(), CTag_Finder(_TAG.c_str()));
     if(iter == ItemList.end()) return nullptr;
     return iter->second;
 }
 
-VOID UIManager::Render_UI(LPDIRECT3DDEVICE9 _GRPDEV, UIType _uitype)
-{
-    _GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
-    Sprite->Begin(D3DXSPRITE_ALPHABLEND);
-    if (!isActive)
-    {
-        for (auto& pair : vecList)
-        {
-            if (pair.first == _uitype)
-            {
-                for (auto& sprite : pair.second) {
-                    if (sprite.VISIBLE == TRUE) {
-                        Sprite->Draw(sprite.TEXTURE, NULL, NULL, &sprite.POS, D3DCOLOR_ARGB(sprite.OPACITY, 255, 255, 255));
-                    }
-                }
-            }
+VOID UIManager::Render_FontObjects() {
+    DXSprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+    for (auto& TXT : FontList) {
+        if (TXT.second->Visible == TRUE) {
+            FLOAT XPos = TXT.second->Position.x;
+            FLOAT YPos = TXT.second->Position.y;
+            RECT RT = { XPos, YPos, XPos + 1, YPos + 1 };
+            TXT.second->DXFont->DrawTextW(DXSprite, TXT.second->Text.c_str(), -1, &RT, TXT.second->FORMAT | DT_NOCLIP, TXT.second->TextColor);
         }
     }
-    Sprite->End();
-    _GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
+
+    DXSprite->End();
 }
 
 VOID UIManager::Free() {
     for (auto& Item : ItemList) 
         Safe_Delete(Item.second);
+    for (auto& FO : FontList)
+        Safe_Delete(FO.second);
     ItemList.clear();
 }

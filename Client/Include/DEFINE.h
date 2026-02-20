@@ -55,10 +55,10 @@
 #define PLAY_MONSTER_EFFECT_ONCE(SKILL_TYPE, POSITION ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,				\
 	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME));									// 몬스터 : 이펙트 최초 한번 실행
 
-#define PLAY_BOSS_EFFECT(SKILL_TYPE, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,					\
-	BossEffect::Create(GRPDEV, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE));								// 보스 몬스터 : 이펙트 반복 실행
-#define PLAY_BOSS_EFFECT_ONCE(SKILL_TYPE, POSITION, SCALE ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,				\
-	BossEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE));								// 보스 몬스터 : 이펙트 최초 한번 실행
+#define PLAY_BOSS_EFFECT(SKILL_TYPE, _TAG, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,					\
+	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE));								// 보스 몬스터 : 이펙트 반복 실행
+#define PLAY_BOSS_EFFECT_ONCE(SKILL_TYPE, _TAG, POSITION, SCALE ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,				\
+	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE));								// 보스 몬스터 : 이펙트 최초 한번 실행
 
 #define PLAY_UI_EFFECT(SKILL_TYPE, _TAG, _X, _Y, _SX, _SY, PLAYTIME, OPAC)			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI,	\
 	UIEffect::Create(GRPDEV, _TAG, SKILL_TYPE, {_X, _Y, 0.f}, {_SX, _SY, 0.f}, OPAC, TRUE, PLAYTIME));		// UI : 이펙트 반복 실행

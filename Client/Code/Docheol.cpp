@@ -76,7 +76,7 @@ HRESULT Docheol::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
 
-	ADD_COMPONENT_FSM
+	//ADD_COMPONENT_FSM
 
 	Change_Status(DOCHEOL_IDLE);
 

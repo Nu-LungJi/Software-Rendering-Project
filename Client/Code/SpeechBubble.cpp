@@ -21,12 +21,12 @@ VOID	SpeechBubble::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID	SpeechBubble::Render_GameObject() {
 	Component_Sprite->Render_Sprite();
 
-	FontObject* pContent = FontManager::GetInstance()->Find_FontObject(L"asd");
-	if (pContent)
-	{
-		pContent->Text = L"어서오세요!";
-		pContent->Visible = TRUE;
-	}
+	//FontObject* pContent = FontManager::GetInstance()->Find_FontObject(L"asd");
+	//if (pContent)
+	//{
+	//	pContent->Text = L"어서오세요!";
+	//	pContent->Visible = TRUE;
+	//}
 }
 HRESULT SpeechBubble::Component_Initialize() {
 	Component_Sprite = ADD_COMPONENT_SPRITE;
@@ -37,7 +37,7 @@ HRESULT SpeechBubble::Sprite_Initialize() {
 	return S_OK;
 }
 HRESULT SpeechBubble::Text_Initialize() {
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 600.f,450.f }, 20, L"asd", L"08서울한강체 L", D3DCOLOR_ARGB(255, 0, 0, 0));
+	//FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 600.f,450.f }, 20, L"asd", L"08서울한강체 L", D3DCOLOR_ARGB(255, 0, 0, 0));
 	return S_OK;
 }
 SpeechBubble* SpeechBubble::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

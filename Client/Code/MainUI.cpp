@@ -28,15 +28,7 @@ HRESULT	MainUI::Ready_GameObject() {
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
-	if (KEY_DOWN(DIK_LCONTROL)) {
-		Player_LostHP();
-		Player_UseSkill();
-	}
-	if (KEY_DOWN(DIK_L)) {
-		PlayerObject->Set_Key(10);
-		PlayerObject->Set_Coin(20);
-		PlayerObject->Set_Crystal(15);
-	}
+
 	PopUp_Speech_Bubble(Speech_Text, _DT);
 	PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
@@ -71,7 +63,7 @@ VOID MainUI::Player_LostHP() {
 }
 VOID MainUI::Player_KeyModify() {
 	if (Current_KeyCount != PlayerObject->Get_Key()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"KeyCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"KeyCountText");
 		if(Current_KeyCount < PlayerObject->Get_Key())
 			Font->Set_Text(to_wstring(++Current_KeyCount));
 		else
@@ -80,7 +72,7 @@ VOID MainUI::Player_KeyModify() {
 }
 VOID MainUI::Player_MoneyModify() {
 	if (Current_CoinCount != PlayerObject->Get_Coin()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"CoinCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"CoinCountText");
 		if (Current_CoinCount < PlayerObject->Get_Coin())
 			Font->Set_Text(to_wstring(++Current_CoinCount));
 		else
@@ -89,7 +81,7 @@ VOID MainUI::Player_MoneyModify() {
 }
 VOID MainUI::Player_CrystalModify() {
 	if (Current_CrystalCount != PlayerObject->Get_Crystal()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"CrystalCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"CrystalCountText");
 		if (Current_CrystalCount < PlayerObject->Get_Crystal())
 			Font->Set_Text(to_wstring(++Current_CrystalCount));
 		else
@@ -110,7 +102,7 @@ VOID MainUI::Player_UseSkill() {
 VOID MainUI::PopUp_Interaction_Notice(wstring _Text, BOOL _Vis) {
 	SpriteINFO* KeyBoard = Component_Sprite->Get_Texture(L"KEY_E");
 	SpriteINFO* InterBG = Component_Sprite->Get_Texture(L"Interaction_BG");
-	FontObject* FO = FontManager::GetInstance()->Find_FontObject(L"Interaction_Text");
+	FontObject* FO = UIManager::GetInstance()->Find_FontObject(L"Interaction_Text");
 	FO->Text = _Text;
 
 	if (_Vis) {
@@ -126,15 +118,14 @@ VOID MainUI::PopUp_Interaction_Notice(wstring _Text, BOOL _Vis) {
 	
 }
 VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
-	if (KEY_DOWN(DIK_J)) { ItemInfo = TRUE; }
 	if (ItemInfo) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"ItemNoticeBG");
 		SpriteINFO* ITEM = Component_Sprite->Get_Texture(ItemTag);
 
 		ItemINFO* iINFO = UIManager::GetInstance()->Find_Item(ItemTag);
 		
-		FontObject* InfoFont = FontManager::GetInstance()->Find_FontObject(L"ItemInfo");
-		FontObject* ClassFont = FontManager::GetInstance()->Find_FontObject(L"ItemClass");
+		FontObject* InfoFont = UIManager::GetInstance()->Find_FontObject(L"ItemInfo");
+		FontObject* ClassFont = UIManager::GetInstance()->Find_FontObject(L"ItemClass");
 
 		InfoFont->Set_Text(iINFO->ItemDesc[1]);
 		ClassFont->Set_Text(iINFO->ItemDesc[2]);
@@ -198,12 +189,11 @@ VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
 	}
 }
 VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
-	if (KEY_DOWN(DIK_K)) { Speech_Bubble = TRUE; }
 	if (Speech_Bubble) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"SpeechBubble_BG");
 		SpriteINFO* Frame = Component_Sprite->Get_Texture(L"SpeechBubble_Frame");
 		SpriteINFO* Character = Component_Sprite->Get_Texture(L"SpeechBubble_Tif");
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
 
 		//Font->Set_Text(_Text);
 		Font->Set_Text(L"유물의 헌사"); // 디버그용
@@ -359,22 +349,22 @@ HRESULT MainUI::Effect_Initialize() {
 }
 HRESULT MainUI::Text_Initialize() {
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"∞", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"∞", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 180.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 180.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	return S_OK;

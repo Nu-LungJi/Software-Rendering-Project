@@ -28,8 +28,8 @@ HRESULT		NPCTalk::Ready_GameObject() {
 
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
-	Name = FontManager::GetInstance()->Find_FontObject(L"Personal Name");
-	Talk = FontManager::GetInstance()->Find_FontObject(L"TALK");
+	//Name = FontManager::GetInstance()->Find_FontObject(L"Personal Name");
+	//Talk = FontManager::GetInstance()->Find_FontObject(L"TALK");
 
 	return S_OK;
 }
@@ -50,8 +50,8 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 	if (!ShadowCast) {
 		PlayerObject->Set_PlayerStop(TRUE);
 		Timer01 += _DT;
-		FontManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(0, 255, 255, 255);
-		FontManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Color(0, 255, 255, 255);
+		//FontManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(0, 255, 255, 255);
+		//FontManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Color(0, 255, 255, 255);
 		Shadow_FadeIn(Timer01);
 	}
 	
@@ -82,8 +82,8 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 		if (Shadow_FadeOut(Timer01)) {
 			ShadowCast = FALSE;
 			ContextPassing = 0;
-			FontManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(200, 255, 255, 255);
-			FontManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Color(200, 255, 255, 255);
+			//FontManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(200, 255, 255, 255);
+			//FontManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Color(200, 255, 255, 255);
 			PlayerObject->Set_PlayerStop(FALSE);
 			return TRUE;
 		}
@@ -154,8 +154,8 @@ HRESULT  NPCTalk::Effect_Initialize() {
 	return S_OK;
 }
 HRESULT  NPCTalk::Text_Initialize() {
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 643, 502.f }, 28, L"Personal Name", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 640, 560.f }, 20, L"TALK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
+	//FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 643, 502.f }, 28, L"Personal Name", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
+	//FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 640, 560.f }, 20, L"TALK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
 	return S_OK;
 }
 

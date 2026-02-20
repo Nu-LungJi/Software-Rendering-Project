@@ -18,9 +18,10 @@ public:
 	virtual BOOL		OnCollisionExit(GameObject* _Other);
 
 public:
-	HRESULT				Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size);
+	HRESULT				Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, wstring _TAG, _vec3 _Rot);
 	HRESULT				Make_TextureList(wstring _FileName);
-	static	BossEffect* Create(LPDIRECT3DDEVICE9 _GRPDEV, BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size = { 1.f, 1.f, 1.f });
+	VOID				Set_EffectRotation(FLOAT _X, FLOAT _Y, FLOAT _Z);
+	static	BossEffect* Create(LPDIRECT3DDEVICE9 _GRPDEV, wstring _TAG, BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size = { 1.f, 1.f, 1.f }, _vec3 _Rot = { 0.f, 0.f, 0.f });
 private:
 	HRESULT				Component_Initialize();
 	virtual	VOID		Free();

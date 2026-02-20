@@ -20,17 +20,14 @@ HRESULT	DebugScene::Ready_Scene() {
 }
 INT	 DebugScene::Update_Scene(CONST FLOAT& _DT) {
 	CollisionManager::GetInstance()->Update_CollisionManager();
-	UIManager::GetInstance()->Update_UIManager(_DT);
 	return Scene::Update_Scene(_DT);
 }
 VOID DebugScene::LateUpdate_Scene(CONST FLOAT& _DT) {
-	UIManager::GetInstance()->LateUpdate_UIManager(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 	Scene::LateUpdate_Scene(_DT);
 }
 VOID DebugScene::Render_Scene() {
-	UIManager::GetInstance()->Render_UIManager(GRPDEV);
 }
 HRESULT DebugScene::Ready_Enviroment_Layer() {
 	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_STATIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
@@ -60,7 +57,7 @@ DebugScene* DebugScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	SceneManager::GetInstance()->Set_CurrentScene(LS);
 
 	if (FAILED(LS->Ready_Scene())) {
-		MSG_BOX("Cannot Create StartScene.");
+		MSG_BOX("Cannot Create DebugScene.");
 		Safe_Release(LS);
 		return nullptr;
 	}

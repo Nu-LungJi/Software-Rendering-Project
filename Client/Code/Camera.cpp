@@ -14,6 +14,9 @@ HRESULT CameraObject::Ready_GameObject() {
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
+	Shake_Strength = 0;
+	Shake_Time = 0.f;
+
 	MouseCheck = FALSE;
 
 	Camera_Show = TRUE;
@@ -33,24 +36,39 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-
 	if (!Camera_Move)
 	{
 		GameObject* player = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 			Get_GameObject(L"Player"));
-
+	
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
-
+	
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
-
+	
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
 	}
+	_vec3 OriginEye = { 0.f, 0.f, 0.f };
+	_vec3 OriginAt = { 0.f, 0.f, 0.f };
+	if (Shake_Time > 0.f) {
+		Shake_Time -= _DT;
+		OriginEye = EyeVec;
+		OriginAt = AtVec;
 
+
+		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+
+		EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
+		AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
+	}
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
-
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
+
+	EyeVec = OriginEye;
+	AtVec = OriginAt;
 	return 0;
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
@@ -148,6 +166,11 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 			AtVec = EyeVec + LookVec;
 		}
 	}
+}
+
+VOID CameraObject::Camera_Shaking(INT _Strength, FLOAT _Time) {
+	Shake_Strength = _Strength;
+	Shake_Time = _Time;
 }
 
 

@@ -2,15 +2,17 @@
 
 GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV)
 	: GRPDEV(_GRPDEV)	 , ObjectTAG(L""), ObjectDead(FALSE), ObjectTYPE(), AlphaZValue(0.f)
-										{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
+									{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
 GameObject::GameObject(const GameObject& _RHS)	 
 	: GRPDEV(_RHS.GRPDEV), ObjectTAG(_RHS.ObjectTAG), ObjectTYPE(_RHS.ObjectTYPE), ComponentList(_RHS.ComponentList), AlphaZValue(_RHS.AlphaZValue)
-	, ObjectDead(_RHS.ObjectDead) { GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
+	, ObjectDead(_RHS.ObjectDead)	{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
 GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV, CONST TCHAR* _TAG)
-	: GRPDEV(_GRPDEV)	 , ObjectTAG(_TAG), ObjectDead(FALSE) { GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
-GameObject::~GameObject()				{																				}
+	: GRPDEV(_GRPDEV)	 , ObjectTAG(_TAG), ObjectDead(FALSE) 
+									{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
+GameObject::~GameObject()			{																				}
 
 HRESULT		GameObject::Ready_GameObject() {
+	CollisionList.resize(0);
 	return S_OK;
 }
 INT			GameObject::Update_GameObject(const FLOAT& _DT) {
@@ -49,6 +51,19 @@ VOID GameObject::AlphaYSorting(const D3DXVECTOR3* _Vec)
 	D3DXVECTOR3 DirectionToCam = CameraPosition - *_Vec;
 	AlphaYValue = _Vec->y;
 }
+
+BOOL GameObject::Search_CollisionObject(GameObject* _COL) {
+	for (auto& CO : CollisionList) 
+		if (CO == _COL) return TRUE;
+	return FALSE;
+}
+VOID GameObject::Add_CollisionObject(GameObject* _COL) {
+	CollisionList.push_back(_COL);
+}
+VOID GameObject::Delete_CollisionObject(GameObject* _COL) {
+	CollisionList.remove(_COL);
+}
+
 Component*	GameObject::Get_Component(COMPONENT_TYPE _CID) {
 	return ComponentList[(LONG)_CID] != nullptr ? ComponentList[(LONG)_CID] : nullptr;
 }
@@ -61,6 +76,8 @@ Component*	GameObject::Add_Component(COMPONENT_TYPE _CID) {
 VOID		GameObject::Free() {
 	for (auto& COM : ComponentList)
 		Safe_Release(COM);
+
+	
 	Safe_Release(GRPDEV);
 }
 

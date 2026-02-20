@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "PlayerEquipMent.h"
-
+#include "UIManager.h"
 
 class PlayerInven :  public GameObject {
 	explicit PlayerInven(LPDIRECT3DDEVICE9 _GRPDEV);
