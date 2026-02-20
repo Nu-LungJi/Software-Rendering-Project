@@ -57,6 +57,8 @@ HRESULT NPC::Component_Initialize() {
 	Component_Texture	= ADD_COMPONENT_TEXTURE;
 	Component_Collider	= ADD_COMPONENT_COLLIDER;
 
+	ResourceManager::GetInstance()->PathFinder(GRPDEV, L"../../UI/NPCDialog");
+
 	for (INT PIC = 1; PIC <= 8; ++PIC) {
 		wstring Base = L"Tif_Stand" + to_wstring(PIC) + L".png";
 		Tif_TextureList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));

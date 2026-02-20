@@ -22,6 +22,9 @@ public:
 	static	Augment* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	SpriteObject* Component_Sprite;
+	Texture* Component_Texture;
+	Collider* Component_Collider;
+	Transform* Component_Transform;
 
 private:
 	virtual	VOID		Free();
