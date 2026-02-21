@@ -31,8 +31,9 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
 				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI)
 				ObjectResult = (*iter)->Update_GameObject(_DT);
-			else
+			else {
 				ObjectResult = (*iter)->Update_GameObject_Component(_DT);
+			}
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
 				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
 				Safe_Release((*iter));

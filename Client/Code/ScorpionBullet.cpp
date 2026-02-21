@@ -36,12 +36,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	GameObject::Update_GameObject(_DT);
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	return 0;
-}
-VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
-	GameObject::LateUpdate_GameObject(_DT);
-
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
@@ -49,10 +43,16 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 	if (m_tInfo.fTimer[0] > 10.f)
 	{
 		ObjectDead = true;
-		return;
+		return -1;
 	}
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	return 0;
+}
+VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
+	GameObject::LateUpdate_GameObject(_DT);
 
 	_matrix* pmatWorld = Component_Transform->Get_World();
 	_matrix matView, matRot;

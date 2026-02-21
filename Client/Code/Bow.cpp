@@ -203,8 +203,8 @@ VOID Bow::Render_GameObject()
 
 HRESULT Bow::Component_Initialize()
 {
-	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
+	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Weapon/IceBow");
 

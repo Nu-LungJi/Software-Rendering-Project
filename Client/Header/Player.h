@@ -221,6 +221,8 @@ private:
 	bool			_skillNPC_On;
 	_vec3			_NPC_Pos;
 
+	bool			_isInvincible;		// 무적 상태
+	float			_invincibleTimer;	//무적 타이머
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)

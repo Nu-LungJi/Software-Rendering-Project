@@ -544,7 +544,7 @@ void Player::DASH_STATE(const _float& _DT)
 }
 void Player::ATTACK_STATE(const _float& _DT)
 {
-	//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -563,7 +563,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
-	else if (!MOUSE_LBUTTON && !KEY_HOLD(DIK_SPACE)) {
+	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
 	}
 
