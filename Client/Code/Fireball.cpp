@@ -20,14 +20,21 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 		return 0;
 	}
 
-	m_tInfo.fTimer[0] += _DT;
-	if (m_tInfo.fTimer[0] >= 5.f)
+	m_tInfo.fSpeed -= _DT;
+	//if (m_tInfo.fTimer[0] >= 5.f)
+	if(m_tInfo.fSpeed <0.f)
 	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
 		ObjectDead = true;
 		return 0;
 	}
 	
-	//Component_Transform->Get_Position()->y = 0.5f;
+	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
 	m_tInfo.Textureinfo._frameTick += _DT;
@@ -61,7 +68,7 @@ HRESULT Fireball::Component_Initialize() {
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.396f, 0.184f, 1.f);
+	Component_Transform->Set_Scale(FIREBALL_WIDTH, FIREBALL_HEIGHT, 1.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
@@ -77,6 +84,21 @@ Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return MST;
+}
+BOOL Fireball::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if (Tag == L"Player")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
 }
 VOID Fireball::Free()
 {

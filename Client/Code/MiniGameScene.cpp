@@ -48,7 +48,7 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 
 	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 0.f,0.f,0.f }));
+	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 0.f, 0.f, 0.f }),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV),GAMEOBJECT_TYPE::OBJECT_TERRAIN);
 	return S_OK;
 }

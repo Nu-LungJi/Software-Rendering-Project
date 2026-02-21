@@ -15,6 +15,9 @@ public:
 	virtual			VOID		Render_GameObject();
 
 	static			ScorpionBullet* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+	BOOL			OnCollisionStay(GameObject* _Other)		override;
+	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 private:
 	VOID			Free();
@@ -37,7 +40,6 @@ public:
 
 	MONBULLETINFO*	Get_Info() { return &m_tInfo; }
 
-	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 
 private:
 

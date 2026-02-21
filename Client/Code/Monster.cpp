@@ -106,21 +106,21 @@ HRESULT Monster::Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer
 	return S_OK;
 }
 
-VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, GAMEOBJECT_TYPE eType)
+VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType)
 {
-	TCHAR Classname[256];
-	swprintf_s(Classname, 256, L"%S", typeid(*pMonster).name());
+	//TCHAR Classname[256];
+	//swprintf_s(Classname, 256, L"%S", typeid(*pMonster).name());
 
-	CONST TCHAR* pName = wcschr(Classname, L' ');
+	//CONST TCHAR* pName = wcschr(Classname, L' ');
 
-	pName = (pName != nullptr) ? pName + 1 : Classname;
-	pMonster->Set_ObjectTag(L"Monster");
+	//pName = (pName != nullptr) ? pName + 1 : Classname;
 
-
+	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
-	CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
+	if (pMonster->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
+		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }
 
 	uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
@@ -170,3 +170,4 @@ VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_
 
 	Component_Transform->Set_World(&matWorld);
 }
+

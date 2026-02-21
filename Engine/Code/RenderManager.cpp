@@ -10,6 +10,7 @@ RenderManager::~RenderManager() {	Free();	}
 
 VOID RenderManager::Add_RenderGroup(RENDERID _RID, GameObject* _GOBJ) {
 	if (_GOBJ == nullptr)	return;
+	if (_GOBJ->Get_ObjectDead())	return;
 	RenderGroup[_RID].push_back(_GOBJ);
 	_GOBJ->AddRef();
 }

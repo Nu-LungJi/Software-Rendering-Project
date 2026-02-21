@@ -9,6 +9,11 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 {
     if (FAILED(Component_Initialize())) return E_FAIL;
 
+    // Temp
+    Component_Collider->Set_Hp(1.f);
+    Component_Collider->Set_Att(30.f);
+
+
     _bowType = _BOWTYPE;
     _speed = 15.f;
     _sumSpeed = 0.f;
@@ -399,9 +404,14 @@ Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int
 
 BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 {
+    wstring Tag = _Other->Get_ObjectTag();
 
+    if (Tag == L"Monster") {
+        Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        return TRUE;
+    }
 
-    return 0;
+    return FALSE;
 }
 
 BOOL Arrow::OnCollisionStay(GameObject* _Other)

@@ -6,12 +6,17 @@ Bullet_Chain_Head::~Bullet_Chain_Head() {}
 
 HRESULT Bullet_Chain_Head::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
-	m_tInfo.fSpeed = 2.f;
+	m_tInfo.fSpeed = BULLET_CHAIN_SPEED;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
 	fDis = 0.f;
 	return S_OK;
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
+
+	MYPOS->y = 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
 	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo)))
 	{
@@ -22,9 +27,13 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
-
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] >= 2.f)
+	{
+		Component_Collider->Set_Hp(-1.f);
+	}
+
+	if (Component_Collider->Get_Hp() < 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
 
@@ -33,11 +42,12 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		ObjectDead = true;
-		return 0;
 	}
 
 	GameObject::Update_GameObject(_DT);
 
+	if (ObjectDead)
+		return -1;
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return 0;
@@ -54,9 +64,11 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.bTrigger[0] = !m_tInfo.bTrigger[0];
 		fDis -= MYSCALE->x;
 
-		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, *MYPOS);
+		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, {MYPOS->x, MYPOS->y -0.001f, MYPOS->z});
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
+		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.5f;
+
 		*dynamic_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *MYSCALE;
 		
 		MONBULLETINFO* pBulletinfo = static_cast<Bullet_Chain*>(m_tInfo.pGameObj[1])->Get_Info();
@@ -64,7 +76,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		pBulletinfo->bTrigger[0] = m_tInfo.bTrigger[0];
 		pBulletinfo->pGameObj[0] = m_tInfo.pGameObj[0];
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 		m_tInfo.pGameObj[1] = nullptr;
 	}
@@ -77,7 +89,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 	m_tInfo.vDirection.y = 0.f;
-	Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -94,12 +106,12 @@ HRESULT Bullet_Chain_Head::Component_Initialize() {
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.11f, 0.1f, 1.f);
+	Component_Transform->Set_Scale(BULLET_CHAIN_WIDTH, BULLET_CHAIN_HEIGHT, 1.f);
 	Component_Transform->Set_Pos(0.f, 0.5f, 0.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+	Component_Collider->Set_Scale(BULLET_CHAIN_WIDTH, 1.f, BULLET_CHAIN_HEIGHT);
 
 	return S_OK;
 }
@@ -115,16 +127,26 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
-	switch (_Other->Get_ObjectType())
-	{
-	default:
-		break;
-	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
-	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
+	wstring Tag = _Other->Get_ObjectTag();
 
-		break;
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
 	}
-	return true;
+	else if (Tag == L"Player")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
+}
+BOOL Bullet_Chain_Head::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Bullet_Chain_Head::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
 }
 VOID Bullet_Chain_Head::Free()
 {

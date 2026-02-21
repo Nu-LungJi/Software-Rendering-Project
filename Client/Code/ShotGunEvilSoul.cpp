@@ -8,20 +8,18 @@ HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHP = SHOTGUNEVILSOUL_HP;
-
-	ObjectTAG = L"Monster";
+	Component_Collider->Set_Hp(SHOTGUNEVILSOUL_HP);
 
 	return S_OK;
 }
 INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
-	// <ÇÃ·¹ÀÌ¾î ¾÷µ¥ÀÌÆ® ½ÃÁ¡>
+	MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+
 	GameObject::Update_GameObject(_DT);
-
-	ObjectTAG = L"Monster";
-
-	if (m_tInfo.fHP <= 0.f)
+	
+	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 	switch (m_tInfo.eState[0])
 	{
@@ -70,7 +68,7 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
 			return;
 		}
-
+		m_tInfo.Textureinfo._frameTick += _DT;
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
@@ -121,11 +119,9 @@ HRESULT ShotGunEvilSoul::Component_Initialize() {
 
 	Component_Transform->Set_Pos(10.f, 0.5f, 0.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.169f, 0.284f, 1.f);
+	Component_Transform->Set_Scale(SHOTGUNEVILSOUL_WIDTH, SHOTGUNEVILSOUL_HEIGHT, 1.f);
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-
-	Component_Collider->Set_Scale(0.5f, 1.f, 0.5f);
 
 	return S_OK;
 }
@@ -140,20 +136,19 @@ ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
-	if (_Other->Get_ObjectTag() == L"PlayerArrow")
-	{
-		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-		m_tInfo.fHP -= (_float)atk;
-	}
-	return TRUE;
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
+
+	return FALSE;
 }
 BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
 {
-	return TRUE;
+	return FALSE;
 }
 BOOL ShotGunEvilSoul::OnCollisionExit(GameObject* _Other)
 {
-	return TRUE;
+	return FALSE;
 }
 VOID ShotGunEvilSoul::Free() {
 
@@ -266,12 +261,12 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 		{
 			_float fRandom = (Monster::XorShift128plus(Seed[0], Seed[1]) % 1000) / 1000.f;
 
-			m_tInfo.pGameObj[1] = Monster::Create<Bullet_Standard>(GRPDEV, *MYPOS, 1.f);
+			m_tInfo.pGameObj[1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, 1.f);
 
 			_float fRadian = fBaseRadian + fRandom * (D3DXToRadian(SHOTGUNEVILSOUL_SPREAD)) - D3DXToRadian(SHOTGUNEVILSOUL_SPREAD) * 0.5f;
-			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
+			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 			m_tInfo.pGameObj[1] = nullptr;
 		}

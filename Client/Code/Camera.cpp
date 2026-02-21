@@ -98,8 +98,8 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 
-	EyeVec = OriginEye;
-	AtVec = OriginAt;
+	//EyeVec = OriginEye;
+	//AtVec = OriginAt;
 	return 0;
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {

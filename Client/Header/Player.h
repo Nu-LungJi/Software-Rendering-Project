@@ -242,4 +242,11 @@ private:
 	GameObject*		_inventory[8];
 	int				_equipNum;
 
+
+	//temp
+	public:
+
+		BOOL			OnCollisionEnter(GameObject* _Other)override;
+		BOOL			OnCollisionStay(GameObject* _Other) override;
+		BOOL			OnCollisionExit(GameObject* _Other)		override;
 };
