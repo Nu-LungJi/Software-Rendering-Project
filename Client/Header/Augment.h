@@ -27,5 +27,11 @@ private:
 	Transform* Component_Transform;
 
 private:
+	vector<ItemINFO*> Perk_Info;
+	vector<FontObject*> Perk_Text;
+
+	vector<SpriteINFO> PerkInfo_Screen;
+	vector<SpriteINFO*> PerkInfo_InfoFrame;
+private:
 	virtual	VOID		Free();
 };

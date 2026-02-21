@@ -17,11 +17,24 @@ INT		ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-	if (KEY_DOWN(DIK_F8)) {
+	if (KEY_DOWN(DIK_T) && KEY_DOWN(DIK_LCONTROL))
+	{
 		isActive = !isActive;
+		if (!isActive)
+		{
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Title")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_ATKType")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_ATK")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_Add")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_DESC")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_ExDESC")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"ITEM_PRICE")->Visible = FALSE;
+		}
 	}
-
 	if (isActive) {
+		Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
+
 		if (KEY_DOWN(DIK_RIGHT)) {
 			m_iCurrentItemIndex++;
 			if (m_iCurrentItemIndex >= (INT)Item_Index.size()) m_iCurrentItemIndex = 0;
@@ -33,7 +46,8 @@ INT		ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 			if (m_iCurrentItemIndex < 0) m_iCurrentItemIndex = (INT)Item_Index.size() - 1;
 			Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
 		}
-	}	return 0;
+	}	
+	return 0;
 }
 VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
@@ -41,14 +55,14 @@ VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID	ShopUI::Render_GameObject() {
 	if(isActive)
 		Component_Sprite->Render_Sprite();
-	if(!isActive)
-		UIManager::GetInstance()->Set_Active(FALSE);
 }
 
 HRESULT	ShopUI::Component_Initialize() {
 	Component_Sprite		= ADD_COMPONENT_SPRITE;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Collider	= ADD_COMPONENT_COLLIDER;
+
+	m_iCurrentItemIndex = 0;
 
 	return S_OK;
 }
@@ -77,8 +91,8 @@ HRESULT	ShopUI::Text_Initialize() {
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 							
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -108,53 +122,66 @@ HRESULT ShopUI::Item_Initialize() {
 //	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;	
 	//Display_ShopItemInfo(m_pShopItem);
 	ItemINFO* pItem1 = new ItemINFO;
-	pItem1->ItemDesc = { L"인내의 활", L"무기/희귀", L"", L"", L"",
-											 L"차징시간이 길수록 데미지가 증가합니다.",
-											 L"때를 기다려라...", L"", L"DIC_DarkBow" };
-	pItem1->ItemPrice = 68;
-	pItem1->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+	pItem1->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
+											L"사도의 가호를 하나 충전합니다.",
+											L"", L"20" };
+	pItem1->ItemPrice = 20;
+	pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
 	Item_Index.push_back(pItem1);
 
 	ItemINFO* pItem2 = new ItemINFO;
-	pItem2->ItemDesc = { L"Home", L"소모품",L"",L"",L"",
-											 L"10시가돼면 피곤함이 늘어납니다.",
-											 L"소모품",L"",L"DIC_HOME"};
-	pItem2->ItemPrice = 10;
+	pItem2->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
+											 L"잃은 체력을 한 칸 회복합니다.",
+											 L"", L"20"};
+	pItem2->ItemPrice = 15;
 	pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
 	Item_Index.push_back(pItem2);
 
 	ItemINFO* pItem3 = new ItemINFO;
-	pItem3->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
-											 L"잃은 체력을 한 칸 회복합니다.",
-											 L"소모품", L"", L"DIC_HEART"};
+	pItem3->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
+											L"현재 사용중인 활의 화살을 전부 충전합니다.",
+											L"", L"20"};
 	pItem3->ItemPrice = 15;
 	pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
 	Item_Index.push_back(pItem3);
 
 	ItemINFO* pItem4 = new ItemINFO;
-	pItem4->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
-											L"현재 사용중인 활의 화살을 전부 충전합니다.",
-											L"소모품", L"", L"DIC_ARROW" };
-	pItem4->ItemPrice = 15;
-	pItem4->ItemType = (int)ITEM_TYPE::SUPPLY;
+	pItem4->ItemDesc = {L"빙결의 활", L"무기/희귀", L"일반 공격",
+											L"일반 공격력 24 ~ 26", L"공격 속도 2.5",
+											L"적에게 피해를 입힐 경우 \n적이 빙결 상태에 빠집니다.",
+											L"얼어붙어라..", L"80" };
+
+	pItem4->ItemPrice = 80;
+	pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 	Item_Index.push_back(pItem4);
 
 	ItemINFO* pItem5 = new ItemINFO;
-	pItem5->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
-											L"사도의 가호를 하나 충전합니다.",
-											L"소모품", L"", L"DIC_GAHO" };
-	pItem5->ItemPrice = 15;
-	pItem5->ItemType = (int)ITEM_TYPE::SUPPLY;
+	pItem5->ItemDesc = { L"오동나무 활",L"무기/희귀",L"일반 공격",
+											L"일반 공격력 24 ~ 26",L"공격 속도 2.5",
+											L"가장 기본적인 활입니다.", L"이 활... 오동나무네?",
+											L"70" };
+	pItem5->ItemPrice = 0;
+	pItem5->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 	Item_Index.push_back(pItem5);
 
 	ItemINFO* pItem6 = new ItemINFO;
-	pItem6->ItemDesc = { L"오동나무 활",L"무기/희귀",L"일반 공격",
-											L"일반 공격력 24 ~ 26",L"공격 속도 2.5",
-											L"가장 기본적인 활입니다.",L"",
-											L"DIC_ODONG", };
-	pItem6->ItemPrice = 0;
-	pItem6->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+	pItem6->ItemDesc = { L"어둠의 활",L"무기/희귀",L"일반 공격",
+											L"일반 공격력 30 ~ 36",L"공격 속도 2.3",
+											L"어둠의 힘을 담아 화살을 발사합니다.",L"어둠의 힘을 담아..",
+											L"80" };
+	pItem6->ItemPrice = 75;
+	pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 	Item_Index.push_back(pItem6);
+
+	ItemINFO* pItem7 = new ItemINFO;
+	pItem7->ItemDesc = { L"자연의 활",L"무기/희귀",L"일반 공격",
+										 L"일반 공격력 30 ~ 36", L"공격 속도 2.6",
+										 L"자연의 힘을 담아 화살을 발사합니다.", L"자연의 힘을 담아..",
+										 L"90" };
+	pItem7->ItemPrice = 90;
+	pItem7->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+	Item_Index.push_back(pItem7);
+
 
 	return S_OK;
 }
@@ -196,14 +223,19 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 
 		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(TRUE);
 		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(TRUE);
-
-		ItemInfo_Text[0]->Text = _pItem->ItemDesc[0];
-		ItemInfo_Text[1]->Text = _pItem->ItemDesc[1];
-		ItemInfo_Text[2]->Text = _pItem->ItemDesc[2];
-		ItemInfo_Text[3]->Text = _pItem->ItemDesc[3];
-		ItemInfo_Text[4]->Text = _pItem->ItemDesc[4];
-		ItemInfo_Text[5]->Text = _pItem->ItemDesc[5];
-		ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
+			ItemInfo_Text[0]->Text = _pItem->ItemDesc[0];
+			ItemInfo_Text[1]->Text = _pItem->ItemDesc[1];
+			ItemInfo_Text[2]->Text = _pItem->ItemDesc[2];
+			ItemInfo_Text[3]->Text = _pItem->ItemDesc[3];
+			ItemInfo_Text[4]->Text = _pItem->ItemDesc[4];
+			ItemInfo_Text[5]->Text = _pItem->ItemDesc[5];
+			ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
+			ItemInfo_Text[7]->Text = _pItem->ItemDesc[7];
+	}
+	if (!isActive)
+	{
+		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
+		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
 	}
 }
 

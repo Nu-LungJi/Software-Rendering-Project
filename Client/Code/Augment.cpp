@@ -32,8 +32,6 @@ HRESULT Augment::Component_Initialize() {
 	Component_Collider  = ADD_COMPONENT_COLLIDER;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
-
-
 	return S_OK;
 }
 HRESULT Augment::Sprite_Initialize() {
@@ -69,7 +67,8 @@ HRESULT Augment::Text_Initialize() {
 	return S_OK;
 }
 HRESULT Augment::Item_Initialize() {
-	wstring BaseFolder = L"../../UI/Inventory_UI/";
+	wstring BaseFolder = L"../../UI/Augments/";
+
 	return S_OK;
 }
 Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

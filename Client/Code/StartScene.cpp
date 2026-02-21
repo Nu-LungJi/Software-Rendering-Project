@@ -64,6 +64,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
 
 	Add_GameObjectToScene<NPCTalk>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"NPCTalk"		);
 	Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
+	Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 	return S_OK;
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
