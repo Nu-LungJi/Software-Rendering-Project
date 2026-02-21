@@ -17,11 +17,23 @@ INT		ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-	if (KEY_DOWN(DIK_F1)) {
-		isActive = TRUE;
-		Display_ShopItemInfo(m_pShopItem);
+	if (KEY_DOWN(DIK_F8)) {
+		isActive = !isActive;
 	}
-	return 0;
+
+	if (isActive) {
+		if (KEY_DOWN(DIK_RIGHT)) {
+			m_iCurrentItemIndex++;
+			if (m_iCurrentItemIndex >= (INT)Item_Index.size()) m_iCurrentItemIndex = 0;
+			Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
+		}
+
+		if (KEY_DOWN(DIK_LEFT)) {
+			m_iCurrentItemIndex--;
+			if (m_iCurrentItemIndex < 0) m_iCurrentItemIndex = (INT)Item_Index.size() - 1;
+			Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
+		}
+	}	return 0;
 }
 VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
@@ -29,6 +41,8 @@ VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID	ShopUI::Render_GameObject() {
 	if(isActive)
 		Component_Sprite->Render_Sprite();
+	if(!isActive)
+		UIManager::GetInstance()->Set_Active(FALSE);
 }
 
 HRESULT	ShopUI::Component_Initialize() {
@@ -49,7 +63,6 @@ HRESULT	ShopUI::Sprite_Initialize() {
 	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Mid.png", L"INFO_BGMid", 153.f, 300.f, 305, 110, TRUE, 175));
 	ItemInfo_Screen.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"ItemInformation_Bottom.png", L"INFO_BGBot", 140.f, 410.f, 335, 63, TRUE, 175));
 	////////////////////////////////////////////ITEM_SPRITE//////////////////////////////////////////
-	Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png", L"DIC_Field_DarkBow", 0.f, 0.f, 60, 60, TRUE, 255);
 	
 	return S_OK;
 }
@@ -60,13 +73,13 @@ HRESULT	ShopUI::Text_Initialize() {
 	/////////////////////////////////////////////////////// ITEM INFO ////////////////////////////////////////////////////////////////
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_ATK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 0.f, 0.f }, 12, L"ITEM_Add", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 275.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 							
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 200.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"50", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	return S_OK;
@@ -92,8 +105,7 @@ HRESULT ShopUI::Item_Initialize() {
 //			L"DIC_InfoFrame"
 //	};
 //	m_pShopItem->ItemPrice = 68;
-//	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-	
+//	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;	
 	//Display_ShopItemInfo(m_pShopItem);
 	ItemINFO* pItem1 = new ItemINFO;
 	pItem1->ItemDesc = { L"인내의 활", L"무기/희귀", L"", L"", L"",
@@ -101,7 +113,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"때를 기다려라...", L"", L"DIC_DarkBow" };
 	pItem1->ItemPrice = 68;
 	pItem1->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-	//Item_Index.push_back(pItem1);
+	Item_Index.push_back(pItem1);
 
 	ItemINFO* pItem2 = new ItemINFO;
 	pItem2->ItemDesc = { L"Home", L"소모품",L"",L"",L"",
@@ -109,7 +121,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"소모품",L"",L"DIC_HOME"};
 	pItem2->ItemPrice = 10;
 	pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
-	//Item_Index.push_back(pItem2);
+	Item_Index.push_back(pItem2);
 
 	ItemINFO* pItem3 = new ItemINFO;
 	pItem3->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
@@ -117,7 +129,7 @@ HRESULT ShopUI::Item_Initialize() {
 											 L"소모품", L"", L"DIC_HEART"};
 	pItem3->ItemPrice = 15;
 	pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
-	//Item_Index.push_back(pItem3);
+	Item_Index.push_back(pItem3);
 
 	ItemINFO* pItem4 = new ItemINFO;
 	pItem4->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
@@ -125,19 +137,24 @@ HRESULT ShopUI::Item_Initialize() {
 											L"소모품", L"", L"DIC_ARROW" };
 	pItem4->ItemPrice = 15;
 	pItem4->ItemType = (int)ITEM_TYPE::SUPPLY;
-	//Item_Index.push_back(pItem4);
+	Item_Index.push_back(pItem4);
 
 	ItemINFO* pItem5 = new ItemINFO;
 	pItem5->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
-											L"사도의 가호를 하나 회복합니다.",
+											L"사도의 가호를 하나 충전합니다.",
 											L"소모품", L"", L"DIC_GAHO" };
 	pItem5->ItemPrice = 15;
 	pItem5->ItemType = (int)ITEM_TYPE::SUPPLY;
-	//Item_Index.push_back(pItem5);
+	Item_Index.push_back(pItem5);
 
 	ItemINFO* pItem6 = new ItemINFO;
-
-	// 02.21 일자 Merge - Item_Index 정의가 없어서 주석쳐놨습니다.
+	pItem6->ItemDesc = { L"오동나무 활",L"무기/희귀",L"일반 공격",
+											L"일반 공격력 24 ~ 26",L"공격 속도 2.5",
+											L"가장 기본적인 활입니다.",L"",
+											L"DIC_ODONG", };
+	pItem6->ItemPrice = 0;
+	pItem6->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+	Item_Index.push_back(pItem6);
 
 	return S_OK;
 }
@@ -191,6 +208,7 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 }
 
 VOID	ShopUI::Free() {
-
+	for (auto& II : Item_Index)
+		Safe_Delete(II);
 	GameObject::Free();
 }

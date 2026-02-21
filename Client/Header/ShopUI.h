@@ -34,6 +34,8 @@ private:
 
 	vector<SpriteINFO*> ItemInfo_Screen;
 	vector<FontObject*>	ItemInfo_Text;
+	vector<ItemINFO*>		Item_Index;
+	INT		m_iCurrentItemIndex;
 
 	BOOL			isActive;
 	ItemINFO*		m_pShopItem;
