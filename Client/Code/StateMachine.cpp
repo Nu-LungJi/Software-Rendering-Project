@@ -50,11 +50,7 @@ VOID		  StateMachine::Free() {
 }
 
 VOID AppearState::FSM_StateEnter(GameObject* _Owner)	{}
-VOID AppearState::FSM_StateUpdate(GameObject* _Owner)	{
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1) {		// RSWING - PUNCH FLAME EFFECT
-		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
-	}
-}
+VOID AppearState::FSM_StateUpdate(GameObject* _Owner)	{}
 VOID AppearState::FSM_StateExit(GameObject* _Owner)		{}
 
 VOID DeadState	::FSM_StateEnter(GameObject* _Owner)	{}
@@ -108,13 +104,13 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.12f);
 		float pow = 1.5f;
 		_vec3 Scale = { 1.f * pow, 1.f * pow, 1.f * pow };
-		_vec3 PosL = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 6.5f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 0.5f + 0.0001f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 1.0f
+		_vec3 PosL = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x	,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y	,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z
 		};
-		_vec3 PosR = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 3.f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 0.25f + 0.0001f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 0.5f
+		_vec3 PosR = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x	,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y	,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z
 		};
 
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS, BossEffect::Create(GRPDEV, L"FSwing Charge ElectricL", BOSS_EFFECT::FSWING_CHARGE_ELECTRIC_EFFECT,
@@ -127,9 +123,9 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float pow = 4.f;
 		_vec3 Scale = { 1.f * pow, 1.f * pow, 1.f * pow };
-		_vec3 Pos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 4.5f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 0.5f + 0.0001f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 1.f 
+		_vec3 Pos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y,
+						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z 
 		};
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_CHARGE_EFFECT,		  L"FSwing Charge", &Pos, Scale, 0.4f);
 	}

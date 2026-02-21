@@ -35,8 +35,9 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 				ObjectResult = (*iter)->Update_GameObject_Component(_DT);
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
 				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-				Safe_Release((*iter));
+				GameObject* OBJ = *iter;
 				iter = GameObjectList.erase(iter);
+				Safe_Release(OBJ);
 				continue;
 			}
 			else { ++iter; }

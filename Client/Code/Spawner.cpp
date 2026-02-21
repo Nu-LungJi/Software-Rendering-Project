@@ -1,5 +1,5 @@
-#include "Spawner.h"
 #include "../Include/PCH.h"
+#include "Spawner.h"
 
 Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
@@ -77,10 +77,10 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		//Monster_Spawn();
+		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		//Monster_Spawn2();
+		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
 		//Monster_Spawn3();
@@ -104,6 +104,9 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 
 	case TILE_SPAWNER::ITEM_SPAWN6:
+		break;
+	case TILE_SPAWNER::BOSS_SPAWN:
+		Boss();
 		break;
 	}
 
@@ -169,6 +172,21 @@ Transform* Spawner::Crash_Player()
 
 
 	return nullptr;
+}
+
+void Spawner::Boss()
+{
+	if (!m_bSpawn)
+	{
+		_vec3 vPos;
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
+		GameObject* Docheol = SceneManager::GetInstance()->Get_GameObject(L"Docheol");
+		CollisionManager::GetInstance()->Add_ColliderObject(Docheol);
+
+		vPos = *m_pTransform->Get_Position();
+		dynamic_cast<FinalBoss*>(Docheol)->Set_StartPos(vPos);
+		m_bSpawn = true;
+	}
 }
 
 HRESULT Spawner::Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn) {

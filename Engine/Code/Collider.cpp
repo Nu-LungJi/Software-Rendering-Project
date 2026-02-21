@@ -1,10 +1,10 @@
 #include "Collider.h"
 
-Collider::Collider()							:						ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
-Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
-Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.ColliderPos), Curr_ColState(FALSE), Prev_ColState(FALSE),	
-	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj)																			{}
-Collider::~Collider()																																{}
+Collider::Collider()							:						ColliderPos(nullptr),			Offset{0.f, 0.f, 0.f}, Curr_ColState(FALSE), Prev_ColState(FALSE) {}
+Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr),			Offset{0.f, 0.f, 0.f}, Curr_ColState(FALSE), Prev_ColState(FALSE) {}
+Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.ColliderPos),	Offset{0.f, 0.f, 0.f}, Curr_ColState(FALSE), Prev_ColState(FALSE)	
+	,matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj)																								  {}
+Collider::~Collider()																																					  {}
 
 HRESULT		Collider::Ready_Component() {
 	MinPoint = { 0.f, 0.f, 0.f };
@@ -17,6 +17,7 @@ INT			Collider::Update_Component(CONST FLOAT& _DT) {
 		return 0;
 
 	CenterPos = *ColliderPos->Get_Position();
+	CenterPos += Offset;
 	
 	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
 	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };

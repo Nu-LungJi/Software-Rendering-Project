@@ -6,17 +6,18 @@ FinalBoss::FinalBoss(CONST GameObject& _RHS)	: GameObject(_RHS)		{}
 FinalBoss::~FinalBoss()													{}
 
 HRESULT	FinalBoss::Ready_GameObject()						{
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+	////ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+	////ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+	//
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect/Staging");
-
+	BossStartPos = {- 0.4f, 1.5f, 1.7f };
 
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
@@ -32,6 +33,8 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 
 	BossHP = 1000.f;
 
+	TEMP1 = 0.f; TEMP2 = 0.f; TEMP3 = 0.f;
+
 	Invalidate_Mode = TRUE;		// 피해 무효화
 	Rage_Mode		= FALSE;	// 폭주화 단계
 	Action_Mode		= TRUE;		// 다른 행동 간섭 방지
@@ -41,9 +44,9 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	Animation_Interval	 = 0.07f;
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
-	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
 
-	Animation_TexList = &Animation_NonAnim_TexList;
+	Animation_TexList = &Animation_Stand_Normal_TexList;
 
 	Invalidate_Mode = FALSE;		// 피해 무효화
 	Action_Mode = FALSE;		// 다른 행동 간섭 방지
@@ -68,7 +71,7 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
 	_float _cameraAngle = angle / D3DX_PI * 180.f;
 
-	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
+	Component_Transform->Rotation(ROT_X, 80.f);//90.f - _cameraAngle);
 
 	return S_OK;
 }
@@ -97,7 +100,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	
 	if (Action_Timer > 3.f) {
 		srand(time(NULL));
-		Action_Selector = 0;//rand() % 4 + 1;
+		Action_Selector = 2;//rand() % 4 + 1;
 		Action_Timer = 0.f;
 	}
 
@@ -195,7 +198,30 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 	}
-
+	
+	if (KEY_HOLD(DIK_LSHIFT)) {
+		if (KEY_DOWN(DIK_I)) {
+			TEMP1 -= 1.f;
+		}
+		if (KEY_DOWN(DIK_O)) {
+			TEMP2 -= 1.f;
+		}
+		if (KEY_DOWN(DIK_P)) {
+			TEMP3 -= 1.f;
+		}
+	}
+	else {
+		if (KEY_DOWN(DIK_I)) {
+			TEMP1 += 1.f;
+		}
+		if (KEY_DOWN(DIK_O)) {
+			TEMP2 += 1.f;
+		}
+		if (KEY_DOWN(DIK_P)) {
+			TEMP3 += 1.f;
+		}
+	}
+	
 	return 0;
 }
 VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT)	{
@@ -206,7 +232,7 @@ VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	GRPDEV->SetTexture(0, (*Animation_TexList)[Animation_CurrentIndex]);
 
 	Component_Buffer->Render_Buffer();
@@ -240,12 +266,13 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Texture		= ADD_COMPONENT_TEXTURE;
 
 	Component_Transform		= ADD_COMPONENT_TRANSFORM;
-	Component_Transform->Set_Pos(0.f, 0.6f, 0.f);
-	Component_Transform->Set_Scale(10.f, 10.f, 10.f);
+	Component_Transform->Set_Pos(BossStartPos.x, BossStartPos.y , BossStartPos.z);
+	Component_Transform->Set_Scale(9.f, 9.f, 9.f);
 
 	Component_Collider		= ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
+	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
 
 	return S_OK;
 }
@@ -313,44 +340,44 @@ HRESULT FinalBoss::Texture_Initialize() {
 VOID FinalBoss::Animation_Appear_Staging(const FLOAT& _DT) {
 	if (Enable_Staging) {
 		Staging_Timer += _DT;
-		_vec3 GlobalPosition = { 0.f, 1.f - 7.f / 2.f, 0.f - 7.f };
+		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f};
 		FLOAT GloabalScale = 2.f;
 		// Floor Glow
 		// Floor Pool
 		if		(Staging_Timer > 2.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_APPEAR]) {
-			_vec3 SpoolAppearSca = { 400.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 225.f / 100.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f};
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_APPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_APPEAR] = FALSE;
 		}
 		else if (Staging_Timer > 3.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW1]) {
-			_vec3 SpoolAppearSca = { 400.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 225.f / 100.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW1] = FALSE;
 		}
 		else if (Staging_Timer > 4.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW2]) {
-			_vec3 SpoolAppearSca = { 400.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 225.f / 100.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW2] = FALSE;
 		}
 		else if (Staging_Timer > 5.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW3]) {
-			_vec3 SpoolAppearSca = { 400.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 225.f / 100.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW3] = FALSE;
 		}
 		// Emblem Staging
 		if		(Staging_Timer > 4.f && STAGING_TRIGGER[(INT)STAGING::EMBLEM_APPEAR]) {
-			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::EMBLEM_APPEAR_EFFECT, L"EMBLEM_APPEAR", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::EMBLEM_APPEAR] = FALSE;
 		}
 		else if (Staging_Timer > 5.f && STAGING_TRIGGER[(INT)STAGING::EMBLEM_DESTROY]) {
-			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y, GlobalPosition.z };
+			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::EMBLEM_DESTROY_EFFECT, L"EMBLEM_DESTROY", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::EMBLEM_DESTROY] = FALSE;
 		}
@@ -358,36 +385,35 @@ VOID FinalBoss::Animation_Appear_Staging(const FLOAT& _DT) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Appear_TexList;
 			Animation_FrameCount = ANIMATION_APPEAR_FRAMECOUNT;
-
-			FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
+			Component_Transform->Set_Pos(Component_Transform->Get_Position()->x - 0.3f, Component_Transform->Get_Position()->y, Component_Transform->Get_Position()->z + 0.5f);
 			STAGING_TRIGGER[(INT)STAGING::ANIMATION] = FALSE;
 		}
 		// Blue Water Staging
 		if		(Staging_Timer > 6.f && STAGING_TRIGGER[(INT)STAGING::WATER_POPUP]) {
 			Camera->Camera_Shaking(10, 0.5f);
 			_vec3 SpoolAppearSca = { 3.f * GloabalScale, 2.5f * 2.f * GloabalScale, 5.f * 2.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y + 7.1f / 2.f, GlobalPosition.z + 7.1f };
+			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y + 2.f, GlobalPosition.z + 8.4f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 0.7f);
 			STAGING_TRIGGER[(INT)STAGING::WATER_POPUP] = FALSE;
 		}
 		// Small Flame Staging
 		if (Staging_Timer > 6.f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEL]) {
 			_vec3 SpoolAppearSca = { 3.5f * GloabalScale, 3.5f * GloabalScale, 3.5f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x - 1.5f, GlobalPosition.y + 3.1f / 2.f, GlobalPosition.z + 3.1f };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 4.5f, GlobalPosition.y + 3.f / 2.f, GlobalPosition.z + 4.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEL", &SpoolAppearPos, SpoolAppearSca, 1.f);
-			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 0.f);
+			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 10.f);
 			STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEL] = FALSE;
 		}
 		if (Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMER]) {
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x + 2.5f, GlobalPosition.y + 4.1f / 2.f, GlobalPosition.z + 4.1f };
+			_vec3 SpoolAppearPos = { GlobalPosition.x + 4.5f, GlobalPosition.y + 2.5f, GlobalPosition.z + 6.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMER", &SpoolAppearPos, SpoolAppearSca, 1.f);
-			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMER"))->Set_EffectRotation(0.f, 60.f, 0.f);
+			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMER"))->Set_EffectRotation(0.f, 60.f, -10.f);
 			STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMER] = FALSE;
 		}
 		if (Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEC]) {
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x + 0.5f, GlobalPosition.y + 5.1f / 2.f , GlobalPosition.z + 5.1f };
+			_vec3 SpoolAppearPos = { GlobalPosition.x + 2.5f, GlobalPosition.y + 2.5f , GlobalPosition.z + 6.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEC", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEC"))->Set_EffectRotation(0.f, 20.f, 0.f);
 			STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEC] = FALSE;
@@ -397,47 +423,51 @@ VOID FinalBoss::Animation_Appear_Staging(const FLOAT& _DT) {
 		// Big Flame Staging
 		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::BIG_FLAME]) {
 			Camera->Camera_Shaking(30, 1.f);
-			_vec3 SpoolAppearSca = { 5.5f * GloabalScale, 5.5f * GloabalScale, 5.5f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.25f, GlobalPosition.y + 6.1f / 2.f, GlobalPosition.z + 6.1f };
+			_vec3 SpoolAppearSca = { 5.f * GloabalScale, 5.f * GloabalScale, 5.f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.25f, GlobalPosition.y + 3.1f / 2.f, GlobalPosition.z + 6.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"BIG_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::BIG_FLAME] = FALSE;
 		}
 		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::BIG_CIRCLE_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y , GlobalPosition.z  };
+			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 1.f, GlobalPosition.z + 1.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::CIRCLE_FLAME_EFFECT, L"BIG_CIRCLE_FLAME", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::BIG_CIRCLE_FLAME] = FALSE;
-
-			
 		}
 		// Circle Flame Staging
 		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::SPIRAL_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 6.f / 2.f , GlobalPosition.z + 6.f };
+			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 2.1f / 2.f , GlobalPosition.z + 3.5f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPIRAL_FLAME_EFFECT, L"SPIRAL_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.4f);
 			STAGING_TRIGGER[(INT)STAGING::SPIRAL_FLAME] = FALSE;
+
+			Component_Transform->Set_Pos(Component_Transform->Get_Position()->x + 0.3f, Component_Transform->Get_Position()->y, Component_Transform->Get_Position()->z - 0.5f);
 		}
 
 		if (Staging_Timer > 9.5f && STAGING_TRIGGER[(INT)STAGING::CAMERA_SHAKE]) {
 			Camera->Camera_Shaking(30, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::CAMERA_SHAKE] = FALSE;
-			Component_Transform->Set_Pos(0.f, 1.f, 0.f);
+			//Component_Transform->Set_Pos(0.f, 1.f, 0.f);
 		}
-		if (Staging_Timer > 14.5f) {
-			Animation_Interval = 0.07f;
-			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_NonAnim_TexList;
-			Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
-
-			//FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
-			Component_Transform->Set_Pos(0.f, 0.6f, 0.f);
-			Staging_Timer = 0.f;
-			Enable_Staging = 0.f;
-			memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
-		}
+		//if (Staging_Timer > 11.5f) {
+		//	Animation_Interval = 0.07f;
+		//	Animation_CurrentIndex = 0;
+		//	Animation_TexList = &Animation_NonAnim_TexList;
+		//	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
+		//
+		//	FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
+		//	Staging_Timer = 0.f;
+		//	Enable_Staging = 0.f;
+		//	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
+		//}
 		// Animation
 
 	}
+}
+
+VOID FinalBoss::Set_StartPos(_vec3 _StartPos) {
+	Component_Transform->Set_Pos(Component_Transform->Get_Position()->x + _StartPos.x, 
+		Component_Transform->Get_Position()->y + _StartPos.y, Component_Transform->Get_Position()->z + _StartPos.z);
 }
 
 VOID	FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {

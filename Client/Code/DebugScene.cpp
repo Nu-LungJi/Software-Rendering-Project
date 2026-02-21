@@ -6,11 +6,25 @@ DebugScene::~DebugScene() {}
 
 HRESULT	DebugScene::Ready_Scene() {
 	Scene::Ready_Scene();
+
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
+
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
 	if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
 	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
 	if (FAILED(Ready_UserInterface_Layer()))	return E_FAIL;
+
+	dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"))->Set_StartPos({ 64.595f, 0.263f, 103.137f});
 
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);

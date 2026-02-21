@@ -84,6 +84,9 @@ VOID Tile::Render_GameObject()
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 	
 	{
+		if (m_pTileName == nullptr)
+			return;
+
 		if (m_eMode == TILEMODE_CHANGE::MODE_END || m_eTileInstall == INSTALL_MODE::MODE_MOVE)
 			GRPDEV->SetTexture(0, NULL);
 		else
@@ -493,7 +496,8 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[9]))   m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN2;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[10]))  m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN3;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[11]))  m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN4;
-						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::BOSS_SPAWN;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[13]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
 					}
 					if (bSelect)
 						ImGui::SetItemDefaultFocus();

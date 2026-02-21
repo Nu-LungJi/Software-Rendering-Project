@@ -90,7 +90,6 @@ HRESULT	MapScene::Ready_Scene() {
 		if (0 == dwByte)
 			break;
 	}
-	
 	TileManager::GetInstance()->Set_StageCnt();
 	MSG_BOX("로드 성공");
 	CloseHandle(hFile);

@@ -60,6 +60,8 @@ public:
 	INT		Get_EnableQuadGroundExp()					{ return Enable_QuadGroundExplosion; }
 	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_QuadGroundExplosion = _EXP; }
 
+	VOID	Set_StartPos(_vec3 _StartPos);
+
 	VOID	Skill_GroundExplosion(CONST FLOAT& _DT);
 
 	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -73,6 +75,7 @@ private:
 
 	CameraObject*	Camera;
 
+	_vec3			BossStartPos;
 	FLOAT			BossHP;
 
 	BOOL			Invalidate_Mode;
@@ -85,6 +88,9 @@ private:
 	BOOL			STAGING_TRIGGER[20];
 	enum class STAGING {SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
 						WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE};
+	FLOAT TEMP1;
+	FLOAT TEMP2;
+	FLOAT TEMP3;
 
 	INT				Action_Selector;
 	FLOAT			Action_Timer;

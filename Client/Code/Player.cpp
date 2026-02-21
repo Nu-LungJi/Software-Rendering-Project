@@ -53,8 +53,8 @@ HRESULT Player::Ready_GameObject() {
 
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
-	Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-
+	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
+	Component_Transform->Set_Pos({  64.595f, 0.263f, 103.137f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -173,13 +173,13 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
 	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);				// 충돌체의 범위 조절
 
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
@@ -544,7 +544,7 @@ void Player::DASH_STATE(const _float& _DT)
 }
 void Player::ATTACK_STATE(const _float& _DT)
 {
-	//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -563,7 +563,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
-	else if (!MOUSE_LBUTTON && !KEY_HOLD(DIK_SPACE)) {
+	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
 	}
 

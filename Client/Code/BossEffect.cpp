@@ -44,7 +44,7 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 
 	Transform* BossTransform = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 
-	Component_Transform->Rotation(ROT_X, BossTransform->Get_Rotation()->x);
+	Component_Transform->Rotation(ROT_X, 80.f);
 	Component_Transform->Rotation(ROT_X, _Rot.x);
 	Component_Transform->Rotation(ROT_Y, _Rot.y);
 	Component_Transform->Rotation(ROT_Z, _Rot.z);
@@ -70,8 +70,8 @@ VOID BossEffect::Set_EffectRotation(FLOAT _X, FLOAT _Y, FLOAT _Z) {
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 
 	Component_Transform->Rotation(ROT_X, _X);
-	Component_Transform->Rotation(ROT_Y, _Y);
 	Component_Transform->Rotation(ROT_Z, _Z);
+	Component_Transform->Rotation(ROT_Y, _Y);
 
 	Transform* BossTransform = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 

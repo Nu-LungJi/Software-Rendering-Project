@@ -24,6 +24,7 @@ public:
     void                    Monster_Spawn3();
     void                    Monster_Spawn4();
     Transform*               Crash_Player();
+    void                      Boss();
 private:
     HRESULT			Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn );
 

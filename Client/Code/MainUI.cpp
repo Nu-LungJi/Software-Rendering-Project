@@ -39,6 +39,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Timer02 = 0.f;
 	}
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
+
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {

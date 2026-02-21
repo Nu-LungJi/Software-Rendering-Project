@@ -235,7 +235,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		Tile_Animation(_DT);
 		break;
 	case TILE_STATE::STATE_COLLISION:
-		Crash_Player();
+	//	Crash_Player();
 		break;
 	case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
 		//Tile_Destory(_DT);
