@@ -9,7 +9,6 @@ HRESULT	Augment::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))		return E_FAIL;
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
-	if (FAILED(Item_Initialize()))			return E_FAIL;
 
 	return S_OK;
 }
@@ -17,6 +16,19 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
+	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_A))
+	{
+		isActive = !isActive;
+		if (!isActive)
+		{
+			UIManager::GetInstance()->Find_FontObject(L"PERK_TITLE")->Visible = FALSE;
+			UIManager::GetInstance()->Find_FontObject(L"PERK_INFO")->Visible = FALSE;
+		}
+		if (isActive)
+		{
+
+		}
+	}
 	return 0;
 }
 VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -39,7 +51,7 @@ HRESULT Augment::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_Apostle_BackGroun.png", L"Apostle_BackGround", 0.f, 0.f, 1280, 960, TRUE, 155);
 	///////////////////////////////APOSTLE_EFFECT///////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Object_LevelUpBless_Effect.png", L"Apostle_Light", 540.f, 30.f, 180, 180, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Object_LevelUpBless_Birth_03.png", L"Apostle", 540.f, 30.f, 170, 170, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_LevepUpPopupWindow.png", L"Apostle", 540.f, 30.f, 170, 190, TRUE, 255);
 	//////////////////////////////////////PERK//////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-04.png", L"Perk_01", 340.f, 270.f, 80.f, 80.f, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-05.png", L"Perk_02", 590.f, 260.f, 108.f, 108.f, TRUE, 255);
@@ -58,19 +70,36 @@ HRESULT Augment::Sprite_Initialize() {
 	
 	return S_OK;
 }
+
 HRESULT Augment::Text_Initialize() {
 	///////////////////////////////////////FONT//////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 선택", { 625.f, 90.f }, 30, L"Testing", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 625.f,500.f }, 30, L"Testing2", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"가호 이름", { 600.f,415.f }, 20, L"Testing3", L"08서울한강체 L", D3DCOLOR_ARGB(255, 255, 255, 255));
-
+	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 600.f }, 15, L"PERK_TITLE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 650.f }, 15, L"PERK_INFO", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	
 	return S_OK;
 }
-HRESULT Augment::Item_Initialize() {
-	wstring BaseFolder = L"../../UI/Augments/";
 
-	return S_OK;
+VOID Augment::Display_Perk_Font()
+{
+	if (isActive)
+	{
+
+	}
 }
+
+BOOL Augment::OnCollisionEnter(GameObject* _Other) {
+	
+	return FALSE;
+}
+BOOL Augment::OnCollisionStay(GameObject* _Other) {
+	
+	return FALSE;
+}
+BOOL Augment::OnCollisionExit(GameObject* _Other) {
+	
+	return FALSE;
+}
+
 Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	Augment* MUI = new Augment(_GRPDEV);
 	if (FAILED(MUI->Ready_GameObject())) {

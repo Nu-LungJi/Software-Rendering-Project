@@ -132,7 +132,7 @@ HRESULT ShopUI::Item_Initialize() {
 	ItemINFO* pItem2 = new ItemINFO;
 	pItem2->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
 											 L"잃은 체력을 한 칸 회복합니다.",
-											 L"", L"20"};
+											 L"", L"15"};
 	pItem2->ItemPrice = 15;
 	pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
 	Item_Index.push_back(pItem2);
@@ -140,7 +140,7 @@ HRESULT ShopUI::Item_Initialize() {
 	ItemINFO* pItem3 = new ItemINFO;
 	pItem3->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
 											L"현재 사용중인 활의 화살을 전부 충전합니다.",
-											L"", L"20"};
+											L"", L"15"};
 	pItem3->ItemPrice = 15;
 	pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
 	Item_Index.push_back(pItem3);
@@ -159,7 +159,7 @@ HRESULT ShopUI::Item_Initialize() {
 	pItem5->ItemDesc = { L"오동나무 활",L"무기/희귀",L"일반 공격",
 											L"일반 공격력 24 ~ 26",L"공격 속도 2.5",
 											L"가장 기본적인 활입니다.", L"이 활... 오동나무네?",
-											L"70" };
+											L"0" };
 	pItem5->ItemPrice = 0;
 	pItem5->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 	Item_Index.push_back(pItem5);
@@ -168,7 +168,7 @@ HRESULT ShopUI::Item_Initialize() {
 	pItem6->ItemDesc = { L"어둠의 활",L"무기/희귀",L"일반 공격",
 											L"일반 공격력 30 ~ 36",L"공격 속도 2.3",
 											L"어둠의 힘을 담아 화살을 발사합니다.",L"어둠의 힘을 담아..",
-											L"80" };
+											L"75" };
 	pItem6->ItemPrice = 75;
 	pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 	Item_Index.push_back(pItem6);
