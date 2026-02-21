@@ -113,6 +113,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _vec3 Size = { 1.f, 1.f, 1.f };
             _vec3 effectPos = *Component_Transform->Get_Position();
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
             _effectDelay = 0.f;
         }
     }

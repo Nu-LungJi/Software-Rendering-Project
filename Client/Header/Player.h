@@ -192,6 +192,7 @@ private:
 	void			SetGrahpic();
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
 	void			Set_Effect(const _float& _DT);
+	void			Calc_Near();
 
 private:
 	bool			Debug;
@@ -215,11 +216,18 @@ private:
 	float			_attackDelay;
 	int				_arrowCount;
 	bool			_isStop;
+	_vec3			_shadowPos;
 
 	float			_dashRefillTimer;
 	float			_skillTimer;
 	bool			_skillNPC_On;
+	bool			_skillArea_On;
 	_vec3			_NPC_Pos;
+	_vec3			_nearPos;
+
+	float			_animSpeed;
+	float			_originArrowSpeed;
+	float			_originDefualtSpeed;
 
 	bool			_isInvincible;		// 무적 상태
 	float			_invincibleTimer;	//무적 타이머

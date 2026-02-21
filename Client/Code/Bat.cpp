@@ -75,6 +75,12 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	return 0;
+}
+VOID Bat::LateUpdate_GameObject(const _float& _DT) {
+	GameObject::LateUpdate_GameObject(_DT);
+
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
@@ -94,14 +100,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
-
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	return 0;
-}
-VOID Bat::LateUpdate_GameObject(const _float& _DT) {
-	GameObject::LateUpdate_GameObject(_DT);
-
-
 }
 VOID Bat::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

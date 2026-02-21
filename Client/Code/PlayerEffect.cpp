@@ -32,6 +32,9 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_AURA) { Make_TextureList(L"Wind_Aura"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW) { Make_TextureList(L"NPC_TimeSlow"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) { Make_TextureList(L"NPC_TimeSlow_Loof"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::SHADOW) { Make_TextureList(L"Shadow"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::BLUE_SHADER) { Make_TextureList(L""); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_AREA) { Make_TextureList(L"NPC_Area"); }
 
 	//if (!AngleChase)
 	//{
@@ -107,7 +110,9 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 		ObjectTAG = L"NPC_TIMESLOW";
 
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
-
+	_alphaRatio = 1.f;
+	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER)
+		_alphaRatio = 0.5f;
 	return S_OK;
 }
 
@@ -134,7 +139,19 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	_effectTimer += _DT;
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 
-
+	if (SKILL_TYPE == PLAYER_SKILL::BLUE_SHADER) {
+		if (_effectTimer > 0.4f && _effectTimer < 2.2f) {
+			_effectSize = {_effectSize.x + _DT * 80, _effectSize.y + _DT * 80, _effectSize.z + _DT * 80 };
+		}
+		else if(_effectTimer > 2.2f && _effectTimer < 4.f){
+			_effectSize = { _effectSize.x - _DT * 80, _effectSize.y - _DT * 80, _effectSize.z - _DT * 80 };
+		}
+	}
+	if (SKILL_TYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) {
+		if (_effectTimer > 2.6f) {
+			_alphaRatio -= _DT;
+		}
+	}
 
 	switch (SKILL_TYPE)
 	{
@@ -161,6 +178,9 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		break;
 	case PLAYER_SKILL::NPC_TIMESLOW_LOOF:
 		if (_effectTimer > (*player->Get_SlowTime()) - 1.f ) ObjectDead = true;
+		break;
+	case PLAYER_SKILL::NPC_AREA:
+		if (_effectTimer > (*player->Get_SlowTime()) - 0.5f) ObjectDead = true;
 		break;
 	}
 
@@ -224,11 +244,37 @@ VOID PlayerEffect::Render_GameObject() {
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
+
+	DWORD tfactor = D3DCOLOR_ARGB(
+		(BYTE)(_alphaRatio * 255.f),
+		255, 255, 255
+	);
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
 	GRPDEV->SetTexture(0, TextureList[TextureIndex]);
+
+	// COLOR = Texture * TFACTOR
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+	// ALPHA = TextureAlpha * TFACTORAlpha
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 	
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	// ÃÊ±âÈ­
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 	return TRUE;

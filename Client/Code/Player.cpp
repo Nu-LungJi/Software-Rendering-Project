@@ -26,6 +26,7 @@ HRESULT Player::Ready_GameObject() {
 	_arrowCount = 0;
 	_isStop = false;
 	_skillTimer = 0.f;
+	_animSpeed = 1.f;
 
 	// UI
 	_hp					= 5;
@@ -145,6 +146,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	default:
 		break;
 	}
+
+
 	return S_OK;
 }
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
@@ -809,23 +812,42 @@ void Player::Idle_Final_Input(const _float& _DT)
 void Player::SKILL_NONE(const _float& _DT)
 {
 	_skillTimer = 0.f;
-	if (KEY_DOWN(DIK_Q)) {
-		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+	if (KEY_DOWN(DIK_Q) && _token > 0) {
+		_vec3 Size = { 0.2f, 0.2f, 0.2f };
 		_NPC_Pos = *Component_Transform->Get_Position();
+		_NPC_Pos.y += 1.f;
+		Calc_Near();
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
+		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
 
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
+		_skillArea_On = false;
 		SceneManager::GetInstance()->Set_TimeSlow(true);
+
+		_originArrowSpeed = _arrowSpeed;
+		_originDefualtSpeed = _defaultSpeed;
+
+		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_UseSkill();
 	}
 }
 
 void Player::SKILL_TIMESLOW(const _float& _DT)
 {
 	_skillTimer += _DT;
+	Calc_Near();
+	if (_skillTimer > 0.4f && !_skillArea_On) {
+		_vec3 Size = { 5.f, 5.f, 5.f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_AREA, &_NPC_Pos, 1.f, Size, false);
+		_skillArea_On = true;
+	}
+
 	if (_skillTimer > 0.9f && !_skillNPC_On) {
 		_vec3 Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOF, &_NPC_Pos, 1.f, Size, false);
+
 		_skillNPC_On = true;
 	}
 
@@ -833,6 +855,18 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 		_skillState = skillState::NONE;
 		SceneManager::GetInstance()->Set_TimeSlow(false);
 	}
+
+	if (_skillTimer < 0.8f) {
+		_defaultSpeed = 1.f;
+		_animSpeed = 5.f;
+		_arrowSpeed = 0.1f;
+	}
+	else {
+		_defaultSpeed = _originDefualtSpeed;
+		_animSpeed = 1.f;
+		_arrowSpeed = _originArrowSpeed;
+	}
+		
 }
 
 void Player::SetGrahpic()
@@ -1090,7 +1124,7 @@ void Player::SetGrahpic()
 void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 {
 	Component_Texture->Set_Texture(FileName);
-
+	delay *= _animSpeed;
 	if (!reverse)
 	{
 		if (_frameTick > delay)
@@ -1140,6 +1174,17 @@ void Player::Set_Effect(const _float& _DT)
 	//else if (KEY_DOWN(DIK_2)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_2, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_3)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_3, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_4)) { PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f); }
+}
+void Player::Calc_Near()
+{
+	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
+		Get_GameObject(L"Camera"));
+	_vec3 cameraPos = *Camera->Get_EyeVec();
+
+	_vec3 dir = _NPC_Pos - cameraPos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	_nearPos = cameraPos + dir * 5.f;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 

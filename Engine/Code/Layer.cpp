@@ -21,6 +21,7 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 				continue;
 			}
 			else { ++iter; }
+			if (_isTimeSlow) break;
 		}
 	}
 	else {
@@ -29,7 +30,7 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 			int ObjectResult = 0;
 			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"
 				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
-				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI)
+				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI || (*iter)->Get_ObjectTag() == L"Bow")
 				ObjectResult = (*iter)->Update_GameObject(_DT);
 			else {
 				ObjectResult = (*iter)->Update_GameObject_Component(_DT);
