@@ -47,7 +47,7 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
+	ObjectTAG = L"MonsterBullet";
 	return 0;
 }
 
@@ -125,6 +125,15 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
+	MainUI* mainUI;
+	switch (_Other->Get_ObjectType())
+	{
+	default:
+		break;
+	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
 	wstring Tag = _Other->Get_ObjectTag();
 
 	if (Tag == L"Player")

@@ -24,15 +24,21 @@ HRESULT Player::Ready_GameObject() {
 	_dashTime			= 0.f;
 	_dashG				= 30.f;
 	_speed				= 0.f;
-	_slideTime = 0.f;
-	_g = 30.f;
-	_frame = 1;
-	_arrowCount = 0;
-	_isStop = false;
-	_skillTimer = 0.f;
+	_slideTime			= 0.f;
+	_g					= 30.f;
+	_frame				= 1;
+	_arrowCount			= 0;
+	_isStop				= false;
+	_skillTimer			= 0.f;
+	_animSpeed			= 1.f;
+	_isInvincible		= false;
+	_invincibleTimer	= 0.f;
+	_alphaRatio			= 1.f;
+	_alphaDelayTimer	= 0.f;
 
 	// UI
-	_hp					= 5;
+	Component_Collider->Set_Hp(5.f);
+	Component_Collider->Set_Att(1.f);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -45,6 +51,8 @@ HRESULT Player::Ready_GameObject() {
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
 	_slowTime			= 4.f;
+	_hit_inv_Time		= 2.f;
+	_dash_inv_Time		= 2.f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -86,7 +94,7 @@ HRESULT Player::Ready_GameObject() {
 		_weaponSlot[3]->Set_Bow_Equip(false);
 	}
 
-
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
 
 	return S_OK;
@@ -100,6 +108,33 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		//Set_ObjectDead(TRUE);
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
+		Component_Collider->Set_Hp(0);
+	}
+
+	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
+	}
+
+	// 피격무적
+	if ( _isInvincible && _pState != pState::STATE_DEATH && _pState != pState::STATE_DASH) {
+		_invincibleTimer += _DT;
+		_alphaDelayTimer += _DT;
+		if (_invincibleTimer > _hit_inv_Time) {
+			_invincibleTimer = 0.f;
+			_alphaDelayTimer = 0.f;
+			_alphaRatio		 = 1.f;
+			_isInvincible = false;
+		}
+		if (_alphaDelayTimer < 0.1f) {
+			_alphaRatio -= _DT * 6;
+			_alphaRatio = max(_alphaRatio, 0.f);
+		}
+		else if (_alphaDelayTimer > 0.1f && _alphaDelayTimer < 0.2f) {
+			_alphaRatio += _DT * 6;
+			_alphaRatio = min(_alphaRatio, 1.f);
+		}
+		else _alphaDelayTimer = 0.f;
 	}
 
 	//SetOnTerrain(); - 광윤 디버그
@@ -149,6 +184,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	default:
 		break;
 	}
+
+
 	return S_OK;
 }
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
@@ -166,6 +203,11 @@ VOID Player::Render_GameObject() {
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	// 초기화
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 HRESULT Player::Component_Initialize() {
 	Component_Buffer	= ADD_COMPONENT_RECTTEX;
@@ -199,9 +241,9 @@ void Player::Reset()
 	_frame = 1;
 	_arrowCount = 0;
 	_isStop = false;
+	_isInvincible = false;
 
 	// UI
-	_hp					= 5;
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -215,6 +257,11 @@ void Player::Reset()
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
 	_maxArrow			= 1.f;
+	_hit_inv_Time		= 2.f;
+	_dash_inv_Time		= 2.f;
+
+	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	mainUI->Player_ReFillHP(5);
 
 	for (int i = 1; i < 4; i++) {
 		if (_weaponSlot[i] != nullptr) {
@@ -449,6 +496,7 @@ void Player::DASH_STATE(const _float& _DT)
 	D3DXVec3Normalize(&rightDir, &rightDir);
 
 	_dashTime += _DT;
+	_isInvincible = true;
 
 	if (_dashStart)
 	{
@@ -543,12 +591,13 @@ void Player::DASH_STATE(const _float& _DT)
 		_speed = 0;
 		_dashTime = 0.f;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
+		if (_invincibleTimer == 0.f) _isInvincible = false;
 	}
 		
 }
 void Player::ATTACK_STATE(const _float& _DT)
 {
-	//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -566,8 +615,9 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_frame = 1;
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
 	}
-	else if (!MOUSE_LBUTTON && !KEY_HOLD(DIK_SPACE)) {
+	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
 	}
 
@@ -798,6 +848,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_frame = 1;
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
 	}
 	else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
@@ -813,23 +864,42 @@ void Player::Idle_Final_Input(const _float& _DT)
 void Player::SKILL_NONE(const _float& _DT)
 {
 	_skillTimer = 0.f;
-	if (KEY_DOWN(DIK_Q)) {
-		_vec3 Size = { 1.5f, 1.5f, 1.5f };
+	if (KEY_DOWN(DIK_Q) && _token > 0) {
+		_vec3 Size = { 0.2f, 0.2f, 0.2f };
 		_NPC_Pos = *Component_Transform->Get_Position();
+		_NPC_Pos.y += 1.f;
+		Calc_Near();
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
+		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
 
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
+		_skillArea_On = false;
 		SceneManager::GetInstance()->Set_TimeSlow(true);
+
+		_originArrowSpeed = _arrowSpeed;
+		_originDefualtSpeed = _defaultSpeed;
+
+		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_UseSkill();
 	}
 }
 
 void Player::SKILL_TIMESLOW(const _float& _DT)
 {
 	_skillTimer += _DT;
+	Calc_Near();
+	if (_skillTimer > 0.4f && !_skillArea_On) {
+		_vec3 Size = { 5.f, 5.f, 5.f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_AREA, &_NPC_Pos, 1.f, Size, false);
+		_skillArea_On = true;
+	}
+
 	if (_skillTimer > 0.9f && !_skillNPC_On) {
 		_vec3 Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOF, &_NPC_Pos, 1.f, Size, false);
+
 		_skillNPC_On = true;
 	}
 
@@ -837,10 +907,32 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 		_skillState = skillState::NONE;
 		SceneManager::GetInstance()->Set_TimeSlow(false);
 	}
+
+	if (_skillTimer < 0.8f) {
+		_defaultSpeed = 1.f;
+		_animSpeed = 5.f;
+		_arrowSpeed = 0.1f;
+	}
+	else {
+		_defaultSpeed = _originDefualtSpeed;
+		_animSpeed = 1.f;
+		_arrowSpeed = _originArrowSpeed;
+	}
+		
 }
 
 void Player::SetGrahpic()
 {
+	DWORD tfactor = D3DCOLOR_ARGB(
+		(BYTE)(_alphaRatio * 255.f),
+		255, 255, 255
+	);
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
 	TCHAR FileName[128] = L"";
 
 	switch (_eState)
@@ -1090,11 +1182,21 @@ void Player::SetGrahpic()
 		Anim(FileName, 0.1f, 10);
 		break;
 	}
+
+	// COLOR = Texture * TFACTOR
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+	// ALPHA = TextureAlpha * TFACTORAlpha
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 {
 	Component_Texture->Set_Texture(FileName);
-
+	delay *= _animSpeed;
 	if (!reverse)
 	{
 		if (_frameTick > delay)
@@ -1144,6 +1246,17 @@ void Player::Set_Effect(const _float& _DT)
 	//else if (KEY_DOWN(DIK_2)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_2, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_3)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_3, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_4)) { PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f); }
+}
+void Player::Calc_Near()
+{
+	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
+		Get_GameObject(L"Camera"));
+	_vec3 cameraPos = *Camera->Get_EyeVec();
+
+	_vec3 dir = _NPC_Pos - cameraPos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	_nearPos = cameraPos + dir * 5.f;
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {

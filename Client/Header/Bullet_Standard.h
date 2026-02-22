@@ -38,8 +38,7 @@ public:
 
 private:
 	virtual VOID Free();
-
-
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 
 	MONBULLETINFO m_tInfo;
 

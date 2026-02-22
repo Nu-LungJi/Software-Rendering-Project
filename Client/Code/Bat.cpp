@@ -128,8 +128,8 @@ VOID Bat::Render_GameObject() {
 }
 HRESULT Bat::Component_Initialize() {
 
-	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
+	Component_Buffer = ADD_COMPONENT_RECTTEX;
 
 	Component_Transform->Set_Pos(10.f, 0.112f, 10.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);

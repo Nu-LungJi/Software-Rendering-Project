@@ -45,5 +45,6 @@ private:
 	float _angle;
 
 	float			_effectTimer;
+	float			_alphaRatio;
 };
 

@@ -32,6 +32,7 @@ public:
 	}
 
 	// ½ºÅ³¿ë
+	_vec3* Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
 	void Set_TimeSlow(bool isTimeSlow) {for (auto& LYR : LayerList) {LYR->Set_TimeSlow(isTimeSlow);}}
 protected:
 	vector<Layer*>				LayerList;

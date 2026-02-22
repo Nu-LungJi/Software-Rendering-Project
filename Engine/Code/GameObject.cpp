@@ -31,7 +31,12 @@ VOID		GameObject::LateUpdate_GameObject(const FLOAT& _DT) {
 }
 INT GameObject::Update_GameObject_Component(const FLOAT& _DT)
 {
-	for (auto& COM : ComponentList) {
+	for (int i = 0; i < ComponentList.size(); i++) {
+		if ((COMPONENT_TYPE)i == COMPONENT_TYPE::COMPONENT_TRANSFORM)
+			continue;
+
+		auto& COM = ComponentList[i];
+		
 		if (COM == nullptr)	 continue;
 		COM->Update_Component(_DT);
 	}

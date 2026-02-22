@@ -12,6 +12,7 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"MonsterBullet";
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
