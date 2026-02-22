@@ -14,6 +14,8 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 {
 	GameObject::Update_GameObject(_DT);
 
+	ObjectTAG = L"MonsterBullet";
+
 	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
 	{
 		ObjectDead = true;
@@ -67,6 +69,19 @@ HRESULT Fireball::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 
 	return S_OK;
+}
+
+BOOL Fireball::OnCollisionEnter(GameObject* _Other)
+{
+	// 플레이어 충돌
+	MainUI* mainUI;
+	if (_Other->Get_ObjectTag() == L"Player") {
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		return true;
+	}
+
+	return false;
 }
 
 Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

@@ -139,9 +139,6 @@ HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
-	GameObject* obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	CollisionManager::GetInstance()->Add_ColliderObject(obj);
-
 	//Rain* pObj = Rain::Create(GRPDEV);
 	//pObj->Set_ObjectTag(L"Rain");
 	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);

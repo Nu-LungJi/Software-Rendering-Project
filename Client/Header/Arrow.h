@@ -49,7 +49,7 @@ public:
 	BOOL			OnCollisionStay(GameObject* _Other);
 private:
 	virtual VOID Free();
-
+	void			Search_Target();
 private:
 	ArrowType	_type;
 	BowType		_bowType;
@@ -72,11 +72,12 @@ private:
 	float		_speed;
 	float		_sumSpeed;
 	int			_arrowAtk;
+	_vec3*		_targetPos;
 
 	float		_evilMoveTime;
 	float		_sumEvilSpeed;
 	float		_ThunderDelay;
 
-	float _EvilTime;
+	float		_EvilTime;
 };
 

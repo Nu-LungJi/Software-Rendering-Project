@@ -31,6 +31,7 @@ private:
 	// 플레이어 스킬용
 public:
 	void Set_TimeSlow(bool isSlow) { _isTimeSlow = isSlow;}
+	_vec3* Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
 private:
 	bool _isTimeSlow;
 };

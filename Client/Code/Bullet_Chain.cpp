@@ -10,6 +10,8 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"MonsterBullet";
+
 	if (m_tInfo.bTrigger[0])
 	{
 		if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_Chain01", &m_tInfo)))

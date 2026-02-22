@@ -132,14 +132,14 @@ INT Bow::Update_GameObject(const _float& _DT)
 					
 					switch (_type) {
 					case BowType::FairyBow :
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.9f, Size, true);
 						break;
 					case BowType::IceBow:
 						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.1f, Size, true);
 						break;
 					case BowType::EvilHeadBow:
 						Size = { 1.5f, 1.5f, 1.5f };
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.1f, Size, true);
 						break;
 					case BowType::WindBow:
 						Size = { 1.f, 1.f, 1.f };
@@ -437,7 +437,7 @@ void Bow::CreateChargingEffect(const _float& _DT)
 	float radius = 1.f;
 	if (_type == BowType::FairyBow) radius = 1.6f;
 	else if (_type == BowType::IceBow) radius = 1.6f;
-	else if (_type == BowType::EvilHeadBow) radius = 1.0f;
+	else if (_type == BowType::EvilHeadBow) radius = 1.6f;
 	else if (_type == BowType::WindBow) radius = 1.6f;
 
 	float offsetX = cosf(angle) * radius;
@@ -543,7 +543,6 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	arrow->Set_ObjectTag(L"PlayerArrow");
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
-	CollisionManager::GetInstance()->Add_ColliderObject(arrow);
 }
 
 Bow* Bow::Create(LPDIRECT3DDEVICE9 _GRPDEV)

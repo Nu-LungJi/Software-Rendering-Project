@@ -17,6 +17,8 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 
+	ObjectTAG = L"MonsterBullet";
+
 	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
 
@@ -100,6 +102,18 @@ HRESULT Bullet_Standard::Component_Initialize() {
 //}
 VOID Bullet_Standard::Free() {
 	GameObject::Free();
+}
+BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
+{
+	// 플레이어 충돌
+	MainUI* mainUI;
+	if (_Other->Get_ObjectTag() == L"Player") {
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		return true;
+	}
+
+	return FALSE;
 }
 //
 //VOID Bullet_Standard::BillBoard()

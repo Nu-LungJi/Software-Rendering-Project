@@ -90,7 +90,7 @@ HRESULT Player::Ready_GameObject() {
 		_weaponSlot[3]->Set_Bow_Equip(false);
 	}
 
-
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
 
 	return S_OK;

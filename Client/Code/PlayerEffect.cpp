@@ -35,6 +35,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::SHADOW) { Make_TextureList(L"Shadow"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::BLUE_SHADER) { Make_TextureList(L""); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_AREA) { Make_TextureList(L"NPC_Area"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ICE_BOMB) { Make_TextureList(L"IceArrow_Bomb"); }
 
 	//if (!AngleChase)
 	//{
@@ -148,8 +149,8 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		}
 	}
 	if (SKILL_TYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) {
-		if (_effectTimer > 2.6f) {
-			_alphaRatio -= _DT;
+		if (_effectTimer > 2.2f) {
+			_alphaRatio -= _DT / 3.f;
 			_alphaRatio = max(_alphaRatio, 0.f);
 		}
 	}

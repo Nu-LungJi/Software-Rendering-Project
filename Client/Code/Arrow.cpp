@@ -9,6 +9,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 {
     if (FAILED(Component_Initialize())) return E_FAIL;
 
+    Component_Transform->Set_Pos(*_PlayerPOS);
     _bowType = _BOWTYPE;
     _speed = 15.f;
     _sumSpeed = 0.f;
@@ -24,6 +25,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _sumEvilSpeed = 0.f;
     _effectDelay = 0.f;
     _ThunderDelay = 0.5f;
+    _targetPos = nullptr;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -43,7 +45,6 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
             break;
         case BowType::EvilHeadBow:
             if (_LVEL == 1) {
-                _size = 0.6;
                 _type = ArrowType::EvilHead_Arrow;
             }
             else if (_LVEL == 3) _type = ArrowType::EvilHeadCharging;
@@ -65,6 +66,8 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _playerArrowSize = player->Get_ArrowSize();
     _playerArrowSpeed = player->Get_ArrowSpeed();
 
+    CollisionManager::GetInstance()->Add_ColliderObject(this);
+
     return S_OK;
 }
 
@@ -83,9 +86,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::FairyCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
+        case ArrowType::IceArrow_LV1:
+            Size = { 1.f, 1.f, 1.f };
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_BOMB, &effectPos, 0.2f, Size, false);
+            break;
         case ArrowType::IceCharging:
             Size = { 2.5f, 2.5f, 2.5f };
-            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.3f, Size, false);
             break;
         case ArrowType::EvilHead_Arrow:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
@@ -133,6 +140,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _vec3 Size = { 3.f, 6.f, 3.f };
             Size *= (*_playerArrowSize);
             _vec3 effectPos = *Component_Transform->Get_Position();
+            effectPos.y += 4.f;
+            effectPos.z += 2.2f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 1.f, Size, false);
             _ThunderDelay = 0.f;
         }
@@ -146,8 +155,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
     case ArrowType::FairyCharging:
         maxLifeTime = 2.f;
         break;
+    case ArrowType::IceArrow_LV1:
+        maxLifeTime = 0.6f;
+        break;
     case ArrowType::IceCharging:
-        maxLifeTime = 1.f;
+        maxLifeTime = 0.6f;
         break;
     case ArrowType::EvilHead_Arrow:
         maxLifeTime = 1.f;
@@ -166,9 +178,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::FairyCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
+        case ArrowType::IceArrow_LV1:
+            Size = { 1.f, 1.f, 1.f };
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_BOMB, &effectPos, 0.2f, Size, false);
+            break;
         case ArrowType::IceCharging:
             Size = { 2.5f, 2.5f, 2.5f };
-            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.3f, Size, false);
             break;
         case ArrowType::EvilHead_Arrow:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
@@ -194,13 +210,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
         _vec3 at = cameraDir;
         _vec3 up = { 0.f, 1.f, 0.f };
 
-        switch (_bowType)
+        switch (_type)
         {
-        case BowType::FairyBow:
-            _size = 0.8f;
+        case ArrowType::FairyArrow:
+            _size = 1.f;
             break;
-        case BowType::EvilHeadBow:
-            _size = 0.6f;
+        case ArrowType::EvilHead_Arrow:
+            _size = 0.7f;
             break;
         default:
             _size = 1.f;
@@ -208,6 +224,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         }
         _size *= (*_playerArrowSize);
         Component_Collider->Set_Scale(_size * 0.5f, _size * 0.5f, _size * 0.5f);
+
         _matrix matSize;
         D3DXMatrixIdentity(&matSize);
         D3DXMatrixScaling(&matSize, _size, _size, _size);
@@ -231,8 +248,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::FairyCharging:
             _speed = 5.f;
             break;
+        case ArrowType::IceArrow_LV1:
+            _speed = 20.f;
+            break;
         case ArrowType::IceCharging:
-            _speed = 15.f;
+            _speed = 20.f;
             break;
         case ArrowType::EvilHead_Arrow:
             _speed = 10.f;
@@ -241,10 +261,26 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 5.f - _evilMoveTime * 1.f;
             break;
         }
-        _sumSpeed += _DT * _speed * (*_playerArrowSpeed);
-        matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
+        _sumSpeed = _DT * _speed * (*_playerArrowSpeed);
+        _vec3* curPos = Component_Transform->Get_Position();
+
+        matWorld._41 = (*curPos).x + _sumSpeed * cosf(_angle);
         matWorld._42 = 0.1f;
-        matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
+        matWorld._43 = (*curPos).z - _sumSpeed * sinf(_angle);
+
+        if (_type == ArrowType::FairyCharging) {
+            _targetPos = nullptr;
+            Search_Target();
+            if (_targetPos != nullptr) {
+                _vec3 dir = *_targetPos - *curPos;
+                D3DXVec3Normalize(&dir, &dir);
+                _angle = atan2f(-dir.y, dir.x);
+
+                matWorld._41 = (*curPos).x + _sumSpeed * cosf(_angle);
+                matWorld._42 = 0.1f;
+                matWorld._43 = (*curPos).z - _sumSpeed * sinf(_angle);
+            }
+        }
 
         // ÀÌµ¿
         switch (_type)
@@ -419,4 +455,9 @@ BOOL Arrow::OnCollisionStay(GameObject* _Other)
 VOID Arrow::Free()
 {
     GameObject::Free();
+}
+
+void Arrow::Search_Target()
+{
+    _targetPos = SceneManager::GetInstance()->Get_CurrentScene()->Search_Target(Component_Transform->Get_Position(), 50.f, L"Monster");
 }

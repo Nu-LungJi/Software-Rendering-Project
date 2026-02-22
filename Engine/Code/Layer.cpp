@@ -89,3 +89,22 @@ void		Layer::Free() {
 	for (auto& GOBJ : GameObjectList)
 		Safe_Release(GOBJ);
 }
+
+_vec3* Layer::Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG)
+{
+	_vec3* targetPos = nullptr;
+	_float minLength = radius + 1.f;
+	for (auto& OBJ : GameObjectList) {
+		if (OBJ->Get_ObjectTag() == _TAG) {
+			_vec3* tempPos = (dynamic_cast<Transform*>(OBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
+			_vec3 vlength = *tempPos - *myPos;
+			float length = D3DXVec3Length(&vlength);
+			if (length < minLength) {
+				minLength = length;
+				targetPos = tempPos;
+			}
+		}
+	}
+
+	return targetPos;
+}
