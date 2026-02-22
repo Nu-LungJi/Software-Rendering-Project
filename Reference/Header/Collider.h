@@ -44,15 +44,10 @@ public:
 
 	_float      Get_Att() { return fAtt; }
 	_float      Get_Hp() { return fHp; }
-  
+
 public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
-
-	void		Set_Hp(_float fH)	{ fHp = fH; }
-	void		Set_Att(_float fA)	{ fAtt = fA; }
-	_float      Get_Att()			{ return fAtt; }
-	_float      Get_Hp()			{ return fHp; }
 
 private:
 	Transform*		ColliderPos;
@@ -62,8 +57,6 @@ private:
 	_vec3			MinPoint;
 	_vec3			MaxPoint;
 
-	_float         fHp;
-	_float         fAtt;
 	_vec3			Offset;
 
 	BOOL		Curr_ColState;
@@ -73,6 +66,9 @@ private:
 
 	ID3DXLine* pLine;
 
+	_float         fHp;
+	_float         fAtt;
+	
 private:
 	virtual		VOID		Free();
 };

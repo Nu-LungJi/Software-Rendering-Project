@@ -39,8 +39,6 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Timer02 = 0.f;
 	}
 
-	if (KEY_DOWN(DIK_M))	Player_LostHP();
-	if (KEY_DOWN(DIK_N))	Player_ReFillHP(1);
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
 
 	return 0;
@@ -71,6 +69,8 @@ VOID MainUI::Player_LostHP() {
 VOID MainUI::Player_ReFillHP(INT _HP) {
 	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
 	INT healHP = PlayerHP + _HP;
+
+	if (healHP > 5) healHP = 5;
 
 	for (int i = PlayerHP + 1; i <= healHP; i++) {
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
@@ -281,23 +281,6 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 	}
 }
 
-VOID MainUI::Player_ReFillHP(INT _HP)
-{
-	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
-	INT healHP = PlayerHP + _HP;
-
-	for (int i = PlayerHP + 1; i <= healHP; i++) {
-		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
-
-		UIKey_HP = L"HP_SPRITE" + to_wstring(i);
-		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
-
-		UIKey_HP = L"EHP_SPRITE" + to_wstring(i);
-		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
-	}
-	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(healHP);
-}
-
 VOID MainUI::All_UI_FadeOUT() {
 
 }
@@ -393,14 +376,14 @@ HRESULT MainUI::Text_Initialize() {
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"∞", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	//UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"∞", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 180.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));

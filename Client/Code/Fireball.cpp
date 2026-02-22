@@ -82,18 +82,6 @@ HRESULT Fireball::Component_Initialize() {
 	return S_OK;
 }
 
-BOOL Fireball::OnCollisionEnter(GameObject* _Other)
-{
-	// ÇÃ·¹ÀÌ¾î Ãæµ¹
-	MainUI* mainUI;
-	if (_Other->Get_ObjectTag() == L"Player") {
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
-		return true;
-	}
-
-	return false;
-}
 
 Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	Fireball* MST = new Fireball(_GRPDEV);
@@ -107,13 +95,15 @@ Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Fireball::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-
+	MainUI* mainUI;
 	if (Tag == L"PlayerArrow") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
 	else if (Tag == L"Player")
 	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}

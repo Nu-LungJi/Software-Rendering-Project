@@ -137,14 +137,15 @@ BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
 	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
-	wstring Tag = _Other->Get_ObjectTag();
+		wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"Player")
-	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
+		if (Tag == L"Player")
+		{
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		return FALSE;
 	}
-	return FALSE;
 }
 BOOL Bullet_Chain_Head::OnCollisionStay(GameObject* _Other)
 {

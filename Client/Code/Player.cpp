@@ -65,8 +65,8 @@ HRESULT Player::Ready_GameObject() {
 
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
-	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  64.595f, 0.263f, 90.137f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
+	//Component_Transform->Set_Pos({  64.595f, 0.263f, 90.137f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -225,13 +225,13 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
