@@ -12,7 +12,6 @@ HRESULT Bullet_Chain_Head::Ready_GameObject() {
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
-
 	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo)))
 	{
 		ObjectDead = true;
@@ -39,7 +38,7 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	GameObject::Update_GameObject(_DT);
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
+	ObjectTAG = L"MonsterBullet";
 	return 0;
 }
 

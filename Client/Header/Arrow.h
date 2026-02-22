@@ -70,6 +70,7 @@ private:
 
 	float		_lifeTime;
 	float		_speed;
+	float		_calcSpeed;
 	float		_sumSpeed;
 	int			_arrowAtk;
 	_vec3*		_targetPos;

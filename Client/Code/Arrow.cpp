@@ -26,6 +26,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _effectDelay = 0.f;
     _ThunderDelay = 0.5f;
     _targetPos = nullptr;
+    _calcSpeed = 0.f;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -140,6 +141,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _vec3 Size = { 3.f, 6.f, 3.f };
             Size *= (*_playerArrowSize);
             _vec3 effectPos = *Component_Transform->Get_Position();
+            _targetPos = nullptr;
+            Search_Target();
+            if (_targetPos != nullptr) {
+                effectPos = *_targetPos;
+            }
             effectPos.y += 4.f;
             effectPos.z += 2.2f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 1.f, Size, false);
@@ -261,24 +267,33 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 5.f - _evilMoveTime * 1.f;
             break;
         }
-        _sumSpeed = _DT * _speed * (*_playerArrowSpeed);
-        _vec3* curPos = Component_Transform->Get_Position();
 
-        matWorld._41 = (*curPos).x + _sumSpeed * cosf(_angle);
-        matWorld._42 = 0.1f;
-        matWorld._43 = (*curPos).z - _sumSpeed * sinf(_angle);
+        // 움직임
+        _vec3* curPos = Component_Transform->Get_Position();
+        if (_type == ArrowType::EvilHead_Arrow) {
+            _sumSpeed += _DT * _speed * (*_playerArrowSpeed);
+            matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
+            matWorld._42 = 0.1f;
+            matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
+        }
+        else {
+            _calcSpeed = _DT * _speed * (*_playerArrowSpeed);
+            matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
+            matWorld._42 = 0.1f;
+            matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
+        }
 
         if (_type == ArrowType::FairyCharging) {
             _targetPos = nullptr;
             Search_Target();
             if (_targetPos != nullptr) {
-                _vec3 dir = *_targetPos - *curPos;
+                _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
                 D3DXVec3Normalize(&dir, &dir);
-                _angle = atan2f(-dir.y, dir.x);
+                _angle = atan2f(-dir.z, dir.x);
 
-                matWorld._41 = (*curPos).x + _sumSpeed * cosf(_angle);
+                matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
                 matWorld._42 = 0.1f;
-                matWorld._43 = (*curPos).z - _sumSpeed * sinf(_angle);
+                matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
             }
         }
 
