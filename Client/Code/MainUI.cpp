@@ -10,15 +10,15 @@ HRESULT	MainUI::Ready_GameObject() {
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
-
+	
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-
+	
 	Speech_Bubble = FALSE;
 	Speech_Text = L"";
 	Timer01 = 0.f; Timer02 = 0.f; Timer03 = 0.f;
-
+	
 	MainUIOpacity = 0.f;
-
+	
 	Current_KeyCount		= 0;
 	Current_CoinCount		= 0;
 	Current_CrystalCount	= 0;
@@ -28,7 +28,7 @@ HRESULT	MainUI::Ready_GameObject() {
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
-
+	
 	PopUp_Speech_Bubble(Speech_Text, _DT);
 	PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
@@ -38,6 +38,9 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Player_CrystalModify();
 		Timer02 = 0.f;
 	}
+
+	if (KEY_DOWN(DIK_M))	Player_LostHP();
+	if (KEY_DOWN(DIK_N))	Player_ReFillHP(1);
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
 
 	return 0;
@@ -61,6 +64,21 @@ VOID MainUI::Player_LostHP() {
 		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
 	}
+}
+VOID MainUI::Player_ReFillHP(INT _HP) {
+	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
+	INT healHP = PlayerHP + _HP;
+
+	for (int i = PlayerHP + 1; i <= healHP; i++) {
+		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
+
+		UIKey_HP = L"HP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		UIKey_HP = L"EHP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+	}
+	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(healHP);
 }
 VOID MainUI::Player_KeyModify() {
 	if (Current_KeyCount != PlayerObject->Get_Key()) {

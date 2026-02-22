@@ -54,7 +54,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  64.595f, 0.263f, 103.137f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({  64.595f, 0.263f, 90.137f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -94,6 +94,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
+	}
+
+	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 	}
@@ -172,6 +177,8 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
 	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);				// 충돌체의 범위 조절
+	Component_Collider->Set_Hp(5.f);
+	Component_Collider->Set_Att(1.f);
 
 	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
 	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");

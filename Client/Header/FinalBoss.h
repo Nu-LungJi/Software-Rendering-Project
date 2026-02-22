@@ -60,9 +60,13 @@ public:
 	INT		Get_EnableQuadGroundExp()					{ return Enable_QuadGroundExplosion; }
 	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_QuadGroundExplosion = _EXP; }
 
+	INT		Get_EnableMeteorExp()						{ return Enable_MeteorExplosion; }
+	VOID	Set_EnableMeteorExp(BOOL _EXP)				{ Enable_MeteorExplosion = _EXP; }
+
 	VOID	Set_StartPos(_vec3 _StartPos);
 
 	VOID	Skill_GroundExplosion(CONST FLOAT& _DT);
+	VOID	Skill_MeteorExplosion(CONST FLOAT& _DT);
 
 	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -88,6 +92,14 @@ private:
 	BOOL			STAGING_TRIGGER[20];
 	enum class STAGING {SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
 						WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE};
+
+	BOOL			EXPLOSION_TRIGGER[5];
+	enum class EXPLOSION { NORMAL_EXPLOSION, METEOR_SLAM_EXPLOSION1, METEOR_SLAM_EXPLOSION2, METEOR_SLAM_EXPLOSION3, METEOR_SLAM_EXPLOSION4 };
+
+	BOOL			METEOR_TRIGGER[5];
+	enum class METEOR { DANGER_AREA, METEOR_CREATE, METEOR_EXPLOSION1, METEOR_EXPLOSION2, METEOR_EXPLOSION3 };
+	Transform*	MeteorTransform[4];
+	FLOAT		RanPosX[4], RanPosZ[4];
 	FLOAT TEMP1;
 	FLOAT TEMP2;
 	FLOAT TEMP3;
@@ -100,6 +112,9 @@ private:
 	BOOL			Enable_GroundExplosion;
 	BOOL			Enable_QuadGroundExplosion;
 	FLOAT			Explosion_Timer;
+
+	BOOL			Enable_MeteorExplosion;
+	FLOAT			Enable_MeteorExplosion_Timer;
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;

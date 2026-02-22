@@ -19,10 +19,10 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 
 	if (_SKILLTYPE == BOSS_EFFECT::SLAM_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
 	if (_SKILLTYPE == BOSS_EFFECT::SLAM_FLAME_EFFECT)				{ Make_TextureList(L"Effect_SlamFlame");		}
-	if (_SKILLTYPE == BOSS_EFFECT::SLAM_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
 	if (_SKILLTYPE == BOSS_EFFECT::SLAM_GROUND_EXP_EFFECT)			{ Make_TextureList(L"Effect_GroundExp");		}
 	if (_SKILLTYPE == BOSS_EFFECT::METEOR_SLAM_FLAME_EFFECT)		{ Make_TextureList(L"Effect_SlamFlame");		}
-	if (_SKILLTYPE == BOSS_EFFECT::METEOR_EFFECT)					{ Make_TextureList(L"Effect_MeteorExp");		}
+	if (_SKILLTYPE == BOSS_EFFECT::METEOR_EFFECT)					{ Make_TextureList(L"Effect_Meteor");			}
+	if (_SKILLTYPE == BOSS_EFFECT::METEOR_EXP_EFFECT)				{ Make_TextureList(L"Effect_MeteorExp");		}
 
 	if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_EFFECT)			{ Make_TextureList(L"Effect_FSwing_Charge");	}
 	if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_ELECTRIC_EFFECT)	{ Make_TextureList(L"Effect_FSwing_Charge_Electric"); }

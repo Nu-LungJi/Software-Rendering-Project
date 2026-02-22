@@ -211,6 +211,7 @@
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
     <ClInclude Include="..\Header\MainUI.h" />
+    <ClInclude Include="..\Header\Meteor.h" />
     <ClInclude Include="..\Header\MonsterTest.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -364,6 +365,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MainUI.cpp" />
+    <ClCompile Include="..\Code\Meteor.cpp" />
     <ClCompile Include="..\Code\MonsterTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
