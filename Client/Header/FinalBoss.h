@@ -57,8 +57,8 @@ public:
 	INT		Get_EnableGroundExp()						{ return Enable_GroundExplosion; }
 	VOID	Set_EnableGroundExp(BOOL _EXP)				{ Enable_GroundExplosion = _EXP; }
 
-	INT		Get_EnableQuadGroundExp()					{ return Enable_QuadGroundExplosion; }
-	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_QuadGroundExplosion = _EXP; }
+	INT		Get_EnableQuadGroundExp()					{ return Enable_GroundQuadExplosion; }
+	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_GroundQuadExplosion = _EXP; }
 
 	INT		Get_EnableMeteorExp()						{ return Enable_MeteorExplosion; }
 	VOID	Set_EnableMeteorExp(BOOL _EXP)				{ Enable_MeteorExplosion = _EXP; }
@@ -73,14 +73,19 @@ public:
 private:
 	virtual	VOID	Free();
 
+public:
+	enum class STAGING		{ SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
+								WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE };
+
+	enum class EXPLOSION	{ NORMAL_EXPLOSION, METEOR_SLAM_EXPLOSION1, METEOR_SLAM_EXPLOSION2, METEOR_SLAM_EXPLOSION3, METEOR_SLAM_EXPLOSION4 };
+
+	enum class METEOR		{ DANGER_AREA, METEOR_CREATE, METEOR_EXPLOSION };
+
 private:
 	Player*			PlayerObject;
 	_vec3			PlayerPos;
 
 	CameraObject*	Camera;
-
-	_vec3			BossStartPos;
-	FLOAT			BossHP;
 
 	BOOL			Invalidate_Mode;
 	BOOL			Rage_Mode;
@@ -88,33 +93,26 @@ private:
 	BOOL			Death_Mode;
 
 	FLOAT			Staging_Timer;
-	BOOL			Enable_Staging;
+	FLOAT			Action_Timer;
+	FLOAT			Explosion_Timer;
+	FLOAT			MeteorExplosion_Timer;
+
 	BOOL			STAGING_TRIGGER[20];
-	enum class STAGING {SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
-						WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE};
-
 	BOOL			EXPLOSION_TRIGGER[5];
-	enum class EXPLOSION { NORMAL_EXPLOSION, METEOR_SLAM_EXPLOSION1, METEOR_SLAM_EXPLOSION2, METEOR_SLAM_EXPLOSION3, METEOR_SLAM_EXPLOSION4 };
-
 	BOOL			METEOR_TRIGGER[5];
-	enum class METEOR { DANGER_AREA, METEOR_CREATE, METEOR_EXPLOSION1, METEOR_EXPLOSION2, METEOR_EXPLOSION3 };
-	Transform*	MeteorTransform[4];
-	FLOAT		RanPosX[4], RanPosZ[4];
-	FLOAT TEMP1;
-	FLOAT TEMP2;
-	FLOAT TEMP3;
 
 	INT				Action_Selector;
-	FLOAT			Action_Timer;
 
 	BOOL			DoubleSlam;
 
+	BOOL			Enable_BossAppearStaging;
 	BOOL			Enable_GroundExplosion;
-	BOOL			Enable_QuadGroundExplosion;
-	FLOAT			Explosion_Timer;
-
+	BOOL			Enable_GroundQuadExplosion;
 	BOOL			Enable_MeteorExplosion;
-	FLOAT			Enable_MeteorExplosion_Timer;
+
+	Transform*		MeteorTransform[4];
+	FLOAT			RanPosX[4], RanPosZ[4];
+
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;
@@ -150,4 +148,6 @@ private:
 	Collider*		Component_Collider;
 
 	StateMachine*	FSM;
+
+
 };

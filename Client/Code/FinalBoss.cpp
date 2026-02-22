@@ -6,8 +6,6 @@ FinalBoss::FinalBoss(CONST GameObject& _RHS)	: GameObject(_RHS)		{}
 FinalBoss::~FinalBoss()													{}
 
 HRESULT	FinalBoss::Ready_GameObject()						{
-	BossStartPos = {- 0.4f, 1.5f, 1.7f };
-
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
@@ -40,11 +38,11 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 
 	DoubleSlam = TRUE;
 	Enable_GroundExplosion = FALSE;
-	Enable_QuadGroundExplosion = FALSE;
+	Enable_GroundQuadExplosion = FALSE;
 	Explosion_Timer = 0.f;
 
 	Staging_Timer = 0.f;
-	Enable_Staging = FALSE;
+	Enable_BossAppearStaging = FALSE;
 
 	memset(MeteorTransform, 0, sizeof(MeteorTransform));
 	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
@@ -67,7 +65,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	FSM->Update_GameObject(_DT);
 
 	if (KEY_DOWN(DIK_L)) 
-		Enable_Staging = true;
+		Enable_BossAppearStaging = true;
 
 	Skill_GroundExplosion(_DT);
 	Skill_MeteorExplosion(_DT);
@@ -175,7 +173,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	}
 	else if (Rage_Mode == TRUE) {
 		// < Death >
-		if (BossHP <= 0 && Death_Mode == FALSE) {
+		if (Component_Collider->Get_Hp() <= 0 && Death_Mode == FALSE) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Death_TexList;
 			Animation_FrameCount = ANIMATION_DEATH_FRAMECOUNT;
@@ -183,29 +181,6 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 			Invalidate_Mode = TRUE;
 			Death_Mode = TRUE;
 			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
-		}
-	}
-	
-	if (KEY_HOLD(DIK_LSHIFT)) {
-		if (KEY_DOWN(DIK_I)) {
-			TEMP1 -= 1.f;
-		}
-		if (KEY_DOWN(DIK_O)) {
-			TEMP2 -= 1.f;
-		}
-		if (KEY_DOWN(DIK_P)) {
-			TEMP3 -= 1.f;
-		}
-	}
-	else {
-		if (KEY_DOWN(DIK_I)) {
-			TEMP1 += 1.f;
-		}
-		if (KEY_DOWN(DIK_O)) {
-			TEMP2 += 1.f;
-		}
-		if (KEY_DOWN(DIK_P)) {
-			TEMP3 += 1.f;
 		}
 	}
 	
@@ -229,7 +204,7 @@ VOID	FinalBoss::Render_GameObject() {
 
 BOOL	FinalBoss::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Arrow" && Invalidate_Mode == FALSE) {
-		BossHP -= dynamic_cast<Arrow*>(_Other)->Get_Atk();
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
 		// Delete Arrow Code
 	}
 	else if (_Other->Get_ObjectTag() == L"Arrow" && Invalidate_Mode == TRUE) {
@@ -253,7 +228,7 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Texture		= ADD_COMPONENT_TEXTURE;
 
 	Component_Transform		= ADD_COMPONENT_TRANSFORM;
-	Component_Transform->Set_Pos(BossStartPos.x, BossStartPos.y , BossStartPos.z);
+	Component_Transform->Set_Pos(-0.4f, 1.5f, 1.7f);
 	Component_Transform->Set_Scale(9.f, 9.f, 9.f);
 
 	Component_Collider		= ADD_COMPONENT_COLLIDER;
@@ -325,8 +300,8 @@ HRESULT FinalBoss::Texture_Initialize() {
 	return S_OK;
 }
 
-VOID FinalBoss::Animation_Appear_Staging(const FLOAT& _DT) {
-	if (Enable_Staging) {
+VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
+	if (Enable_BossAppearStaging) {
 		Staging_Timer += _DT;
 		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f};
 		FLOAT GloabalScale = 2.f;
@@ -458,7 +433,7 @@ VOID FinalBoss::Set_StartPos(_vec3 _StartPos) {
 		Component_Transform->Get_Position()->y + _StartPos.y, Component_Transform->Get_Position()->z + _StartPos.z);
 }
 
-VOID	FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
+VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 	if (Enable_GroundExplosion) {
 		Explosion_Timer += _DT;
 		if (Explosion_Timer > 0.5f) {
@@ -473,7 +448,7 @@ VOID	FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 			Explosion_Timer = 0.f;
 		}
 	}
-	else if (Enable_QuadGroundExplosion) {
+	else if (Enable_GroundQuadExplosion) {
 		Explosion_Timer += _DT;
 
 		_vec3 Scale = { 6.f, 6.f, 6.f };
@@ -515,18 +490,18 @@ VOID	FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 
 			PlayerPos = { 0.f, 0.f, 0.f };
 			memset(EXPLOSION_TRIGGER, TRUE, sizeof(EXPLOSION_TRIGGER));
-			Enable_QuadGroundExplosion = FALSE;
+			Enable_GroundQuadExplosion = FALSE;
 			Explosion_Timer = 0.f;
 		}
 	}
 }
 
-VOID FinalBoss::Skill_MeteorExplosion(const FLOAT& _DT) {
+VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 	if (Enable_MeteorExplosion) {
-		Enable_MeteorExplosion_Timer += _DT;
+		MeteorExplosion_Timer += _DT;
 
 		// Activate Danger Area
-		if (Enable_MeteorExplosion_Timer > 0.2f && METEOR_TRIGGER[(INT)METEOR::DANGER_AREA]) {
+		if (MeteorExplosion_Timer > 0.2f && METEOR_TRIGGER[(INT)METEOR::DANGER_AREA]) {
 			_vec3 Scale = { 1.f, 1.f, 1.f };
 
 			srand(time(NULL));
@@ -543,8 +518,8 @@ VOID FinalBoss::Skill_MeteorExplosion(const FLOAT& _DT) {
 				METEOR_TRIGGER[(INT)METEOR::DANGER_AREA] = FALSE;
 			}
 		}
-
-		if (Enable_MeteorExplosion_Timer > 0.45f && METEOR_TRIGGER[(INT)METEOR::METEOR_CREATE]) {
+		// Create Meteor & Place
+		if (MeteorExplosion_Timer > 0.45f && METEOR_TRIGGER[(INT)METEOR::METEOR_CREATE]) {
 			_vec3 Pos0 = { Component_Transform->Get_Position()->x + RanPosX[0] + 2.f, Component_Transform->Get_Position()->y - 1.5f + 6.f, Component_Transform->Get_Position()->z + RanPosZ[0] + 12.f };
 			_vec3 Pos1 = { Component_Transform->Get_Position()->x + RanPosX[1] + 2.f, Component_Transform->Get_Position()->y - 1.5f + 6.f, Component_Transform->Get_Position()->z + RanPosZ[1] + 12.f };
 			_vec3 Pos2 = { Component_Transform->Get_Position()->x + RanPosX[2] - 2.f, Component_Transform->Get_Position()->y - 1.5f + 6.f, Component_Transform->Get_Position()->z + RanPosZ[2] + 12.f };
@@ -557,8 +532,8 @@ VOID FinalBoss::Skill_MeteorExplosion(const FLOAT& _DT) {
 
 			METEOR_TRIGGER[(INT)METEOR::METEOR_CREATE] = FALSE;
 		}
-
-		if (Enable_MeteorExplosion_Timer > 0.5f && Enable_MeteorExplosion_Timer <= 0.9f) {
+		// Drop Meteor
+		if (MeteorExplosion_Timer > 0.5f && MeteorExplosion_Timer <= 0.9f) {
 			if (MeteorTransform[0] == nullptr) {
 				for (INT IDX = 0; IDX < 4; ++IDX) {
 					MeteorTransform[IDX] = dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Meteor" + to_wstring(IDX + 1))->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
@@ -570,8 +545,8 @@ VOID FinalBoss::Skill_MeteorExplosion(const FLOAT& _DT) {
 			MeteorTransform[2]->Set_Pos(MeteorTransform[2]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[2]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[2]->Get_Position()->z- MeteorSpeed * 50);
 			MeteorTransform[3]->Set_Pos(MeteorTransform[3]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[3]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[3]->Get_Position()->z- MeteorSpeed * 50);
 		}
-
-		if (Enable_MeteorExplosion_Timer > 0.9f && METEOR_TRIGGER[(INT)METEOR::METEOR_EXPLOSION1]) {
+		// Ground Explosion
+		if (MeteorExplosion_Timer > 0.9f && METEOR_TRIGGER[(INT)METEOR::METEOR_EXPLOSION]) {
 			_vec3 Scale = { 3.f, 4.f, 4.f };
 			if (MeteorTransform[0] == nullptr) {
 				for (INT IDX = 0; IDX < 4; ++IDX) {
@@ -588,15 +563,14 @@ VOID FinalBoss::Skill_MeteorExplosion(const FLOAT& _DT) {
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::METEOR_EXP_EFFECT, L"MeteorExp3", &Pos2, Scale, 0.4f);
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::METEOR_EXP_EFFECT, L"MeteorExp4", &Pos3, Scale, 0.4f);
 
-			METEOR_TRIGGER[(INT)METEOR::METEOR_EXPLOSION1] = FALSE;
+			METEOR_TRIGGER[(INT)METEOR::METEOR_EXPLOSION] = FALSE;
 		}
-
-
-		if (Enable_MeteorExplosion_Timer > 1.3f) {
+		// All Reset
+		if (MeteorExplosion_Timer > 1.3f) {
 			memset(MeteorTransform, 0, sizeof(MeteorTransform));
 			memset(METEOR_TRIGGER, TRUE, sizeof(METEOR_TRIGGER));
 			Enable_MeteorExplosion = FALSE;
-			Enable_MeteorExplosion_Timer = 0.f;
+			MeteorExplosion_Timer = 0.f;
 		}
 	}
 }

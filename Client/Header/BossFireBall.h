@@ -2,13 +2,13 @@
 #include "GameObject.h"
 #include "FinalBoss.h"
 
-#define ANIMATION_SUPPORTER_IDLE 24
+#define ANIMATION_BOSS_FIREBALL	10
 
-class Supporter : public GameObject {
+class BossFireBall : public GameObject {
 private:
-	explicit Supporter(LPDIRECT3DDEVICE9 _GRPDEV);
-	explicit Supporter(CONST GameObject& _RHS);
-	virtual ~Supporter();
+	explicit BossFireBall(LPDIRECT3DDEVICE9 _GRPDEV);
+	explicit BossFireBall(CONST GameObject& _RHS);
+	virtual ~BossFireBall();
 
 public:
 	virtual	HRESULT		Ready_GameObject();
@@ -24,32 +24,35 @@ public:
 	HRESULT	Component_Initialize();
 	HRESULT Texture_Initialize();
 
-	static	Supporter* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static	BossFireBall* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
-	VOID	Supporter_Transform(CONST FLOAT& _DT);
-	VOID	Generate_FireBall(CONST FLOAT& _DT);
-
+	VOID	FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed);
 private:
 	FinalBoss* Boss;
 
-	vector<LPDIRECT3DTEXTURE9>	Animation_IdleTexList;
+	vector<LPDIRECT3DTEXTURE9>* Animation_TexList;
 	INT							Animation_CurrentIndex;
 	INT							Animation_PreviousIndex;
+
+	vector<LPDIRECT3DTEXTURE9>	Animation_NormalTexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_RageTexList;
 
 	FLOAT	Animation_Timer;
 	INT		Animation_FrameCount;
 	FLOAT	Animation_Interval;
 
 	_vec3	Direction;
-	_vec3	PosinDirection[3];
+
+	_vec3	FireBallType;
+
+	float angle;
 
 private:
-	Buffer*			Component_Buffer;
-	Transform*		Component_Transform;
-	Texture*		Component_Texture;
-	Collider*		Component_Collider;
+	Buffer*		Component_Buffer;
+	Transform*	Component_Transform;
+	Texture*	Component_Texture;
+	Collider*	Component_Collider;
 
 private:
 	virtual		VOID	Free();
 };
-

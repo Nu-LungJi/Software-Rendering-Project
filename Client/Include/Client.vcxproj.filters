@@ -445,7 +445,7 @@
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\MonsterTest.h" />
-    <ClInclude Include="..\Header\Meteor.h">
+    <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
   </ItemGroup>
@@ -662,7 +662,7 @@
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterTest.cpp" />
-    <ClCompile Include="..\Code\Meteor.cpp">
+    <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClCompile>
   </ItemGroup>
