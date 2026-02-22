@@ -6,6 +6,16 @@ DoCheolScene::~DoCheolScene() {}
 HRESULT	DoCheolScene::Ready_Scene() {
 	Scene::Ready_Scene();
 
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
+
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
@@ -91,7 +101,7 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			
 		}
 		TileManager::GetInstance()->Set_StageCnt();
-		MSG_BOX("로드 성공");
+		//MSG_BOX("로드 성공");
 		CloseHandle(hFile);
 	}
 
@@ -101,13 +111,13 @@ HRESULT	DoCheolScene::Ready_Scene() {
 	return S_OK;
 }
 INT	 DoCheolScene::Update_Scene(CONST FLOAT& _DT) {
-	TileManager::GetInstance()->Update_TileList(_DT);
+	TileManager::GetInstance()->Stage_Update(_DT);
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
 VOID DoCheolScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	Scene::LateUpdate_Scene(_DT);
-	TileManager::GetInstance()->LateUpdate_Tile(_DT);
+	TileManager::GetInstance()->Stage_LateUpdate(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 }
@@ -126,13 +136,11 @@ HRESULT DoCheolScene::Ready_Enviroment_Layer(CONST TCHAR* _LTAG) {
 }
 HRESULT DoCheolScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 
-
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
-
+	
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
-
 
 	return S_OK;
 }

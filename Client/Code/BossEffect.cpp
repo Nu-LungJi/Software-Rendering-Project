@@ -8,32 +8,34 @@ BossEffect::~BossEffect()													{}
 HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, wstring _TAG, _vec3 _Rot) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	if (_SKILLTYPE == BOSS_EFFECT::EMBLEM_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Emblem_Appear");	}
-	else if (_SKILLTYPE == BOSS_EFFECT::EMBLEM_DESTROY_EFFECT)		{ Make_TextureList(L"Effect_Emblem");			}
-	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_APPEAR_EFFECT)		{ Make_TextureList(L"Effect_Spool_Appear");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_FLOW_EFFECT)			{ Make_TextureList(L"Effect_Spool");			}
-	else if (_SKILLTYPE == BOSS_EFFECT::WATER_POPUP_EFFECT)			{ Make_TextureList(L"Effect_Water_PopUp");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::FLAME_EFFECT)				{ Make_TextureList(L"Effect_AppearFlame");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::CIRCLE_FLAME_EFFECT)		{ Make_TextureList(L"Effect_CircleFlame");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::SPIRAL_FLAME_EFFECT)		{ Make_TextureList(L"Effect_Spiral_Flame");		}
+	if		(_SKILLTYPE == BOSS_EFFECT::EMBLEM_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Emblem_Appear");	}
+	else if (_SKILLTYPE == BOSS_EFFECT::EMBLEM_DESTROY_EFFECT)			{ Make_TextureList(L"Effect_Emblem");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Spool_Appear");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_FLOW_EFFECT)				{ Make_TextureList(L"Effect_Spool");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::WATER_POPUP_EFFECT)				{ Make_TextureList(L"Effect_Water_PopUp");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::FLAME_EFFECT)					{ Make_TextureList(L"Effect_AppearFlame");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::CIRCLE_FLAME_EFFECT)			{ Make_TextureList(L"Effect_CircleFlame");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SPIRAL_FLAME_EFFECT)			{ Make_TextureList(L"Effect_Spiral_Flame");		}
 
-	if (_SKILLTYPE == BOSS_EFFECT::SLAM_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
-	if (_SKILLTYPE == BOSS_EFFECT::SLAM_FLAME_EFFECT)				{ Make_TextureList(L"Effect_SlamFlame");		}
-	if (_SKILLTYPE == BOSS_EFFECT::SLAM_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
-	if (_SKILLTYPE == BOSS_EFFECT::SLAM_GROUND_EXP_EFFECT)			{ Make_TextureList(L"Effect_GroundExp");		}
-	if (_SKILLTYPE == BOSS_EFFECT::METEOR_SLAM_FLAME_EFFECT)		{ Make_TextureList(L"Effect_SlamFlame");		}
-	if (_SKILLTYPE == BOSS_EFFECT::METEOR_EFFECT)					{ Make_TextureList(L"Effect_MeteorExp");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SLAM_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SLAM_FLAME_EFFECT)				{ Make_TextureList(L"Effect_SlamFlame");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SLAM_GROUND_EXP_EFFECT)			{ Make_TextureList(L"Effect_GroundExp");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::METEOR_SLAM_FLAME_EFFECT)		{ Make_TextureList(L"Effect_SlamFlame");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::METEOR_EFFECT)					{ Make_TextureList(L"Effect_Meteor");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::METEOR_EXP_EFFECT)				{ Make_TextureList(L"Effect_MeteorExp");		}
 
-	if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_EFFECT)			{ Make_TextureList(L"Effect_FSwing_Charge");	}
-	if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_ELECTRIC_EFFECT)	{ Make_TextureList(L"Effect_FSwing_Charge_Electric"); }
-	if (_SKILLTYPE == BOSS_EFFECT::FSWING_CIRCLE_EFFET)				{ Make_TextureList(L"Effect_Slam_Circle");		}
-	if (_SKILLTYPE == BOSS_EFFECT::FSWING_ELECTRIC_EFFECT)			{ Make_TextureList(L"Effect_FSwing_Electric");	}
-	if (_SKILLTYPE == BOSS_EFFECT::FSWING_EXP_EFFECT)				{ Make_TextureList(L"Effect_Exp");				}
+	else if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_EFFECT)			{ Make_TextureList(L"Effect_FSwing_Charge");	}
+	else if (_SKILLTYPE == BOSS_EFFECT::FSWING_CHARGE_ELECTRIC_EFFECT)	{ Make_TextureList(L"Effect_FSwing_Charge_Electric"); }
+	else if (_SKILLTYPE == BOSS_EFFECT::FSWING_CIRCLE_EFFET)			{ Make_TextureList(L"Effect_Slam_Circle");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::FSWING_ELECTRIC_EFFECT)			{ Make_TextureList(L"Effect_FSwing_Electric");	}
+	else if (_SKILLTYPE == BOSS_EFFECT::FSWING_EXP_EFFECT)				{ Make_TextureList(L"Effect_Exp");				}
 
-	if (_SKILLTYPE == BOSS_EFFECT::RSWING_EFFECT)					{ Make_TextureList(L"Effect_RSwing");			}
-	if (_SKILLTYPE == BOSS_EFFECT::RSWING_PROJ_EFFECT)				{ Make_TextureList(L"Effect_FireBall");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::RSWING_EFFECT)					{ Make_TextureList(L"Effect_RSwing");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::RSWING_PROJ_EFFECT)				{ Make_TextureList(L"Effect_FireBall");			}
 
-	if (_SKILLTYPE == BOSS_EFFECT::DANGER_AREA_EFFECT)				{ Make_TextureList(L"DangerArea");				}
+	else if (_SKILLTYPE == BOSS_EFFECT::DANGER_AREA_EFFECT)				{ Make_TextureList(L"DangerArea");				}
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_EFFECT)				{ Make_TextureList(L"Supporter_Effect");		}
+
 	EffectSize = _Size;
 	PlayTime = _PlayTime;
 
@@ -44,7 +46,7 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 
 	Transform* BossTransform = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 
-	Component_Transform->Rotation(ROT_X, BossTransform->Get_Rotation()->x);
+	Component_Transform->Rotation(ROT_X, 80.f);
 	Component_Transform->Rotation(ROT_X, _Rot.x);
 	Component_Transform->Rotation(ROT_Y, _Rot.y);
 	Component_Transform->Rotation(ROT_Z, _Rot.z);
@@ -70,8 +72,8 @@ VOID BossEffect::Set_EffectRotation(FLOAT _X, FLOAT _Y, FLOAT _Z) {
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 
 	Component_Transform->Rotation(ROT_X, _X);
-	Component_Transform->Rotation(ROT_Y, _Y);
 	Component_Transform->Rotation(ROT_Z, _Z);
+	Component_Transform->Rotation(ROT_Y, _Y);
 
 	Transform* BossTransform = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 

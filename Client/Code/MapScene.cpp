@@ -95,7 +95,6 @@ HRESULT	MapScene::Ready_Scene() {
 		TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 	
 	}
-	
 	TileManager::GetInstance()->Set_StageCnt();
 	MSG_BOX("로드 성공");
 	CloseHandle(hFile);

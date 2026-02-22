@@ -26,6 +26,8 @@ public:
 
 	VOID		Set_CenterPos(Transform* _ColliderPos) { ColliderPos = _ColliderPos; }
 
+	VOID		Set_Offset(_vec3 _Offset) { Offset = _Offset;}
+
 	VOID		Set_Scale(FLOAT _XRANGE, FLOAT _YRANGE, FLOAT _ZRANGE) { Scale = { _XRANGE,  _YRANGE,  _ZRANGE }; }
 
 	VOID		Set_MinPoint(FLOAT _X, FLOAT _Y, FLOAT _Z) { MinPoint = { _X , _Y , _Z }; }
@@ -42,6 +44,7 @@ public:
 
 	_float      Get_Att() { return fAtt; }
 	_float      Get_Hp() { return fHp; }
+
 public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
@@ -59,14 +62,17 @@ private:
 	_vec3			MinPoint;
 	_vec3			MaxPoint;
 
-	BOOL			Curr_ColState;
-	BOOL			Prev_ColState;
+	_vec3			Offset;
+
+	BOOL		Curr_ColState;
+	BOOL		Prev_ColState;
+
 	D3DXMATRIX matWorld, matView, matProj, Sum;
 
 	ID3DXLine* pLine;
 
-	_float			fHp;
-	_float			fAtt;
+	_float         fHp;
+	_float         fAtt;
 	
 private:
 	virtual		VOID		Free();

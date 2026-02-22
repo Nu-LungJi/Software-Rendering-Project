@@ -26,6 +26,7 @@ public:
     void                    CL_Spawn();
 
     Transform*               Crash_Player();
+    void                      Boss();
 private:
     HRESULT			Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn );
 

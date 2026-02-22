@@ -57,8 +57,12 @@ private:
 	bool		Camera_Show;
 	bool		Camera_Move;
 
-	INT		Shake_Strength;
+	INT			Shake_Strength;
 	FLOAT		Shake_Time;
+	_vec3		OriginEye;
+	_vec3		OriginAt;
+
+
 	_vec3		m_vVelocity;
 
 public:

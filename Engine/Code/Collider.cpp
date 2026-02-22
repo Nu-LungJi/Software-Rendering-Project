@@ -6,6 +6,7 @@ Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.C
 	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj), fAtt(_RHS.fAtt) ,fHp(_RHS.fHp)											{}
 Collider::~Collider()																																{}
 
+
 HRESULT		Collider::Ready_Component() {
 	MinPoint = { 0.f, 0.f, 0.f };
 	MaxPoint = { 0.f, 0.f, 0.f };
@@ -18,6 +19,7 @@ INT			Collider::Update_Component(CONST FLOAT& _DT) {
 		return 0;
 
 	CenterPos = *ColliderPos->Get_Position();
+	CenterPos += Offset;
 	
 	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
 	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
