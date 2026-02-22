@@ -170,6 +170,9 @@ public:
 	bool	Get_Invincible() { return _isInvincible; }
 	void	Set_Invincible(bool value) { _isInvincible = value;  }
 
+	int     Get_HP()			{ return Component_Collider->Get_Hp(); }
+	void	Set_HP(INT _value)	{ Component_Collider->Set_Hp(_value); }
+
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
 private:

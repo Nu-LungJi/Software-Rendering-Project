@@ -8,7 +8,8 @@ CameraObject::~CameraObject() {}
 HRESULT CameraObject::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
+	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
+	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.6f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.6f, 1.35f * 1.6f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
 	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
 
@@ -32,6 +33,9 @@ HRESULT CameraObject::Ready_GameObject() {
 
 	ObjectTAG = L"Camera";
 
+	OriginEye = { 0.f, 0.f, 0.f };
+	OriginAt = { 0.f, 0.f, 0.f };
+
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
@@ -40,6 +44,8 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
+	//EyeVec = OriginEye;
+	//AtVec = OriginAt;
 	if (!Camera_Move)
 	{
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
@@ -84,14 +90,11 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		EyeVec += m_vVelocity * 0.02;
 		AtVec += m_vVelocity * 0.02;
 	}
-	_vec3 OriginEye = { 0.f, 0.f, 0.f };
-	_vec3 OriginAt = { 0.f, 0.f, 0.f };
 	if (Shake_Time > 0.f) {
-		Shake_Time -= _DT;
+		
 		OriginEye = EyeVec;
 		OriginAt = AtVec;
-	
-	
+
 		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
@@ -105,6 +108,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 	//EyeVec = OriginEye;
 	//AtVec = OriginAt;
+
 	return 0;
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {

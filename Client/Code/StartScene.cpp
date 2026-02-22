@@ -140,7 +140,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
 
 
-	//Add_GameObjectToScene<FinalBoss>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
+	Add_GameObjectToScene<FinalBoss>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
 	//Add_GameObjectToScene<Fireball>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
 	//Add_GameObjectToScene<NPC>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC	  , L"NPC_Tif"		);
 	return S_OK;
