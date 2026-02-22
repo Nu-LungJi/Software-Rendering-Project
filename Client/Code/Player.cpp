@@ -30,6 +30,7 @@ HRESULT Player::Ready_GameObject() {
 	_isInvincible		= false;
 	_invincibleTimer	= 0.f;
 	_alphaRatio			= 1.f;
+	_alphaDelayTimer	= 0.f;
 
 	// UI
 	Component_Collider->Set_Hp(5.f);
@@ -46,6 +47,8 @@ HRESULT Player::Ready_GameObject() {
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
 	_slowTime			= 4.f;
+	_hit_inv_Time		= 2.f;
+	_dash_inv_Time		= 2.f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -101,11 +104,33 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		//Set_ObjectDead(TRUE);
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
+		Component_Collider->Set_Hp(0);
 	}
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
+	}
+
+	// 피격무적
+	if ( _isInvincible && _pState != pState::STATE_DEATH && _pState != pState::STATE_DASH) {
+		_invincibleTimer += _DT;
+		_alphaDelayTimer += _DT;
+		if (_invincibleTimer > _hit_inv_Time) {
+			_invincibleTimer = 0.f;
+			_alphaDelayTimer = 0.f;
+			_alphaRatio		 = 1.f;
+			_isInvincible = false;
+		}
+		if (_alphaDelayTimer < 0.1f) {
+			_alphaRatio -= _DT * 6;
+			_alphaRatio = max(_alphaRatio, 0.f);
+		}
+		else if (_alphaDelayTimer > 0.1f && _alphaDelayTimer < 0.2f) {
+			_alphaRatio += _DT * 6;
+			_alphaRatio = min(_alphaRatio, 1.f);
+		}
+		else _alphaDelayTimer = 0.f;
 	}
 
 	//SetOnTerrain(); - 광윤 디버그
@@ -212,6 +237,7 @@ void Player::Reset()
 	_frame = 1;
 	_arrowCount = 0;
 	_isStop = false;
+	_isInvincible = false;
 
 	// UI
 	_dashstock			= 3;
@@ -227,6 +253,8 @@ void Player::Reset()
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
 	_maxArrow			= 1.f;
+	_hit_inv_Time		= 2.f;
+	_dash_inv_Time		= 2.f;
 
 	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 	mainUI->Player_ReFillHP(5);
@@ -464,6 +492,7 @@ void Player::DASH_STATE(const _float& _DT)
 	D3DXVec3Normalize(&rightDir, &rightDir);
 
 	_dashTime += _DT;
+	_isInvincible = true;
 
 	if (_dashStart)
 	{
@@ -558,6 +587,7 @@ void Player::DASH_STATE(const _float& _DT)
 		_speed = 0;
 		_dashTime = 0.f;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
+		if (_invincibleTimer == 0.f) _isInvincible = false;
 	}
 		
 }
@@ -581,6 +611,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_frame = 1;
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
 	}
 	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
@@ -813,6 +844,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_frame = 1;
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
 	}
 	else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;

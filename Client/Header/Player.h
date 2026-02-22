@@ -167,6 +167,7 @@ public:
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
+	bool	Get_Invincible() { return _isInvincible; }
 	void	Set_Invincible(bool value) { _isInvincible = value;  }
 
 	_vec3			Get_MouseDir();
@@ -232,8 +233,9 @@ private:
 	float			_originDefualtSpeed;
 
 	float			_alphaRatio;
-	bool			_isInvincible;		// 무적 상태
-	float			_invincibleTimer;	//무적 타이머
+	bool			_isInvincible;		//	무적 상태
+	float			_invincibleTimer;	//	무적 타이머
+	float			_alphaDelayTimer;	//	깜박임 타이머
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
@@ -249,6 +251,8 @@ private:
 	float			_arrowSpeed;	// 화살 스피드 ex) 1.5면 1.5배 증가
 	float			_maxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
 	float			_slowTime;		// 시간 제어 스킬 지속시간 일단 4초 초기화
+	float			_hit_inv_Time;	// 피격시 무적 유지시간;
+	float			_dash_inv_Time;	// 대시시 무적 유지시간;
 
 	Bow*			_weaponSlot[4];
 	GameObject*		_artifactSlot[4];

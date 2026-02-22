@@ -243,7 +243,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         }
         _sumSpeed += _DT * _speed * (*_playerArrowSpeed);
         matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
-        matWorld._42 = _playerPos.y;
+        matWorld._42 = 0.1f;
         matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
 
         // ÀÌµ¿

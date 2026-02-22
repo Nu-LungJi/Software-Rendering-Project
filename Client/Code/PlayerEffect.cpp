@@ -150,6 +150,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	if (SKILL_TYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) {
 		if (_effectTimer > 2.6f) {
 			_alphaRatio -= _DT;
+			_alphaRatio = max(_alphaRatio, 0.f);
 		}
 	}
 

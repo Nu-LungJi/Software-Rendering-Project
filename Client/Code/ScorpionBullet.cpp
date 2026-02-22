@@ -106,17 +106,18 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 	MainUI* mainUI;
 	if (!m_tInfo.bTrigger[0])
 	{
-		switch (_Other->Get_ObjectType())
-		{
-		default:
-			//break;
-		case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+		if (_Other->Get_ObjectTag() == L"Player") {
 			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 			mainUI->Player_LostHP();
 			m_tInfo.fSpeed = 0.f;
 			m_tInfo.bTrigger[0] = true;
 			m_tInfo.fTimer[0] = 8.f;
-			break;
+		}
+		switch (_Other->Get_ObjectType())
+		{
+		default:
+			//break;
+		case GAMEOBJECT_TYPE::OBJECT_PLAYER:
 		case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
 			m_tInfo.fSpeed = 0.f;
 			m_tInfo.bTrigger[0] = true;

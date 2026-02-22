@@ -49,7 +49,7 @@ VOID	MainUI::Render_GameObject() {
 }
 VOID MainUI::Player_LostHP() {
 	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
-	if (PlayerHP > 0) {
+	if (PlayerHP > 0 && !dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_Invincible()) {
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
