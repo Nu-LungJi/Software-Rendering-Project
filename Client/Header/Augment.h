@@ -1,15 +1,6 @@
 #pragma once
 #include "GameObject.h"
 
-struct PerkINFO {
-	enum PEINFO {KEY, NAME, DESC};
-
-	LPDIRECT3DTEXTURE9 TEXTURE;
-
-	vector<wstring> PerkDesc;
-
-};
-
 class Augment : public GameObject {
 	explicit Augment(LPDIRECT3DDEVICE9 _GRPDEV);
 	explicit Augment(CONST GameObject& _RHS);
@@ -29,9 +20,11 @@ public:
 	HRESULT Component_Initialize();
 	HRESULT Sprite_Initialize();
 	HRESULT Text_Initialize();
-
+	HRESULT	Perk_Initialize();
 public:
-	VOID Display_Perk_Font();
+	VOID Display_PerkInfo(ItemINFO* _pItem);
+	BOOL IsMouseOnPerk();
+
 public:
 	static	Augment* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
@@ -41,14 +34,17 @@ private:
 	Transform* Component_Transform;
 
 private:
+	
 	vector<ItemINFO*> Perk_Info;
 	vector<FontObject*> Perk_Text;
 
-	vector<SpriteINFO> PerkInfo_Screen;
+	vector<SpriteINFO*> PerkInfo_Screen;
 	vector<SpriteINFO*> PerkInfo_InfoFrame;
+	
+	_vec2 PerkInfo_Pos;
 
 	BOOL isActive;
-
+	
 private:
 	virtual	VOID		Free();
 };
