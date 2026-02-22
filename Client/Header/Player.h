@@ -123,8 +123,8 @@ public:
 	float	Get_Speed()				{ return _speed;}
 	void	Set_Speed(INT _value)	{ _speed = _value; }
 
-	int		Get_HP() { return _hp; }
-	void	Set_HP(INT _value) { _hp = _value; }
+	int		Get_HP() { return Component_Collider->Get_Hp(); }
+	void	Set_HP(INT _value) { Component_Collider->Set_Hp(_value); }
 
 	int		Get_Key() { return _key; }
 	void	Set_Key(INT _value) { _key = _value; }

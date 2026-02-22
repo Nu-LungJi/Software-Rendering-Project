@@ -23,6 +23,8 @@ public:
     void                    Monster_Spawn2();
     void                    Monster_Spawn3();
     void                    Monster_Spawn4();
+    void                    CL_Spawn();
+
     Transform*               Crash_Player();
 private:
     HRESULT			Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn );

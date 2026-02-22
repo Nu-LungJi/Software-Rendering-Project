@@ -10,6 +10,7 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
+	
 	if (m_tInfo.bTrigger[0])
 	{
 		if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_Chain01", &m_tInfo)))
@@ -66,6 +67,7 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 	}
 
 	Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
+	
 }
 VOID Bullet_Chain::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

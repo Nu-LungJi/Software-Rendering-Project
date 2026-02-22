@@ -12,6 +12,7 @@ HRESULT Fireball::Ready_GameObject() {
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
 {
+	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
 
 	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
@@ -44,6 +45,7 @@ VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
 	Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	
 
 }
 VOID Fireball::Render_GameObject() {

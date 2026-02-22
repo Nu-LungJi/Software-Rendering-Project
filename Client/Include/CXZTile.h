@@ -16,7 +16,7 @@ public:
     virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
     virtual			VOID		Render_GameObject();
 public:
-    void            Set_Buffer(TILE_SIDE eid);
+    void                    Set_Buffer(TILE_SIDE eid);
     D3DMATERIAL9            Set_Material();
     void                    Frame_Move      (CONST FLOAT& _DT);
     void                    Tile_Animation  (CONST FLOAT& _DT);

@@ -32,7 +32,11 @@ INT	CXZTile::Update_GameObject(const _float& _DT) {
 	
 	GameObject::Update_GameObject(_DT);
 
+	if (Get_ObjectDead() == TRUE)
+		return -1;
+
 	Frame_Move(_DT);
+	
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
 
 
@@ -52,6 +56,7 @@ INT	CXZTile::Update_GameObject(const _float& _DT) {
 		if (m_fAlpha < 0.f)
 			m_fAlpha = 0.f;
 	}
+
 	return 0;
 
 }
@@ -68,10 +73,6 @@ VOID CXZTile::LateUpdate_GameObject(const _float& _DT) {
 VOID CXZTile::Render_GameObject()
 {
 	DWORD Argb = D3DCOLOR_ARGB( 255, 255, 255, 255);
-
-	//GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	//GRPDEV->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	//GRPDEV->SetRenderState(D3DRS_ALPHAREF, 0xc0);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 	
@@ -146,17 +147,6 @@ VOID CXZTile::Render_GameObject()
 		break;
 	case TILE_STATE::STATE_UNDERTILE:
 	{
-		//GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-		//GRPDEV->SetTexture(1, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_BackGroundName(0)));
-		//
-		//GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-		//GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-		//
-		//GRPDEV->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-		//GRPDEV->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-		//GRPDEV->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-		//GRPDEV->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-
 	}
 		break;
 	case TILE_STATE::STATE_POTALGASI_BREAK:
@@ -235,10 +225,10 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		Tile_Animation(_DT);
 		break;
 	case TILE_STATE::STATE_COLLISION:
-		Crash_Player();
+		//Crash_Player();
 		break;
 	case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
-		//Tile_Destory(_DT);
+		Tile_Destory(_DT);
 		break;
 	case TILE_STATE::STATE_POTAL:
 		Tile_Potal(_DT);
@@ -248,17 +238,17 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_STATE::STATE_TRIGGER:
 		Tile_Trigger();
+		break;
 	case TILE_STATE::STATE_POTALGASI:
 		break;
 	case TILE_STATE::STATE_POTALGASI_EFFECT:
-
 		//Tile_Gasi_Destory();
 		break;
 	case TILE_STATE::STATE_POTALGASI_BREAK:
 		Tile_Gasi_Destory(_DT);
 		break;
 	case TILE_STATE::STATE_BOOM:
-		Tile_Boom(_DT);
+		//Tile_Boom(_DT);
 		break;
 	}
 	
@@ -320,7 +310,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 	if(m_bDestroy && m_pTileInfo->Get_OnlyAnimation() && m_fFrame < 1)
 	{
 		Scale.x *= 2.5;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale , Rot));
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale , Rot));
 		Set_ObjectDead(TRUE);
 		++m_fFrame;
 	}
@@ -331,7 +321,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 		// 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
 		if (!m_pTileInfo->Get_OnlyAnimation())
 		{
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
 			//SoundManager::GetInstance()->Play_Sound(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01);
 		}
 			
@@ -366,7 +356,7 @@ void CXZTile::Tile_Potal_Effect(CONST FLOAT& _DT)
 }
 void CXZTile::Tile_Trigger()
 {
-	if (Crash_Player() != nullptr)
+	if (Crash_Player() != nullptr )
 	{
 		TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
 	}
@@ -457,22 +447,25 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
 			m_pTransform->Get_Info(INFO_POS, &Pos);
 			Scale = *m_pTransform->Get_Scale();
 			Rot = *m_pTransform->Get_Rotation();
-
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, {5.f,5.f,5.f}, Rot));
+			Pos.y = 0;
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, {0,0,0}, true));
 			m_bEffect = true;
 		}
 		if (!m_bStopFrame)
 		{
+			m_fHeightSpeed = 0.1f;
 			if (m_fHeightSpeed < 0)
+			{
 				m_fHeightSpeed *= -1;
-
+			}
+				
 			_vec3 vPos;
 			m_pTransform->Get_Info(INFO_POS, &vPos);
 
 			m_fTime += _DT;				
-			if (m_fTime > 0.35f) 
+			if (m_fTime > 0.1f) 
 			{
-				m_fCount += 0.01f;
+				m_fCount += 1;
 				m_fTime = 0.f;	
 
 				if (vPos.y <= 0 )
@@ -482,6 +475,9 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
 				}
 			}
 			vPos.y -= m_fHeightSpeed;
+		
+			if (m_fCount > 10)
+				Set_ObjectDead(TRUE);
 		}
 		
 	}

@@ -15,6 +15,7 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
+	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
 
 	MYPOS->y = 0.5f;
@@ -60,6 +61,7 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	}
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
+	
 }
 VOID Bullet_Standard::Render_GameObject() {
 

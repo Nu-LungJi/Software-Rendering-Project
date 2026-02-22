@@ -379,7 +379,7 @@ void Arrow::Destory_Tile()
           
             if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z -1 && vPos.z < vTilePos.z + 1 )
             {
-                Set_ObjectDead(TRUE);
+                _hp = 0;
                 dynamic_cast<CXZTile*>(iter)->Set_Destory();
             }
         }

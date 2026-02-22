@@ -170,3 +170,27 @@ VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_
 
 	Component_Transform->Set_World(&matWorld);
 }
+
+VOID Monster::Destory_Tile(GameObject* pObj)
+{
+	_vec3 vPos, vScale, vTileScale, vTilePos{ 0,0,0 };
+
+	Transform* pTile = nullptr;
+	vPos = *dynamic_cast<Transform*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+	vScale = *dynamic_cast<Transform*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale();
+	for (auto& iter : TileManager::GetInstance()->Get_DestoryTile_List())
+	{
+		if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_DESTORY ||
+			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_BOOM)
+		{
+			pTile = dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+			vTilePos = *pTile->Get_Position();
+
+			if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
+			{
+				pObj->Set_ObjectDead(TRUE);
+				dynamic_cast<CXZTile*>(iter)->Set_Destory();
+			}
+		}
+	}
+}

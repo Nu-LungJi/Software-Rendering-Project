@@ -28,7 +28,8 @@ HRESULT Player::Ready_GameObject() {
 	_skillTimer = 0.f;
 
 	// UI
-	_hp					= 5;
+	Component_Collider->Set_Hp(5.f);
+	Component_Collider->Set_Att(1.f);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -98,6 +99,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_pState = pState::STATE_DEATH;
 	}
 
+	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
+	}
 	//SetOnTerrain(); - 광윤 디버그
 
 	_frameTick += _DT;
@@ -197,7 +202,7 @@ void Player::Reset()
 	_isStop = false;
 
 	// UI
-	_hp					= 5;
+	Component_Collider->Set_Hp(5);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -544,7 +549,7 @@ void Player::DASH_STATE(const _float& _DT)
 }
 void Player::ATTACK_STATE(const _float& _DT)
 {
-	//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -563,7 +568,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
-	else if (!MOUSE_LBUTTON && !KEY_HOLD(DIK_SPACE)) {
+	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
 	}
 

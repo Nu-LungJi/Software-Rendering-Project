@@ -13,6 +13,7 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+	Monster::Destory_Tile(this);
 	if (!m_tInfo.bTrigger[0])
 	{
 		Monster::Set_TextureList(L"Spr_Bullet_ScorpionBullet", &m_tInfo);
@@ -75,6 +76,7 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 	Component_Collider->Set_Scale(MYSCALE->x, 1.f, MYSCALE->z);
 	//AlphaSorting(Component_Transform->Get_Position());
 	//AlphaSorting((_vec3*)&Component_Transform->Get_World()->_41);
+
 }
 VOID ScorpionBullet::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

@@ -38,14 +38,14 @@ HRESULT Tile::Ready_GameObject() {
 	Load_Image(L"../../Tile/DestroyObject", TILE_STATE::STATE_DESTORY);
 	Load_Image(L"../../Tile/Stage1/Potal", TILE_STATE::STATE_POTAL);
 	Load_Image(L"../../Tile/Stage2", TILE_STATE::STATE_NORMAL);
-	for (size_t i = 0; i < TILE_STATE::STATE_END; ++i)
-	{
-		for (auto& iter : m_vecImage[i])
-		{
-			iter.vSize.x /= 200;			
-			iter.vSize.y /= 200;
-		}
-	}
+	//for (size_t i = 0; i < TILE_STATE::STATE_END; ++i)
+	//{
+	//	for (auto& iter : m_vecImage[i])
+	//	{
+	//		iter.vSize.x /= 200;			
+	//		iter.vSize.y /= 200;
+	//	}
+	//}
 	return S_OK;
 }
 INT	Tile::Update_GameObject(const _float& _DT) {
@@ -84,6 +84,9 @@ VOID Tile::Render_GameObject()
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 	
 	{
+		if (m_pTileName == nullptr)
+			return;
+
 		if (m_eMode == TILEMODE_CHANGE::MODE_END || m_eTileInstall == INSTALL_MODE::MODE_MOVE)
 			GRPDEV->SetTexture(0, NULL);
 		else
@@ -154,18 +157,18 @@ void Tile::Imgui_Setting()
 	_vec3 vRot = { 0.f,0.f,0.f };
 	_int iCnt(0.f);
 	_int eid(0);
-	for (size_t i = 0; i < STATE_END ;++i)
-	{
-		for (auto iter : m_vecImage[i])
-		{
-	
-			if (m_pTileName != nullptr && !_tcscmp(m_pTileName, iter.wstr->c_str()))
-			{
-				vScale.x = iter.vSize.x / fsScale;
-				vScale.y = iter.vSize.y / fsScale;
-			}
-		}
-	}
+	//for (size_t i = 0; i < STATE_END ;++i)
+	//{
+	//	for (auto iter : m_vecImage[i])
+	//	{
+	//
+	//		if (m_pTileName != nullptr && !_tcscmp(m_pTileName, iter.wstr->c_str()))
+	//		{
+	//			vScale.x = iter.vSize.x / fsScale;
+	//			vScale.y = iter.vSize.y / fsScale;
+	//		}
+	//	}
+	//}
 	if (TILE_SIDE::TILE_OTHER != m_eTile) vRotation.x = 45.f;
 	else vRotation.x = 0;
 	if (!ImGui::CollapsingHeader("Setting"))
@@ -312,7 +315,7 @@ void Tile::Imgui_Image(const char* tName, TILE_STATE eid)
 
 		if (ImGui::ImageButton(scat,
 			ResourceManager::GetInstance()->Find_Texture((m_vecImage[eid][i].wstr)->c_str()),
-			ImVec2(size.x *128, size.y*128), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f)
+			ImVec2(128, 128), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f)
 			, ImVec4(0, 0, 0, 0))) //이미지 클릭 관련해서 true false 반환
 		{
 			m_pTileName = m_vecImage[eid][i].wstr->c_str();
@@ -335,7 +338,7 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTileStage[]      = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS", "END" };
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
-	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","SPAWN_END"};
+	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_END"};
 	static const char* cSelect_Tile      = nullptr;
 	static const char* cSelect_State     = nullptr;
 	static const char* cSelect_Stage     = nullptr;
@@ -493,7 +496,10 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[9]))   m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN2;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[10]))  m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN3;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[11]))  m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN4;
-						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::BOSS_SPAWN;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[13]))  m_eSpawner = TILE_SPAWNER::CL_SPAWN;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[14]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
+
 					}
 					if (bSelect)
 						ImGui::SetItemDefaultFocus();
@@ -692,42 +698,42 @@ void Tile::Set_AnimationCount(_int* icnt)
 {
 	//누가 아이디어좀;;
 	//_tcscmp
-	if (!_tcscmp(m_pTileName, L"Object_InfectionPillar01_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_InfectionWall1_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_InfectionWall2_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_InfectionWall3_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_InfectionWall4_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_Pillar01_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_Pillar02_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_StoneWell_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_StoneWell2_Hp100_%d.png")) *icnt = 2;
+	if (!_tcscmp(m_pTileName, L"Object_InfectionPillar01_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_InfectionWall1_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_InfectionWall2_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_InfectionWall3_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_InfectionWall4_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_Pillar01_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_Pillar02_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_StoneWell_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_StoneWell2_Hp100_%d.dds")) *icnt = 2;
 
-	else if (!_tcscmp(m_pTileName, L"Object_InfectionTower_Hp100_%d.png")
-		|| !_tcscmp(m_pTileName, L"Object_Pillar04_Hp100_%d.png"))*icnt = 3;
+	else if (!_tcscmp(m_pTileName, L"Object_InfectionTower_Hp100_%d.dds")
+		|| !_tcscmp(m_pTileName, L"Object_Pillar04_Hp100_%d.dds"))*icnt = 3;
 
-	else if (!_tcscmp(m_pTileName, L"spr_bush_01_%d.png")
-		|| !_tcscmp(m_pTileName, L"spr_bush_02_%d.png")
-		|| !_tcscmp(m_pTileName, L"spr_bush_03_%d.png")
-		|| !_tcscmp(m_pTileName, L"spr_bush_04_%d.png")
-		|| !_tcscmp(m_pTileName, L"spr_bush_05_%d.png")) *icnt = 7;
+	else if (!_tcscmp(m_pTileName, L"spr_bush_01_%d.dds")
+		|| !_tcscmp(m_pTileName, L"spr_bush_02_%d.dds")
+		|| !_tcscmp(m_pTileName, L"spr_bush_03_%d.dds")
+		|| !_tcscmp(m_pTileName, L"spr_bush_04_%d.dds")
+		|| !_tcscmp(m_pTileName, L"spr_bush_05_%d.dds")) *icnt = 7;
 
-	else if (!_tcscmp(m_pTileName, L"Spr_Deco_BushFlower01_0%d.png")
-		|| !_tcscmp(m_pTileName, L"Spr_Deco_BushFlower02_0%d.png")) *icnt = 8;
-	else if (!_tcscmp(m_pTileName, L"spr_spawneffect0%d.png") || !_tcscmp(m_pTileName, L"BossPotal%d.png") ||
-		!_tcscmp(m_pTileName, L"NPCPotal%d.png")) *icnt = 7;
+	else if (!_tcscmp(m_pTileName, L"Spr_Deco_BushFlower01_0%d.dds")
+		|| !_tcscmp(m_pTileName, L"Spr_Deco_BushFlower02_0%d.dds")) *icnt = 8;
+	else if (!_tcscmp(m_pTileName, L"spr_spawneffect0%d.dds") || !_tcscmp(m_pTileName, L"BossPotal%d.dds") ||
+		!_tcscmp(m_pTileName, L"NPCPotal%d.dds")) *icnt = 7;
 
-	else if (!_tcscmp(m_pTileName, L"spr_spawneffect0%d.png")) *icnt = 7;
+	else if (!_tcscmp(m_pTileName, L"spr_spawneffect0%d.dds")) *icnt = 7;
 
-	else if (!_tcscmp(m_pTileName, L"pr_InfectionThorns_05.png") ||
-		!_tcscmp(m_pTileName, L"pr_InfectionThorns_06.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns03_05.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_03.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_04.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_05.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionThorns_01.png") ||
-		!_tcscmp(m_pTileName, L"Spr_InfectionThorns_DestructionEffect_00.png")) *icnt = 1;
+	else if (!_tcscmp(m_pTileName, L"pr_InfectionThorns_05.dds") ||
+		!_tcscmp(m_pTileName, L"pr_InfectionThorns_06.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns03_05.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_03.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_04.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionDoor_Thorns05_05.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionThorns_01.dds") ||
+		!_tcscmp(m_pTileName, L"Spr_InfectionThorns_DestructionEffect_00.dds")) *icnt = 1;
 
-	else if (!_tcscmp(m_pTileName, L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.png")) *icnt = 8;
+	else if (!_tcscmp(m_pTileName, L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.dds")) *icnt = 8;
 }
 HRESULT Tile::Load_Image(const _tchar* pName, TILE_STATE eid)
 {

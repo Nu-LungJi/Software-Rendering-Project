@@ -12,7 +12,7 @@ HRESULT Bullet_Chain_Head::Ready_GameObject() {
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
-
+	Monster::Destory_Tile(this);
 	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo)))
 	{
 		ObjectDead = true;
@@ -78,6 +78,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	}
 	m_tInfo.vDirection.y = 0.f;
 	Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
