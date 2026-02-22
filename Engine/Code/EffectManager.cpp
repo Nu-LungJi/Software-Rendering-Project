@@ -81,6 +81,11 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 
 HRESULT EffectManager::Append_Effect(EFFECT_OWNER _Owner, GameObject* _Effect) {
+
+	// 실패구문 추가
+	if (!_Effect)
+		return E_POINTER;
+
 	if (_Owner		== EFFECT_OWNER::PLAYER)
 		Container_PlayerEffect.push_back(_Effect);
 	else if(_Owner	== EFFECT_OWNER::MONSTER)

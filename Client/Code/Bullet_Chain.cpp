@@ -12,8 +12,6 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
-
-	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
@@ -32,9 +30,6 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 			return 0;
 		}
 	}
-	
-	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
 
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] >= 2.f)
@@ -118,11 +113,7 @@ BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player")
+	if (Tag == L"Player")
 	{
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;

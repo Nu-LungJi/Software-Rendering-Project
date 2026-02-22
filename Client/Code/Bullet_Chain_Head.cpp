@@ -24,8 +24,6 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 		return 0;
 	}
 
-	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] >= 2.f)
@@ -59,15 +57,15 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
 	fDis += m_tInfo.fSpeed * _DT;
-	if (fDis >= MYSCALE->x)
+	if (fDis >= MYSCALE->x*2.f)
 	{
 		m_tInfo.bTrigger[0] = !m_tInfo.bTrigger[0];
-		fDis -= MYSCALE->x;
+		fDis -= MYSCALE->x*2.f;
 
 		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, {MYPOS->x, MYPOS->y -0.001f, MYPOS->z});
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
-		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.5f;
+		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.3f;
 
 		*dynamic_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *MYSCALE;
 		
@@ -129,11 +127,7 @@ BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player")
+	if (Tag == L"Player")
 	{
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;

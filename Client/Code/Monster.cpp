@@ -11,12 +11,6 @@ GameObject* Monster::Set_Target(CONST TCHAR* _TAG)
 	return GameObj;
 }
 
-_vec3 Monster::Normalize(_vec3 vec)
-{
-	_vec3 vTemp = vec;
-	D3DXVec3Normalize(&vTemp, &vec);
-	return vTemp;
-}
 
 HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 {
@@ -58,8 +52,14 @@ FLOAT Monster::BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 v
 	_vec3 vPos = *TransCom->Get_Position();
 	_vec3 vScale = *TransCom->Get_Scale();
 
+	// 여기서 누수남..? 왜?
 	_vec3 vCampos = *dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->
 					Get_EyeVec();
+
+	//_matrix matView;
+	//_GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+	//_vec3 vCampos	 = ?
+
 	_vec3 vLook = vCampos - vPos;
 	D3DXVec3Normalize(&vLook, &vLook);
 
@@ -122,52 +122,34 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 	if (pMonster->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
 		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }
-
-	uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
-	{
-		if (0 == _Seed1 || 0 == _Seed2)
-		{
-			_Seed1 = 0x123456789ABCDEF0;
-			_Seed2 = 0xFEDCBA9876543210;
-		}
-
-		uint64_t x = _Seed1;
-		uint64_t const y = _Seed2;
-		_Seed1 = y;
-		x ^= x << 23;
-		_Seed2 = x ^ y ^ (x >> 17) ^ (y >> 26);
-
-		return _Seed2 + y;
-	}
-
-
-VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
-{
-	_matrix		matBill, matWorld, matView;
-
-	matWorld = *Component_Transform->Get_World();
-	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMatrixIdentity(&matBill);
-
-	//XÃà
-	matBill._11 = matView._11;
-	matBill._12 = matView._12;
-	matBill._13 = matView._13;
-	//YÃà
-	matBill._21 = matView._21;
-	matBill._22 = matView._22;
-	matBill._23 = matView._23;
-	//ZÃà
-	matBill._31 = matView._31;
-	matBill._32 = matView._32;
-	matBill._33 = matView._33;
-
-	D3DXMatrixInverse(&matBill, 0, &matBill);
-
-	// ÁÖÀÇ ÇÒ °Í
-	matWorld = matBill * matWorld;
-
-	Component_Transform->Set_World(&matWorld);
-}
+//
+//VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
+//{
+//	_matrix		matBill, matWorld, matView;
+//
+//	matWorld = *Component_Transform->Get_World();
+//	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+//
+//	D3DXMatrixIdentity(&matBill);
+//
+//	//XÃà
+//	matBill._11 = matView._11;
+//	matBill._12 = matView._12;
+//	matBill._13 = matView._13;
+//	//YÃà
+//	matBill._21 = matView._21;
+//	matBill._22 = matView._22;
+//	matBill._23 = matView._23;
+//	//ZÃà
+//	matBill._31 = matView._31;
+//	matBill._32 = matView._32;
+//	matBill._33 = matView._33;
+//
+//	D3DXMatrixInverse(&matBill, 0, &matBill);
+//
+//	// ÁÖÀÇ ÇÒ °Í
+//	matWorld = matBill * matWorld;
+//
+//	Component_Transform->Set_World(&matWorld);
+//}
 

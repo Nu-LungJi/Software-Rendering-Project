@@ -26,6 +26,9 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 	{
 		Monster::Set_TextureList(L"Spr_Bullet_ScorpionBullet_Death", &m_tInfo);
 
+		m_tInfo.fTimer[1] += _DT;
+		ObjectDead = m_tInfo.fTimer[1] >= 2.f;
+
 		if (!m_tInfo.bTrigger[1])
 		{
 			m_tInfo.fSpeed *= 0.3f;

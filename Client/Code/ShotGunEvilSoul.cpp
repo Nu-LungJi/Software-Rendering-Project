@@ -158,31 +158,8 @@ VOID ShotGunEvilSoul::Free() {
 VOID ShotGunEvilSoul::State_Summon(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
-	if (nullptr == m_tInfo.pGameObj[0])
-	{
-		m_tInfo.bTrigger[0] = false;
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS03, vPos, FALSE, MONSTER_SUMMON03_PLAYTIME);
-		//*static_cast<Transform*>(pTarget->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *Component_Transform->Get_Scale();
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-	}
-
-	if (m_tInfo.fTimer[0] >= MONSTER_SUMMON03_PLAYTIME)
-	{
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.fTimer[0] = 0.f;
-		m_tInfo.bTrigger[0] = true;
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS01, vPos, FALSE, MONSTER_SUMMON01_PLAYTIME);
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_SUMMONS02, vPos, MONSTER_SUMMON02_PLAYTIME);
-	}
-
-	if (m_tInfo.bTrigger[0])
-		if (m_tInfo.fTimer[0] >= (MONSTER_SUMMON01_PLAYTIME * 0.5f))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_IDLE);
-			m_tInfo.pGameObj[0] = nullptr;
-		}
+	if (FAILED(MonsterEffect::Monster_SummonEffect_Set(GRPDEV, Component_Transform, &m_tInfo.bTrigger[0], &m_tInfo.fTimer[0]))) { ObjectDead = true; return; }
+	if (m_tInfo.bTrigger[0] > 3)	m_tInfo.Change_State(MONSTER_STATE_IDLE);
 }
 
 VOID ShotGunEvilSoul::State_Idle(const _float& _DT)
@@ -248,34 +225,49 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
-	m_tInfo.fTimer[0] += _DT;
-
-	if (m_tInfo.fTimer[0] >= SHOTGUNEVILSOUL_CHANNELING_TIME)
+	if (m_tInfo.fTimer[0] == 0.f)
 	{
 		_vec3	vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 		_float	fBaseRadian = atan2f(vDir.z, vDir.x);
 
-		uint64_t Seed[2] = { (uint64_t)time(NULL), GetTickCount64() };
-
 		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
 		{
-			_float fRandom = (Monster::XorShift128plus(Seed[0], Seed[1]) % 1000) / 1000.f;
+			_float fRandom = D3DXToRadian(RANDOM::Get_float((SHOTGUNEVILSOUL_SPREAD * -0.5f), (SHOTGUNEVILSOUL_SPREAD * 0.5f), this));
 
-			m_tInfo.pGameObj[1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, 1.f);
+			m_tInfo.pGameObj[i+1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, 1.f);
 
-			_float fRadian = fBaseRadian + fRandom * (D3DXToRadian(SHOTGUNEVILSOUL_SPREAD)) - D3DXToRadian(SHOTGUNEVILSOUL_SPREAD) * 0.5f;
-			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
+			_float fRadian = fBaseRadian + fRandom;
+			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i+1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
-			m_tInfo.pGameObj[1] = nullptr;
+		}
+	}
+
+	m_tInfo.fTimer[0] += _DT;
+
+	if (m_tInfo.fTimer[0] >= SHOTGUNEVILSOUL_CHANNELING_TIME)
+	{
+		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
+		{
+			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1])->Get_Info()->bTrigger[0] = true;
+			m_tInfo.pGameObj[i + 1] = nullptr;
 		}
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
+	}
+	else
+	{
+		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
+		{
+			SHOTGUNEVILSOUL_BULLET_TYPE* pBullet = static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1]);
+			pBullet->Get_Info()->fSpeed = pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
+		}
 	}
 }
 VOID ShotGunEvilSoul::State_Dead()
 {
-	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,
+		MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x));
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

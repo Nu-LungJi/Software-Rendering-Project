@@ -96,7 +96,7 @@
 #define SCORPIONBULLET_IMGY						120
 #define SCORPIONBULLET_IMG_ASPECTRATIO			((FLOAT)SCORPIONBULLET_IMGY / (FLOAT)SCORPIONBULLET_IMGX)
 
-#define SCORPIONBULLET_WIDTH					2.f
+#define SCORPIONBULLET_WIDTH					1.5f
 #define SCORPIONBULLET_HEIGHT					SCORPIONBULLET_WIDTH * SCORPIONBULLET_IMG_ASPECTRATIO
 
 #define SCORPIONBULLET_SPEED					3.f
@@ -119,7 +119,7 @@
 #define SHOTGUNEVILSOULIMGY						284
 #define SHOTGUNEVILSOULIMG_ASPECTRATIO			((FLOAT)SHOTGUNEVILSOULIMGY / (FLOAT)SHOTGUNEVILSOULIMGX)
 
-#define SHOTGUNEVILSOUL_WIDTH					1.f
+#define SHOTGUNEVILSOUL_WIDTH					0.8f
 #define SHOTGUNEVILSOUL_HEIGHT					SHOTGUNEVILSOUL_WIDTH * SHOTGUNEVILSOULIMG_ASPECTRATIO
 
 #define SHOTGUNEVILSOUL_SPEED					1.f	
@@ -130,14 +130,14 @@
 #define SHOTGUNEVILSOUL_TRACKING_TIME			1.f	
 #define SHOTGUNEVILSOUL_LOST_TIME				1.f	
 
-#define SHOTGUNEVILSOUL_CASTING_TIME			1.f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
+#define SHOTGUNEVILSOUL_CASTING_TIME			0.5f			//	½ÃÀü ½Ã°£(¼±µô)				CASTING		-> CHANNELING
 
-#define SHOTGUNEVILSOUL_CHANNELING_TIME			0.5f		//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
+#define SHOTGUNEVILSOUL_CHANNELING_TIME			1.f		//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
 #define SHOTGUNEVILSOUL_BULLET_TYPE				Fireball
 #define SHOTGUNEVILSOUL_BULLET_SCALEMULT		1.f
 #define SHOTGUNEVILSOUL_BULLET_SPEEDMULT		1.f
 #define SHOTGUNEVILSOUL_BULLET_NUM				6			//	ÃÑ¾Ë °¹¼ö
-#define SHOTGUNEVILSOUL_SPREAD					30.f		//	ºÐ»ê ¹üÀ§
+#define SHOTGUNEVILSOUL_SPREAD					60.f		//	ºÐ»ê ¹üÀ§
 
 #define SHOTGUNEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f		//	ÀÌ¹ÌÁö ÁÂ¿ì ¹ÝÀü ¹öÆÛ
 #pragma endregion
@@ -150,7 +150,7 @@
 #define FIREBALL_WIDTH						1.f
 #define FIREBALL_HEIGHT						FIREBALL_WIDTH * FIREBALLIMG_ASPECTRATIO
 
-#define FIREBALL_SPEED						3.f
+#define FIREBALL_SPEED						5.f
 #pragma endregion
 
 #pragma region EvilSlime
@@ -243,7 +243,6 @@ typedef struct tagTextureInfo
 
 }TEXINFO;
 
-
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fTimer{}, pGameObj{},
@@ -270,26 +269,51 @@ typedef struct tagMonsterInfo {
 
 }MONSTERINFO, MONINFO, MONBULLETINFO;
 
+typedef struct tagRandomGenerator {
+	static inline uint64_t Seed[2] = { (uint64_t)time(NULL), 0x9e3779b97f4a7c15 };
+
+	static uint64_t Xorshift128p(void* _Seed = nullptr)
+	{
+	uint64_t x = Seed[0];
+	const uint64_t y = (_Seed == nullptr) ? Seed[1] : reinterpret_cast<uintptr_t>(_Seed) ^ Seed[1];
+	Seed[0] ^= y;
+	x ^= x << 23;
+	Seed[1] = x ^ y ^ (x >> 17) ^ (y >> 26);
+	return Seed[1] + y;
+	}
+
+	static _float Get_float(_float _Dst, _float _Src, void* _Seed = nullptr)
+	{
+		if (_Dst == _Src) return _Dst;
+
+		return (_Dst < _Src) ?
+			_Dst + ((Xorshift128p(_Seed) % 1001) * 0.001f) * (_Src - _Dst)
+			: _Src + ((Xorshift128p(_Seed) % 1001) * 0.001f) * (_Dst - _Src);
+	}
+
+	static int Get_int(int _Dst, int _Src, void* _Seed = nullptr)
+	{
+		if (_Dst == _Src) return _Dst;
+
+		return (_Dst < _Src) ?
+			_Dst + (int)Xorshift128p(_Seed) % (_Src - _Dst + 1)
+			: _Src + (int)Xorshift128p(_Seed) % (_Dst - _Src + 1);
+	}
+}RANDOM;
 
 class Monster
 {
 public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG, GameObject*& GameObj);
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
-	static	_vec3		Normalize(_vec3 vec);
-
-//
-public:
-	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
-	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
-	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
-	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
-	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
-	static	HRESULT			Collision_Enter(GameObject* pSrc, GameObject* pDst);
+	static	HRESULT		Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
+	static	HRESULT		Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
+	static	FLOAT		BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
+	static	HRESULT		Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
+	//static	VOID		BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
-	static uint64_t XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2); 
 
 	template<typename T>
 	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV)

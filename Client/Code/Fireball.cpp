@@ -7,7 +7,7 @@ Fireball::~Fireball() {}
 HRESULT Fireball::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.fSpeed = FIREBALL_SPEED;
+	m_tInfo.fTimer[1] = FIREBALL_SPEED;
 	return S_OK;
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
@@ -20,16 +20,16 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 		return 0;
 	}
 
-	m_tInfo.fSpeed -= _DT;
-	//if (m_tInfo.fTimer[0] >= 5.f)
-	if(m_tInfo.fSpeed <0.f)
+	if(m_tInfo.bTrigger[0])
 	{
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+		_vec3 vPos = *MYPOS;
+		vPos += m_tInfo.vDirection * MYSCALE->x * 0.5f;
 
-		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
-		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, vPos, MYSCALE->x * 0.5f, 1.2f, false, m_tInfo.vDirection);
+
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
+		m_tInfo.bTrigger[0] = false;
 		ObjectDead = true;
 		return 0;
 	}
@@ -41,6 +41,9 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 	if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 
+	if (ObjectDead)
+		return -1;
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
@@ -50,7 +53,7 @@ VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 	//m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 
 }
 VOID Fireball::Render_GameObject() {

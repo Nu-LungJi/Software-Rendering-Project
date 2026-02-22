@@ -17,6 +17,7 @@ INT	Alert::Update_GameObject(const _float& _DT)
 
 	if (!m_tInfo.bTrigger[0])
 	{
+		MYPOS->y = 0.002f;
 		if (m_tInfo.pGameObj[2] == nullptr)
 		{
 			m_tInfo.pGameObj[2] = Monster::Create<Alert>(GRPDEV, { MYPOS->x, MYPOS->y - 0.001f, MYPOS->z });
@@ -62,7 +63,7 @@ VOID Alert::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
-	Monster::BillBoard_Standard(GRPDEV, Component_Transform);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID Alert::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

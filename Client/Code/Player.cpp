@@ -1149,7 +1149,16 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"MonsterBullet")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
+	if (Tag == L"MonsterBullet")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if(Tag == L"Monster")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
 
 	return FALSE;
 }

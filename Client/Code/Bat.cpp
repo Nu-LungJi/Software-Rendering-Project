@@ -28,9 +28,11 @@ INT	Bat::Update_GameObject(const _float& _DT)
 
 	switch (m_tInfo.eState[0])
 	{
+	//case MONSTER_STATE_APPEAR:
+	//	Bat::State_Appear(_DT);
+	//	break;
 	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_APPEAR:
-		Bat::State_Appear(_DT);
+		Bat::State_Summon(_DT);
 		break;
 	case MONSTER_STATE_IDLE:
 		Bat::State_Idle();
@@ -169,35 +171,51 @@ VOID Bat::Free() {
 	GameObject::Free();
 }
 
-VOID Bat::State_Appear(const _float& _DT)
+VOID Bat::State_Summon(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
-	if (nullptr == m_tInfo.pGameObj[0])
-	{
-		m_tInfo.bTrigger[0] = false;
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS03, vPos, FALSE, MONSTER_SUMMON03_PLAYTIME);
-		//*static_cast<Transform*>(pTarget->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *Component_Transform->Get_Scale();
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-	}
-
-	if (m_tInfo.fTimer[0] >= MONSTER_SUMMON03_PLAYTIME)
-	{
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.fTimer[0] = 0.f;
-		m_tInfo.bTrigger[0] = true;
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS01, vPos, FALSE, MONSTER_SUMMON01_PLAYTIME);
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_SUMMONS02, vPos, MONSTER_SUMMON02_PLAYTIME);
-	}
-
-	if (m_tInfo.bTrigger[0])
-		if (m_tInfo.fTimer[0] >= (MONSTER_SUMMON01_PLAYTIME * 0.5f))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_IDLE);
-			m_tInfo.pGameObj[0] = nullptr;
-		}
+	if (FAILED(MonsterEffect::Monster_SummonEffect_Set(GRPDEV, Component_Transform, &m_tInfo.bTrigger[0], &m_tInfo.fTimer[0]))) { ObjectDead = true; return; }
+	if (m_tInfo.bTrigger[0] > 3)	m_tInfo.Change_State(MONSTER_STATE_IDLE);
 }
+
+//VOID Bat::State_Appear(const _float& _DT)
+//{
+//	m_tInfo.fTimer[0] += _DT;
+//	if (nullptr == m_tInfo.pGameObj[0])
+//	{
+//		m_tInfo.bTrigger[0] = false;
+//		_vec3 vPos = *MYPOS;
+//		vPos.z += 0.001f;
+//
+//		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS03, 
+//			vPos, MYSCALE->x, MONSTER_SUMMON03_PLAYTIME, false);
+//
+//		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
+//	}
+//
+//	if (m_tInfo.fTimer[0] >= MONSTER_SUMMON03_PLAYTIME)
+//	{
+//		_vec3 vPos = *MYPOS;
+//		vPos.z += 0.001f;
+//		m_tInfo.fTimer[0] = 0.f;
+//		m_tInfo.bTrigger[0] = true;
+//		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS01, 
+//			vPos, MYSCALE->x, MONSTER_SUMMON01_PLAYTIME, false);
+//		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
+//		
+//		
+//		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, 
+//			MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS02, 
+//				*MYPOS, MYSCALE->x, MONSTER_SUMMON02_PLAYTIME, false));
+//	}
+//
+//	if (m_tInfo.bTrigger[0])
+//		if (m_tInfo.fTimer[0] >= (MONSTER_SUMMON01_PLAYTIME * 0.5f))
+//		{
+//			m_tInfo.Change_State(MONSTER_STATE_IDLE);
+//			m_tInfo.pGameObj[0] = nullptr;
+//		}
+//}
 
 VOID Bat::State_Idle()
 {
