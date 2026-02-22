@@ -18,6 +18,7 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
+	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
 
 	ObjectTAG = L"MonsterBullet";
@@ -80,7 +81,9 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.Textureinfo._frameTick = 0.f;
 	}
 
+
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+
 }
 VOID Bullet_Standard::Render_GameObject() {
 
@@ -149,7 +152,7 @@ VOID Bullet_Standard::Free() {
 }
 BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
-	// ÇÃ·¹ÀÌ¾î Ãæµ¹
+	// í”Œë ˆì´ì–´ ì¶©ëŒ
 	MainUI* mainUI;
 	if (_Other->Get_ObjectTag() == L"Player") {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
@@ -169,22 +172,22 @@ BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 //
 //	D3DXMatrixIdentity(&matBill);
 //
-//	//XÃà
+//	//Xì¶•
 //	matBill._11 = matView._11;
 //	matBill._12 = matView._12;
 //	matBill._13 = matView._13;
-//	//YÃà
+//	//Yì¶•
 //	matBill._21 = matView._21;
 //	matBill._22 = matView._22;
 //	matBill._23 = matView._23;
-//	//ZÃà
+//	//Zì¶•
 //	matBill._31 = matView._31;
 //	matBill._32 = matView._32;
 //	matBill._33 = matView._33;
 //
 //	D3DXMatrixInverse(&matBill, 0, &matBill);
 //
-//	// ÁÖÀÇ ÇÒ °Í
+//	// ì£¼ì˜ í•  ê²ƒ
 //	matWorld = matBill * matWorld;
 //
 //	Component_Transform->Set_World(&matWorld);

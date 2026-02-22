@@ -137,6 +137,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		else _alphaDelayTimer = 0.f;
 	}
 
+	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
+	}
 	//SetOnTerrain(); - 광윤 디버그
 
 	_frameTick += _DT;
@@ -244,6 +248,7 @@ void Player::Reset()
 	_isInvincible = false;
 
 	// UI
+	Component_Collider->Set_Hp(5);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;

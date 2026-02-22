@@ -1,6 +1,7 @@
 #include "TileManager.h"
 #include "Buffer.h"
 #include "Component.h"
+#include "tchar.h"
 
 IMPLEMENT_SINGLETON(TileManager)
 TileManager::TileManager() : m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false){}
@@ -43,17 +44,16 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 	_int iState = (0), iMode(0), iTileN(0);
 	_vec3 vPos, vScale, vRot;
 	_bool bAi = false;
-	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
-	{
+
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
 		{
-			for (size_t k = 0 ; k < m_vecTileBuffer[i][j].size(); ++k)
+			for (size_t k = 0 ; k < m_vecTileBuffer[m_eStage][j].size(); ++k)
 			{
 				_vec3 vTileLocalPos[4];
 				_matrix InverseWorld;
 
 				memcpy(&InverseWorld, dynamic_cast<Transform*>
-			((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_World(), sizeof(_matrix));
+			((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_World(), sizeof(_matrix));
 
 				vTileLocalPos[0] = { -1.f,  1.f, -1.f }; //좌하단
 				vTileLocalPos[1] = {  1.f,  1.f, -1.f };  //우하단
@@ -71,20 +71,20 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 				}
 				if (m_bCheck && ftCheck < ft)
 				{
-					iState = i;
+					iState = m_eStage;
 					iMode  = j;
 					iTileN = k;
 					dynamic_cast<Transform*>
-						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS,&vPos);
+						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS,&vPos);
 				
 					vScale = *dynamic_cast<Transform*>
-						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale();
+						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale();
 					vRot = *dynamic_cast<Transform*>
-						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
+						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 					ftCheck = ft;
 					
 					bAi = dynamic_cast<TileInfo*>
-						((m_vecTileBuffer[i][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
+						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
 
 				}
 
@@ -92,7 +92,6 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 
 			}
 		}
-	}
 	if (m_bCheck)
 	{
 		*returnPos	 = vPos;
@@ -214,6 +213,7 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 			{
 				Safe_Release((*iter));
 				iter = m_vecTileBuffer[m_eStage][j].erase(iter);
+				continue;
 			}
 
 			if (iter != m_vecTileBuffer[m_eStage][j].end())
@@ -365,7 +365,23 @@ void TileManager::Save_Tile(HWND g_hWnd)
 		MSG_BOX("저장 실패요");
 		return;
 	}
-
+	//for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
+	//{
+	//	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+	//	{
+	//		for (auto pTile = m_vecTileBuffer[i][j].begin(); pTile != m_vecTileBuffer[i][j].end();)
+	//		{
+	//			if (dynamic_cast<TileInfo*>((*pTile)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner() == TILE_SPAWNER::CL_SPAWN)
+	//			{
+	//				Safe_Release((*pTile));
+	//				pTile = m_vecTileBuffer[i][j].erase(pTile);
+	//				continue;
+	//			}
+	//			++pTile;
+	//			
+	//		}
+	//	}
+	//}
 	DWORD		dwByte(0);
 	
 	_int             iTilenum		 = 0;
@@ -373,14 +389,14 @@ void TileManager::Save_Tile(HWND g_hWnd)
 	TILE_STATE       eTileState		 = TILE_STATE::STATE_END;
 	TILEMODE_CHANGE  eTileMode		 = TILEMODE_CHANGE::MODE_END;
 	TILE_STAGE		 eTileStage		 = TILE_STAGE::STAGE_END;
-	_tchar			 cTileName[256]  = {};
+	_tchar			 cTileName[128]  = {};
 	_vec3		     Info			 = {};
 	_vec3			 Scale			 = {};
 	_vec3			 Rotation		 = {};
 	_tchar			 cPathName[128]  = {};
 	_int			 iTileTextureCnt = 0;
 	_vec3		     vNextPos	     = {};
-	_bool			 bOnlyAni		 = {};
+	_bool			 bOnlyAni		 = false;
 	TILE_SPAWNER     eSpawn			 = TILE_SPAWNER::SPAWN_END;
 	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 	{
@@ -405,7 +421,9 @@ void TileManager::Save_Tile(HWND g_hWnd)
 				Rotation	= *dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 				dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &Info);
 				bOnlyAni	= dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
-
+				
+				TCHAR* dot = _tcsrchr(cTileName, _T('.'));
+				_tcscpy_s(dot, 128 - (dot - cTileName), _T(".dds"));
 				WriteFile(hFile, &Info,			   sizeof(_vec3),			&dwByte, NULL);
 				WriteFile(hFile, &iTilenum,		   sizeof(_int),			&dwByte, NULL);
 				WriteFile(hFile, &eTileSide,	   sizeof(TILE_SIDE),		&dwByte, NULL);

@@ -306,11 +306,16 @@ class Monster
 public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG, GameObject*& GameObj);
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
-	static	HRESULT		Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
-	static	HRESULT		Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
-	static	FLOAT		BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
-	static	HRESULT		Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
-	//static	VOID		BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
+	static	_vec3		Normalize(_vec3 vec);
+
+//·»´õ¸µ °ü·Ã
+public:
+	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
+	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
+	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
+	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
+	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
+	static	VOID			Destory_Tile(GameObject* pObj);
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr

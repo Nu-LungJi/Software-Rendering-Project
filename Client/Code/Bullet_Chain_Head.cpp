@@ -14,6 +14,7 @@ HRESULT Bullet_Chain_Head::Ready_GameObject() {
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
+	Monster::Destory_Tile(this);
 
 	MYPOS->y = 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
@@ -87,7 +88,9 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 	m_tInfo.vDirection.y = 0.f;
+
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

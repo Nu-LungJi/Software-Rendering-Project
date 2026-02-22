@@ -153,3 +153,74 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 //	Component_Transform->Set_World(&matWorld);
 //}
 
+	uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
+	{
+		if (0 == _Seed1 || 0 == _Seed2)
+		{
+			_Seed1 = 0x123456789ABCDEF0;
+			_Seed2 = 0xFEDCBA9876543210;
+		}
+
+		uint64_t x = _Seed1;
+		uint64_t const y = _Seed2;
+		_Seed1 = y;
+		x ^= x << 23;
+		_Seed2 = x ^ y ^ (x >> 17) ^ (y >> 26);
+
+		return _Seed2 + y;
+	}
+
+
+VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
+{
+	_matrix		matBill, matWorld, matView;
+
+	matWorld = *Component_Transform->Get_World();
+	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+
+	D3DXMatrixIdentity(&matBill);
+
+	//XÃà
+	matBill._11 = matView._11;
+	matBill._12 = matView._12;
+	matBill._13 = matView._13;
+	//YÃà
+	matBill._21 = matView._21;
+	matBill._22 = matView._22;
+	matBill._23 = matView._23;
+	//ZÃà
+	matBill._31 = matView._31;
+	matBill._32 = matView._32;
+	matBill._33 = matView._33;
+
+	D3DXMatrixInverse(&matBill, 0, &matBill);
+
+	// ÁÖÀÇ ÇÒ °Í
+	matWorld = matBill * matWorld;
+
+	Component_Transform->Set_World(&matWorld);
+}
+
+VOID Monster::Destory_Tile(GameObject* pObj)
+{
+	_vec3 vPos, vScale, vTileScale, vTilePos{ 0,0,0 };
+
+	Transform* pTile = nullptr;
+	vPos = *dynamic_cast<Transform*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+	vScale = *dynamic_cast<Transform*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale();
+	for (auto& iter : TileManager::GetInstance()->Get_DestoryTile_List())
+	{
+		if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_DESTORY ||
+			dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_BOOM)
+		{
+			pTile = dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+			vTilePos = *pTile->Get_Position();
+
+			if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
+			{
+				pObj->Set_ObjectDead(TRUE);
+				dynamic_cast<CXZTile*>(iter)->Set_Destory();
+			}
+		}
+	}
+}

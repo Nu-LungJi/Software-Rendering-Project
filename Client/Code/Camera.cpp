@@ -42,7 +42,6 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	}
 	if (!Camera_Move)
 	{
-
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
@@ -64,7 +63,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		if (distance > offset)
 		{
 			targetEye += dir * moveAmount;
-			targetAt += dir * moveAmount;
+			targetAt  += dir * moveAmount;
 		}
 
 		//float smoothSpeed = 8.f;

@@ -89,8 +89,8 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
+	
 		break;
-
 	case TILE_SPAWNER::ITEM_SPAWN2:
 		break;
 
@@ -104,6 +104,13 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 
 	case TILE_SPAWNER::ITEM_SPAWN6:
+		break;
+
+	case TILE_SPAWNER::BOSS_SPAWN:
+
+		break;
+	case TILE_SPAWNER::CL_SPAWN:
+ 		//CL_Spawn();
 		break;
 	}
 
@@ -150,6 +157,23 @@ void Spawner::Monster_Spawn4()
 		m_bSpawn = true;
 	}
 }
+
+void Spawner::CL_Spawn()
+{
+	if (!m_bSpawn)
+	{
+		_vec3 vPos;
+		m_pTransform->Get_Info(INFO_POS, &vPos);
+		Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
+
+		pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		pCL->Set_ObjectTag(L"CheonLog");
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+		m_bSpawn = true;
+	}
+}
+
+
 
 Transform* Spawner::Crash_Player()
 {

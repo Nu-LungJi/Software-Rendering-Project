@@ -12,6 +12,7 @@ HRESULT Fireball::Ready_GameObject() {
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
 {
+	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
 
 	ObjectTAG = L"MonsterBullet";
@@ -83,7 +84,7 @@ HRESULT Fireball::Component_Initialize() {
 
 BOOL Fireball::OnCollisionEnter(GameObject* _Other)
 {
-	// �÷��̾� �浹
+	// ÇÃ·¹ÀÌ¾î Ãæµ¹
 	MainUI* mainUI;
 	if (_Other->Get_ObjectTag() == L"Player") {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));

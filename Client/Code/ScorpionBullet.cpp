@@ -16,11 +16,18 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+  ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
+	Monster::Destory_Tile(this);
+	if (!m_tInfo.bTrigger[0])
+  {
+		Component_Collider->Set_Hp(-1.f);
+	}
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] > 10.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
 	}
+  ///////////////////////////////////////////////
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
@@ -108,6 +115,7 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 	Component_Collider->Set_Scale(MYSCALE->x, 1.f, MYSCALE->z);
 	//AlphaSorting(Component_Transform->Get_Position());
 	//AlphaSorting((_vec3*)&Component_Transform->Get_World()->_41);
+
 }
 VOID ScorpionBullet::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

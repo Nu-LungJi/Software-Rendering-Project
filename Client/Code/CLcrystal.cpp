@@ -20,7 +20,7 @@ HRESULT CLcrystal::Make_TextureList(wstring _FileName) {
 	INT FRAME = 0;
 
 	while (++FRAME) {
-		wstring FileName = _FileName + to_wstring(FRAME) + L".png";
+		wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
 		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
 		if (TEX == nullptr) break;
 		else { TEX->AddRef();  TextureList.push_back(TEX); }
@@ -73,18 +73,18 @@ void CLcrystal::Chek_CLPos()
 
 	if (pCL->Get_Statu() == CL_LJUMP)
 	{
-		pPos += { -1.4f, 1.3f, 2.9f };
+		pPos += { -1.4f, 1.3f, 2.2f };
 		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
 
 	}
 	else if (pCL->Get_Statu() == CL_RJUMP)
 	{
-		pPos += { 0.9f, 1.f, 3.1f };
+		pPos += { 0.9f, 0.8f, 2.4f };
 		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
 	}
 	else
 	{
-		pPos += { 0.9f, 1.f, 3.1f };
+		pPos += { 0.9f, 0.8f, 2.4f };
 		Component_Transform->Set_Pos(pPos.x, pPos.y, pPos.z);
 	}
 

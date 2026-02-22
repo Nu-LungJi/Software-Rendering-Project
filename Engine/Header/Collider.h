@@ -59,12 +59,8 @@ private:
 	_vec3			MinPoint;
 	_vec3			MaxPoint;
 
-	BOOL		Curr_ColState;
-	BOOL		Prev_ColState;
-
-	_float         fHp;
-	_float         fAtt;
-
+	BOOL			Curr_ColState;
+	BOOL			Prev_ColState;
 	D3DXMATRIX matWorld, matView, matProj, Sum;
 
 	ID3DXLine* pLine;

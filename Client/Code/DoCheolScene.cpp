@@ -58,7 +58,9 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
 			ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
 			ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
-
+		
+			if (0 == dwByte)
+				break;
 			GameObject* GOBJ = nullptr;
 
 			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
@@ -86,8 +88,7 @@ HRESULT	DoCheolScene::Ready_Scene() {
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 
-			if (0 == dwByte)
-				break;
+			
 		}
 		TileManager::GetInstance()->Set_StageCnt();
 		MSG_BOX("로드 성공");

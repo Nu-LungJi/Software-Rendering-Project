@@ -12,6 +12,7 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
+
 	ObjectTAG = L"MonsterBullet";
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
@@ -75,6 +76,7 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 	}
 
 	AlphaZValue=Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
+
 }
 VOID Bullet_Chain::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

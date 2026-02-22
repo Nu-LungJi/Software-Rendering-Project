@@ -1,14 +1,14 @@
 #include "../Include/PCH.h"
 
-CLEffect::CLEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_iBulletCnt(0),m_fRotY(0.f), m_fAngle(0.f), m_TextureIndex(0), m_iCnt(0), m_FrameTick(0.f), m_bDead(false){}
+CLEffect::CLEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bNextEffect(false), m_fSpeed(0.f), m_fAlpha(0.f), m_iBulletCnt(0),m_fRotY(0.f), m_fAngle(0.f), m_TextureIndex(0), m_iCnt(0), m_FrameTick(0.f), m_bDead(false){}
 CLEffect::CLEffect(const GameObject& _RHS) : GameObject(_RHS), m_TextureIndex(0), m_FrameTick(0.f) {}
 CLEffect::~CLEffect() {}
 
-HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook) {
+HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook, _bool bNext) {
 	if (FAILED(Component_Initialize(eEffect))) return E_FAIL;
 
 	_bool AngleChase = true;
-
+	Set_ObjectTag(L"CheonLog_Leaf");
 	switch (eEffect)
 	{
 	case CL_EFFECT::LEFT_HORN:
@@ -22,9 +22,6 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 		break;
 	case CL_EFFECT::LEAF_FIRST:
 		Make_TextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0");
-		break;
-	case CL_EFFECT::LEAF_EXPLOSION:
-		Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth");
 		break;
 	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
 		Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0");
@@ -42,7 +39,16 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 		Make_TextureList(L"Spr_Effect_Cheonlog_Appear_Electric01_0");
 		break;
 	case CL_EFFECT::SPAWN_THUNDER:
-		Make_TextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Birth01_0");
+		Make_TextureList(L"Green_Evil_Thunder0");
+		break;
+	case CL_EFFECT::SPAWN_BOOM_CIRCLE:
+		Make_TextureList(L"Green_Shader0");
+		break;
+	case CL_EFFECT::SPAWN_L:
+		Make_TextureList(L"Cheonlog_Spawn_L0");
+		break;
+	case CL_EFFECT::SPAWN_R:
+		Make_TextureList(L"Cheonlog_Spawn0");
 		break;
 	}
 
@@ -54,7 +60,11 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 	m_vLook = vLook;
 	m_eEffect = eEffect;
 	m_bDead = bDead;
+	m_fSpeed = 0.1f;
 	m_fFrame = fFrame;
+	m_fAlpha = 1.f;
+	m_bNextEffect = bNext;
+
 	return S_OK;
 }
 
@@ -62,7 +72,7 @@ HRESULT CLEffect::Make_TextureList(wstring _FileName) {
 	INT FRAME = 0;
 
 	while (++FRAME) {
-		wstring FileName = _FileName + to_wstring(FRAME) + L".png";
+		wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
 		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
 		if (TEX == nullptr) break;
 		else { TEX->AddRef();  TextureList.push_back(TEX); }
@@ -76,6 +86,10 @@ INT  CLEffect::Update_GameObject(const _float& _DT) {
 	Move_Frame(_DT);
 	Move_Pos();
 
+	if (m_fAlpha > 0.f)
+		m_fAlpha -= _DT * m_fSpeed;
+	if (m_fAlpha < 0.f)
+		m_fAlpha = 0.f;
 	return 0;
 }
 void CLEffect::LateUpdate_GameObject(const _float& _DT) {
@@ -83,22 +97,71 @@ void CLEffect::LateUpdate_GameObject(const _float& _DT) {
 
 }
 void CLEffect::Render_GameObject() {
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE,FALSE);
+	
+	if (!AlphaStart(m_eEffect))
+	{
+		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
+	}
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-
-	GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
-
 	Component_Buffer->Render_Buffer();
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	GRPDEV->SetRenderState(D3DRS_LIGHTING, FALSE);
-}
 
+	if (!AlphaEnd(m_eEffect))
+	{
+		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
+}
+_bool CLEffect::AlphaStart(CL_EFFECT eid)
+{
+	if (eid == CL_EFFECT::SPAWN_BOOM || eid == CL_EFFECT::SPAWN_BOOM_CIRCLE || eid == CL_EFFECT::SPAWN_THUNDER)
+	{
+		DWORD tfactor = D3DCOLOR_ARGB(
+			(BYTE)(m_fAlpha * 255.f),
+			255, 255, 255
+		);
+
+		GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
+		GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
+
+		// COLOR = Texture * TFACTOR
+		GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+		// ALPHA = TextureAlpha * TFACTORAlpha
+		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+		GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+		return true;
+	}
+
+	return false;
+}
+_bool CLEffect::AlphaEnd(CL_EFFECT eid)
+{
+	if (eid == CL_EFFECT::SPAWN_BOOM || eid == CL_EFFECT::SPAWN_BOOM_CIRCLE || eid == CL_EFFECT::SPAWN_THUNDER)
+	{
+		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		return true;
+	}
+	return false;
+}
 void CLEffect::Move_Normal(const _float& _DT)
 {
+	_vec3 vScale, vPos;
+	vScale = *Component_Transform->Get_Scale();
+	vPos = *Component_Transform->Get_Position();
+
 	if (m_FrameTick > m_fFrame)
 	{
 		++m_TextureIndex;
@@ -108,22 +171,44 @@ void CLEffect::Move_Normal(const _float& _DT)
 			m_vScale -= {0.2f, 0.2f, 0.2f};
 			Component_Transform->Set_Scale(m_vScale);
 		}
+		
+		if (m_eEffect == CL_EFFECT::SPAWN_BOOM_CIRCLE)
+		{
+			vScale += {0.2f, 0.2f, 0.2f};
+			Component_Transform->Set_Scale(vScale);
+			if (m_TextureIndex == 7)
+				EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_BOOM, vPos, TRUE,{1.5f,1.5f,1.5f},{65,0,0},0.1f));
+				
+		}
+		if (m_eEffect  == CL_EFFECT::SPAWN_BOOM)
+		{
+			vScale += {0.3f, 0.3f, 0.3f};
+			Component_Transform->Set_Scale(vScale);
+		}
+
 		if (m_TextureIndex > TextureList.size() - 1)
 		{
 			m_TextureIndex = 0;
 
 			if (m_bDead)
 			{
+				if (m_eEffect == CL_EFFECT::SPAWN_THUNDER && m_bNextEffect)
+					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_BOOM_CIRCLE, {vPos.x, 1.f, vPos.z}, TRUE, {1.5f,1.5f,1.5f}, {65,0,0}, 0.1f));
+
+				if (m_eEffect == CL_EFFECT::SPAWN_BOOM)
+					dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog"))->Set_Statu(vPos);
+			
 				Set_ObjectDead(m_bDead);
 			}
 		}
 	}
 }
+
 void CLEffect::Move_Frame(const _float& _DT)
 {
 	m_FrameTick += _DT;
 	_vec3 vRot, vPos, vScale;
-	_matrix matRotZ, matWorld,matRotY, matScale,matInverse,matBill;
+	_matrix matRotZ, matWorld, matRotY, matScale, matInverse, matBill;
 	vRot = *Component_Transform->Get_Rotation();
 	switch (m_eEffect)
 	{
@@ -138,14 +223,6 @@ void CLEffect::Move_Frame(const _float& _DT)
 		break;
 	case CL_EFFECT::RIGHT_HORN:
 		Move_Normal(_DT);
-		break;
-	case CL_EFFECT::LEAF_EXPLOSION:
-		Move_Normal(_DT);
-		Component_Transform->Get_Info(INFO_POS, &vPos);
-		if (m_TextureIndex == 16)
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,-0.2f,vPos.z - 3 }, TRUE, { 6,0,5 }, { 20,0,0 }, 0.1f));
-		if (m_TextureIndex == 25)
-			Component_Transform->Set_Scale(5.f, 5.f, 5.f);
 		break;
 	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
 		if (m_bDead == FALSE)
@@ -204,6 +281,8 @@ void CLEffect::Move_Frame(const _float& _DT)
 			Component_Transform->Set_World(&matWorld);
 			Component_Transform->Set_Pos(matWorld._41, matWorld._42, matWorld._43);
 		}
+		if (dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Check() == IDEL)
+			Set_ObjectDead(TRUE);
 		break;
 	case CL_EFFECT::LEAF_SPIN_DEATH:
 		Move_Normal(_DT);
@@ -217,6 +296,19 @@ void CLEffect::Move_Frame(const _float& _DT)
 	case CL_EFFECT::SPAWN_THUNDER:
 		Move_Normal(_DT);
 		break;
+	case CL_EFFECT::SPAWN_BOOM_CIRCLE:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::SPAWN_L:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::SPAWN_R:
+		Move_Normal(_DT);
+		break;
+	case CL_EFFECT::LEAF_CHARGING:
+		Move_Normal(_DT);
+		break;
+
 	}
 }
 
@@ -225,13 +317,17 @@ void CLEffect::Move_Pos()
 	switch (m_eEffect)
 	{
 	case CL_EFFECT::LEFT_HORN:
-		Pos_Check(0.0f, 0.5f, 2.7f);
+		if(dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu() == CL_LJUMP)
+			Pos_Check(-2.0f, 0.8f, 1.1f);
+		else Pos_Check(0.0f, 0.8f, 1.1f);
 		break;
 	case CL_EFFECT::RIGHT_HORN:
-		Pos_Check(2.3f, 0.0f, 3.2f);
+		if (dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu() == CL_LJUMP)
+			Pos_Check(0.3f, 0.8f, 1.1f);
+		else 	Pos_Check(2.3f, 0.8f, 1.1f);
 		break;
 	case CL_EFFECT::CL_BODY:
-		Pos_Check(-1.2f, 0.2F, 0.8f);
+		Pos_Check(-1.2f, 0.f, -0.5f);
 		break;
 	case CL_EFFECT::LEAF_FIRST:
 		break;
@@ -260,10 +356,8 @@ void CLEffect::Effect_Dead_After(LEAF_ATTACK eid, _vec3 vLook, _bool bSpin)
 	{
 		CLAttack* pAttack = nullptr;
 		TCHAR tChar[128] = {};
-		wsprintf(tChar, L"CL_Leaf%d", m_iBulletCnt);
 		pAttack = CLAttack::Create(GRPDEV, eid, m_vPos, vLook, bSpin);
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-		pAttack->Set_ObjectTag(tChar);
 		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
 	}
 }
@@ -285,17 +379,15 @@ HRESULT	CLEffect::Component_Initialize(CL_EFFECT eEffect) {
 		Component_Buffer = ADD_COMPONENT_RECTTEX;
 
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-	Component_Collider = ADD_COMPONENT_COLLIDER;
-	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.1f, 0.1f, 0.1f);				// 충돌체의 범위 조절
 
+	
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 
 	return S_OK;
 }
-CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale , _vec3 vRot, FLOAT fFrame, _vec3 vLook) {
+CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale , _vec3 vRot, FLOAT fFrame, _vec3 vLook, _bool bNext) {
 	CLEffect* EFT = new CLEffect(_GRPDEV);
-	if (FAILED(EFT->Ready_Effect(eEffect, vPos, bDead, vScale, vRot, fFrame, vLook))) {
+	if (FAILED(EFT->Ready_Effect(eEffect, vPos, bDead, vScale, vRot, fFrame, vLook, bNext))) {
 		MSG_BOX("Cannot Create Effect.");
 		Safe_Release(EFT);
 		return nullptr;

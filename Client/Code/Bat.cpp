@@ -137,6 +137,7 @@ HRESULT Bat::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
+
 	Component_Collider->Set_Scale(BAT_WIDTH, 1.f, BAT_HEIGHT);
 
 	return S_OK;
