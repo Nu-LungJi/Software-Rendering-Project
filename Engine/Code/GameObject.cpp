@@ -32,9 +32,12 @@ VOID		GameObject::LateUpdate_GameObject(const FLOAT& _DT) {
 INT GameObject::Update_GameObject_Component(const FLOAT& _DT)
 {
 	for (int i = 0; i < ComponentList.size(); i++) {
-		if (i == (int)COMPONENT_TYPE::COMPONENT_TRANSFORM) continue;
+		if ((COMPONENT_TYPE)i == COMPONENT_TYPE::COMPONENT_TRANSFORM)
+			continue;
+
 		auto& COM = ComponentList[i];
-		if (COM == nullptr)    continue;
+		
+		if (COM == nullptr)	 continue;
 		COM->Update_Component(_DT);
 	}
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);

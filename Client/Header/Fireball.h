@@ -16,9 +16,12 @@ public:
 
 	static			Fireball* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 private:
 	VOID			Free();
 	HRESULT			Component_Initialize();
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+
 
 private:
 	Buffer*		Component_Buffer;

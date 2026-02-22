@@ -37,13 +37,20 @@ public:
 	VOID		Set_CollisionState(BOOL _State) { Curr_ColState = _State; }
 	BOOL		Get_CollisionState()			{ return Curr_ColState;   }
 
-	void		Set_Hp(_float fH)  { fHp = fH; }
+	void		Set_Hp(_float fH) { fHp = fH; }
 	void		Set_Att(_float fA) { fAtt = fA; }
-	_float		Get_Att()		   { return fAtt; }
-	_float		Get_Hp()		   { return fHp; }
+
+	_float      Get_Att() { return fAtt; }
+	_float      Get_Hp() { return fHp; }
+  
 public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
+
+	void		Set_Hp(_float fH)	{ fHp = fH; }
+	void		Set_Att(_float fA)	{ fAtt = fA; }
+	_float      Get_Att()			{ return fAtt; }
+	_float      Get_Hp()			{ return fHp; }
 
 private:
 	Transform*		ColliderPos;
@@ -53,15 +60,16 @@ private:
 	_vec3			MinPoint;
 	_vec3			MaxPoint;
 
-	_float			fHp;
-	_float			fAtt;
-
 	BOOL			Curr_ColState;
 	BOOL			Prev_ColState;
+
+	_float         fHp;
+	_float         fAtt;
+
 	D3DXMATRIX matWorld, matView, matProj, Sum;
 
 	ID3DXLine* pLine;
-	
+
 private:
 	virtual		VOID		Free();
 };

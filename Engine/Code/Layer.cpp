@@ -10,7 +10,6 @@ HRESULT		Layer::Ready_Layer() {
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	if (!_isTimeSlow) {
-		// ���� �ڵ�
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
 			int ObjectResult = (*iter)->Update_GameObject(_DT);
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
@@ -21,6 +20,7 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 				continue;
 			}
 			else { ++iter; }
+			if (_isTimeSlow) break;
 		}
 	}
 	else {
@@ -29,10 +29,11 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 			int ObjectResult = 0;
 			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"
 				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
-				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI)
+				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI || (*iter)->Get_ObjectTag() == L"Bow")
 				ObjectResult = (*iter)->Update_GameObject(_DT);
-			else
+			else {
 				ObjectResult = (*iter)->Update_GameObject_Component(_DT);
+			}
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
 				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
 				Safe_Release((*iter));
@@ -86,4 +87,23 @@ Layer*		Layer::Create() {
 void		Layer::Free() {
 	for (auto& GOBJ : GameObjectList)
 		Safe_Release(GOBJ);
+}
+
+_vec3* Layer::Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG)
+{
+	_vec3* targetPos = nullptr;
+	_float minLength = radius + 1.f;
+	for (auto& OBJ : GameObjectList) {
+		if (OBJ->Get_ObjectTag() == _TAG) {
+			_vec3* tempPos = (dynamic_cast<Transform*>(OBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
+			_vec3 vlength = *tempPos - *myPos;
+			float length = D3DXVec3Length(&vlength);
+			if (length < minLength) {
+				minLength = length;
+				targetPos = tempPos;
+			}
+		}
+	}
+
+	return targetPos;
 }

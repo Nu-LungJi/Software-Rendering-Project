@@ -9,7 +9,8 @@ Collider::~Collider()																																{}
 HRESULT		Collider::Ready_Component() {
 	MinPoint = { 0.f, 0.f, 0.f };
 	MaxPoint = { 0.f, 0.f, 0.f };
-
+	fHp = 1.f;
+	fAtt = 0.f;
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {

@@ -25,13 +25,13 @@ private:
 	Buffer* Component_Buffer;
 	Transform* Component_Transform;
 	Collider* Component_Collider;
-
 public:
 	static			EvilSlime* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 	BOOL			OnCollisionStay(GameObject* _Other)		override;
 	BOOL			OnCollisionExit(GameObject* _Other)		override;
-	MONSTERINFO* Get_Info() { return &m_tInfo; }
+	MONSTERINFO*	Get_Info() { return &m_tInfo; }
+	_vec3*			Get_FissionDst() { return &m_vFissionDst; }
 
 private:
 	virtual VOID Free();
@@ -39,7 +39,7 @@ private:
 	VOID Set_Target(CONST TCHAR* _TAG);
 
 	MONINFO m_tInfo;
-	_float	m_fFlyingDis;
+	_vec3	m_vFissionDst;
 
 	VOID State_Summon(const _float& _DT);
 	VOID State_Idle(const _float& _DT);
@@ -47,4 +47,6 @@ private:
 	VOID State_Casting(const _float& _DT);
 	VOID State_Channeling(const _float& _DT);
 	VOID State_Dead();
+
+	VOID State_Fission(const _float& _DT);
 };

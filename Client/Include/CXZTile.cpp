@@ -560,7 +560,7 @@ Transform* CXZTile::Crash_Arrow()
 
 	if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1 && vTilePos.y < 2)
 	{
-		pPArrow->Set_ObjectDead(TRUE);
+		pPArrow->Set_HP(0);
 		return ObjArrow;
 	}
 	return nullptr;

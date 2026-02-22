@@ -10,6 +10,7 @@ RenderManager::~RenderManager() {	Free();	}
 
 VOID RenderManager::Add_RenderGroup(RENDERID _RID, GameObject* _GOBJ) {
 	if (_GOBJ == nullptr)	return;
+	if (_GOBJ->Get_ObjectDead())	return;
 	RenderGroup[_RID].push_back(_GOBJ);
 	_GOBJ->AddRef();
 }
@@ -42,8 +43,8 @@ VOID RenderManager::Render_NonAlpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	}
 }
 VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
-	//_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	//_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -57,8 +58,8 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 			_OBJ->Render_GameObject();
 	}
 
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-	//_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	//_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 	

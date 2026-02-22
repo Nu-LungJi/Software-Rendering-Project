@@ -66,34 +66,40 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 			targetAt  += dir * moveAmount;
 		}
 
+		//float smoothSpeed = 8.f;
+		//
+		//EyeVec += (targetEye - EyeVec) * smoothSpeed * 0.01;
+		//AtVec += (targetAt - AtVec) * smoothSpeed * 0.01;
+
 		_float stiffness = 40.f;
 		_float damping = 2.f * sqrtf(stiffness);
-
+		
 		_vec3 toTarget = targetEye - EyeVec;
-
+		
 		_vec3 accel = toTarget * stiffness - m_vVelocity * damping;
-
-		if (moveAmount > 0.1f)
+		
+		if(moveAmount > 0.1f)
 			m_vVelocity += accel * 0.02;
-
-		//EyeVec += m_vVelocity * 0.02;
-		//AtVec += m_vVelocity * 0.02;
+		
+		EyeVec += m_vVelocity * 0.02;
+		AtVec += m_vVelocity * 0.02;
 	}
 	_vec3 OriginEye = { 0.f, 0.f, 0.f };
 	_vec3 OriginAt = { 0.f, 0.f, 0.f };
-	//if (Shake_Time > 0.f) {
-	//	Shake_Time -= _DT;
-	//	OriginEye = EyeVec;
-	//	OriginAt = AtVec;
-	//
-	//
-	//	FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
-	//	FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
-	//	FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
-	//	
-	//	EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
-	//	AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
-	//}
+	if (Shake_Time > 0.f) {
+		Shake_Time -= _DT;
+		OriginEye = EyeVec;
+		OriginAt = AtVec;
+	
+	
+		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+	
+		EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
+		AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
+	}
+
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 

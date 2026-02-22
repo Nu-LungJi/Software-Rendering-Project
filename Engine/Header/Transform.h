@@ -51,6 +51,7 @@ private:
 	_vec3		m_vAngle;
 
 	_matrix		WorldMatrix;
+	_matrix		PrevMatrix;
 
 public:
 	static		Transform* Create(LPDIRECT3DDEVICE9 _GRPDEV);
