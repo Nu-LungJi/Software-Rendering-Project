@@ -23,7 +23,9 @@ private:
 
 public:
 	//static Bullet_Standard* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+	BOOL			OnCollisionStay(GameObject* _Other)		override;
+	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	VOID			Set_Master(GameObject* pOwner) { m_tInfo.pGameObj[0] = pOwner; }
 	GameObject*		Get_Master() { return m_tInfo.pGameObj[0]; }
@@ -32,6 +34,8 @@ public:
 	VOID			Set_Dir(_float x, _float y, _float z)	{ m_tInfo.vDirection = { x,y,z }; }
 	_vec3*			Get_Dir()								{ return &m_tInfo.vDirection; }
 
+	MONBULLETINFO*	Get_Info() { return &m_tInfo; }
+
 private:
 	virtual VOID Free();
 
@@ -39,6 +43,4 @@ private:
 
 	MONBULLETINFO m_tInfo;
 
-//private:
-//		VOID BillBoard();
 };

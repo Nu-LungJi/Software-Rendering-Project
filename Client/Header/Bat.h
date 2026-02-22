@@ -39,6 +39,7 @@ private:
 
 	VOID Set_Target(CONST TCHAR* _TAG);
 
+	VOID State_Summon(const _float& _DT);
 	VOID State_Appear(const _float& _DT);
 	VOID State_Idle();
 	VOID State_Tracking(const _float& _DT);

@@ -8,6 +8,10 @@ Player::~Player()													{}
 HRESULT Player::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
+	//Temp
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
+
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 8);
@@ -1140,6 +1144,31 @@ void Player::Set_Effect(const _float& _DT)
 	//else if (KEY_DOWN(DIK_2)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_2, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_3)) { PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SKILL_3, playerPos, 0.5f); }
 	//else if (KEY_DOWN(DIK_4)) { PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f); }
+}
+BOOL Player::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"MonsterBullet")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if(Tag == L"Monster")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+
+	return FALSE;
+}
+BOOL Player::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Player::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 
