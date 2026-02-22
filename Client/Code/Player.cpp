@@ -8,6 +8,10 @@ Player::~Player()													{}
 HRESULT Player::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
+	//Temp
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
+
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 8);
@@ -1253,6 +1257,31 @@ void Player::Calc_Near()
 	D3DXVec3Normalize(&dir, &dir);
 
 	_nearPos = cameraPos + dir * 5.f;
+}
+BOOL Player::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"MonsterBullet")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if(Tag == L"Monster")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+
+	return FALSE;
+}
+BOOL Player::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Player::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 

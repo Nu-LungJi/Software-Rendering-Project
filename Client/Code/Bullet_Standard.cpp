@@ -9,8 +9,11 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
+
+	m_tInfo.Change_State(MONSTER_STATE_SUMMON);
 	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
-	m_tInfo.fHP = 1.f;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
 
 	return S_OK;
 }
@@ -20,24 +23,41 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 	ObjectTAG = L"MonsterBullet";
 
 	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x* 0.5f, 1.f, MYSCALE->x * 0.5f);
 
-	if (m_tInfo.fHP <= 0.f)
-		m_tInfo.fTimer[0] = 10.f;
+	if (Component_Collider->Get_Hp() <= 0.f)
+		m_tInfo.fTimer[0] = 5.f;
+
+	if (m_tInfo.fTimer[0] <= 0.f)
+	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV,
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.f, false);
+
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
+		pEffect = MonsterEffect::Create(GRPDEV,
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.2f, false);
+
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	}
 
 	m_tInfo.fTimer[0] += _DT;
 
-	if (m_tInfo.fTimer[0] > 10.f)
+	if (m_tInfo.fTimer[0] > 5.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
 
-		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		_vec3 vEffectScale = { MYSCALE->x*2, MYSCALE->x*2, MYSCALE->x*2 };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		ObjectDead = true;
 		return 0;
-		ObjectDead = true;
+	}
+
+	if (ObjectDead)
+	{
+		return -1;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -45,11 +65,10 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 }
 VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	
-	GameObject::LateUpdate_GameObject(_DT);
-	
-	_vec3 ColliderScale = *Component_Transform->Get_Scale();
+	if (m_tInfo.fTimer[0]< 1.f)
+		return;
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.8f, 1.f, MYSCALE->z * 0.8f);
+	GameObject::LateUpdate_GameObject(_DT);
 
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
@@ -61,15 +80,17 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.Textureinfo._frameTick = 0.f;
 	}
 
-	Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID Bullet_Standard::Render_GameObject() {
+
+	if (m_tInfo.fTimer[0] < 0.9f)
+		return;
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
-
 
 	Component_Buffer->Render_Buffer();
 
@@ -82,14 +103,37 @@ HRESULT Bullet_Standard::Component_Initialize() {
 
 	Component_Transform->Set_Pos(1.f, 0.5f, 1.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.1f, 0.1f, 0.1f);
+	Component_Transform->Set_Scale(BULLET_STANDARD_WIDTH, BULLET_STANDARD_HEIGHT, 1.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 
-	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);
+	Component_Collider->Set_Scale(BULLET_STANDARD_WIDTH, 0.5f, BULLET_STANDARD_HEIGHT);
 
 	return S_OK;
+}
+BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if (Tag == L"Player")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
+}
+BOOL Bullet_Standard::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Bullet_Standard::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
 }
 //Bullet_Standard* Bullet_Standard::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 //	Bullet_Standard* NPN = new Bullet_Standard(_GRPDEV);

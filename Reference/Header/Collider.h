@@ -46,6 +46,11 @@ public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
 
+	void		Set_Hp(_float fH)	{ fHp = fH; }
+	void		Set_Att(_float fA)	{ fAtt = fA; }
+	_float      Get_Att()			{ return fAtt; }
+	_float      Get_Hp()			{ return fHp; }
+
 private:
 	Transform*		ColliderPos;
 	Buffer*			ColliderArea;
@@ -56,6 +61,9 @@ private:
 
 	BOOL		Curr_ColState;
 	BOOL		Prev_ColState;
+
+	_float         fHp;
+	_float         fAtt;
 
 	D3DXMATRIX matWorld, matView, matProj, Sum;
 

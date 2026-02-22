@@ -8,27 +8,49 @@ HRESULT EvilSlime::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	m_tInfo.fHP = EVILSLIME_HP;
+	Component_Collider->Set_Hp(EVILSLIME_HP);
+	Component_Collider->Set_Att(1.f);
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
-
-	ObjectTAG = L"Monster";
 
 	return S_OK;
 }
 INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
+	MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+
 	// <플레이어 업데이트 시점>
+
 	GameObject::Update_GameObject(_DT);
 
-	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x* 0.5f, 1.f, MYSCALE->y*0.5f);
 
-	if (m_tInfo.fHP <= 0.f) 
-		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
+	if (KEY_DOWN(DIK_H))
+	{
+		m_tInfo.bTrigger[2] = true;
+		m_tInfo.Change_State(EVILSLIME_FISSION);
+	}
+
+
+	if (Component_Collider->Get_Hp() <= 0.f)
+	{
+		if (MYSCALE->x < 0.5f)
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		}
+		else
+		{
+			m_tInfo.bTrigger[2] = true;
+			m_tInfo.Change_State(EVILSLIME_FISSION);
+		}
+	}
+
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
+		break;
+	case EVILSLIME_FISSION:
+		EvilSlime::State_Fission(_DT);
 		break;
 	case MONSTER_STATE_SUMMON:
 		EvilSlime::State_Summon(_DT);
@@ -52,7 +74,12 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 
 	if (ObjectDead)
+	{
+		for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+			if (m_tInfo.pGameObj[i] != nullptr) m_tInfo.pGameObj[i]->Set_ObjectDead(true);
+
 		return -1;
+	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -102,7 +129,7 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 		break;
 
 	case	MONSTER_STATE_CASTING:
-
+	case MONSTER_STATE_CHANNELING:
 		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Attack", &m_tInfo)))
 		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
@@ -115,6 +142,7 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 				++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 			m_tInfo.Textureinfo._frameTick = 0.f;
 		}
+		break;
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:
@@ -147,11 +175,11 @@ HRESULT EvilSlime::Component_Initialize() {
 
 	Component_Transform->Set_Pos(10.f, 0.5f, 0.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.384f, 0.311f, 1.f);
+	Component_Transform->Set_Scale(EVILSLIME_WIDTH, EVILSLIME_HEIGHT, 1.f);
+
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-
-	Component_Collider->Set_Scale(0.28f, 1.f, 0.3f);
+	Component_Collider->Set_Scale(EVILSLIME_WIDTH, 1.f, EVILSLIME_HEIGHT);
 
 	return S_OK;
 }
@@ -166,39 +194,50 @@ EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 {
-	if (_Other->Get_ObjectTag() == L"PlayerArrow")
+	wstring Tag;
+	switch (m_tInfo.eState[0])
 	{
-		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-		m_tInfo.fHP -= (_float)atk;
+	default:
+		Tag = _Other->Get_ObjectTag();
+		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
+		return 0;
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_CASTING:
+	case EVILSLIME_FISSION:
+		return 0;
 	}
-	return TRUE;
+
+	return FALSE;
 }
 BOOL EvilSlime::OnCollisionStay(GameObject* _Other)
 {
-	switch (_Other->Get_ObjectType())
-	{
-	default:
-		break;
-	case GAMEOBJECT_TYPE::OBJECT_MONSTER:
-		_vec3	vDir = *POS(_Other) - *MYPOS;
-		if (D3DXVec3Dot(&m_tInfo.vDirection, &vDir) > 0.f)
-		{
-			switch (m_tInfo.eState[0])
-			{
-			default:
-				m_tInfo.fSpeed = 0.f;
-				break;
-			case MONSTER_STATE_CASTING:
-			case MONSTER_STATE_CHANNELING:
-				break;
-			}
-		}
-	}
-	return TRUE;
+	//switch (_Other->Get_ObjectType())
+	//{
+	//default:
+	//	break;
+	//case GAMEOBJECT_TYPE::OBJECT_MONSTER:
+	//	_vec3	vDir = *POS(_Other) - *MYPOS;
+	//	if (D3DXVec3Dot(&m_tInfo.vDirection, &vDir) > 0.f)
+	//	{
+	//		switch (m_tInfo.eState[0])
+	//		{
+	//		default:
+	//			m_tInfo.fSpeed = 0.f;
+	//			break;
+	//		case MONSTER_STATE_CASTING:
+	//		case MONSTER_STATE_CHANNELING:
+	//			break;
+	//		}
+	//	}
+	//}
+	return FALSE;
 }
 BOOL EvilSlime::OnCollisionExit(GameObject* _Other)
 {
-	return TRUE;
+	return FALSE;
 }
 VOID EvilSlime::Free() {
 
@@ -208,31 +247,8 @@ VOID EvilSlime::Free() {
 VOID EvilSlime::State_Summon(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
-	if (nullptr == m_tInfo.pGameObj[0])
-	{
-		m_tInfo.bTrigger[0] = false;
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS03, vPos, FALSE, MONSTER_SUMMON03_PLAYTIME);
-		//*static_cast<Transform*>(pTarget->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *Component_Transform->Get_Scale();
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-	}
-
-	if (m_tInfo.fTimer[0] >= MONSTER_SUMMON03_PLAYTIME)
-	{
-		_vec3 vPos = { MYPOS->x, 0.01f, MYPOS->z };
-		m_tInfo.fTimer[0] = 0.f;
-		m_tInfo.bTrigger[0] = true;
-		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS01, vPos, FALSE, MONSTER_SUMMON01_PLAYTIME);
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
-		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_SUMMONS02, vPos, MONSTER_SUMMON02_PLAYTIME);
-	}
-
-	if (m_tInfo.bTrigger[0])
-		if (m_tInfo.fTimer[0] >= (MONSTER_SUMMON01_PLAYTIME * 0.5f))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_IDLE);
-			m_tInfo.pGameObj[0] = nullptr;
-		}
+	if (FAILED(MonsterEffect::Monster_SummonEffect_Set(GRPDEV, Component_Transform, &m_tInfo.bTrigger[0], &m_tInfo.fTimer[0]))) { ObjectDead = true; return; }
+	if (m_tInfo.bTrigger[0] > 3)	m_tInfo.Change_State(MONSTER_STATE_IDLE);
 }
 
 VOID EvilSlime::State_Idle(const _float& _DT)
@@ -280,54 +296,73 @@ VOID EvilSlime::State_Tracking(const _float& _DT)
 
 VOID EvilSlime::State_Casting(const _float& _DT)
 {
-	m_tInfo.fTimer[0] += _DT;
 
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
-	if (nullptr == m_tInfo.pGameObj[1] && nullptr == m_tInfo.pGameObj[2])
+	if (nullptr == m_tInfo.pGameObj[1])
 	{
-		m_tInfo.bTrigger[1] = true;
-		_vec3 vDst = *POS(m_tInfo.pGameObj[0]);
+		_vec3 vPos = *POS(m_tInfo.pGameObj[0]);
+		vPos *= RANDOM::Get_float(1.1f, 0.9f, this);
 
-		vDst.y = 0.01f;
-		m_tInfo.pGameObj[2] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::ALERT_CIRCLE, vDst, FALSE, EVILSLIME_CASTING_TIME);
-		static_cast<Transform*>(m_tInfo.pGameObj[2]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
-			->Set_Scale(2.f, 2.f, 2.f);
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[2]);
+		_vec2 vDis = { MYSCALE->x, MYSCALE->y };
+		_float fDis = D3DXVec2Length(&vDis);
+		_vec3 vDir = vPos - *MYPOS;
+		
+		m_tInfo.fSpeed = D3DXVec3Length(&vDir) / EVILSLIME_CASTING_TIME;
+		D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
 
-		vDst.y += 0.01f;
-		m_tInfo.pGameObj[1] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::ALERT_CIRCLE, vDst, FALSE, EVILSLIME_CASTING_TIME);
-		static_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
-			->Set_Scale(0.f, 0.f, 0.f);
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[1]);
+		m_tInfo.pGameObj[1] = Monster::Create<EVILSLIME_BULLET_TYPE>(GRPDEV,vPos);
 
+		for (int i = 1; i < EVILSLIME_BULLET_NUM + 1; ++i)
+		{
+			if (i > 1)
+			{
+				_float fRadian = (i - 1.5f) * D3DX_PI / 2.f;
+				_vec3 vDst = vPos;
+				_float fDst = (i > 5) ? fDis * 2.f : fDis;
+				vDst.x += cosf(fRadian) * fDst;
+				vDst.z += sinf(fRadian) * fDst;
+				m_tInfo.pGameObj[i] = Monster::Create<EVILSLIME_BULLET_TYPE>(GRPDEV, vDst, EVILSLIME_BULLET_SCALEMULT);
+			}	
 
+			if (m_tInfo.pGameObj[i] == nullptr)
+			{
+				m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
-		vDst = *POS(m_tInfo.pGameObj[1]) - *MYPOS;
-		vDst.y = 0.f;
-		m_fFlyingDis = D3DXVec3Length(&vDst);
-		m_tInfo.fSpeed = m_fFlyingDis / EVILSLIME_CASTING_TIME;
-		D3DXVec3Normalize(&m_tInfo.vDirection, &vDst);
+				for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+				{
+					m_tInfo.pGameObj[i]->Set_ObjectDead(true);
+					m_tInfo.pGameObj[i] = nullptr;
+				}
+				break;
+			}
+
+			EVILSLIME_BULLET_TYPE* pBullet = static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i]);
+			pBullet->Set_Master(this);
+			pBullet->Get_Info()->fTimer[1] = EVILSLIME_CASTING_TIME;
+			*SCALE(m_tInfo.pGameObj[i]) = *MYSCALE;
+
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+
+		}
 	}
 	else
 	{
-		Transform*	pDst		= static_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-		_vec3		vDir		= *static_cast<Transform*>(m_tInfo.pGameObj[2]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() - *MYPOS;
-		_float		fRatio		= 1 - D3DXVec3Length(&vDir) / m_fFlyingDis;
-
-		pDst->Set_Scale(fRatio * 2.f, fRatio * 2.f, fRatio * 2.f);
-		//pDst->Get_Position()->y = fRatio;
-
-		Component_Transform->Get_Position()->y += sinf(D3DX_PI * fRatio) * EVILSIME_JUMP_HEIGHT;
+		m_tInfo.fTimer[0] += _DT;
+		MYPOS->y += EVILSIME_JUMP_HEIGHT * sinf(D3DX_PI * (m_tInfo.fTimer[0] / EVILSLIME_CASTING_TIME));
+		for (int i = 1; i < EVILSLIME_BULLET_NUM + 1; ++i)
+		{
+			static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i])->Get_Info()->fTimer[0] = m_tInfo.fTimer[0];
+		}
 	}
 
 	if (m_tInfo.fTimer[0] >= EVILSLIME_CASTING_TIME)
 	{
-		m_tInfo.pGameObj[1]->Set_ObjectDead(true);
-		m_tInfo.pGameObj[2]->Set_ObjectDead(true);
-		m_tInfo.pGameObj[1] = nullptr;
-		m_tInfo.pGameObj[2] = nullptr;
+		for (int i = 1; i < EVILSLIME_BULLET_NUM + 1; ++i) {
+			static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i])->Get_Info()->bTrigger[0] = true;
+			m_tInfo.pGameObj[i] = nullptr;
+		}
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
 	}
 }
@@ -343,14 +378,14 @@ VOID EvilSlime::State_Channeling(const _float& _DT)
 	{
 		for (int i = 0; i < EVILSLIME_BULLET_NUM; ++i)
 		{
-			m_tInfo.pGameObj[1] = Monster::Create<Bullet_Standard>(GRPDEV, *MYPOS);
+			//m_tInfo.pGameObj[1] = Monster::Create<Bullet_Standard>(GRPDEV, *MYPOS);
 
-			_float fRadian = 2.f * D3DX_PI * ((_float)i / EVILSLIME_BULLET_NUM);
-			fRadian = (fRadian > D3DX_PI) ? fRadian - (2.f * D3DX_PI) : fRadian;
+			//_float fRadian = 2.f * D3DX_PI * ((_float)i / EVILSLIME_BULLET_NUM);
+			//fRadian = (fRadian > D3DX_PI) ? fRadian - (2.f * D3DX_PI) : fRadian;
 
-			static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
+			//static_cast<Bullet_Standard*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+			//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
 		m_tInfo.pGameObj[1] = nullptr;
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
@@ -361,4 +396,48 @@ VOID EvilSlime::State_Dead()
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
+}
+
+VOID EvilSlime::State_Fission(const _float& _DT)
+{
+	m_tInfo.fTimer[0] += _DT;
+	if (m_tInfo.fTimer[0] <= 0.5f) {
+		_float fHeight = (m_vFissionDst.y - MYSCALE->y * 0.5f) * sinf(D3DX_PI * (m_tInfo.fTimer[0] / 0.5f));
+		MYPOS->y += fHeight;
+	}
+	else
+	{
+		m_tInfo.Change_State(MONSTER_STATE_IDLE);
+	}
+
+	if (m_tInfo.bTrigger[2]) {
+		for (int i = 0; i < 4; ++i)
+		{
+			_vec3 vDst = { MYPOS->x + ((MYSCALE->x * RANDOM::Get_float(MYPOS->x, -MYPOS->x,this))),
+							MYSCALE->y,
+							MYPOS->z + ((MYSCALE->y * RANDOM::Get_float(MYPOS->z, -MYPOS->z,this)))};
+
+			m_tInfo.pGameObj[i] = Monster::Create<EvilSlime>(GRPDEV, *MYPOS);
+
+			*SCALE(m_tInfo.pGameObj[i]) = *MYSCALE * 0.5f;
+
+			EvilSlime* pSlime = static_cast<EvilSlime*>(m_tInfo.pGameObj[i]);
+
+			pSlime->Get_Info()->Change_State(EVILSLIME_FISSION);
+
+			*pSlime->Get_FissionDst() = vDst;
+
+			_vec3 vSpeed = { MYSCALE->x * 0.25f, 0.f, MYSCALE->y * 0.25f };
+			pSlime->Get_Info()->fSpeed = D3DXVec3Length(&vSpeed) / 0.5f;
+
+			vDst -= *MYPOS;
+			D3DXVec3Normalize(&pSlime->Get_Info()->vDirection, &vDst);
+
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		}
+
+		m_tInfo.bTrigger[2] = false;
+		m_tInfo.pGameObj[0] = m_tInfo.pGameObj[1] = m_tInfo.pGameObj[2] = m_tInfo.pGameObj[3] = nullptr;
+		ObjectDead = true;
+	}
 }

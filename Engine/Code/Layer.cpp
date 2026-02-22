@@ -10,7 +10,6 @@ HRESULT		Layer::Ready_Layer() {
 }
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	if (!_isTimeSlow) {
-		// ���� �ڵ�
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
 			int ObjectResult = (*iter)->Update_GameObject(_DT);
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
