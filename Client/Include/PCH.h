@@ -8,6 +8,7 @@
 
 //////////////////////////////////////////// Engine Import
 ////////////////////////////// IMGUIZMO Import
+
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
 #include "ImZoomSlider.h"
@@ -29,31 +30,64 @@
 
 #include "Camera.h"
 #include "Terrain.h"
-#include "MainUI.h"
 #include "Inventory.h"
-#include "NPCTalk.h"
+
+#include "BossEffect.h"
 #include "PlayerEffect.h"
 #include "UIEffect.h"
-#include "NPC.h"
+
 #include "Object_Explain.h"
-//#include "Monster_State.h"
-//#include "Monster1.h"
-//#include "BossMonster.h"
+
+#pragma region Monster
 
 #include "Monster.h"
-#include "MonsterTest.h"
-
-//#include "MonsterSummon01.h"
-//#include "MonsterSummon02.h"
-//#include "MonsterSummon03.h"
+#include "MonsterEffect.h"
 #include "Bat.h"
 #include "ScorpionEvilSoul.h"
-#include "Docheol.h"
+//#include "DocheolAppearMark.h"
+//#include "Docheol.h"
+
+
+#include "Alert.h"
 
 #include "Bullet_Standard.h"
 #include "Fireball.h"
 
+#include "ScorpionBullet.h"
+#include "Bullet_Chain_Head.h"
+#include "Bullet_Chain.h"
+
+#include "ShotGunEvilSoul.h"
+
+#include "EvilSlime.h"
+#include "EvilSlimeGroundIce.h"
+
+#include "StateMachine.h"
+#include "Supporter.h"
+#include "BossFireBall.h"
+#include "FinalBoss.h"
+
+#pragma endregion
+
+
+#pragma region MiniGame
+#include "CubeFloorTile.h"
+
+#pragma endregion
+
+#pragma region Shop
+
+#include "ShopKeeper.h"
+#include "SupplyBigCat.h"
+#include "Stall.h"
+#include "DropItem.h"
+#include "DropItemEffect.h"
+
+#pragma endregion
 #include "Player.h"
+#include "MainUI.h"
+#include "NPCTalk.h"
+#include "NPC.h"
 #include "Tile.h"
 #include "CubeTile.h"
 #include "CXZTile.h"
@@ -63,14 +97,28 @@
 #include "Arrow.h"
 #include "TileDestoryEffect.h"
 #include "PlayerInven.h"
-#include "Augments.h"
+#include "Augment.h"
+#include "SpeechBubble.h"
+#include "Spawner.h"
+#include "Cheonlog.h"
+#include "CLcrystal.h"
+#include "CLEffect.h"
+#include "CLAttack.h"
+#include "Rain.h"
+#include "ShopKeeper.h"
+#include "ShopUI.h"
+
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
 #include "DebugScene.h"
 #include "MapScene.h"
+
+#include "DoCheolScene.h"
+#include "MiniGameScene.h"
+
 //////////////////////////////////////////// Manager
-#include "FontManager.h"
+
 #include "GUIManager.h"
 #include "ResourceManager.h"
 #include "CollisionManager.h"
@@ -84,6 +132,7 @@
 #include "TimeManager.h"
 #include "GameManager.h"
 #include "TileManager.h"
+
 //////////////////////////////////////////// Global Variable
 
 extern HWND			hWnd;

@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "FontManager.h"
+#include "UIManager.h"
 
 class NPCTalk : public GameObject {
 private:
@@ -40,6 +40,7 @@ private:
 
 	SpriteINFO* Sprite_Yeon;
 	SpriteINFO* Sprite_Tif;
+	SpriteINFO* Sprite_Shop;
 
 	SpriteINFO* NameBar;
 	SpriteINFO* Square;

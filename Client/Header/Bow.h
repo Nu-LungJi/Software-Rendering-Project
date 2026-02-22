@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Player.h"
 
+static int			_arrowCount = 1;
 enum class BowType {
 	FairyBow,
 	IceBow,
@@ -35,13 +36,18 @@ public:
 	virtual			VOID		Render_GameObject();
 
 public:
-	void			Set_PlayerPos(_vec3* pos) { _playerPos = pos; }
+	void			Set_PlayerPos(_vec3* pos) { _bowPos = pos; }
 	void			Set_Destroy() { _isDestroied = true; }
+
 private:
 	HRESULT			Component_Initialize();
 	void			SetGrahpic();
 	void			CreateArrow(const _float& _DT);
 	void			CreateEffect(const _float& _DT);
+	void			CreateChargingArrow(const _float& _DT);
+	void			CreateChargingEffect(const _float& _DT);
+	void			Late_Ready();
+	void			MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging = false);
 private:
 	Buffer* Component_Buffer;
 	Transform* Component_Transform;
@@ -55,15 +61,17 @@ public:
 	void		Set_Bow_Type(BowType type)		{ _type = type; }
 	void		Set_Bow_Equip(bool isequip)		{ _isEquip = isequip; }
 	BowStat*	Get_Bow_Stat()					{ return &_Stat; }
+	_int		Get_Charging()					{ return _Charging; }
 private:
 	virtual VOID Free();
 private:
-	_vec3*		_playerPos;
+	_vec3*		_bowPos;
 	_float		_cameraAngle;
 	_vec3		_cameraDir;
 private:
 	BowType		_type;
 	BowStat		_Stat;
+	bool		_lateReady;
 
 	bool		_isEquip;
 	bool		_isDestroied;
@@ -73,6 +81,14 @@ private:
 	_vec3		_pulsepos;
 	_vec3		_arrowPos;
 	float		_attackDelay;
-	int			_arrowCount;
+
+	_int		_Charge;
+	_int		_Charging;
+	_float		_ChargingTime;
+	_float		_chargingTime;
+
+	int*		_playerAtk;
+	int*		_playerCritical;
+	float*		_playerChargingSpeed;
 };
 

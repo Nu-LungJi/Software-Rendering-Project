@@ -33,6 +33,8 @@ public:
 	virtual VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
 	virtual VOID		Render_GameObject() = 0;
 
+	// ½ºÅ³¿ë
+	INT			Update_GameObject_Component(CONST FLOAT& _DT);
 public:
 	virtual BOOL		OnCollisionEnter(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionStay	(GameObject* _Other)	{ return TRUE; }
@@ -41,6 +43,10 @@ public:
 public:
 	VOID	AlphaSorting(CONST D3DXVECTOR3* _Vec);
 	VOID	AlphaYSorting(CONST D3DXVECTOR3* _Vec);
+
+	BOOL	Search_CollisionObject(GameObject* _COL);
+	VOID	Add_CollisionObject(GameObject* _COL);
+	VOID	Delete_CollisionObject(GameObject* _COL);
 
 protected:
 	vector<Component*>				ComponentList;
@@ -52,6 +58,8 @@ protected:
 
 	FLOAT							AlphaZValue;
 	FLOAT							AlphaYValue;
+
+	list<GameObject*>				CollisionList;
 
 protected:
 	virtual VOID		Free();

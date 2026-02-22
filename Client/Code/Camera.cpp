@@ -8,11 +8,15 @@ CameraObject::~CameraObject() {}
 HRESULT CameraObject::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
+	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
+	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.6f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.6f, 1.35f * 1.6f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
 	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
+
+	Shake_Strength = 0;
+	Shake_Time = 0.f;
 
 	MouseCheck = FALSE;
 
@@ -25,32 +29,86 @@ HRESULT CameraObject::Ready_GameObject() {
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
 
+	m_vVelocity = {0.f , 0.f, 0.f};
+
+	ObjectTAG = L"Camera";
+
+	OriginEye = { 0.f, 0.f, 0.f };
+	OriginAt = { 0.f, 0.f, 0.f };
+
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_F2)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
+		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-
+	//EyeVec = OriginEye;
+	//AtVec = OriginAt;
 	if (!Camera_Move)
 	{
-		GameObject* player = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
-			Get_GameObject(L"Player"));
+		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
-
+	
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
+
+		_float distance = player->Get_MouseDistance();
+		_vec3 dir = player->Get_MouseDir();
+		_float offset = 2.f;
+
+		_vec3 targetEye = EyeVec;
+		_vec3 targetAt = AtVec;
+
+		_float moveAmount = (distance - offset) * 3;
+		if (distance > offset)
+		{
+			targetEye += dir * moveAmount;
+			targetAt  += dir * moveAmount;
+		}
+
+		//float smoothSpeed = 8.f;
+		//
+		//EyeVec += (targetEye - EyeVec) * smoothSpeed * 0.01;
+		//AtVec += (targetAt - AtVec) * smoothSpeed * 0.01;
+
+		_float stiffness = 40.f;
+		_float damping = 2.f * sqrtf(stiffness);
+		
+		_vec3 toTarget = targetEye - EyeVec;
+		
+		_vec3 accel = toTarget * stiffness - m_vVelocity * damping;
+		
+		if(moveAmount > 0.1f)
+			m_vVelocity += accel * 0.02;
+		
+		EyeVec += m_vVelocity * 0.02;
+		AtVec += m_vVelocity * 0.02;
+	}
+	if (Shake_Time > 0.f) {
+		
+		OriginEye = EyeVec;
+		OriginAt = AtVec;
+
+		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
+	
+		EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
+		AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
 	}
 
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
-
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
+
+	//EyeVec = OriginEye;
+	//AtVec = OriginAt;
+
 	return 0;
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
@@ -99,7 +157,7 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 			_vec3 Length = *D3DXVec3Normalize(&SideVector, &SideVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
-		if (KEY_HOLD(DIK_SPACE)) {
+		if (KEY_HOLD(DIK_RCONTROL)) {
 			memcpy(&UpVector, &CameraMatrix.m[1][0], sizeof(_vec3));
 
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
@@ -148,6 +206,11 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 			AtVec = EyeVec + LookVec;
 		}
 	}
+}
+
+VOID CameraObject::Camera_Shaking(INT _Strength, FLOAT _Time) {
+	Shake_Strength = _Strength;
+	Shake_Time = _Time;
 }
 
 

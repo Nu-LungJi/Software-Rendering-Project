@@ -1,7 +1,7 @@
 #include "RenderManager.h"
 #include "TileManager.h"
 #include "EffectManager.h"
-#include "FontManager.h"
+#include "UIManager.h"
 
 IMPLEMENT_SINGLETON(RenderManager)
 
@@ -10,6 +10,7 @@ RenderManager::~RenderManager() {	Free();	}
 
 VOID RenderManager::Add_RenderGroup(RENDERID _RID, GameObject* _GOBJ) {
 	if (_GOBJ == nullptr)	return;
+	if (_GOBJ->Get_ObjectDead())	return;
 	RenderGroup[_RID].push_back(_GOBJ);
 	_GOBJ->AddRef();
 }
@@ -43,6 +44,7 @@ VOID RenderManager::Render_NonAlpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 }
 VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	//_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -56,8 +58,8 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 			_OBJ->Render_GameObject();
 	}
 
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	//_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 	
@@ -66,11 +68,11 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			if (_OBJ->Get_ObjectTag() == L"MainUI") {
 				_OBJ->Render_GameObject();
 				EffectManager::GetInstance()->Render_EffectManager(_GRPDEV);
-				FontManager::GetInstance()->Render_FontManager();
+				UIManager::GetInstance()->Render_FontObjects();
 			}
 			else {
 				_OBJ->Render_GameObject();
-				FontManager::GetInstance()->Render_FontManager();
+				UIManager::GetInstance()->Render_FontObjects();
 			}
 		}
 	}
@@ -88,12 +90,12 @@ VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 	//알파 테스트 특정 수치 이하의 색상값을 출력되지 않게함
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	_GRPDEV->SetRenderState(D3DRS_ALPHAREF, 0xc0);
+	_GRPDEV->SetRenderState(D3DRS_ALPHAREF, 0x20); // 0x10
+
 	RenderGroup[RENDER_TILE].sort([](GameObject* DEST, GameObject* SRC)->bool
 		{
 			return DEST->Get_AlphaYValue() < SRC->Get_AlphaYValue();
 		});
-
 	for (auto& _OBJ : RenderGroup[RENDER_TILE]){
 		if (_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
@@ -101,7 +103,7 @@ VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 VOID	RenderManager::Free() {

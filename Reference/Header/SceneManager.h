@@ -26,6 +26,9 @@ public:
 	}
 	GameObject*		Get_GameObject(CONST TCHAR* _TAG);
 	void			Set_CurrentScene(Scene* scene) { CurrentScene = scene; }
+
+	// ½ºÅ³¿ë
+	void Set_TimeSlow(bool isTimeSlow) { CurrentScene->Set_TimeSlow(isTimeSlow); }
 private:
 	Scene*			CurrentScene;
 

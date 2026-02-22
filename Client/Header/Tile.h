@@ -58,7 +58,7 @@ private:
     vector<const _tchar*>        m_vecName[TILE_STATE::STATE_END];
     vector<ImageFile>            m_vecImage[TILE_STATE::STATE_END];
     vector<RECT>                 m_vecTileUnder;
-    vector<UvXY>                 m_vecUVXY;
+  
     _bool                        m_bTileCheck;
     _bool                        m_bMouseClick;
     _bool                        m_bOnlyAnimation;
@@ -88,6 +88,7 @@ private:
     TILE_STATE                   m_eTileState;
     TILEMODE_CHANGE              m_eMode;
     TILE_STAGE                   m_eStage;
+    TILE_SPAWNER                 m_eSpawner;
     INSTALL_MODE                 m_eTileInstall;
 public:
     static      Tile* Create(LPDIRECT3DDEVICE9 pGraphicDev);

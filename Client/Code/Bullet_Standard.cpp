@@ -7,101 +7,188 @@ Bullet_Standard::~Bullet_Standard() {}
 
 HRESULT Bullet_Standard::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
+
+	m_tInfo.Change_State(MONSTER_STATE_SUMMON);
+	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
+
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
+	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
-	_frameTick += _DT;
+
+	ObjectTAG = L"MonsterBullet";
+
+	MYPOS->y = 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x* 0.5f, 1.f, MYSCALE->x * 0.5f);
+
+	if (Component_Collider->Get_Hp() <= 0.f)
+		m_tInfo.fTimer[0] = 5.f;
+
+	if (m_tInfo.fTimer[0] <= 0.f)
+	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV,
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.f, false);
+
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
+		pEffect = MonsterEffect::Create(GRPDEV,
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.2f, false);
+
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	}
+
+	m_tInfo.fTimer[0] += _DT;
+
+	if (m_tInfo.fTimer[0] > 5.f)
+	{
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+
+		_vec3 vEffectScale = { MYSCALE->x*2, MYSCALE->x*2, MYSCALE->x*2 };
+		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+
+		ObjectDead = true;
+		return 0;
+	}
+
+	if (ObjectDead)
+	{
+		return -1;
+	}
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
 VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	
+	if (m_tInfo.fTimer[0]< 1.f)
+		return;
+
 	GameObject::LateUpdate_GameObject(_DT);
-	_vec3 ColliderScale = *Component_Transform->Get_Scale();
-	Component_Collider->Set_Scale(ColliderScale.x, 1.f, ColliderScale.z);
-	Component_Transform->Move_Pos(&m_vDir, m_fSpeed, _DT);
-	BillBoard();
+
+	m_tInfo.vDirection.y = 0.f;
+	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
+
+	m_tInfo.Textureinfo._frameTick += _DT;
+	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
+	{
+		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+		m_tInfo.Textureinfo._frameTick = 0.f;
+	}
+
+
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+
 }
 VOID Bullet_Standard::Render_GameObject() {
+
+	if (m_tInfo.fTimer[0] < 0.9f)
+		return;
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	TCHAR FileName[128] = L"";
-	wsprintfW(FileName, L"Standard%d.png", _frame);
-	GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(FileName));
+	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
 
-	if (_frameTick > 0.1f)
-	{
-		if (++_frame > 5)
-			_frame = 1;
-
-		_frameTick = 0.f;
-	}
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 HRESULT Bullet_Standard::Component_Initialize() {
 
-	m_fSpeed = 1.f;
-	_frame = 1;
-
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
-
-	Component_Transform->Set_Pos(1.f, 1.f, 1.f);
+	Component_Transform->Set_Pos(1.f, 0.5f, 1.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.5f, 0.5f, 0.5f);
+	Component_Transform->Set_Scale(BULLET_STANDARD_WIDTH, BULLET_STANDARD_HEIGHT, 1.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 
-	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);
+	Component_Collider->Set_Scale(BULLET_STANDARD_WIDTH, 0.5f, BULLET_STANDARD_HEIGHT);
 
 	return S_OK;
 }
-Bullet_Standard* Bullet_Standard::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
-	Bullet_Standard* NPN = new Bullet_Standard(_GRPDEV);
-	if (FAILED(NPN->Ready_GameObject())) {
-		MSG_BOX("Cannot Create Bullet_Standard.");
-		Safe_Release(NPN);
-		return nullptr;
+BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
 	}
-	return NPN;
+	else if (Tag == L"Player")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
 }
+BOOL Bullet_Standard::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Bullet_Standard::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
+}
+//Bullet_Standard* Bullet_Standard::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+//	Bullet_Standard* NPN = new Bullet_Standard(_GRPDEV);
+//	if (FAILED(NPN->Ready_GameObject())) {
+//		MSG_BOX("Cannot Create Bullet_Standard.");
+//		Safe_Release(NPN);
+//		return nullptr;
+//	}
+//	return NPN;
+//}
 VOID Bullet_Standard::Free() {
 	GameObject::Free();
 }
-
-VOID Bullet_Standard::BillBoard()
+BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
-	_matrix		matBill, matWorld, matView;
+	// í”Œë ˆì´ì–´ ì¶©ëŒ
+	MainUI* mainUI;
+	if (_Other->Get_ObjectTag() == L"Player") {
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		return true;
+	}
 
-	matWorld = *Component_Transform->Get_World();
-	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMatrixIdentity(&matBill);
-
-	//XÃà
-	matBill._11 = matView._11;
-	matBill._12 = matView._12;
-	matBill._13 = matView._13;
-	//YÃà
-	matBill._21 = matView._21;
-	matBill._22 = matView._22;
-	matBill._23 = matView._23;
-	//ZÃà
-	matBill._31 = matView._31;
-	matBill._32 = matView._32;
-	matBill._33 = matView._33;
-
-	D3DXMatrixInverse(&matBill, 0, &matBill);
-
-	// ÁÖÀÇ ÇÒ °Í
-	matWorld = matBill * matWorld;
-
-	Component_Transform->Set_World(&matWorld);
+	return FALSE;
 }
+//
+//VOID Bullet_Standard::BillBoard()
+//{
+//	_matrix		matBill, matWorld, matView;
+//
+//	matWorld = *Component_Transform->Get_World();
+//	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+//
+//	D3DXMatrixIdentity(&matBill);
+//
+//	//Xì¶•
+//	matBill._11 = matView._11;
+//	matBill._12 = matView._12;
+//	matBill._13 = matView._13;
+//	//Yì¶•
+//	matBill._21 = matView._21;
+//	matBill._22 = matView._22;
+//	matBill._23 = matView._23;
+//	//Zì¶•
+//	matBill._31 = matView._31;
+//	matBill._32 = matView._32;
+//	matBill._33 = matView._33;
+//
+//	D3DXMatrixInverse(&matBill, 0, &matBill);
+//
+//	// ì£¼ì˜ í•  ê²ƒ
+//	matWorld = matBill * matWorld;
+//
+//	Component_Transform->Set_World(&matWorld);
+//}

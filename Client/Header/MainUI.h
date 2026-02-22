@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "Player.h"
 
 class MainUI : public GameObject {
 private:
@@ -16,13 +15,15 @@ public:
 
 public:		// Trigger Function
 	VOID			Player_LostHP();
+	VOID			Player_ReFillHP(INT _HP);
 	VOID			Player_KeyModify();
 	VOID			Player_MoneyModify();
 	VOID			Player_CrystalModify();
 	VOID			Player_UseSkill();
-	VOID			PopUp_Interaction_Notice(wstring _Text, BOOL _Vis);
+	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
+	VOID			Player_ReFillHP(INT _HP);
 
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Speech_Bubble = TRUE; }
 

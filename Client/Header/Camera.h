@@ -15,6 +15,7 @@ public:
 
 	VOID			Camera_Transform_Control(CONST FLOAT& _DT);
 	VOID			Camera_Rotation_Control(CONST FLOAT& _DT);
+	VOID			Camera_Shaking(INT _Strength, FLOAT _Time);
 
 	_matrix*		Get_ViewMatrix() { return &ViewMatrix; }
 	_matrix*		Get_ProjMatrix() { return &ProjMatrix; }
@@ -51,10 +52,18 @@ private:
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
 
-	GameObject* Player;
+	//GameObject* Player;
 
 	bool		Camera_Show;
 	bool		Camera_Move;
+
+	INT			Shake_Strength;
+	FLOAT		Shake_Time;
+	_vec3		OriginEye;
+	_vec3		OriginAt;
+
+
+	_vec3		m_vVelocity;
 
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);

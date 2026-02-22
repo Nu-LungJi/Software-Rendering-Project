@@ -34,9 +34,6 @@
     <Filter Include="99. Component\02. Transform">
       <UniqueIdentifier>{a586d953-951b-41a4-aead-120984a11a0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Component\99. StateMachine">
-      <UniqueIdentifier>{818e8a07-c0d7-48c4-80fd-1a7761d25a68}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. SoundManager">
       <UniqueIdentifier>{1e3bd1a8-9ca5-4fde-9773-86836f586b6c}</UniqueIdentifier>
     </Filter>
@@ -73,17 +70,14 @@
     <Filter Include="99. Component\06. Tile">
       <UniqueIdentifier>{4e2a987d-50f6-4e59-bd84-9e0016b96795}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Component\07. Font">
-      <UniqueIdentifier>{1b683c38-f84a-441e-9b76-42c8c2fd8f98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="13. UIManager">
-      <UniqueIdentifier>{06dba40a-cde8-4d74-a015-c5cfb226400f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="11. FontManager">
-      <UniqueIdentifier>{45e3c7f3-03b5-4afb-a8f9-8cf66c4cb361}</UniqueIdentifier>
-    </Filter>
     <Filter Include="99. Component\03. Texture">
       <UniqueIdentifier>{f901d2b8-ed83-41d1-b248-ff0820f8b24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. UIManager">
+      <UniqueIdentifier>{06dba40a-cde8-4d74-a015-c5cfb226400f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Component\08. Paticle">
+      <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,9 +135,6 @@
     <ClInclude Include="..\Header\SoundManager.h">
       <Filter>04. SoundManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\StateMachine.h">
-      <Filter>99. Component\99. StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\KeyManager.h">
       <Filter>03. KeyManager</Filter>
     </ClInclude>
@@ -160,7 +151,7 @@
       <Filter>10. CollisionManager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\UIManager.h">
-      <Filter>13. UIManager</Filter>
+      <Filter>11. UIManager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\ResourceManager.h">
       <Filter>09. ResourceManager</Filter>
@@ -174,14 +165,11 @@
     <ClInclude Include="..\Header\Collider.h">
       <Filter>99. Component\05. Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\FontManager.h">
-      <Filter>11. FontManager</Filter>
+    <ClInclude Include="..\Header\CDYBuffer.h">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\Font.h">
-      <Filter>99. Component\07. Font</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\NoCloneBuffer.h">
-      <Filter>99. Component\01. Buffer</Filter>
+    <ClInclude Include="..\Header\ParticleRain.h">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +209,6 @@
     <ClCompile Include="..\Code\SoundManager.cpp">
       <Filter>04. SoundManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\StateMachine.cpp">
-      <Filter>99. Component\99. StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\KeyManager.cpp">
       <Filter>03. KeyManager</Filter>
     </ClCompile>
@@ -243,7 +228,7 @@
       <Filter>10. CollisionManager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\UIManager.cpp">
-      <Filter>13. UIManager</Filter>
+      <Filter>11. UIManager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ResourceManager.cpp">
       <Filter>09. ResourceManager</Filter>
@@ -254,14 +239,11 @@
     <ClCompile Include="..\Code\TileInfo.cpp">
       <Filter>99. Component\06. Tile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\FontManager.cpp">
-      <Filter>11. FontManager</Filter>
+    <ClCompile Include="..\Code\CDYBuffer.cpp">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Font.cpp">
-      <Filter>99. Component\07. Font</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\NoCloneBuffer.cpp">
-      <Filter>99. Component\01. Buffer</Filter>
+    <ClCompile Include="..\Code\ParticleRain.cpp">
+      <Filter>99. Component\08. Paticle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

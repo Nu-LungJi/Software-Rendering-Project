@@ -10,15 +10,15 @@ HRESULT	MainUI::Ready_GameObject() {
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
-
+	
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-
+	
 	Speech_Bubble = FALSE;
 	Speech_Text = L"";
 	Timer01 = 0.f; Timer02 = 0.f; Timer03 = 0.f;
-
+	
 	MainUIOpacity = 0.f;
-
+	
 	Current_KeyCount		= 0;
 	Current_CoinCount		= 0;
 	Current_CrystalCount	= 0;
@@ -28,15 +28,7 @@ HRESULT	MainUI::Ready_GameObject() {
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
-	if (KEY_DOWN(DIK_LCONTROL)) {
-		Player_LostHP();
-		Player_UseSkill();
-	}
-	if (KEY_DOWN(DIK_L)) {
-		PlayerObject->Set_Key(10);
-		PlayerObject->Set_Coin(20);
-		PlayerObject->Set_Crystal(15);
-	}
+	
 	PopUp_Speech_Bubble(Speech_Text, _DT);
 	PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
@@ -46,7 +38,11 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Player_CrystalModify();
 		Timer02 = 0.f;
 	}
+
+	if (KEY_DOWN(DIK_M))	Player_LostHP();
+	if (KEY_DOWN(DIK_N))	Player_ReFillHP(1);
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
+
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -56,10 +52,13 @@ VOID	MainUI::Render_GameObject() {
 	Component_Sprite->Render_Sprite();
 }
 VOID MainUI::Player_LostHP() {
-	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
+
+	INT PlayerHP = COLLIDER(PlayerObject)->Get_Hp();
 	if (PlayerHP > 0) {
+
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
+		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
 		REPLAY_UI_EFFECT(UIKey_HP);
 
 		UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
@@ -69,9 +68,24 @@ VOID MainUI::Player_LostHP() {
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
 	}
 }
+VOID MainUI::Player_ReFillHP(INT _HP) {
+	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
+	INT healHP = PlayerHP + _HP;
+
+	for (int i = PlayerHP + 1; i <= healHP; i++) {
+		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
+
+		UIKey_HP = L"HP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		UIKey_HP = L"EHP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+	}
+	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(healHP);
+}
 VOID MainUI::Player_KeyModify() {
 	if (Current_KeyCount != PlayerObject->Get_Key()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"KeyCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"KeyCountText");
 		if(Current_KeyCount < PlayerObject->Get_Key())
 			Font->Set_Text(to_wstring(++Current_KeyCount));
 		else
@@ -80,7 +94,7 @@ VOID MainUI::Player_KeyModify() {
 }
 VOID MainUI::Player_MoneyModify() {
 	if (Current_CoinCount != PlayerObject->Get_Coin()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"CoinCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"CoinCountText");
 		if (Current_CoinCount < PlayerObject->Get_Coin())
 			Font->Set_Text(to_wstring(++Current_CoinCount));
 		else
@@ -89,7 +103,7 @@ VOID MainUI::Player_MoneyModify() {
 }
 VOID MainUI::Player_CrystalModify() {
 	if (Current_CrystalCount != PlayerObject->Get_Crystal()) {
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"CrystalCountText");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"CrystalCountText");
 		if (Current_CrystalCount < PlayerObject->Get_Crystal())
 			Font->Set_Text(to_wstring(++Current_CrystalCount));
 		else
@@ -107,10 +121,10 @@ VOID MainUI::Player_UseSkill() {
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 	}
 }
-VOID MainUI::PopUp_Interaction_Notice(wstring _Text, BOOL _Vis) {
+VOID MainUI::PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis) {
 	SpriteINFO* KeyBoard = Component_Sprite->Get_Texture(L"KEY_E");
 	SpriteINFO* InterBG = Component_Sprite->Get_Texture(L"Interaction_BG");
-	FontObject* FO = FontManager::GetInstance()->Find_FontObject(L"Interaction_Text");
+	FontObject* FO = UIManager::GetInstance()->Find_FontObject(L"Interaction_Text");
 	FO->Text = _Text;
 
 	if (_Vis) {
@@ -126,15 +140,14 @@ VOID MainUI::PopUp_Interaction_Notice(wstring _Text, BOOL _Vis) {
 	
 }
 VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
-	if (KEY_DOWN(DIK_J)) { ItemInfo = TRUE; }
 	if (ItemInfo) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"ItemNoticeBG");
 		SpriteINFO* ITEM = Component_Sprite->Get_Texture(ItemTag);
 
 		ItemINFO* iINFO = UIManager::GetInstance()->Find_Item(ItemTag);
 		
-		FontObject* InfoFont = FontManager::GetInstance()->Find_FontObject(L"ItemInfo");
-		FontObject* ClassFont = FontManager::GetInstance()->Find_FontObject(L"ItemClass");
+		FontObject* InfoFont = UIManager::GetInstance()->Find_FontObject(L"ItemInfo");
+		FontObject* ClassFont = UIManager::GetInstance()->Find_FontObject(L"ItemClass");
 
 		InfoFont->Set_Text(iINFO->ItemName);
 		ClassFont->Set_Text(iINFO->ItemClass);
@@ -198,15 +211,14 @@ VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
 	}
 }
 VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
-	if (KEY_DOWN(DIK_K)) { Speech_Bubble = TRUE; }
 	if (Speech_Bubble) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"SpeechBubble_BG");
 		SpriteINFO* Frame = Component_Sprite->Get_Texture(L"SpeechBubble_Frame");
 		SpriteINFO* Character = Component_Sprite->Get_Texture(L"SpeechBubble_Tif");
-		FontObject* Font = FontManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
 
 		//Font->Set_Text(_Text);
-		Font->Set_Text(L"¿Øπ∞¿« «ÂªÁ"); // µπˆ±◊øÎ
+		Font->Set_Text(L"Ïú†Î¨ºÏùò ÌóåÏÇ¨"); // ÎîîÎ≤ÑÍ∑∏Ïö©
 		if (Timer01 < 1.f) {
 			Timer01 += _DT;
 
@@ -267,6 +279,23 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			Font->Set_Pos( 180.f, 555.f + 30.f );
 		}
 	}
+}
+
+VOID MainUI::Player_ReFillHP(INT _HP)
+{
+	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
+	INT healHP = PlayerHP + _HP;
+
+	for (int i = PlayerHP + 1; i <= healHP; i++) {
+		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
+
+		UIKey_HP = L"HP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		UIKey_HP = L"EHP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+	}
+	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(healHP);
 }
 
 VOID MainUI::All_UI_FadeOUT() {
@@ -359,24 +388,23 @@ HRESULT MainUI::Effect_Initialize() {
 }
 HRESULT MainUI::Text_Initialize() {
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"°ƒ", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"‚àû", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
-	FontManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 180.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08º≠øÔ«—∞≠√º L", D3DCOLOR_ARGB(0, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 180.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08ÏÑúÏö∏ÌïúÍ∞ïÏ≤¥ L", D3DCOLOR_ARGB(0, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
 	return S_OK;
 }
 

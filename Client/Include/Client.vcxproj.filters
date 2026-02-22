@@ -79,26 +79,14 @@
     <Filter Include="03. GameObject\01. Player\00. Weapon">
       <UniqueIdentifier>{e6e37be2-21d9-4bae-9501-44337c752b3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\02. Monster\99. MonsterTest">
-      <UniqueIdentifier>{4e415e69-9a81-4ad9-95cf-47daa628d3d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\02. Monster\01. Boss\01. Docheol">
       <UniqueIdentifier>{85fcb151-c452-4026-b6ae-991bcb23747e}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\07. ProJectile">
       <UniqueIdentifier>{439bbeef-a25b-49de-a227-87dae46c6b96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\03. EnvEffect">
-      <UniqueIdentifier>{67951d9e-7d40-478f-8302-55c93ba9b870}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. UI\01. MainUI">
       <UniqueIdentifier>{c5ddb37a-c839-4e15-9417-7076814467ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\01. MainUI\MainMenuUI">
-      <UniqueIdentifier>{5aecb6cf-f877-4f39-8fe8-44da2610ab28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\InventoryUI">
-      <UniqueIdentifier>{9a0e251d-3851-4318-b454-5525a5729ca9}</UniqueIdentifier>
     </Filter>
     <Filter Include="04. UI\AugmentUI">
       <UniqueIdentifier>{cdda3270-297f-43a4-a689-5010dc732961}</UniqueIdentifier>
@@ -115,17 +103,8 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\01. Bat">
       <UniqueIdentifier>{47a98307-749c-40cc-a1ff-9d9504e380c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned">
-      <UniqueIdentifier>{33bbc5b6-90ed-40c6-b7f1-9e66c79c0b77}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. MonsterSummon">
-      <UniqueIdentifier>{972b69e8-ba8b-4e8f-9b7a-88f61efefedd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
       <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. MonsterSummon\00. MonsterEffect">
-      <UniqueIdentifier>{fc51ebe6-2fb3-4524-897b-a5e5fa378c26}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\01. Player\01. Arrow">
       <UniqueIdentifier>{876f658b-2647-4f66-9e4e-b05122adf8d0}</UniqueIdentifier>
@@ -144,6 +123,102 @@
     </Filter>
     <Filter Include="04. UI\05. ShopUI">
       <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\03.ScorpionBullet">
+      <UniqueIdentifier>{64a83776-8b63-4f8c-a8e9-b5d925e51d43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect">
+      <UniqueIdentifier>{fc51ebe6-2fb3-4524-897b-a5e5fa378c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul">
+      <UniqueIdentifier>{1373bb05-7100-44eb-a4c4-e35dfae4748b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\04. EvilSlime">
+      <UniqueIdentifier>{0b780999-08fa-451f-9e14-a7d3b1c136f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\SpeechBubble">
+      <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster">
+      <UniqueIdentifier>{ee57f866-6323-42e5-9cb1-5197f307d10f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\01. MidBoss">
+      <UniqueIdentifier>{2386c273-ae85-4301-9ecd-5c547055f3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss">
+      <UniqueIdentifier>{d57f7457-e1de-4708-b544-e425897f457c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\StateMachine">
+      <UniqueIdentifier>{2fb3d403-7a6d-406d-b1aa-cf37dc800bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\03. BossEffect">
+      <UniqueIdentifier>{167b9a35-bcb4-4383-9f4d-61d841e1a298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\02. DocheolScene">
+      <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\03. InventoryUI">
+      <UniqueIdentifier>{9a0e251d-3851-4318-b454-5525a5729ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Supporter">
+      <UniqueIdentifier>{30667666-39cc-42e0-b5ff-f65cdef8fcc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\02. DocheolScene">
+      <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog">
+      <UniqueIdentifier>{d8682e5d-8943-47f9-b9e1-164439ae83b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogAttack">
+      <UniqueIdentifier>{a06f45c6-5593-482c-9eac-e8ed95066549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogEffect">
+      <UniqueIdentifier>{f0879c72-92fb-40aa-b302-02bd683ee229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08.Rain">
+      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
+      <UniqueIdentifier>{e95b52e2-480a-4c4e-86e1-3bfb56eabb61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle">
+      <UniqueIdentifier>{ed052ccf-fa03-4629-b716-d94adcf42eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\01. CubeFloor">
+      <UniqueIdentifier>{330c0100-08f5-4694-872c-f0a71d93aa7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\99. MiniGameScene">
+      <UniqueIdentifier>{7b40fad7-addf-4aa7-8e5d-9fe597019890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop">
+      <UniqueIdentifier>{c9dc8ca7-5450-415f-b97d-495f792bcf2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\01. ShopKeeper">
+      <UniqueIdentifier>{73118245-8c6b-424a-ad1a-6f568d7c0e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\00. Shop">
+      <UniqueIdentifier>{6e02d8f9-d6ef-44c2-ba10-c8ef03fce255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\02. Stall">
+      <UniqueIdentifier>{cac3daa3-02e5-4da5-b443-898c2d593c85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\03. DropItem">
+      <UniqueIdentifier>{6e20169a-f86b-4124-9a9f-76e5c02f61bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\04. DropItemEffect">
+      <UniqueIdentifier>{9fd12251-ffa4-4d9d-8467-7920e29ac2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned">
+      <UniqueIdentifier>{8155a5ae-2b7c-4f41-9996-cacddc5e963b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark">
+      <UniqueIdentifier>{72c1af4c-c6e5-4c66-9ace-ef7ac3c50387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\05.EvilSlimeGroundIce">
+      <UniqueIdentifier>{c45efe71-4311-43eb-8fe1-d2596bf2b95e}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
+      <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -222,18 +297,6 @@
     <ClInclude Include="CXZTile.h">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\MainMenuButton.h">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainUI.h">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainMenu.h">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainMenuLogo.h">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\DebugScene.h">
       <Filter>02. Scene\99. DebugScene</Filter>
     </ClInclude>
@@ -246,14 +309,8 @@
     <ClInclude Include="..\Header\Bow.h">
       <Filter>03. GameObject\01. Player\00. Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\MonsterTest.h">
-      <Filter>03. GameObject\02. Monster\99. MonsterTest</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\UIEffect.h">
       <Filter>03. GameObject\06. Effect\04. UIEffect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Monster1.h">
-      <Filter>03. GameObject\02. Monster\00. BaseMonster</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Docheol.h">
       <Filter>03. GameObject\02. Monster\01. Boss\01. Docheol</Filter>
@@ -268,13 +325,7 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\PlayerInven.h">
-      <Filter>04. UI\InventoryUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Object_Explain.h">
-      <Filter>04. UI\InventoryUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Augments.h">
-      <Filter>04. UI\AugmentUI</Filter>
+      <Filter>04. UI\03. InventoryUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Bullet_Standard.h">
       <Filter>03. GameObject\07. ProJectile\01.Bullet_Standard</Filter>
@@ -282,17 +333,11 @@
     <ClInclude Include="..\Header\Fireball.h">
       <Filter>03. GameObject\07. ProJectile\02.Fireball</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\MonsterSummon01.h">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MonsterSummon03.h">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\ScorpionEvilSoul.h">
       <Filter>03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\MonsterEffect.h">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. MonsterSummon\00. MonsterEffect</Filter>
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Arrow.h">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
@@ -305,6 +350,112 @@
     </ClInclude>
     <ClInclude Include="..\Header\ShopUI.h">
       <Filter>04. UI\05. ShopUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ScorpionBullet.h">
+      <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\EvilSlime.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\04. EvilSlime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\FieldApostle.h">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\SpeechBubble.h">
+      <Filter>04. UI\SpeechBubble</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Spawner.h">
+      <Filter>03. GameObject\05. Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DoCheolScene.h">
+      <Filter>02. Scene\02. DocheolScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Augment.h">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\FinalBoss.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\BossEffect.h">
+      <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\StateMachine.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Object_Explain.h">
+      <Filter>04. UI\03. InventoryUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainMenu.h">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainMenuButton.h">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainMenuLogo.h">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainUI.h">
+      <Filter>04. UI\02. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Supporter.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Cheonlog.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLAttack.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLEffect.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLcrystal.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Rain.h">
+      <Filter>03. GameObject\08.Rain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Bullet_Chain_Head.h">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Bullet_Chain.h">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ShotGunEvilSoul.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DocheolAppearMark.h">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Alert.h">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MiniGameScene.h">
+      <Filter>02. Scene\99. MiniGameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CubeFloorTile.h">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DropItem.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\03. DropItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\SupplyBigCat.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\01. ShopKeeper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Stall.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\02. Stall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DropItemEffect.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\04. DropItemEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ShopKeeper.h">
+      <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MonsterTest.h" />
+    <ClInclude Include="..\Header\EvilSlimeGroundIce.h">
+      <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Header\BossFireBall.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -365,18 +516,6 @@
     <ClCompile Include="CXZTile.cpp">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MainMenuButton.cpp">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainUI.cpp">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainMenu.cpp">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainMenuLogo.cpp">
-      <Filter>04. UI\01. MainUI\MainMenuUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\DebugScene.cpp">
       <Filter>02. Scene\99. DebugScene</Filter>
     </ClCompile>
@@ -389,14 +528,8 @@
     <ClCompile Include="..\Code\Bow.cpp">
       <Filter>03. GameObject\01. Player\00. Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MonsterTest.cpp">
-      <Filter>03. GameObject\02. Monster\99. MonsterTest</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\UIEffect.cpp">
       <Filter>03. GameObject\06. Effect\04. UIEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Monster1.cpp">
-      <Filter>03. GameObject\02. Monster\00. BaseMonster</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Docheol.cpp">
       <Filter>03. GameObject\02. Monster\01. Boss\01. Docheol</Filter>
@@ -410,32 +543,14 @@
     <ClCompile Include="..\Code\TileDestoryEffect.cpp">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Object_Explain.cpp">
-      <Filter>04. UI\InventoryUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Augments.cpp">
-      <Filter>04. UI\AugmentUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Bullet_Standard.cpp">
       <Filter>03. GameObject\07. ProJectile\01.Bullet_Standard</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Fireball.cpp">
       <Filter>03. GameObject\07. ProJectile\02.Fireball</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MonsterEffect.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. MonsterSummon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MonsterSummon01.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MonsterSummon03.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\ScorpionEvilSoul.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MonsterEffect.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. MonsterSummon\00. MonsterEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Arrow.cpp">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
@@ -447,10 +562,120 @@
       <Filter>04. UI\04. NPCTalk</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\PlayerInven.cpp">
-      <Filter>04. UI\InventoryUI</Filter>
+      <Filter>04. UI\03. InventoryUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ShopUI.cpp">
       <Filter>04. UI\05. ShopUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ScorpionBullet.cpp">
+      <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ShotGunEvilSoul.cpp">
+      <Filter>03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\EvilSlime.cpp">
+      <Filter>03. GameObject\02. Monster\02. Monster\04. EvilSlime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MonsterEffect.cpp" />
+    <ClCompile Include="..\Code\FieldApostle.cpp">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SpeechBubble.cpp">
+      <Filter>04. UI\SpeechBubble</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Spawner.cpp">
+      <Filter>03. GameObject\05. Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DoCheolScene.cpp">
+      <Filter>02. Scene\02. DocheolScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MonsterEffect.cpp">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Augment.cpp">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FinalBoss.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\BossEffect.cpp">
+      <Filter>03. GameObject\06. Effect\03. BossEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StateMachine.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Object_Explain.cpp">
+      <Filter>04. UI\03. InventoryUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainMenu.cpp">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainMenuButton.cpp">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainMenuLogo.cpp">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainUI.cpp">
+      <Filter>04. UI\02. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Supporter.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Cheonlog.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLAttack.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLEffect.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLcrystal.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Rain.cpp">
+      <Filter>03. GameObject\08.Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Bullet_Chain_Head.cpp">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Bullet_Chain.cpp">
+      <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DocheolAppearMark.cpp">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Alert.cpp">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MiniGameScene.cpp">
+      <Filter>02. Scene\99. MiniGameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CubeFloorTile.cpp">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DropItem.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\03. DropItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SupplyBigCat.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\01. ShopKeeper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Stall.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\02. Stall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DropItemEffect.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\04. DropItemEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ShopKeeper.cpp">
+      <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MonsterTest.cpp" />
+    <ClCompile Include="..\Code\EvilSlimeGroundIce.cpp">
+      <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Code\BossFireBall.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

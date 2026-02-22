@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "PlayerEquipMent.h"
-
+#include "UIManager.h"
 
 class PlayerInven :  public GameObject {
 	explicit PlayerInven(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -47,8 +46,10 @@ private:
 	vector<SpriteINFO*> ItemInfo_Screen;
 
 	BOOL			EquipMode;
-	ItemINFO*		EquipObject;
+	ItemINFO**		EquipObject;
+	ItemINFO*		JunkObject;
 
 private:
 	virtual	VOID		Free();
 };
+

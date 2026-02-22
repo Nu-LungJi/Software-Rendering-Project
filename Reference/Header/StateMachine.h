@@ -5,9 +5,9 @@ BEGIN(Engine)
 
 class ENGINE_DLL State {
 public:
-	virtual VOID FSM_StateEnter()	= 0;
-	virtual VOID FSM_StateUpdate()	= 0;
-	virtual VOID FSM_StateExit()	= 0;
+	virtual VOID FSM_StateEnter()	 = 0;
+	virtual VOID FSM_StateUpdate()	 = 0;
+	virtual VOID FSM_StateExit()	 = 0;
 
 	virtual ~State() {};
 };
@@ -28,8 +28,8 @@ public:
 
 public:
 	VOID		FSM_StateChange(State* _State);
-	VOID		FSM_StateInit(State* _State) { CurrentState = _State; }
-	State*		FSM_GetCurrentState() { return CurrentState; }
+	VOID		FSM_StateInit(State* _State)		{ CurrentState = _State; StateHistory.push_back(_State); }
+	State*		FSM_GetCurrentState()				{ return CurrentState; }
 
 public:
 	static		StateMachine*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -38,6 +38,8 @@ public:
 private:
 	State*				CurrentState;
 	State*				PreviousState;
+
+	vector<State*>		StateHistory;
 private:
 	virtual		VOID	Free();
 };
