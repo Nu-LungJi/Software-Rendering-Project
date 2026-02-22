@@ -52,6 +52,7 @@ VOID MainUI::Player_LostHP() {
 	if (PlayerHP > 0) {
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
+		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
 		REPLAY_UI_EFFECT(UIKey_HP);
 
 		UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
@@ -257,6 +258,23 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			Font->Set_Pos( 180.f, 555.f + 30.f );
 		}
 	}
+}
+
+VOID MainUI::Player_ReFillHP(INT _HP)
+{
+	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
+	INT healHP = PlayerHP + _HP;
+
+	for (int i = PlayerHP + 1; i <= healHP; i++) {
+		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(i);
+
+		UIKey_HP = L"HP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		UIKey_HP = L"EHP_SPRITE" + to_wstring(i);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+	}
+	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(healHP);
 }
 
 VOID MainUI::All_UI_FadeOUT() {

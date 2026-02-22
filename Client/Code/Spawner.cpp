@@ -77,16 +77,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		//Monster_Spawn();
+		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		//Monster_Spawn2();
+		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		//Monster_Spawn3();
+		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		//Monster_Spawn4();
+		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 		break;

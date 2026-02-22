@@ -22,6 +22,7 @@ public:		// Trigger Function
 	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
+	VOID			Player_ReFillHP(INT _HP);
 
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Speech_Bubble = TRUE; }
 

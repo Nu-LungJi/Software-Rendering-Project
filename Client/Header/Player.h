@@ -123,8 +123,8 @@ public:
 	float	Get_Speed()				{ return _speed;}
 	void	Set_Speed(INT _value)	{ _speed = _value; }
 
-	int		Get_HP() { return _hp; }
-	void	Set_HP(INT _value) { _hp = _value; }
+	int		Get_HP() { return Component_Collider->Get_Hp(); }
+	void	Set_HP(INT _value) { Component_Collider->Set_Hp(_value); }
 
 	int		Get_Key() { return _key; }
 	void	Set_Key(INT _value) { _key = _value; }
@@ -166,6 +166,8 @@ public:
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
+
+	void	Set_Invincible(bool value) { _isInvincible = value;  }
 
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
@@ -229,6 +231,7 @@ private:
 	float			_originArrowSpeed;
 	float			_originDefualtSpeed;
 
+	float			_alphaRatio;
 	bool			_isInvincible;		// 무적 상태
 	float			_invincibleTimer;	//무적 타이머
 	////////////////// UI

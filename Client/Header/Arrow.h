@@ -44,6 +44,7 @@ private:
 public:
 	static Arrow*	Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir);
 	int				Get_Atk()	{ return _arrowAtk; }
+	void			Set_HP(int hp) { _hp = hp; }
 	BOOL			OnCollisionEnter(GameObject* _Other);
 	BOOL			OnCollisionStay(GameObject* _Other);
 private:

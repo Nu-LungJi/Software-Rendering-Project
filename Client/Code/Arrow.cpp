@@ -84,6 +84,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         case ArrowType::IceCharging:
+            Size = { 2.5f, 2.5f, 2.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         case ArrowType::EvilHead_Arrow:
@@ -166,6 +167,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         case ArrowType::IceCharging:
+            Size = { 2.5f, 2.5f, 2.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         case ArrowType::EvilHead_Arrow:

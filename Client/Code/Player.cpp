@@ -20,16 +20,20 @@ HRESULT Player::Ready_GameObject() {
 	_dashTime			= 0.f;
 	_dashG				= 30.f;
 	_speed				= 0.f;
-	_slideTime = 0.f;
-	_g = 30.f;
-	_frame = 1;
-	_arrowCount = 0;
-	_isStop = false;
-	_skillTimer = 0.f;
-	_animSpeed = 1.f;
+	_slideTime			= 0.f;
+	_g					= 30.f;
+	_frame				= 1;
+	_arrowCount			= 0;
+	_isStop				= false;
+	_skillTimer			= 0.f;
+	_animSpeed			= 1.f;
+	_isInvincible		= false;
+	_invincibleTimer	= 0.f;
+	_alphaRatio			= 1.f;
 
 	// UI
-	_hp					= 5;
+	Component_Collider->Set_Hp(5.f);
+	Component_Collider->Set_Att(1.f);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -95,6 +99,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
+		_frame = 1;
+		_pState = pState::STATE_DEATH;
+	}
+
+	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 	}
@@ -165,6 +174,11 @@ VOID Player::Render_GameObject() {
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	// 초기화
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 HRESULT Player::Component_Initialize() {
 	Component_Buffer	= ADD_COMPONENT_RECTTEX;
@@ -200,7 +214,6 @@ void Player::Reset()
 	_isStop = false;
 
 	// UI
-	_hp					= 5;
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -214,6 +227,9 @@ void Player::Reset()
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
 	_maxArrow			= 1.f;
+
+	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	mainUI->Player_ReFillHP(5);
 
 	for (int i = 1; i < 4; i++) {
 		if (_weaponSlot[i] != nullptr) {
@@ -871,6 +887,16 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 
 void Player::SetGrahpic()
 {
+	DWORD tfactor = D3DCOLOR_ARGB(
+		(BYTE)(_alphaRatio * 255.f),
+		255, 255, 255
+	);
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
 	TCHAR FileName[128] = L"";
 
 	switch (_eState)
@@ -1120,6 +1146,16 @@ void Player::SetGrahpic()
 		Anim(FileName, 0.1f, 10);
 		break;
 	}
+
+	// COLOR = Texture * TFACTOR
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+	// ALPHA = TextureAlpha * TFACTORAlpha
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 {
