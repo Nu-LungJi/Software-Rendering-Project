@@ -72,7 +72,8 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
 	{
 		m_tInfo.Textureinfo._frameTick = 0.f;
-		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+		if(m_tInfo.Textureinfo._Endframe > 0)
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 
 	AlphaZValue=Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
