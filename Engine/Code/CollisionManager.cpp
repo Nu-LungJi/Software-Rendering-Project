@@ -42,7 +42,7 @@ BOOL CollisionManager::AABB_Collision() {
 				[&](GameObject* pObj) {return pObj == SOBJ; });
 
 			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
-				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
+				//(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
 				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
 
 				if (iterS == SRC->Get_ObjList().end()) {
