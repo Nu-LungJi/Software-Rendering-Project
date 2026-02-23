@@ -33,7 +33,8 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
-		if (MYSCALE->x < 0.5f)
+		_float fsize = MYSCALE->x;
+		if (fsize <= 1.f)
 		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
 		}
@@ -201,14 +202,14 @@ BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 	default:
 		Tag = _Other->Get_ObjectTag();
 		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
-		return 0;
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_DISAPPEAR:
-	case MONSTER_STATE_CASTING:
-	case EVILSLIME_FISSION:
-		return 0;
+		return true;
+	//case MONSTER_STATE_SUMMON:
+	//case MONSTER_STATE_APPEAR:
+	//case MONSTER_STATE_DEAD:
+	//case MONSTER_STATE_DISAPPEAR:
+	//case MONSTER_STATE_CASTING:
+	//case EVILSLIME_FISSION:
+	//	return 0;
 	}
 
 	return FALSE;
