@@ -37,6 +37,8 @@ INT  CLcrystal::Update_GameObject(const _float& _DT) {
 }
 void CLcrystal::LateUpdate_GameObject(const _float& _DT) {
 
+	if (dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu() == CL_DEAD)
+		Set_ObjectDead(TRUE);
 }
 void CLcrystal::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

@@ -34,9 +34,18 @@ BOOL CollisionManager::AABB_Collision() {
 			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ)	continue;
 			Collider* DEST = dynamic_cast<Collider*>(DOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 			if (DEST == nullptr) continue;
-			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
-				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
-				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
+
+			_vec3 DstMax, DstMin, SrcMax, SrcMin ;
+	
+			DstMax = { floor(DEST->Get_MaxPoint().x),floor(DEST->Get_MaxPoint().y),floor(DEST->Get_MaxPoint().z)};
+			DstMin = { floor(DEST->Get_MinPoint().x),floor(DEST->Get_MinPoint().y),floor(DEST->Get_MinPoint().z) };
+			
+			SrcMax = { floor(SRC->Get_MaxPoint().x),floor(SRC->Get_MaxPoint().y),floor(SRC->Get_MaxPoint().z) };
+			SrcMin = { floor(SRC->Get_MinPoint().x),floor(SRC->Get_MinPoint().y),floor(SRC->Get_MinPoint().z) };
+
+			if ((SrcMax.x >= DstMin.x) && (DstMax.x >= SrcMin.x) &&
+				(SrcMax.y >= DstMin.y) && (DstMax.y >= SrcMin.y) &&
+				(SrcMax.z >= DstMin.z) && (DstMax.z >= SrcMin.z)) {
 				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
 					SOBJ->Add_CollisionObject(DOBJ);
 					DOBJ->Add_CollisionObject(SOBJ);

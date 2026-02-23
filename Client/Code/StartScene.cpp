@@ -97,10 +97,11 @@ HRESULT	StartScene::Ready_Scene() {
 
 		}
 
-		TileManager::GetInstance()->Set_StageCnt();
 		MSG_BOX("로드 성공");
 		CloseHandle(hFile);
 	}
+
+	TileManager::GetInstance()->Set_StageCnt();
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 

@@ -13,7 +13,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
 
     // Temp
     Component_Collider->Set_Hp(1.f);
-    Component_Collider->Set_Att(30.f);
+    Component_Collider->Set_Att(arrowAtk);
     // 쓰시는거 같아서 남겨둡니다
   
     _bowType = _BOWTYPE;
@@ -460,9 +460,17 @@ Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int
 BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 {
     wstring Tag = _Other->Get_ObjectTag();
+    int hp = Component_Collider->Get_Hp();
+    int atk = COLLIDER(_Other)->Get_Att();
 
     if (Tag == L"Monster") {
         Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        return TRUE;
+    }
+    else if (Tag == L"CheonLog") {
+        atk = 1.f;
+        Component_Collider->Set_Hp(hp - atk);
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         return TRUE;
     }
 

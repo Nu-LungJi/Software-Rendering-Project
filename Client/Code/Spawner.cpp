@@ -1,13 +1,17 @@
 #include "../Include/PCH.h"
-#include "Spawner.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bTrigger(false), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
 HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn) {
 
 	if (FAILED(Component_Initialize(eid, eSpawn))) return E_FAIL;
+
+	if (eSpawn == TILE_SPAWNER::CL_SPAWN)
+	{
+		m_bSpawn = true;
+	}
 
 	return S_OK;
 }
@@ -77,16 +81,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		Monster_Spawn();
+		//Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		Monster_Spawn2();
+		//Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		Monster_Spawn3();
+		//Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		Monster_Spawn4();
+		//Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 	
@@ -105,9 +109,9 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 
 	case TILE_SPAWNER::ITEM_SPAWN6:
 		break;
-
 	case TILE_SPAWNER::CL_SPAWN:
- 		//CL_Spawn();
+ 		CL_Spawn();
+		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
 		Boss();
 		break;
@@ -125,7 +129,6 @@ void Spawner::Monster_Spawn()
 		m_bSpawn = true;
 	}
 }
-
 void Spawner::Monster_Spawn2()
 {
 	if (!m_bSpawn)
@@ -159,17 +162,27 @@ void Spawner::Monster_Spawn4()
 
 void Spawner::CL_Spawn()
 {
+	_vec3 vPos;
+	vPos = *m_pTransform->Get_Position();
+	
+	if (!m_bTrigger)
+	{
+		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Set_CameraMove(true);
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->CheonLog_Respawn(0);
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Obj(this, vPos);
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Move(false);
+		m_bTrigger = true;
+	}
+	
 	if (!m_bSpawn)
 	{
-		_vec3 vPos;
-		m_pTransform->Get_Info(INFO_POS, &vPos);
 		Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
-
 		pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		pCL->Set_ObjectTag(L"CheonLog");
 		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 		m_bSpawn = true;
 	}
+		
 }
 
 

@@ -248,7 +248,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		Tile_Gasi_Destory(_DT);
 		break;
 	case TILE_STATE::STATE_BOOM:
-		//Tile_Boom(_DT);
+		Tile_Boom(_DT);
 		break;
 	}
 	
@@ -322,7 +322,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 		if (!m_pTileInfo->Get_OnlyAnimation())
 		{
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
-			//SoundManager::GetInstance()->Play_Sound(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01);
+		//	SoundManager::GetInstance()->Play_Sound(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01);
 		}
 			
 		++m_fFrame;
@@ -513,12 +513,12 @@ Transform* CXZTile::Crash_Player()
 			{
 				if (vPos.z < vTilePos.z)
 				{
-					vPos.z -= fHalfz + 0.01f;
+					vPos.z -= fHalfz + 0.001f;
 					pPlayer->Set_Pos(vPos);
 				}
 				else
 				{
-					vPos.z += fHalfz + 0.01f;
+					vPos.z += fHalfz + 0.001f;
 					pPlayer->Set_Pos(vPos);
 				}
 			}
@@ -527,12 +527,12 @@ Transform* CXZTile::Crash_Player()
 
 				if (vPos.x < vTilePos.x)
 				{
-					vPos.x -= fHalfx + 0.01f;
+					vPos.x -= fHalfx + 0.001f;
 					pPlayer->Set_Pos(vPos);
 				}
 				else
 				{
-					vPos.x += fHalfx + 0.01f;
+					vPos.x += fHalfx + 0.001f;
 					pPlayer->Set_Pos(vPos);
 				}
 			}

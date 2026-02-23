@@ -93,7 +93,9 @@ INT  CLEffect::Update_GameObject(const _float& _DT) {
 	return 0;
 }
 void CLEffect::LateUpdate_GameObject(const _float& _DT) {
-
+	
+	if (dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu() == CL_DEAD)
+		Set_ObjectDead(TRUE);
 
 }
 void CLEffect::Render_GameObject() {

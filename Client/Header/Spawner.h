@@ -24,6 +24,7 @@ public:
     void                    Monster_Spawn3();
     void                    Monster_Spawn4();
     void                    CL_Spawn();
+    void                    Set_Spawn(_bool bSpawn) { m_bSpawn = bSpawn; }
 
     Transform*               Crash_Player();
     void                      Boss();
@@ -38,6 +39,7 @@ private:
     _float                  m_fTime;
     _bool                   m_bStopFrame;
     _bool                   m_bSpawn;
+    _bool                   m_bTrigger;
 public:
     static         Spawner* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_SPAWNER eSpawn);
 

@@ -17,10 +17,9 @@ HRESULT		Collider::Ready_Component() {
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
 	if (nullptr == ColliderPos)
 		return 0;
-
 	CenterPos = *ColliderPos->Get_Position();
 	CenterPos += Offset;
-	
+
 	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
 	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
 	// 1차 통합 테스트

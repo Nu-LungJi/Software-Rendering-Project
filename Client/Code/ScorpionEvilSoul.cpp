@@ -63,7 +63,10 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	}
 
 	if (ObjectDead)
+	{
+		TileManager::GetInstance()->Set_StageArray();
 		return -1;
+	}
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 
@@ -363,6 +366,6 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpoinEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	TileManager::GetInstance()->Set_StageArray();
+	
 	ObjectDead = true;
 }

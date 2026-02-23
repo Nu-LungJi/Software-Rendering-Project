@@ -100,7 +100,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 9)
+    if (m_iDeadCnt >= 9 || dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu()==CL_DEAD)
         Set_ObjectDead(TRUE);
 
 }
@@ -288,7 +288,7 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
     vPos = *Component_Transform->Get_Position();
 
     if (m_TextureIndex == 16)
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,-0.2f,vPos.z - 3 }, TRUE, { 6,0,5 }, { 20,0,0 }, 0.1f));
+        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,vPos.y,vPos.z }, TRUE, { 6,0,5 }, { 0,0,0 }, 0.1f));
     if (m_TextureIndex == 25)
         Component_Transform->Set_Scale(5.f, 5.f, 5.f);
 

@@ -9,7 +9,6 @@ HRESULT	MapScene::Ready_Scene() {
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 	Ready_UserInterface_Layer(L"UI_Layer");
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
@@ -137,9 +136,15 @@ HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 	
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
-//	Add_GameObjectToScene<Cheonlog>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"CheonLog");
+
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+	
+	//Cheonlog* pCL = Cheonlog::Create(GRPDEV, {0,0,0});
+	//
+	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//pCL->Set_ObjectTag(L"CheonLog");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 
 	//Rain* pObj = Rain::Create(GRPDEV);
 	//pObj->Set_ObjectTag(L"Rain");

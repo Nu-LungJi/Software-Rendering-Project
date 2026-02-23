@@ -33,6 +33,10 @@ public:
 	FLOAT*			Get_Speed() { return &CameraSpeed; }
 	BOOL			Set_Speed(FLOAT _Value) { CameraSpeed = _Value; return TRUE; }
 
+	void			Set_Tracking_Player(BOOL bCameMove) { Camera_Move = bCameMove; }
+	void			Set_Obj(GameObject* pDst, _vec3 Center) { pObj = pDst; vCenter = Center; }
+	void			Set_Move(BOOL bMove) { StopMove = bMove; }
+	void			CheonLog_Respawn(CONST FLOAT& _DT);
 private:
 	HRESULT			Component_Initialize();
 
@@ -51,6 +55,7 @@ private:
 
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
+	BOOL		StopMove;
 
 	//GameObject* Player;
 
@@ -62,8 +67,11 @@ private:
 	_vec3		OriginEye;
 	_vec3		OriginAt;
 
-
+	_vec3		vCenter;
+	_vec3		vPlayer;
 	_vec3		m_vVelocity;
+
+	GameObject*		pObj;
 
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);

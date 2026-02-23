@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bStartPattern(false), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
+Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bDead(false), m_bStartPattern(false), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
 Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
 Cheonlog::~Cheonlog() {}
 
@@ -8,18 +8,33 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 	
 	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Stand_R_0%d.png",    CL_IDELR);
-	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Jump_L_045_0%d.png", CL_LJUMP);
-	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_RU_135_0%d.png",     CL_RJUMP);
+	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_Jump_L_045_0%d.png", CL_LJUMP);
+	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_LU_135_0%d.png",    CL_LUJUMP);
+	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_Jump_R_045_0%d.png", CL_RUJUMP);
+	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_RU_135_0%d.png",     CL_RJUMP);
+	Texture_Initalize(26, L"Spr_Boss_Cheonlog_Death_0%d.png",			  CL_DEAD);
 	m_fPivot = 0.1f;
 	m_eCheck = IDEL;
 	m_eStatu = SPAWN;
 	m_vCenter = vPos;
+
+	//m_eStatu = CL_IDELR;
+	
+	
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
+
 	return S_OK;
 }
 INT	Cheonlog::Update_GameObject(const _float& _DT)
 {
+	if (Component_Collider->Get_Hp() <= 0)
+	{
+		m_bStartPattern = false;
+		m_eStatu = CL_DEAD;
+	}
+
 	GameObject::Update_GameObject(_DT);
 
 	{
@@ -37,7 +52,11 @@ INT	Cheonlog::Update_GameObject(const _float& _DT)
 		matWorld = matScale * matBill;
 		memcpy(matWorld.m[3], vPos, sizeof(_vec3));
 		Component_Transform->Set_World(&matWorld);
-		Component_Transform->Set_Pos({ matWorld._41 , 0.5f , matWorld._43 });
+		
+		if(m_eStatu == CL_DEAD && m_iFrameCnt == m_vecCheonlogTexture[m_eStatu].size() - 1)
+			Component_Transform->Set_Pos({ matWorld._41 , -0.4f , matWorld._43 });
+		else
+			Component_Transform->Set_Pos({ matWorld._41 , 0.8f , matWorld._43 });
 	}
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
@@ -45,11 +64,18 @@ INT	Cheonlog::Update_GameObject(const _float& _DT)
 void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
-	//Change_Pattern(_DT);
-	Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
-
+	
+	if (!m_bDead)
+	{
+		Change_Pattern(_DT);
+		Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
+	}
+	
 }
 void Cheonlog::Render_GameObject() {
+	if (m_eStatu == SPAWN)
+		return;
+
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -65,13 +91,15 @@ HRESULT Cheonlog::Component_Initialize() {
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(3.f, 3.f, 3.f);
+	Component_Transform->Set_Scale(4.f, 4.f, 4.f);
 	Component_Transform->Set_Pos(0.f, 0.5f, 0.f);
 	//좌우반전
 	//Component_Transform->Set_Scale(-2.f, 2.f, 2.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Hp(100);
+
 	Component_Collider->Set_Scale(2.f, 1.5f, 2.f);
 
 	return S_OK;
@@ -110,12 +138,22 @@ void Cheonlog::Set_Statu()
 	case CL_RJUMP:
 		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
 		break;
+	case CL_RUJUMP:
+		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
+		break;
+	case CL_LUJUMP:
+		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
+		break;
+	case CL_DEAD:
+		GRPDEV->SetTexture(0, m_vecCheonlogTexture[m_eStatu][m_iFrameCnt]);
+		break;
 	}
 }
 void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 {
 	_vec3 vPos,vScale;
 	Component_Transform->Get_Info(INFO_POS, &vPos);
+	vScale = *Component_Transform->Get_Scale();
 
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_Z))
 	{
@@ -127,14 +165,13 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		vPos.z += 0.5;
 		Component_Transform->Set_Pos(vPos);
 	}
-	//if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
-	//{
-	//	m_eCheck = ATTACK_B;
-	//}
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
+	{
+		m_eStatu = CL_RJUMP;
+	}
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_L))
 	{
-		m_eStatu = CL_IDELR;
-		m_iSkillDelay = 0;
+		Component_Collider->Set_Hp(0);
 	}
 	if (m_bStartPattern)
 	{
@@ -143,7 +180,7 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_M))
 	{
 		//m_eCheck = ATTACK_B;
-		m_eStatu = SPAWN;
+		//m_eStatu = SPAWN;
 	}
 	//이동 모션 관련
 	switch (m_eStatu)
@@ -165,6 +202,29 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		CL_Jump(_DT, iMaxCnt);
 		break;
 	case CL_RJUMP:
+		CL_JumpCenter(_DT, iMaxCnt);
+		break;
+	case CL_DEAD:
+		m_frameTick += _DT;
+		if (m_frameTick > 0.1)
+		{
+			++m_iFrameCnt;
+			vScale -= {0.1f, 0.1f, 0.1f};
+			Component_Transform->Set_Scale(vScale);
+
+			m_frameTick = 0;
+		}
+		if (m_iFrameCnt > iMaxCnt - 1)
+		{
+			Component_Transform->Set_Pos(vPos.x, -0.4, vPos.z);
+			m_iFrameCnt = iMaxCnt - 1;
+			m_bDead = true;
+		}
+		break;
+	case CL_RUJUMP:
+		CL_Jump(_DT, iMaxCnt);
+		break;
+	case CL_LUJUMP:
 		CL_JumpCenter(_DT, iMaxCnt);
 		break;
 	}
@@ -205,7 +265,6 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
 	{
 		vPos = { 0,0,0 };
-	
 		m_eCheck = ATTACK_A;
 		m_EndEffect = true;
 	}
@@ -219,7 +278,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 		m_framePattern += _DT;
 		if (m_framePattern > 3)
 		{
-			Reset_Pattern(ATTACK_A, CL_IDELR);
+				Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
 		}
 	}
@@ -227,16 +286,19 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 5)
+		if (m_framePattern > 7)
 		{
-			Reset_Pattern(IDEL, CL_RJUMP);
-			return;
+			if(m_eCurr == CL_LJUMP)
+				Reset_Pattern(IDEL, CL_RJUMP);
+			else
+				Reset_Pattern(IDEL, CL_LUJUMP);
+
 		}
 	}
 	if (m_iNextSkill == 4 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 7)
+		if (m_framePattern > 8)
 		{
 			Reset_Pattern(ATTACK_B, CL_IDELR);
 			return;
@@ -245,25 +307,25 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 5 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 9)
+		if (m_framePattern > 14)
 		{
 			Reset_Pattern(ATTACK_C, CL_IDELR);
 			return;
 		}
 	}
-	if (m_iNextSkill == 6 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	if (m_iNextSkill < 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 14)
+		if (m_framePattern > 20)
 		{
 			Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
 		}
 	}
-	if (m_iNextSkill == 7 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	if (m_iNextSkill == 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 18)
+		if (m_framePattern > 25)
 		{
 			Reset_Pattern(ATTACK_D, CL_IDELR);
 			return;
@@ -326,7 +388,6 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 		{
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, {vPos.x,-0.2f,vPos.z}, FALSE, {6,0,5}, {0,0,0}, 0.2f));
 			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(Create_Leaf_Second({ vPos.x,2.f,vPos.z + 3.f }));
-
 			m_EndEffect = false;
 		}
 		break;
@@ -338,16 +399,14 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 			D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 90));
 			D3DXVec3TransformNormal(&vLookReset, &vLook, &matRotY);
 		
-			vPos += vLookReset * 3;
+			vPos += vLookReset * 6;
 		
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x  , -0.2f ,vPos.z + _float(i * 0.001) }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.08f));
 			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(Create_Leaf_Second({ vPos.x  , 2.f, vPos.z  }));
 			vLookReset = { 0,0,0 };
 			vPos = vOrigin;
-		}
-			
+		}	
 			m_EndEffect = false;
-		
 		}
 		break;
 	case 2:
@@ -358,14 +417,14 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 				D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 40));
 				D3DXVec3TransformNormal(&vLookReset, &vLook, &matRotY);
 
-				vPos += vLookReset * 8;
+				vPos += vLookReset * 13;
 
 				EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x  , -0.2f ,vPos.z + _float(i * 0.001)}, FALSE, { 6,0,5 }, { 0,0,0 }, 0.08f));
 				SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(Create_Leaf_Second({ vPos.x  , 2.f, vPos.z }));
 				vLookReset = { 0,0,0 };
 				vPos = vOrigin;
 			}
-
+			
 			m_eCheck = IDEL;
 			m_iSkillCnt = 0;
 			m_EndEffect = false;
@@ -441,6 +500,7 @@ void Cheonlog::AttackLeaf_Four(const _float& _DT, _vec3 vPos)
 			m_iSkillCnt = 0;
 			m_iNextSkill = 0;
 			m_iSkillDelay = 0;
+			m_iFrameCnt = 0;
 		}
 	}
 
@@ -542,7 +602,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	m_frameAttack += _DT;
 	switch (m_iSkillDelay)
 	{
-	case 3:
+	case 5:
 		for (_int i = 0; i < 12; ++i)
 		{
 			D3DXMatrixRotationY(&matRotY, D3DXToRadian(i*30));
@@ -563,14 +623,15 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 		++m_iSkillDelay;
 		m_frameAttack = 0;
 	}
-	if (m_iSkillDelay > 7)
+	if (m_iSkillDelay > 12)
 	{
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Tracking_Player(false);
+
 	}
 		
 }
-
 void Cheonlog::Create_Crystal()
 {
 	if (!m_bCrystal)
@@ -599,6 +660,7 @@ void Cheonlog::Create_Crystal()
 		m_bCrystal = true;
 	}
 }
+
 _bool Cheonlog::Create_Leaf(const _float& _DT)
 {
 	_vec3 vPos, vPlayerPos, vLook, vLookS, vLookReset,vOrigin;
@@ -660,7 +722,19 @@ _bool Cheonlog::Create_Leaf(const _float& _DT)
 		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
 
 		m_eCheck = IDEL;
-		m_eStatu = CL_LJUMP;
+		
+		_int iRand = rand() % 2;
+		if (iRand == 0)
+		{
+			m_eStatu = CL_LJUMP;
+			m_eCurr = CL_LJUMP;
+		}
+		else
+		{
+			m_eStatu = CL_RUJUMP;
+			m_eCurr = CL_RUJUMP;
+		}
+			
 		m_iSkillCnt = 0;
 		m_iFrameCnt = 0;
 		m_iSkillDelay = 0;
@@ -679,7 +753,6 @@ CLAttack* Cheonlog::Create_Leaf_Second(_vec3 vPos)
 
 void Cheonlog::Create_Leaf_Third(_vec3 vPos)
 {
-	
 	_vec3 vPlayerPos, vLook, vLookReset, vOrigin;
 	_matrix RotY;
 	CLAttack* pAttack = nullptr;
@@ -694,9 +767,6 @@ void Cheonlog::Create_Leaf_Third(_vec3 vPos)
 	pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_SECOND, vPos, vLookReset);
 	pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
-
-	
-	
 }
 void Cheonlog::Create_Leaf_Third_S(_vec3 vPos)
 {
@@ -742,8 +812,11 @@ void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 	_int iRandPM = rand() % 2;
 
 	if(iRandPM == 0) iRand *= -1;
-	
-	vRight = { -1.f,0.f,(_float)iRand };
+
+	if(m_eCurr == CL_LJUMP)
+		vRight = { -1.f,0.f,(_float)iRand };
+	else
+		vRight = { 1.f,0.f,(_float)iRand };
 
 	Component_Transform->Move_Pos(&vRight, 8.f, _DT);
 	if (m_frameTick > 0.1)
@@ -766,7 +839,7 @@ void Cheonlog::CL_JumpCenter(const _float& _DT, _int iMaxCnt)
 	
 	m_frameTick += _DT;
 	vLook = m_vCenter - vPos;
-
+	
 	Component_Transform->Move_Pos(&vLook, 8.f, _DT);
 	if (m_frameTick > 0.1)
 	{
@@ -781,6 +854,7 @@ void Cheonlog::CL_JumpCenter(const _float& _DT, _int iMaxCnt)
 		m_iSkillDelay = 0;
 	}
 }
+
 void Cheonlog::Debug_ButtonStyle()
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, D3DXCOLOR(0.0f, 0.f, 0.f, 1.f));

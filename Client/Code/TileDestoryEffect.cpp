@@ -27,17 +27,22 @@ HRESULT TileDestoryEffect::Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3
 		break;
 		case OBJECT_DESTORY::BOOM_S:
 		Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");
+		
 		break;
 		case OBJECT_DESTORY::BOOM_T:
 		Add_Effect(OBJECT_DESTORY::BOOM_T, L"Spr_Effect_FireBird_FireBallPulse_0");
+		CollisionManager::GetInstance()->Add_ColliderObject(this);
+		m_pCollider->Set_Att(150);
 		break;
 	}
 		
 	return S_OK;
 }
 INT	TileDestoryEffect::Update_GameObject(const _float& _DT) {
-
+	if (Get_ObjectDead() == TRUE)
+		return -1;
 	GameObject::Update_GameObject(_DT);
+
 
 	Frame_Move(_DT);
 	
@@ -62,7 +67,8 @@ INT	TileDestoryEffect::Update_GameObject(const _float& _DT) {
 
 		}	
 	}
-
+	if(m_eDestory == OBJECT_DESTORY::BOOM_T)
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 		return 0;
 }
 VOID TileDestoryEffect::LateUpdate_GameObject(const _float& _DT) {
@@ -134,9 +140,16 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 				// Scale += {0.1f, 0.1f, 0.1f};
 				m_pTransform->Set_Scale(Scale);
 				m_fTime = 0.f;	
-				if(m_fFrame == 5)
-					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_T, 0, Pos, { 2.f,2.f,2.f }, Rot));
-
+				if (m_fFrame == 5)
+				{
+					TileDestoryEffect* pDestory = TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_T, 0, Pos, { 4.f,4.f,4.f }, Rot);
+					pDestory->Set_ObjectTag(L"Tile_Boom");
+					pDestory->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+				
+					SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pDestory);
+				
+				}
+					
 				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
 				{
 					m_bEffect = false;
@@ -163,11 +176,11 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 	}
 }
 
-BOOL TileDestoryEffect::OnCollisionStay(GameObject* _Other)
+BOOL TileDestoryEffect::OnCollisionEnter(GameObject* _Other)
 {
 
 	wstring Tag = _Other->Get_ObjectTag();
-	if (Tag == L"Monster")
+	if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T && m_fFrame == 0)
 	{
 		_float hp(0);
 		hp = dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
@@ -223,11 +236,11 @@ HRESULT TileDestoryEffect::Component_Initialize(_bool bOther, OBJECT_DESTORY eid
 
 	m_pTransform = ADD_COMPONENT_TRANSFORM;
 	
-	if (eid == OBJECT_DESTORY::BOOM_S)
+	if (eid == OBJECT_DESTORY::BOOM_T)
 	{
 		m_pCollider = ADD_COMPONENT_COLLIDER;
 		m_pCollider->Set_CenterPos(m_pTransform);
-		m_pCollider->Set_Scale(1.f, 1.f, 1.f);
+		m_pCollider->Set_Scale(4.f, 4.f, 4.f);
 		m_pCollider->Set_Att(50.f);
 	}
 	return S_OK;
