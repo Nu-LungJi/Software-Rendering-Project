@@ -250,7 +250,7 @@ void Player::Reset()
 	_isInvincible = false;
 
 	// UI
-	Component_Collider->Set_Hp(5);
+	//Component_Collider->Set_Hp(5);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -1267,16 +1267,19 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
+	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
-
+	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 		return TRUE;
 	}
 	else if(Tag == L"Monster")
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 		return TRUE;
 	}
 

@@ -50,8 +50,8 @@ BOOL CollisionManager::AABB_Collision() {
 			}
 			else {
 				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
-					SOBJ->Delete_CollisionObject(DOBJ);
-					DOBJ->Delete_CollisionObject(SOBJ);
+					//SOBJ->Delete_CollisionObject(DOBJ);
+					//DOBJ->Delete_CollisionObject(SOBJ);
 					DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
 				}

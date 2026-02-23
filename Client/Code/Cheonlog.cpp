@@ -16,6 +16,7 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	m_vCenter = vPos;
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	return S_OK;
 }
 INT	Cheonlog::Update_GameObject(const _float& _DT)

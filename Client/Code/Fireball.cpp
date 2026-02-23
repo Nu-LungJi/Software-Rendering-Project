@@ -100,13 +100,6 @@ BOOL Fireball::OnCollisionEnter(GameObject* _Other)
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
-	else if (Tag == L"Player")
-	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
 	return FALSE;
 }
 VOID Fireball::Free()

@@ -10,11 +10,6 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     if (FAILED(Component_Initialize())) return E_FAIL;
 
     Component_Transform->Set_Pos(*_PlayerPOS);
-
-    // Temp
-    Component_Collider->Set_Hp(1.f);
-    Component_Collider->Set_Att(30.f);
-    // 쓰시는거 같아서 남겨둡니다
   
     _bowType = _BOWTYPE;
     _speed = 15.f;
@@ -25,7 +20,9 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
+    Component_Collider->Set_Att(arrowAtk);
     _hp = 1;
+    Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;
     _evilMoveTime = 0.f;
     _sumEvilSpeed = 0.f;
@@ -82,7 +79,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
 {
     GameObject::Update_GameObject(_DT);
 
-    if (_hp <= 0){
+    if (Component_Collider->Get_Hp() <= 0){
         _vec3 Size = { 2.f, 2.f, 2.f };
         _vec3 effectPos = *Component_Transform->Get_Position();
         Size *= (*_playerArrowSize);
@@ -461,8 +458,22 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 {
     wstring Tag = _Other->Get_ObjectTag();
 
+    int hp = Component_Collider->Get_Hp();
+    int atk = COLLIDER(_Other)->Get_Att();
+
     if (Tag == L"Monster") {
-        Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        int hp = Component_Collider->Get_Hp();
+        int atk = COLLIDER(_Other)->Get_Att();
+        atk = 1.f;
+        Component_Collider->Set_Hp(hp - atk);
+        return TRUE;
+    }
+
+    else if (Tag == L"CheonLog") {
+        int hp = Component_Collider->Get_Hp();
+        int atk = COLLIDER(_Other)->Get_Att();
+        atk = 1.f;
+        Component_Collider->Set_Hp(hp - atk);
         return TRUE;
     }
 
