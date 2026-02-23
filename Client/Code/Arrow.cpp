@@ -29,6 +29,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _effectDelay = 0.f;
     _ThunderDelay = 0.5f;
     _targetPos = nullptr;
+    _target = nullptr;
     _calcSpeed = 0.f;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
@@ -104,6 +105,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::EvilHeadCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
+        case ArrowType::Wind_Arrow:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
         default:
             break;
         }
@@ -119,31 +123,36 @@ INT Arrow::Update_GameObject(const _float& _DT)
     _evilMoveTime += _DT;
     _effectDelay += _DT;
 
-    // ¾ÆÀÌ½º Â÷Â¡ ¿¡·Î¿ì ÀÌÆåÆ®
-    if (_type == ArrowType::IceCharging) {
+
+    // 날라갈때 이펙트
+    _vec3 Size = { 0.1f, 0.1f, 0.1f };
+    _vec3 effectPos = *Component_Transform->Get_Position();
+    switch (_type) {
+    case ArrowType::FairyArrow:
+        PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::GREEN_SHADER, &effectPos, 0.1f, Size, false);
+        break;
+    case ArrowType::IceArrow_LV1:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.1f, Size, false);
+        break;
+    case ArrowType::IceCharging:
         if (_effectDelay > 0.1f) {
-            _vec3 Size = { 1.f, 1.f, 1.f };
-            _vec3 effectPos = *Component_Transform->Get_Position();
+            Size = { 1.f, 1.f, 1.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
             _effectDelay = 0.f;
         }
-    }
-    // ¿¡ºô Â÷Â¡ ¿¡·Î¿ì ÀÌÆåÆ®
-    if (_type == ArrowType::EvilHeadCharging) {
+        break;
+    case ArrowType::EvilHeadCharging:
         _ThunderDelay += _DT;
-
         if (_effectDelay > 0.5f) {
             _vec3 Size = { 1.5f, 1.5f, 1.5f };
             Size *= (*_playerArrowSize);
-            _vec3 effectPos = *Component_Transform->Get_Position();
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_WAVE_EFFECT, &effectPos, 0.5f, Size, false);
             _effectDelay = 0.f;
         }
         if (_ThunderDelay > 1.5f) {
             _vec3 Size = { 3.f, 6.f, 3.f };
             Size *= (*_playerArrowSize);
-            _vec3 effectPos = *Component_Transform->Get_Position();
             _targetPos = nullptr;
             Search_Target();
             if (_targetPos != nullptr) {
@@ -154,6 +163,10 @@ INT Arrow::Update_GameObject(const _float& _DT)
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 1.f, Size, false);
             _ThunderDelay = 0.f;
         }
+        break;
+    case ArrowType::Wind_Arrow:
+        PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::GREEN_SHADER, &effectPos, 0.2f, Size, false);
+        break;
     }
 
     // Á×À»¶§
@@ -165,7 +178,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         maxLifeTime = 2.f;
         break;
     case ArrowType::IceArrow_LV1:
-        maxLifeTime = 0.6f;
+        maxLifeTime = 0.8f;
         break;
     case ArrowType::IceCharging:
         maxLifeTime = 0.6f;
@@ -175,6 +188,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
         break;
     case ArrowType::EvilHeadCharging:
         maxLifeTime = 3.f;
+        break;
+    case ArrowType::Wind_Arrow:
+        maxLifeTime = 20.f;
         break;
     }
     maxLifeTime = maxLifeTime * (*_playerRange) / (*_playerArrowSpeed);
@@ -200,6 +216,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
             break;
         case ArrowType::EvilHeadCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            break;
+        case ArrowType::Wind_Arrow:
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         default:
             break;
@@ -227,6 +246,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::EvilHead_Arrow:
             _size = 0.7f;
             break;
+        case ArrowType::Wind_Arrow:
+            _size = 0.8f;
+            break;
         default:
             _size = 1.f;
             break;
@@ -242,14 +264,50 @@ INT Arrow::Update_GameObject(const _float& _DT)
         D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
         D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
-        // È¸Àü
-        //if (_type == ArrowType::IceCharging) _originAngle += _DT * D3DXToRadian(1.f) * 400;
-        _matrix matRotZ;
+        _matrix matWorld;
+        if (_type == ArrowType::Wind_Arrow) {
+            if (_target == nullptr) {
+                Search_Target_Object();
+                _targetPos = nullptr;
+                Search_Target();
+            }
+            float TargetAngle = 0.f;
+            if (_targetPos != nullptr) {
+                _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
+                D3DXVec3Normalize(&dir, &dir);
+                TargetAngle = atan2f(-dir.z, dir.x);
 
-        // zÃà È¸Àü
-        D3DXMatrixRotationZ(&matRotZ, _originAngle);
-        if(_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
-        _matrix matWorld = matSize * matRotZ * matBillboard;
+                float delta = TargetAngle - _angle;
+
+                while (delta > D3DX_PI)  delta -= D3DX_PI * 2.f;
+                while (delta < -D3DX_PI) delta += D3DX_PI * 2.f;
+
+                float turnSpeed = D3DXToRadian(2.5f);
+
+                if (fabs(delta) < turnSpeed)
+                {
+                    _angle = TargetAngle;
+                }
+                else
+                {
+                    _angle += (delta > 0.f ? turnSpeed : -turnSpeed);
+                }
+            }
+
+            _matrix matRotZ;
+            D3DXMatrixRotationZ(&matRotZ, _angle);
+            matWorld = matSize * matRotZ * matBillboard;
+        }
+        else {
+            _matrix matRotZ;
+            D3DXMatrixRotationZ(&matRotZ, _originAngle);
+            if (_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
+            matWorld = matSize * matRotZ * matBillboard;
+        }
+        //_matrix matRotZ;
+        //D3DXMatrixRotationZ(&matRotZ, _originAngle);
+        //if (_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
+        //matWorld = matSize * matRotZ * matBillboard;
 
         // ¼Óµµ
         switch (_type)
@@ -261,13 +319,16 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 20.f;
             break;
         case ArrowType::IceCharging:
-            _speed = 20.f;
+            _speed = 30.f;
             break;
         case ArrowType::EvilHead_Arrow:
             _speed = 10.f;
             break;
         case ArrowType::EvilHeadCharging:
             _speed = 5.f - _evilMoveTime * 1.f;
+            break;
+        case ArrowType::Wind_Arrow:
+            _speed = 10.f;
             break;
         }
 
@@ -299,6 +360,23 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
             }
         }
+
+        //if (_type == ArrowType::Wind_Arrow) {
+        //    _targetPos = nullptr;
+        //    Search_Target();
+        //    float TargetAngle = 0.f;
+        //    if (_targetPos != nullptr) {
+        //        _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
+        //        D3DXVec3Normalize(&dir, &dir);
+        //        TargetAngle = atan2f(-dir.z, dir.x);
+        //        if (TargetAngle - _angle < 1.f) _angle += D3DXToRadian(2.f);
+        //        else if(TargetAngle - _angle > -1.f) _angle -= D3DXToRadian(2.f);
+        //
+        //        matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
+        //        matWorld._42 = 0.1f;
+        //        matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
+        //    }
+        //}
 
         // ÀÌµ¿
         switch (_type)
@@ -464,18 +542,15 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     int atk = COLLIDER(_Other)->Get_Att();
 
     if (Tag == L"Monster") {
-        int hp = Component_Collider->Get_Hp();
-        int atk = COLLIDER(_Other)->Get_Att();
         atk = 1.f;
         Component_Collider->Set_Hp(hp - atk);
         return TRUE;
     }
 
     else if (Tag == L"CheonLog") {
-        int hp = Component_Collider->Get_Hp();
-        int atk = COLLIDER(_Other)->Get_Att();
         atk = 1.f;
         Component_Collider->Set_Hp(hp - atk);
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         return TRUE;
     }
 
@@ -499,4 +574,9 @@ VOID Arrow::Free()
 void Arrow::Search_Target()
 {
     _targetPos = SceneManager::GetInstance()->Get_CurrentScene()->Search_Target(Component_Transform->Get_Position(), 50.f, L"Monster");
+}
+
+void Arrow::Search_Target_Object()
+{
+    _target = SceneManager::GetInstance()->Get_CurrentScene()->Search_Target_Object(Component_Transform->Get_Position(), 50.f, L"Monster");
 }

@@ -50,6 +50,7 @@ public:
 private:
 	virtual			VOID Free();
 	void			Search_Target();
+	void			Search_Target_Object();
 private:
 	ArrowType	_type;
 	BowType		_bowType;
@@ -74,6 +75,8 @@ private:
 	float		_sumSpeed;
 	int			_arrowAtk;
 	_vec3*		_targetPos;
+	GameObject* _target;
+	bool		_isRight;
 
 	float		_evilMoveTime;
 	float		_sumEvilSpeed;

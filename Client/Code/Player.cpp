@@ -107,8 +107,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (KEY_DOWN(DIK_Y)) {
 		//Set_ObjectDead(TRUE);
 		_frame = 1;
-		_pState = pState::STATE_DEATH;
-		Component_Collider->Set_Hp(0);
+		//_pState = pState::STATE_DEATH;
+		//Component_Collider->Set_Hp(0);
+		_vec3 Size = { 2.f, 2.f, 2.f };
+		_vec3 effectPos = *Component_Transform->Get_Position();
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_WINDY, &effectPos, 0.5f, Size, false);
 	}
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
