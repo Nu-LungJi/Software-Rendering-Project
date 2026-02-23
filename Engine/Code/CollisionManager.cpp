@@ -34,9 +34,13 @@ BOOL CollisionManager::AABB_Collision() {
 			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ)	continue;
 			Collider* DEST = dynamic_cast<Collider*>(DOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 			if (DEST == nullptr) continue;
-			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
-				//(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
-				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
+			if(((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x)) && 
+				((SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y)) &&
+				((SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z))) {
+				if ((DOBJ->Get_ObjectTag() == L"PlayerArrow" && SOBJ->Get_ObjectTag() == L"Monster") ||
+					(SOBJ->Get_ObjectTag() == L"PlayerArrow" && DOBJ->Get_ObjectTag() == L"Monster")) {
+					int a = 0;
+				}
 				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
 					SOBJ->Add_CollisionObject(DOBJ);
 					DOBJ->Add_CollisionObject(SOBJ);
@@ -45,13 +49,13 @@ BOOL CollisionManager::AABB_Collision() {
 				}
 				SOBJ->OnCollisionStay(DOBJ);
 				DOBJ->OnCollisionStay(SOBJ);
-	
+				
 				return TRUE;
 			}
 			else {
 				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
-					//SOBJ->Delete_CollisionObject(DOBJ);
-					//DOBJ->Delete_CollisionObject(SOBJ);
+					SOBJ->Delete_CollisionObject(DOBJ);
+					DOBJ->Delete_CollisionObject(SOBJ);
 					DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
 				}
@@ -80,6 +84,10 @@ VOID CollisionManager::Get_AllObjectOfScene() {
 		if (GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
 			SceneObjectList.push_back(GOBJ);
 	}
+}
+
+VOID CollisionManager::Add_ColliderObject(GameObject* _OBJ) {
+	SceneObjectList.push_back(_OBJ);
 }
 
 VOID CollisionManager::Delete_ColliderObject(GameObject* _OBJ) {

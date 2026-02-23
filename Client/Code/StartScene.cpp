@@ -107,6 +107,9 @@ HRESULT	StartScene::Ready_Scene() {
 	return S_OK;
 }
 INT	 StartScene::Update_Scene(CONST FLOAT& _DT) {
+	if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_TAB) == TRUE) {
+		int  a = 0;
+	}
 	TileManager::GetInstance()->Stage_Update(_DT);
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);

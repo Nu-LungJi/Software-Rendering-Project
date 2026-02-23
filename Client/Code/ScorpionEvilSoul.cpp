@@ -63,7 +63,10 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	}
 
 	if (ObjectDead)
+	{
+		TileManager::GetInstance()->Set_StageArray();
 		return -1;
+	}
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 
@@ -101,11 +104,11 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 
-		if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
 
 		//if (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe / 2)
 		break;
@@ -190,16 +193,16 @@ ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
+	return TRUE;
+
+	return FALSE;
+}
+BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other) {
 	wstring Tag = _Other->Get_ObjectTag();
 
 	if (Tag == L"PlayerArrow") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	}return TRUE;
-
-	return FALSE;
-}
-BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other)
-{
+	}
 	return FALSE;
 }
 BOOL ScorpoinEvilSoul::OnCollisionExit(GameObject* _Other)
@@ -365,6 +368,6 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpoinEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	TileManager::GetInstance()->Set_StageArray();
+	
 	ObjectDead = true;
 }

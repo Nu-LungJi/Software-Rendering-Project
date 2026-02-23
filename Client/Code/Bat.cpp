@@ -103,7 +103,7 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 		break;
 	}
 
-	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
+	//Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
@@ -153,18 +153,19 @@ Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
-	wstring Tag = _Other->Get_ObjectTag();
-
-	if (Tag == L"PlayerArrow")
-	{
-	 	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	} 
+	
 	return TRUE;
 
 	return FALSE;
 }
 BOOL Bat::OnCollisionStay(GameObject* _Other)
 {
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+	}
 	return FALSE;
 }
 BOOL Bat::OnCollisionExit(GameObject* _Other)
