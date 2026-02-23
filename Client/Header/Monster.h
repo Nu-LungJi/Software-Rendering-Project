@@ -308,7 +308,6 @@ public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
 	static	_vec3		Normalize(_vec3 vec);
 
-//·»´õ¸µ °ü·Ã
 public:
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
@@ -317,7 +316,6 @@ public:
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
 	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
-	uint64_t XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2);
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
