@@ -169,7 +169,6 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 		}
 		wstring Tag = _Other->Get_ObjectTag();
 
-
 		if (Tag == L"PlayerArrow") {
 			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 			return TRUE;
