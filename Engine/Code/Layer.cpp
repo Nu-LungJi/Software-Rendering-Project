@@ -48,10 +48,24 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 	return 0;
 }
 VOID		Layer::LateUpdate_Layer(const FLOAT& _DT) {
-	for (auto& GOBJ : GameObjectList) {
-		if (!GOBJ->Get_ObjectDead() && (!_isTimeSlow))
-			GOBJ->LateUpdate_GameObject(_DT);
+	if (!_isTimeSlow) {
+		for (auto& GOBJ : GameObjectList) {
+			if (!GOBJ->Get_ObjectDead())
+				GOBJ->LateUpdate_GameObject(_DT);
+		}
 	}
+	else {
+		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end(); iter++) {
+			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"
+				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
+				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI || (*iter)->Get_ObjectTag() == L"Bow")
+					(*iter)->LateUpdate_GameObject(_DT);
+			else {
+				(*iter)->LateUpdate_GameObject_Component(_DT);
+			}
+		}
+	}
+
 }
 HRESULT Layer::Delete_Object(GameObject* _OBJ) {
 	for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {

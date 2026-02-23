@@ -43,6 +43,19 @@ INT GameObject::Update_GameObject_Component(const FLOAT& _DT)
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
+INT GameObject::LateUpdate_GameObject_Component(const FLOAT& _DT)
+{
+	for (int i = 0; i < ComponentList.size(); i++) {
+		if ((COMPONENT_TYPE)i == COMPONENT_TYPE::COMPONENT_TRANSFORM)
+			continue;
+
+		auto& COM = ComponentList[i];
+
+		if (COM == nullptr)	 continue;
+		COM->LateUpdate_Component(_DT);
+	}
+	return 0;
+}
 VOID GameObject::AlphaSorting(const D3DXVECTOR3* _Vec) {
 	D3DXMATRIX WorldMat;
 	GRPDEV->GetTransform(D3DTS_VIEW, &WorldMat);
