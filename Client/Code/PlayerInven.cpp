@@ -67,17 +67,15 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 VOID	PlayerInven::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
 }
-VOID	PlayerInven::Render_GameObject() {	
+VOID	PlayerInven::Render_GameObject() {
 	if (UIManager::GetInstance()->Get_Active() == TRUE) {
 		PlayerObject->Set_PlayerStop(TRUE);
 		Component_Sprite->Render_Sprite();
-		UIManager::GetInstance()->Render_UIManager(GRPDEV);
-		UIManager::GetInstance()->Render_UIManager(GRPDEV);
 	}
-	else if(UIManager::GetInstance()->Get_Active() == FALSE){
+	else if (UIManager::GetInstance()->Get_Active() == FALSE) {
 		PlayerObject->Set_PlayerStop(FALSE);
 	}
-}	
+}
 
 HRESULT PlayerInven::Component_Initialize() {
 	UIManager::GetInstance()->Set_Active(true);
@@ -361,23 +359,23 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 			if (SavedItemIndex <= 5)	return E_FAIL;
 			else {
 				SavedItemIndex -= 5;
-				wstring PastFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex + 5);
-				wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 5);
+				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
 		}
 		else if (KEY_DOWN(DIK_A)) {
 			if (SavedItemIndex == 1 || SavedItemIndex == 6) {
-				wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(FALSE);
 				FocusOn_EquipedItem = TRUE;
 				Selecting_EquipItem();
 			}
 			else {
 				SavedItemIndex -= 1;
-				wstring PastFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex + 1);
-				wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 1);
+				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
@@ -386,8 +384,8 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 			if (SavedItemIndex >= 6)	return E_FAIL;
 			else {
 				SavedItemIndex += 5;
-				wstring PastFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex - 5);
-				wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex - 5);
+				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
@@ -396,8 +394,8 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 			if (SavedItemIndex == 10)	return E_FAIL;
 			else {
 				SavedItemIndex += 1;
-				wstring PastFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex - 1);
-				wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex - 1);
+				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
@@ -409,65 +407,65 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 	if (SavedItemIndex == 1 && FocusOn_SavedItem && FocusOn_EquipedItem) {
 		EquipedItemIndex = 4;
 		FocusOn_SavedItem = FALSE;
-		wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+		wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 		Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
-		
-	}	
+
+	}
 	else if (SavedItemIndex == 6 && FocusOn_SavedItem && FocusOn_EquipedItem) {
 		EquipedItemIndex = 8;
 		FocusOn_SavedItem = FALSE;
-		wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+		wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 		Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 	}
-		
+
 	if (FocusOn_EquipedItem) {
 		if (KEY_DOWN(DIK_W)) {
 			if (EquipedItemIndex <= 4)	return E_FAIL;
 			else {
 				EquipedItemIndex -= 4;
-				wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex + 4);
-				wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 4);
+				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
 		}
-		else if (KEY_DOWN(DIK_A)){
+		else if (KEY_DOWN(DIK_A)) {
 			if (EquipedItemIndex == 1 || EquipedItemIndex == 5)	return E_FAIL;
 			else {
 				EquipedItemIndex -= 1;
-				wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex + 1);
-				wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 1);
+				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
 		}
-		else if (KEY_DOWN(DIK_S)){
+		else if (KEY_DOWN(DIK_S)) {
 			if (EquipedItemIndex >= 5)	return E_FAIL;
 			else {
 				EquipedItemIndex += 4;
-				wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex - 4);
-				wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 4);
+				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
 		}
-		else if (KEY_DOWN(DIK_D)){
+		else if (KEY_DOWN(DIK_D)) {
 			if (EquipedItemIndex == 4 || EquipedItemIndex == 8) {
 				FocusOn_SavedItem = TRUE;
 				FocusOn_EquipedItem = FALSE;
 
 				if (EquipedItemIndex == 4) {
-					wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+					wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 					Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 					SavedItemIndex = 1;
-					wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+					wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 					Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				}
 				if (EquipedItemIndex == 8) {
-					wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+					wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 					Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 					SavedItemIndex = 6;
-					wstring SelectedFrame = L"Inven_SelectFrame" + to_wstring(SavedItemIndex);
+					wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 					Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				}
 
@@ -475,14 +473,13 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 			}
 			else {
 				EquipedItemIndex += 1;
-				wstring PastFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex - 1);
-				wstring SelectedFrame = L"Inven_SelectFrame_E" + to_wstring(EquipedItemIndex);
+				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 1);
+				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(TRUE);
 				Component_Sprite->Get_Texture(PastFrame)->Set_Visible(FALSE);
 			}
 		}
 	}
-	
 	return S_OK;
 }
 HRESULT PlayerInven::Equip_Item() {
@@ -490,7 +487,7 @@ HRESULT PlayerInven::Equip_Item() {
 		Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(FALSE);
 		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
 		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ÀåÂø";
-		if (KEY_DOWN(DIK_E)){
+		if (KEY_DOWN(DIK_E)) {
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
 				EquipObject = nullptr;
@@ -506,7 +503,7 @@ HRESULT PlayerInven::Equip_Item() {
 					&& (EquipedItemIndex >= 1 && EquipedItemIndex <= 4)) return E_FAIL;
 
 				swap(Equip_ItemList[EquipedItemIndex - 1], *EquipObject);
-				
+
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
@@ -537,11 +534,10 @@ HRESULT PlayerInven::Equip_Item() {
 		}
 	}
 
-	
 	return S_OK;
 }
 HRESULT PlayerInven::Display_ItemInfo() {
-	
+
 	for (INT IDX = 0; IDX < 8; ++IDX) {
 		if (Equip_ItemList[IDX] == nullptr) {
 			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
@@ -567,8 +563,8 @@ HRESULT PlayerInven::Display_ItemInfo() {
 		else {
 			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
 		}
-	}										
-	else if( FocusOn_EquipedItem ){
+	}
+	else if (FocusOn_EquipedItem) {
 		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = nullptr;
 	}
 
@@ -577,7 +573,7 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX +1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[7])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[7])->TEXTURE;
 	}
 	if (Saved_ItemList[SavedItemIndex - 1] != nullptr && FocusOn_SavedItem) {
 		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[8])->TEXTURE;
@@ -598,7 +594,7 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->TextColor = D3DCOLOR_ARGB(200, 255, 255, 255);
 		}
 	}
-	else if( FocusOn_SavedItem ){
+	else if (FocusOn_SavedItem) {
 		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = nullptr;
 	}
 
@@ -606,21 +602,27 @@ HRESULT PlayerInven::Display_ItemInfo() {
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr) {
 			for (auto& Comp : ItemInfo_Screen)
 				Comp->Set_Visible(TRUE);
-
-
+			for (auto& Comp : ItemInfo_Text)
+				Comp->Set_Visible(TRUE);
 		}
 		else {
 			for (auto& Comp : ItemInfo_Screen)
+				Comp->Set_Visible(FALSE);
+			for (auto& Comp : ItemInfo_Text)
 				Comp->Set_Visible(FALSE);
 		}
 	}
 	if (FocusOn_EquipedItem) {
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr) {
-			for (auto& Comp : ItemInfo_Screen) 
+			for (auto& Comp : ItemInfo_Screen)
+				Comp->Set_Visible(TRUE);
+			for (auto& Comp : ItemInfo_Text)
 				Comp->Set_Visible(TRUE);
 		}
 		else {
-			for (auto& Comp : ItemInfo_Screen) 
+			for (auto& Comp : ItemInfo_Screen)
+				Comp->Set_Visible(FALSE);
+			for (auto& Comp : ItemInfo_Text)
 				Comp->Set_Visible(FALSE);
 		}
 	}
@@ -673,5 +675,9 @@ PlayerInven* PlayerInven::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return MUI;
 }
 VOID	PlayerInven::Free() {
+	for (auto& EI : Equip_ItemList)
+		Safe_Delete(EI);
+	for (auto& SI : Saved_ItemList)
+		Safe_Delete(SI);
 	GameObject::Free();
 }

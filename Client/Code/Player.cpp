@@ -9,7 +9,7 @@ HRESULT Player::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	//Temp
-	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
@@ -37,7 +37,7 @@ HRESULT Player::Ready_GameObject() {
 	_alphaDelayTimer	= 0.f;
 
 	// UI
-	Component_Collider->Set_Hp(5.f);
+	Component_Collider->Set_Hp(50.f);
 	Component_Collider->Set_Att(1.f);
 	_dashstock			= 3;
 	_key				= 0;

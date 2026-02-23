@@ -53,7 +53,7 @@ VOID MainUI::Player_LostHP() {
 
 	INT PlayerHP = COLLIDER(PlayerObject)->Get_Hp();
 	if (PlayerHP > 0) {
-
+		if (PlayerHP > 5) { PlayerHP = 5; }
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
