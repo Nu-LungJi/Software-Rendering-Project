@@ -149,8 +149,8 @@ VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
 		FontObject* InfoFont = UIManager::GetInstance()->Find_FontObject(L"ItemInfo");
 		FontObject* ClassFont = UIManager::GetInstance()->Find_FontObject(L"ItemClass");
 
-		InfoFont->Set_Text(iINFO->ItemName);
-		ClassFont->Set_Text(iINFO->ItemClass);
+		InfoFont->Set_Text(iINFO->ItemDesc[1]);
+		ClassFont->Set_Text(iINFO->ItemDesc[2]);
 
 		if (Timer03 <= 1) {
 			Timer03 += _DT;

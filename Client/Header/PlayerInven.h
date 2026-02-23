@@ -15,8 +15,9 @@ public:
 
 public:
 	HRESULT Component_Initialize();
-	HRESULT Sprite_Initialize();
+	HRESULT Item_Initialize();
 	HRESULT Text_Initialize();
+	HRESULT Sprite_Initialize();
 
 public:
 	HRESULT Selecting_SavedItem();
@@ -26,7 +27,7 @@ public:
 
 	HRESULT Display_ItemInfo();
 
-	HRESULT Append_Item();
+	HRESULT Append_Item(ItemINFO* _ITEM);
 
 public:
 	static	PlayerInven* Create(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -44,6 +45,11 @@ private:
 	ItemINFO*		Saved_ItemList[10];
 
 	vector<SpriteINFO*> ItemInfo_Screen;
+
+	vector<FontObject*>	ItemInfo_Text;
+
+	vector<SpriteINFO*> ItemDictionary_InvenFrame;
+	vector<SpriteINFO*> ItemDictionary_InfoFrame;
 
 	BOOL			EquipMode;
 	ItemINFO**		EquipObject;
