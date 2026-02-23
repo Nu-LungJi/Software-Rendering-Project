@@ -22,6 +22,8 @@ public:
 public:
 	static	ShopUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	VOID Display_ShopItemInfo(ItemINFO* _pItem); 
+
+	
 public:
 	BOOL					Get_Collision_Enter(GameObject* _Other);
 	BOOL					Get_Collision_Stay(GameObject* _Other);

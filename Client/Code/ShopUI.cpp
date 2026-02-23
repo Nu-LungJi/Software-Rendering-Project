@@ -47,6 +47,7 @@ INT		ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 			Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
 		}
 	}	
+
 	return 0;
 }
 VOID	ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
