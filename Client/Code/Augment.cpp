@@ -6,13 +6,18 @@ Augment::Augment(CONST GameObject& _RHS)		: GameObject(_RHS)		{}
 Augment::~Augment()													{}
 
 HRESULT	Augment::Ready_GameObject() {
+	
+	Frame = 0;
+  Timer = 0.f;
+
 	if (FAILED(Component_Initialize()))		return E_FAIL;
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	if (FAILED(Perk_Initialize()))			return E_FAIL;
 	if (FAILED(Effect_Initialize()))		return E_FAIL;
+	
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-
+	
 	return S_OK;
 }
 INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
@@ -54,6 +59,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 			isActive = !isActive;
 			if (!isActive) {
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
+				PlayerObject->Set_PlayerStop(FALSE);
 			}
 		}
 		if (isActive) {
@@ -63,10 +69,11 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 			Display_PerkInfo(Perk_Info[iType]);
 
 			if(iType == FIRST || iType == SECOND || iType == THIRD)
-				Perk_Selected_Effect(iType, _DT);
+				Perk_Selected_Effect(iType);
 			else
-        Perk_Selected_Effect(INIT, _DT);
+        Perk_Selected_Effect(INIT);
 		}
+		
 		return 0;
 }
 VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -81,7 +88,7 @@ HRESULT Augment::Component_Initialize() {
 	Component_Sprite		= ADD_COMPONENT_SPRITE;
 	Component_Texture	  = ADD_COMPONENT_TEXTURE;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-
+	
 	return S_OK;
 }
 HRESULT Augment::Sprite_Initialize() {
@@ -101,15 +108,15 @@ HRESULT Augment::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_LevelV2_Frame.png", L"Perk_Frame2", 560.f, 230.f, 140, 140, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_LevelV2_Frame.png", L"Perk_Frame3", 800.f, 230.f, 140, 140, TRUE, 255);
   //////////////////////////////////////EFFECT//////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash1.png", L"Perk_Effect1", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash2.png", L"Perk_Effect2", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash3.png", L"Perk_Effect3", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash4.png", L"Perk_Effect4", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash5.png", L"Perk_Effect5", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash6.png", L"Perk_Effect6", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash7.png", L"Perk_Effect7", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash8.png", L"Perk_Effect8", 300.f, 230.f, 140, 140, TRUE, 225);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash9.png", L"Perk_Effect9", 300.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash1.png", L"Perk_Effect1", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash2.png", L"Perk_Effect2", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash3.png", L"Perk_Effect3", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash4.png", L"Perk_Effect4", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash5.png", L"Perk_Effect5", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash6.png", L"Perk_Effect6", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash7.png", L"Perk_Effect7", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash8.png", L"Perk_Effect8", 0.f, 230.f, 140, 140, TRUE, 225);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Flash9.png", L"Perk_Effect9", 0.f, 230.f, 140, 140, TRUE, 225);
 	//////////////////////////////////////PERK//////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-04.png", L"Perk_01", 340.f, 270.f, 80.f, 80.f, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-05.png", L"Perk_02", 590.f, 260.f, 108.f, 108.f, TRUE, 255);
@@ -121,6 +128,21 @@ HRESULT Augment::Text_Initialize() {
 	///////////////////////////////////////FONT//////////////////////////////////
 	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 415.f }, 18, L"PERK_TITLE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 500.f }, 20, L"PERK_INFO", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	
+	return S_OK;
+}
+
+HRESULT Augment::Effect_Initialize()
+{
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect4", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect5", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect6", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect7", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect8", 38.f, -30.f, 75, 75, 0.75f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect9", 38.f, -30.f, 75, 75, 0.75f, 255);
 	
 	return S_OK;
 }
@@ -145,16 +167,6 @@ HRESULT Augment::Perk_Initialize()
 
 	return S_OK;
 }
-HRESULT Augment::Effect_Initialize()
-{
-	wstring Base = L"";
-
-	for (INT PIC = 1; PIC <= 9; PIC++)	{
-		Base = L"Flash" + to_wstring(PIC) + L".png";
-    Anim_PerkSelect.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
-	}
-	return S_OK;
-}
 
 VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 {
@@ -173,17 +185,22 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 		return;
 }
 
-VOID Augment::Perk_Selected_Effect(INT _PerkType, FLOAT _DT)
+VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {
-	if (_PerkType == INIT)
-		return;
-  
-	if (_PerkType == FIRST)
+	switch (_PerkType)
 	{
-		if (Timer < 0.5f)
-		{
-			Timer += _DT;
-		}
+	case FIRST: 
+		Anim_PerkSelect[Frame]->Set_Pos(340.f, 270.f);
+    Effect_Animation(Anim_PerkSelect[Frame], 0.1f, 9, false);
+		break;
+  case SECOND:
+		Anim_PerkSelect[Frame]->Set_Pos(590.f, 270.f);
+    Effect_Animation(Anim_PerkSelect[Frame], 0.1f, 9, false);
+		break;
+  case THIRD:
+		Anim_PerkSelect[Frame]->Set_Pos(820.f, 270.f);
+    Effect_Animation(Anim_PerkSelect[Frame], 0.1f, 9, false);
+		break;
 	}
 }
 
@@ -210,6 +227,30 @@ INT Augment::IsMouseOnPerk()
 	}
 
 	return INIT;
+}
+
+void Augment::Effect_Animation(SpriteINFO* _Sprite, float delay, int maxIdx, bool reverse)
+{
+
+	if (!reverse)
+	{
+		if (FrameTick > delay)
+		{
+			if (++Frame > maxIdx )
+				Frame = 1;
+			FrameTick = 0.f;
+		}
+	}
+	else
+	{
+		if (FrameTick > delay)
+		{
+			if (--Frame < 1)
+				Frame = maxIdx;
+			FrameTick = 0.f;
+		}
+	}
+
 }
 
 

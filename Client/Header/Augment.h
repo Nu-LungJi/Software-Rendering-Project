@@ -24,11 +24,11 @@ public:
 
 public:
 	VOID Display_PerkInfo(ItemINFO* _pItem);
-	VOID Perk_Selected_Effect(INT _PerkType, FLOAT _DT);
+	VOID Perk_Selected_Effect(INT _PerkType);
 
 public:
 	INT IsMouseOnPerk();
-
+	VOID Effect_Animation(SpriteINFO* _Sprite,float delay, int maxIdx, bool reverse);
 public:
 	static	Augment* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -40,8 +40,12 @@ private:
 private:
 	
 	FLOAT Timer;
-	vector<LPDIRECT3DTEXTURE9>	Anim_PerkSelect;
+	FLOAT TargetX;
 
+	vector<SpriteINFO*>	Anim_PerkSelect;
+
+	_uint Frame;
+	_uint FrameTick;
 
 	vector<SpriteINFO*> Perk_Pos;
 
@@ -56,6 +60,8 @@ private:
 
 	BOOL isActive;
 	
+	
+
 private:
 	virtual	VOID		Free();
 };
