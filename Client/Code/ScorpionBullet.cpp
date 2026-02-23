@@ -16,6 +16,8 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"MonsterBullet";
+
   ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
 	Monster::Destory_Tile(this);
 	if (!m_tInfo.bTrigger[0])
@@ -143,17 +145,8 @@ HRESULT ScorpionBullet::Component_Initialize() {
 
 BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 {
-	MainUI* mainUI;
 	if (!m_tInfo.bTrigger[0])
 	{
-		if (_Other->Get_ObjectTag() == L"Player") {
-			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-			mainUI->Player_LostHP();
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			m_tInfo.fSpeed = 0.f;
-			m_tInfo.bTrigger[0] = true;
-			m_tInfo.fTimer[0] = 8.f;
-		}
 		switch (_Other->Get_ObjectType())
 		{
 		default:

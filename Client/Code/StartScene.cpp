@@ -134,10 +134,6 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 	Add_GameObjectToScene<Player>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER , L"Player"		);
 	//Add_GameObjectToScene<Bat>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
 	//Add_GameObjectToScene<ScorpoinEvilSoul>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-	//GameObject* obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
-	//obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"ScorpoinEvilSoul"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
 
 
 	//Add_GameObjectToScene<FinalBoss>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
