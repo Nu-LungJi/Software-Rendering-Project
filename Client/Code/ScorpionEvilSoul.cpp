@@ -101,11 +101,11 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 
-		if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
 
 		//if (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe / 2)
 		break;

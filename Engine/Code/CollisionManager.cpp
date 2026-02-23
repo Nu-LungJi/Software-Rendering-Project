@@ -45,7 +45,7 @@ BOOL CollisionManager::AABB_Collision() {
 					//DOBJ->OnCollisionEnter(SOBJ);
 				}
 				SOBJ->OnCollisionEnter(DOBJ);
-				DOBJ->OnCollisionEnter(SOBJ);
+				//DOBJ->OnCollisionEnter(SOBJ);
 				SOBJ->OnCollisionStay(DOBJ);
 				//DOBJ->OnCollisionStay(SOBJ);
 
