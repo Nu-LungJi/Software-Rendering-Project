@@ -18,7 +18,11 @@ public:
 public:
 	BOOL	AABB_Collision();
 	VOID	Get_AllObjectOfScene();
-	VOID	Add_ColliderObject(GameObject* _Effect) { SceneObjectList.push_back(_Effect); }
+	VOID	Add_ColliderObject(GameObject* _Effect) {
+		int before = SceneObjectList.size();
+		SceneObjectList.push_back(_Effect);
+		int after = SceneObjectList.size();
+	}
 	VOID	Delete_ColliderObject(GameObject* _Effect);
 
 private:

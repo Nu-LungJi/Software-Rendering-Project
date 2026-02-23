@@ -151,6 +151,7 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID EvilSlime::Render_GameObject() {
+	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 

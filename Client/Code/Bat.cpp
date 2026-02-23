@@ -15,6 +15,8 @@ HRESULT Bat::Ready_GameObject() {
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"Monster";
+
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
@@ -155,11 +157,10 @@ BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")
-	{
-	 	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	} 
-	return TRUE;
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
 
 	return FALSE;
 }
