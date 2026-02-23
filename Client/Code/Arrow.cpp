@@ -325,7 +325,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
 
         Component_Transform->Set_World(&matWorld);
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
+      
     }
+    
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
     return S_OK;

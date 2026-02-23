@@ -30,38 +30,41 @@ BOOL CollisionManager::AABB_Collision() {
 		if (SOBJ->Get_ObjectDead() || SOBJ == nullptr)	continue;
 		Collider* SRC = dynamic_cast<Collider*>(SOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 		if (SRC == nullptr) continue;
+		bool ret = false;
 		for (auto& DOBJ : SceneObjectList) {
 			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ)	continue;
 			Collider* DEST = dynamic_cast<Collider*>(DOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 			if (DEST == nullptr) continue;
 			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
-				//(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
+				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
 				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
 				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
 					SOBJ->Add_CollisionObject(DOBJ);
 					DOBJ->Add_CollisionObject(SOBJ);
-					SOBJ->OnCollisionEnter(DOBJ);
-					DOBJ->OnCollisionEnter(SOBJ);
+					//SOBJ->OnCollisionEnter(DOBJ);
+					//DOBJ->OnCollisionEnter(SOBJ);
 				}
+				SOBJ->OnCollisionEnter(DOBJ);
+				DOBJ->OnCollisionEnter(SOBJ);
 				SOBJ->OnCollisionStay(DOBJ);
-				DOBJ->OnCollisionStay(SOBJ);
-	
-				return TRUE;
+				//DOBJ->OnCollisionStay(SOBJ);
+
+				ret = true;
+				//
+				//return TRUE;
 			}
 			else {
 				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
-					//SOBJ->Delete_CollisionObject(DOBJ);
-					//DOBJ->Delete_CollisionObject(SOBJ);
+					SOBJ->Delete_CollisionObject(DOBJ);
+					DOBJ->Delete_CollisionObject(SOBJ);
 					DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
 				}
 			}
 		}
 	}
-	
-	return FALSE;
 
-	return FALSE;
+	return ret;
 }
 
 VOID CollisionManager::Get_AllObjectOfScene() {
