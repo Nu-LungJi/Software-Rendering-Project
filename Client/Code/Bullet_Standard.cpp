@@ -118,13 +118,16 @@ HRESULT Bullet_Standard::Component_Initialize() {
 BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-
+	MainUI* mainUI;
 	if (Tag == L"PlayerArrow") {
+		
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
 	else if (Tag == L"Player")
 	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
@@ -149,18 +152,6 @@ BOOL Bullet_Standard::OnCollisionExit(GameObject* _Other)
 //}
 VOID Bullet_Standard::Free() {
 	GameObject::Free();
-}
-BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
-{
-	// 플레이어 충돌
-	MainUI* mainUI;
-	if (_Other->Get_ObjectTag() == L"Player") {
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
-		return true;
-	}
-
-	return FALSE;
 }
 //
 //VOID Bullet_Standard::BillBoard()

@@ -272,7 +272,7 @@ typedef struct tagMonsterInfo {
 typedef struct tagRandomGenerator {
 	static inline uint64_t Seed[2] = { (uint64_t)time(NULL), 0x9e3779b97f4a7c15 };
 
-	static uint64_t Xorshift128p(void* _Seed = nullptr)
+	static inline uint64_t Xorshift128p(void* _Seed = nullptr)
 	{
 	uint64_t x = Seed[0];
 	const uint64_t y = (_Seed == nullptr) ? Seed[1] : reinterpret_cast<uintptr_t>(_Seed) ^ Seed[1];
@@ -316,6 +316,8 @@ public:
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
+	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
+	uint64_t XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2);
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr

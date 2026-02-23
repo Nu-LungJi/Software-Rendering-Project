@@ -153,22 +153,23 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 //	Component_Transform->Set_World(&matWorld);
 //}
 
-	uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
+uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
+{
+	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
+	if (0 == _Seed1 || 0 == _Seed2)
 	{
-		if (0 == _Seed1 || 0 == _Seed2)
-		{
-			_Seed1 = 0x123456789ABCDEF0;
-			_Seed2 = 0xFEDCBA9876543210;
-		}
-
-		uint64_t x = _Seed1;
-		uint64_t const y = _Seed2;
-		_Seed1 = y;
-		x ^= x << 23;
-		_Seed2 = x ^ y ^ (x >> 17) ^ (y >> 26);
-
-		return _Seed2 + y;
+		_Seed1 = 0x123456789ABCDEF0;
+		_Seed2 = 0xFEDCBA9876543210;
 	}
+
+	uint64_t x = _Seed1;
+	uint64_t const y = _Seed2;
+	_Seed1 = y;
+	x ^= x << 23;
+	_Seed2 = x ^ y ^ (x >> 17) ^ (y >> 26);
+
+	return _Seed2 + y;
+}
 
 
 VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)

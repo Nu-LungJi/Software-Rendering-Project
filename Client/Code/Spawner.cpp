@@ -106,9 +106,6 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::ITEM_SPAWN6:
 		break;
 
-	case TILE_SPAWNER::BOSS_SPAWN:
-
-		break;
 	case TILE_SPAWNER::CL_SPAWN:
  		//CL_Spawn();
 	case TILE_SPAWNER::BOSS_SPAWN:

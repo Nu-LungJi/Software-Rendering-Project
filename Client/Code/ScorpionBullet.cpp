@@ -149,7 +149,7 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 		if (_Other->Get_ObjectTag() == L"Player") {
 			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 			mainUI->Player_LostHP();
-      Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 			m_tInfo.fSpeed = 0.f;
 			m_tInfo.bTrigger[0] = true;
 			m_tInfo.fTimer[0] = 8.f;
@@ -172,17 +172,18 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 			{
 				m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain_Head>(GRPDEV, *MYPOS);
 				m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-      }
-    }
-	wstring Tag = _Other->Get_ObjectTag();
-    
+			}
+		}
+		wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-    // 플레이어는 겹쳐서 합쳤는데 화살은 어디둘지 잘 모르겠어서 일단 놔두었습니다
+
+		if (Tag == L"PlayerArrow") {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+			// 플레이어는 겹쳐서 합쳤는데 화살은 어디둘지 잘 모르겠어서 일단 놔두었습니다
+		}
+		return FALSE;
 	}
-	return FALSE;
 }
 
 BOOL ScorpionBullet::OnCollisionStay(GameObject* _Other)
