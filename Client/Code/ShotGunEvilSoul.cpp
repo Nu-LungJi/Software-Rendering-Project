@@ -78,11 +78,11 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 				if (m_tInfo.vDirection.z > 0.f)
 					m_tInfo.Textureinfo._frame += m_tInfo.Textureinfo._Endframe / 2;
 		}
-		if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SHOTGUNEVILSOUL_HORIZONTALFLIP_BUFFER)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SHOTGUNEVILSOUL_HORIZONTALFLIP_BUFFER)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
 
 		//if (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe / 2)
 		break;
