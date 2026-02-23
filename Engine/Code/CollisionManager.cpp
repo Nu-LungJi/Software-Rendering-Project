@@ -56,38 +56,34 @@ BOOL CollisionManager::AABB_Collision() {
 					DEST->Get_ObjList().push_back(SOBJ);
 				}
 				else DOBJ->OnCollisionStay(SOBJ);
-			}
-			else
-			{
-				if (iterS != SRC->Get_ObjList().end()) {
-					SOBJ->OnCollisionExit(DOBJ); SRC->Get_ObjList().erase(iterS);
+
+				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
+					SOBJ->Add_CollisionObject(DOBJ);
+					DOBJ->Add_CollisionObject(SOBJ);
+					//			SOBJ->OnCollisionEnter(DOBJ);
+					//			DOBJ->OnCollisionEnter(SOBJ);
 				}
+				//		SOBJ->OnCollisionStay(DOBJ);
+				//		DOBJ->OnCollisionStay(SOBJ);
 
-				if (iterD != DEST->Get_ObjList().end()) {
-					DOBJ->OnCollisionExit(SOBJ); DEST->Get_ObjList().erase(iterD);
+				return TRUE;
+			}
+			else {
+				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE) {
+					SOBJ->Delete_CollisionObject(DOBJ);
+					DOBJ->Delete_CollisionObject(SOBJ);
+					//			DOBJ->OnCollisionExit(SOBJ);
+					//			SOBJ->OnCollisionExit(DOBJ);
+
+					//if (iterS != SRC->Get_ObjList().end()) {
+					//	SOBJ->OnCollisionExit(DOBJ); SRC->Get_ObjList().erase(iterS);
+					//}
+
+					//if (iterD != DEST->Get_ObjList().end()) {
+					//	DOBJ->OnCollisionExit(SOBJ); DEST->Get_ObjList().erase(iterD);
+					//}
 				}
 			}
-
-
-			//	if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
-			//		SOBJ->Add_CollisionObject(DOBJ);
-			//		DOBJ->Add_CollisionObject(SOBJ);
-			//		SOBJ->OnCollisionEnter(DOBJ);
-			//		DOBJ->OnCollisionEnter(SOBJ);
-			//	}
-			//	SOBJ->OnCollisionStay(DOBJ);
-			//	DOBJ->OnCollisionStay(SOBJ);
-	
-			//	return TRUE;
-			//}
-			//else {
-			//	if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
-			//		SOBJ->Delete_CollisionObject(DOBJ);
-			//		DOBJ->Delete_CollisionObject(SOBJ);
-			//		DOBJ->OnCollisionExit(SOBJ);
-			//		SOBJ->OnCollisionExit(DOBJ);
-			//	}
-			//}
 		}
 	}
 	

@@ -14,8 +14,8 @@ HRESULT CubeFloorTile::Ready_GameObject() {
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 
 	CubeFunction::Grid(m_pTransform, m_bGrid);
-	m_pCollider->Set_Scale(m_pTransform->Get_Position()->x, m_pTransform->Get_Position()->y, m_pTransform->Get_Position()->z);
 
+	m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -23,16 +23,20 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 }
 VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
+	if (m_bTrigger) return;
 	GameObject::LateUpdate_GameObject(_DT);
 }
 
 VOID CubeFloorTile::Render_GameObject()
 {
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+
+	if (m_bTrigger) return;
+
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 
-	GRPDEV->SetTexture(0, m_pTexture->Find_Texture(L"CubeFloor.dds"));
+	GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"CubeFloor.dds"));
 
 	m_pBuffer->Render_Buffer();
 
@@ -46,14 +50,14 @@ HRESULT CubeFloorTile::Component_Initialize() {
 	m_pTransform->Set_Pos(0.f, 0.f, 0.f);
 
 	// ONLY MINIGAME
-	m_pTexture		= MINIGAMESCENE->Set_Texture(L"CubeFloorTile", m_bTrigger);
+	//m_pTexture		= MINIGAMESCENE->Set_Texture(L"CubeFloorTile", m_bTrigger);
 
 	m_pCollider		= ADD_COMPONENT_COLLIDER;
 	m_pCollider->Set_CenterPos(m_pTransform);
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
 
-	if (m_bTrigger)
-		m_pTexture->Import_TextureFromFolder(L"../../Tile/CubeFloorTile");
+	//if (m_bTrigger)
+	//	m_pTexture->Import_TextureFromFolder(L"../../Tile/CubeFloorTile");
 
 	m_bTrigger = false;
 
@@ -74,13 +78,21 @@ CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid)
 
 	return pCubeFloorTile;
 }
-CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vScale, bool _Grid)
+CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid)
 {
 	CubeFloorTile* pCubeFloorTile = CubeFloorTile::Create(pGraphicDev, _Grid);
 
-	*static_cast<Transform*>(pCubeFloorTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() = vScale;
+	*static_cast<Transform*>(pCubeFloorTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() = vPos;
 
-	return nullptr;
+	return pCubeFloorTile;
+}
+CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid)
+{
+	CubeFloorTile* pCubeFloorTile = CubeFloorTile::Create(pGraphicDev, vPos, _Grid);
+
+	*static_cast<Transform*>(pCubeFloorTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vScale;
+
+	return pCubeFloorTile;
 }
 VOID CubeFloorTile::Free() {
 
