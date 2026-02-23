@@ -331,7 +331,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     }
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-    return S_OK;
+    return 0;
 }
 
 VOID Arrow::LateUpdate_GameObject(const _float& _DT)
@@ -463,6 +463,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 
     if (Tag == L"Monster") {
         Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        _hp = 0.f;
         return TRUE;
     }
 

@@ -538,6 +538,11 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	TCHAR arrowTag[128] = L"";
 	wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);
 
+	if (_arrowCount % 4 == 3)
+	{
+		bool i = 1;
+	}
+
 	arrow->Set_ObjectTag(arrowTag);
 	arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
 	arrow->Set_ObjectTag(L"PlayerArrow");

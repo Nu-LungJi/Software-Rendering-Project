@@ -1271,12 +1271,12 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 
 	if (Tag == L"MonsterBullet")
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		//Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
 	else if(Tag == L"Monster")
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		//Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
 
