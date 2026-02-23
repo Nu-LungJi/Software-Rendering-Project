@@ -216,7 +216,7 @@
     </Filter>
     <Filter Include="03. GameObject\07. ProJectile\05.EvilSlimeGroundIce">
       <UniqueIdentifier>{c45efe71-4311-43eb-8fe1-d2596bf2b95e}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
       <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
     </Filter>
@@ -453,7 +453,7 @@
     <ClInclude Include="..\Header\MonsterTest.h" />
     <ClInclude Include="..\Header\EvilSlimeGroundIce.h">
       <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
@@ -673,7 +673,7 @@
     <ClCompile Include="..\Code\MonsterTest.cpp" />
     <ClCompile Include="..\Code\EvilSlimeGroundIce.cpp">
       <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClCompile>

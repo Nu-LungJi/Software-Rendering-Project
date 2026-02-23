@@ -72,7 +72,7 @@ VOID Alert::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV,{1.f,0.f,0.f},0);
 }
 VOID Alert::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

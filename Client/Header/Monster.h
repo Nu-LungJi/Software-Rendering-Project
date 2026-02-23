@@ -315,7 +315,7 @@ public:
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
-	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
+
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr

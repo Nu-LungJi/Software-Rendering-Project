@@ -21,8 +21,10 @@ INT			Collider::Update_Component(CONST FLOAT& _DT) {
 	CenterPos = *ColliderPos->Get_Position();
 	CenterPos += Offset;
 	
-	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
-	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
+	_vec3 ColScale = { fabsf(Scale.x),fabsf(Scale.y),fabsf(Scale.z) };
+
+	MinPoint = { CenterPos.x - ColScale.x, CenterPos.y - ColScale.y, CenterPos.z - ColScale.z };
+	MaxPoint = { CenterPos.x + ColScale.x, CenterPos.y + ColScale.y, CenterPos.z + ColScale.z };
 	// 1차 통합 테스트
 	return 0;
 }
