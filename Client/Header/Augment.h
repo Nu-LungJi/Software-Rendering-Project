@@ -23,12 +23,14 @@ public:
 	HRESULT Effect_Initialize();
 
 public:
+	HRESULT Add_PlayerStatus(INT _PerkType);
+
 	VOID Display_PerkInfo(ItemINFO* _pItem);
 	VOID Perk_Selected_Effect(INT _PerkType);
-
+	
 public:
 	INT IsMouseOnPerk();
-	VOID Effect_Animation(SpriteINFO* _Sprite,float delay, int maxIdx, bool reverse);
+
 public:
 	static	Augment* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -39,7 +41,9 @@ private:
 
 private:
 	
-	FLOAT Timer;
+	FLOAT Screen_Timer;
+	FLOAT Anim_Timer;
+
 	FLOAT TargetX;
 
 	vector<SpriteINFO*>	Anim_PerkSelect;
@@ -58,9 +62,11 @@ private:
 	_vec2 PerkInfo_Pos;
 	Player* PlayerObject;
 
+  INT m_iPrevHoverType;
+
 	BOOL isActive;
 	
-	
+	vector<EffectINFO*> PerkEffectList;
 
 private:
 	virtual	VOID		Free();
