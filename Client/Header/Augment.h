@@ -20,7 +20,6 @@ public:
 	HRESULT Sprite_Initialize();
 	HRESULT Text_Initialize();
 	HRESULT	Perk_Initialize();
-	HRESULT Effect_Initialize();
 
 public:
 	HRESULT Add_PlayerStatus(INT _PerkType);

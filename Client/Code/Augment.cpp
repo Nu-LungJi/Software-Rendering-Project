@@ -7,7 +7,6 @@ Augment::~Augment()													{}
 
 HRESULT	Augment::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))	return E_FAIL;
-	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	if (FAILED(Perk_Initialize()))			return E_FAIL;
@@ -20,78 +19,47 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-//	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q))
-//	{
-//		isActive = !isActive;
-//		if (!isActive)
-//		{
-//			UIManager::GetInstance()->Find_FontObject(L"PERK_TITLE")->Visible = FALSE;
-//			UIManager::GetInstance()->Find_FontObject(L"PERK_INFO")->Visible = FALSE;
-//    }
-//		if (isActive)
-//		{
-//			switch (IsMouseOnPerk())
-//			{
-//			case INIT:
-//        Perk_Text[0]->Text = Perk_Info[1]->ItemDesc[1];
-//				break;
-//			case FIRST:
-//        Perk_Text[1]->Text = Perk_Info[1]->ItemDesc[0];
-//        Perk_Text[1]->Text = Perk_Info[1]->ItemDesc[1];
-//			case SECOND:
-//				Perk_Text[2]->Text = Perk_Info[2]->ItemDesc[0];
-//				Perk_Text[2]->Text = Perk_Info[2]->ItemDesc[1];
-//        break;
-//			case THIRD:
-//        Perk_Text[3]->Text = Perk_Info[3]->ItemDesc[0];
-//        Perk_Text[3]->Text = Perk_Info[3]->ItemDesc[1];
-//				break;
-//			default:
-//				break;
-//			}
-//		}
+	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q)) {
+		isActive = true;
+	}
 
-		if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q)) {
-			isActive = !isActive;
-			if (!isActive) {
+	if (isActive) {
+		PlayerObject->Set_PlayerStop(TRUE);
+		Perk_Text[2]->Text = L"가호 선택";
+		Perk_Text[2]->Visible = TRUE;
+
+		INT iType = IsMouseOnPerk();
+		Display_PerkInfo(Perk_Info[iType]);
+
+		if (iType != m_iPrevHoverType) {
+			wstring prevAnim = L"Perk_Effect" + to_wstring(m_iPrevHoverType);
+			if (iType != INIT)
+				Perk_Selected_Effect(iType);
+
+			UIEffect* pPrevEffect = dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, prevAnim));
+			if (pPrevEffect) {
+				pPrevEffect->Set_All_Visible(FALSE);
+				pPrevEffect->Set_ObjectDead(TRUE);
+			}
+			m_iPrevHoverType = iType;
+		}
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			if (iType != INIT) {
+				Add_PlayerStatus(iType);
+				isActive = FALSE;
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
-					PlayerObject->Set_PlayerStop(FALSE);
+				PlayerObject->Set_PlayerStop(FALSE);
+
+				return 0;
 			}
 		}
-		if (isActive) {
-			PlayerObject->Set_PlayerStop(TRUE);
+	}
 
-			Perk_Text[2]->Text = L"가호 선택";
-			Perk_Text[2]->Visible = TRUE;
-
-			INT iType = IsMouseOnPerk();
-			Display_PerkInfo(Perk_Info[iType]);
-			if (iType != m_iPrevHoverType) {
-				wstring prevAnim = L"Perk_Effect" + to_wstring(m_iPrevHoverType);
-
-				if (iType != INIT) {
-					Perk_Selected_Effect(iType);
-				}
-				m_iPrevHoverType = iType;
-				
-				if (IsMouseOnPerk())
-				{
-					if (KeyManager::GetInstance()->MOUSE_LB_DOWN())
-					{
-						Add_PlayerStatus(iType);
-						isActive = FALSE;
-						for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
-						PlayerObject->Set_PlayerStop(FALSE);
-					}
-				}
-
-				UIEffect* pPrevEffect = dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, prevAnim));
-				if (pPrevEffect) {
-					pPrevEffect->Set_All_Visible(FALSE);
-					pPrevEffect->Set_ObjectDead(TRUE); 
-				}
-			}
-		}
+	if (!isActive) {
+		for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
+		if (PlayerObject) PlayerObject->Set_PlayerStop(FALSE);
+	}
 		return 0;
 }
 VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -141,10 +109,6 @@ HRESULT Augment::Text_Initialize() {
 	return S_OK;
 }
 
-HRESULT Augment::Effect_Initialize()
-{
-	return S_OK;
-}
 
 HRESULT Augment::Perk_Initialize()
 {
@@ -209,6 +173,11 @@ VOID Augment::Perk_Selected_Effect(INT _PerkType)
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 175);
   if (_PerkType == THIRD)
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 175);
+}
+
+VOID Augment::FadeOut(FLOAT Frame)
+{
+	return VOID();
 }
 
 INT Augment::IsMouseOnPerk()
