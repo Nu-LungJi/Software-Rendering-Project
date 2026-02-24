@@ -220,6 +220,12 @@
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
       <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\06. Effect\05.BlackOut">
+      <UniqueIdentifier>{30ee23f7-31bb-4b55-ade1-56ef856070ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Loading">
+      <UniqueIdentifier>{b455ca32-e0a2-46bc-adeb-4db60f6b32b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -457,6 +463,12 @@
     <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\StageBlackOut.h">
+      <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLoading.h">
+      <Filter>99.Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -676,6 +688,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StageBlackOut.cpp">
+      <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLoading.cpp">
+      <Filter>99.Loading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -19,6 +19,7 @@ INT EffectManager::Update_EffectManager(CONST FLOAT& _DT) {
 	}for (auto& UE : Container_UIEffect) {
 		UE->Update_GameObject(_DT);
 	}
+	Scene_Effect->Update_GameObject(_DT);
 	return 0;
 }
 VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
@@ -59,6 +60,7 @@ VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
 		}
 		else { ++iter; }
 	}
+	Scene_Effect->LateUpdate_GameObject(_DT);
 }
 VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV) {
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
@@ -75,7 +77,7 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV) {
 		EE->Render_GameObject();
 	for (auto& UE : Container_UIEffect) 
 		UE->Render_GameObject();
-
+	Scene_Effect->Render_GameObject();
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
@@ -86,15 +88,16 @@ HRESULT EffectManager::Append_Effect(EFFECT_OWNER _Owner, GameObject* _Effect) {
 	if (!_Effect)
 		return E_POINTER;
 
-	if (_Owner		== EFFECT_OWNER::PLAYER)
+	if (_Owner == EFFECT_OWNER::PLAYER)
 		Container_PlayerEffect.push_back(_Effect);
-	else if(_Owner	== EFFECT_OWNER::MONSTER)
+	else if (_Owner == EFFECT_OWNER::MONSTER)
 		Container_MonsterEffect.push_back(_Effect);
 	else if (_Owner == EFFECT_OWNER::BOSS)
 		Container_BossEffect.push_back(_Effect);
 	else if (_Owner == EFFECT_OWNER::UI)
 		Container_UIEffect.push_back(_Effect);
-
+	else if (_Owner == EFFECT_OWNER::SCENE)
+		Scene_Effect = _Effect;
 	return S_OK;
 }
 GameObject* EffectManager::Get_Effect(EFFECT_OWNER _Owner, wstring _TAG) {
@@ -135,4 +138,5 @@ VOID	EffectManager::Free() {
 		Safe_Release(EFF);
 	for (auto& EFF : Container_UIEffect)
 		Safe_Release(EFF);
+	Safe_Release(Scene_Effect);
 }

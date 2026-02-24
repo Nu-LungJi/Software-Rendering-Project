@@ -339,6 +339,8 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
 	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_END"};
+	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS", "END" };
+
 	static const char* cSelect_Tile      = nullptr;
 	static const char* cSelect_State     = nullptr;
 	static const char* cSelect_Stage     = nullptr;
@@ -346,6 +348,7 @@ void Tile::Imgui_ModeChanger()
 	static const char* cSelect_Install   = nullptr;
 	static const char* cSelect_Animat    = nullptr;
 	static const char* cSelect_Spawner = nullptr;
+	static const char* cSelect_NextStage = nullptr;
 	
 	if (!ImGui::CollapsingHeader("TILEMode"))
 		return;
@@ -434,6 +437,7 @@ void Tile::Imgui_ModeChanger()
 				ImGui::EndCombo();
 			}
 		}
+
 		////////////////////TILE_STATE/////////////////////
 		{
 			ImGui::Text("TileState");
@@ -553,6 +557,38 @@ void Tile::Imgui_ModeChanger()
 			}
 		}
 	}
+
+	////////////////////NEXT///////////////////
+	////////////////////MODE_STAGE/////////////////////
+	{
+		ImGui::Text("TILE_NEXT");
+		ImGui::SameLine(140.0f, 0.f);
+
+		if (ImGui::BeginCombo("##cho", cSelect_NextStage))
+		{
+			for (_int i = 0; i < IM_ARRAYSIZE(cTileNextStage); i++)
+			{
+				_bool bSelect = (cSelect_NextStage == cTileNextStage[i]);
+				if (ImGui::Selectable(cTileNextStage[i], bSelect))
+				{
+					cSelect_NextStage = cTileNextStage[i];
+					if (!strcmp(cSelect_NextStage, cTileNextStage[0]))	    m_eNextStage = TILE_STAGE::TILE_STAGE1;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[1])) m_eNextStage = TILE_STAGE::TILE_STAGE2;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[2])) m_eNextStage = TILE_STAGE::TILE_STAGE3;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[3])) m_eNextStage = TILE_STAGE::TILE_STAGE4;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[4])) m_eNextStage = TILE_STAGE::TILE_FIRSTBOSS;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[5])) m_eNextStage = TILE_STAGE::TILE_DOCHER1;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[6])) m_eNextStage = TILE_STAGE::TILE_DOCHER2;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[7])) m_eNextStage = TILE_STAGE::TILE_DOCHERBOSS;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[8])) m_eNextStage = TILE_STAGE::STAGE_END;
+				}
+				if (bSelect)
+					ImGui::SetItemDefaultFocus();
+
+			}
+			ImGui::EndCombo();
+		}
+		}
 }
 void Tile::Imgui_PivotButton(const char pName[32], _vec3* vPivot,_float iLinePivot)
 {
@@ -1010,7 +1046,7 @@ void Tile::Check_TilePoint()
 						}
 						else
 						{
-							dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(m_pPathName, m_pTileName, m_eTile, m_eTileState, m_eMode, (_int)vMouseCheck.z * VTXCNTX + (_int)vMouseCheck.x, m_vNextPos);
+							dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(m_pPathName, m_pTileName, m_eTile, m_eTileState, m_eMode, (_int)vMouseCheck.z * VTXCNTX + (_int)vMouseCheck.x, m_vNextPos,m_eNextStage);
 							dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 								->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 						}
@@ -1179,14 +1215,14 @@ void Tile::Move_Tile()
 	// 
 	if (MOUSE_LBUTTON && !m_bMouseClick)
 	{
-		if(TileManager::GetInstance()->Choice_Tile(&m_iStge, &m_iMode, &m_iNumber, vOrigin, vDirection, &m_vOriginal, &m_vScalePivot, &m_vOriginRotation,&m_bOnlyAnimation))
+		if(TileManager::GetInstance()->Choice_Tile(&m_iStge, &m_iMode, &m_iNumber, vOrigin, vDirection, &m_vOriginal, &m_vScalePivot, &m_vOriginRotation,&m_bOnlyAnimation,&m_eNextStage))
 			m_bMouseClick = true;
 			//해당 타일이 클릭되면 true
 	}
 	//타일 움직이기
 	if (m_bMouseClick)
 	{
-		TileManager::GetInstance()->Set_Tile(m_vOriginal, m_vScalePivot, m_vOriginRotation, m_iStge,m_iMode,m_iNumber, m_bOnlyAnimation);
+		TileManager::GetInstance()->Set_Tile(m_vOriginal, m_vScalePivot, m_vOriginRotation, m_iStge,m_iMode,m_iNumber, m_bOnlyAnimation, m_eNextStage);
 	}
 	//우클릭시 해당 위치에 타일 놓기
 	if (MOUSE_RBUTTON)

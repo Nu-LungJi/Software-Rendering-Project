@@ -85,7 +85,8 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
 	{
 		m_tInfo.Textureinfo._frameTick = 0.f;
-		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+		if (m_tInfo.Textureinfo._Endframe > 0)
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 	m_tInfo.vDirection.y = 0.f;
 

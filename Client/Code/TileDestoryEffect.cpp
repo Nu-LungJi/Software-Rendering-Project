@@ -8,68 +8,67 @@ TileDestoryEffect::~TileDestoryEffect() {}
 HRESULT TileDestoryEffect::Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther) {
 
 
-    if (FAILED(Component_Initialize(bOther, eid))) return E_FAIL;
+	if (FAILED(Component_Initialize(bOther, eid))) return E_FAIL;
 
-    m_pTransform->Set_Pos(vPos);
-    m_pTransform->Set_Scale(vScale);
-    m_pTransform->Set_Rotation(vRot);
-    m_eDestory = eid;
-    switch (m_eDestory)
-    {
-    case OBJECT_DESTORY::STONE:
-        Add_Effect(OBJECT_DESTORY::STONE, L"StoneBox_Destruction_");
-        break;
-    case OBJECT_DESTORY::POTALEFFECT:
-        Add_Effect(OBJECT_DESTORY::POTALEFFECT, L"Spr_InfectionThorns_DestructionEffect_0");
-        break;
-    case OBJECT_DESTORY::BOOM_F:
-        Add_Effect(OBJECT_DESTORY::BOOM_F, L"DangerArea0");
-        break;
-    case OBJECT_DESTORY::BOOM_S:
-        Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");
-
-        break;
-    case OBJECT_DESTORY::BOOM_T:
-        Add_Effect(OBJECT_DESTORY::BOOM_T, L"Spr_Effect_FireBird_FireBallPulse_0");
-        CollisionManager::GetInstance()->Add_ColliderObject(this);
-        m_pCollider->Set_Att(150);
-        break;
-    }
-
-    return S_OK;
+	m_pTransform->Set_Pos(vPos);
+	m_pTransform->Set_Scale(vScale);
+	m_pTransform->Set_Rotation(vRot);
+	m_eDestory = eid;
+	switch (m_eDestory)
+	{
+		case OBJECT_DESTORY::STONE:
+		Add_Effect(OBJECT_DESTORY::STONE, L"StoneBox_Destruction_");
+		break;
+		case OBJECT_DESTORY::POTALEFFECT:
+		Add_Effect(OBJECT_DESTORY::POTALEFFECT, L"Spr_InfectionThorns_DestructionEffect_0");
+		break;
+		case OBJECT_DESTORY::BOOM_F:
+		Add_Effect(OBJECT_DESTORY::BOOM_F, L"DangerArea0");
+		break;
+		case OBJECT_DESTORY::BOOM_S:
+		Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");	
+		break;
+		case OBJECT_DESTORY::BOOM_T:
+		Add_Effect(OBJECT_DESTORY::BOOM_T, L"Spr_Effect_FireBird_FireBallPulse_0");
+		CollisionManager::GetInstance()->Add_ColliderObject(this);
+		m_pCollider->Set_Att(150);
+		break;
+	}
+		
+	return S_OK;
 }
-INT   TileDestoryEffect::Update_GameObject(const _float& _DT) {
-    if (Get_ObjectDead() == TRUE)
-        return -1;
-    GameObject::Update_GameObject(_DT);
+INT	TileDestoryEffect::Update_GameObject(const _float& _DT) {
+	if (Get_ObjectDead() == TRUE)
+		return -1;
+	GameObject::Update_GameObject(_DT);
 
 
-    Frame_Move(_DT);
+	Frame_Move(_DT);
+	
+	{
+		if (m_eDestory != OBJECT_DESTORY::BOOM_F)
+		{
 
-    {
-        if (m_eDestory != OBJECT_DESTORY::BOOM_F)
-        {
+			_vec3 vScale, vPos;
+			_matrix matScale, RotZ, matWorld, matBill, matView;
+			vScale = *m_pTransform->Get_Scale();
+			matWorld = *m_pTransform->Get_World();
+			vPos = *m_pTransform->Get_Position();
+			GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+			D3DXMatrixInverse(&matBill, nullptr, &matView);
 
-            _vec3 vScale, vPos;
-            _matrix matScale, RotZ, matWorld, matBill, matView;
-            vScale = *m_pTransform->Get_Scale();
-            matWorld = *m_pTransform->Get_World();
-            vPos = *m_pTransform->Get_Position();
-            GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-            D3DXMatrixInverse(&matBill, nullptr, &matView);
+			D3DXMatrixScaling(&matScale, vScale.x, vScale.y, vScale.z);
 
-            D3DXMatrixScaling(&matScale, vScale.x, vScale.y, vScale.z);
+			matWorld = matScale * matBill;
+			memcpy(matWorld.m[3], vPos, sizeof(_vec3));
+			m_pTransform->Set_World(&matWorld);
+			m_pTransform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
 
-            matWorld = matScale * matBill;
-            memcpy(matWorld.m[3], vPos, sizeof(_vec3));
-            m_pTransform->Set_World(&matWorld);
-            m_pTransform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
-
-        }
-    }
-    if (m_eDestory == OBJECT_DESTORY::BOOM_T)
-        RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-    return 0;
+		}	
+	}
+	if(m_eDestory == OBJECT_DESTORY::BOOM_T)
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+		return 0;
 }
 VOID TileDestoryEffect::LateUpdate_GameObject(const _float& _DT) {
     GameObject::LateUpdate_GameObject(_DT);
@@ -97,109 +96,109 @@ VOID TileDestoryEffect::Render_GameObject()
 
 
 void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
-{
-    _vec3 Pos, Scale, Rot;
-    m_pTransform->Get_Info(INFO_POS, &Pos);
-    Scale = *m_pTransform->Get_Scale();
-    Rot = *m_pTransform->Get_Rotation();
-    m_fTime += _DT;
-    if (m_bEffect)
-    {
-        switch (m_eDestory)
-        {
-        case OBJECT_DESTORY::STONE:
-            Frame_Normal(_DT);
-            break;
-        case OBJECT_DESTORY::POTALEFFECT:
-            Frame_Normal(_DT);
-            break;
-        case OBJECT_DESTORY::BOOM_F:
-            //Áö³­ ½Ã°£
-            if (m_fTime > 0.1f) //0.1ÃÊ°¡ Áö³ª¸é
-            {
-                ++m_fFrame;     //ÇÁ·¹ÀÓ Áõ°¡
-                m_fTime = 0.f;   //½Ã°£ ÃÊ±âÈ­
+{ 
+	_vec3 Pos, Scale, Rot;
+	m_pTransform->Get_Info(INFO_POS, &Pos);
+	Scale = *m_pTransform->Get_Scale();
+	Rot = *m_pTransform->Get_Rotation();
+	m_fTime += _DT;
+	if (m_bEffect)
+	{
+		switch (m_eDestory)
+		{
+		case OBJECT_DESTORY::STONE:
+			Frame_Normal(_DT);
+			break;
+		case OBJECT_DESTORY::POTALEFFECT:
+			Frame_Normal(_DT);
+			break;
+		case OBJECT_DESTORY::BOOM_F:
+		 //ì§€ë‚œ ì‹œê°„
+			if (m_fTime > 0.1f) //0.1ì´ˆê°€ ì§€ë‚˜ë©´
+			{
+				++m_fFrame;     //í”„ë ˆìž„ ì¦ê°€
+				m_fTime = 0.f;	//ì‹œê°„ ì´ˆê¸°í™”
 
-                if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
-                {
-                    //m_fFrame = 1.f;
-                    m_bEffect = false;
-                    Pos.y += 2.f;
-                    Pos.z -= 0.5f;
+				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+				{
+					//m_fFrame = 1.f;
+					m_bEffect = false;
+					Pos.y += 2.f;
+					Pos.z -= 0.5f;
 
-                    EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, { 4.f,4.f,4.f }, Rot));
+					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, {4.f,4.f,4.f}, Rot));
 
-                    Set_ObjectDead(TRUE);
-                }
-            }
-            break;
-        case OBJECT_DESTORY::BOOM_S:
-            if (m_fTime > 0.1f)
-            {
-                ++m_fFrame;
-                // Scale += {0.1f, 0.1f, 0.1f};
-                m_pTransform->Set_Scale(Scale);
-                m_fTime = 0.f;
-                if (m_fFrame == 5)
-                {
-                    TileDestoryEffect* pDestory = TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_T, 0, Pos, { 4.f,4.f,4.f }, Rot);
-                    pDestory->Set_ObjectTag(L"Tile_Boom");
-                    pDestory->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+					Set_ObjectDead(TRUE);
+				}
+			}
+			break;
+		case OBJECT_DESTORY::BOOM_S:
+			if (m_fTime > 0.1f) 
+			{
+				++m_fFrame; 
+				// Scale += {0.1f, 0.1f, 0.1f};
+				m_pTransform->Set_Scale(Scale);
+				m_fTime = 0.f;	
+				if (m_fFrame == 5)
+				{
+					TileDestoryEffect* pDestory = TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_T, 0, Pos, { 4.f,4.f,4.f }, Rot);
+					pDestory->Set_ObjectTag(L"Tile_Boom");
+					pDestory->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+				
+					SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pDestory);
+				
+				}
+					
+				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+				{
+					m_bEffect = false;
+					Set_ObjectDead(TRUE);
+				}
+			}
+			break;
+		case OBJECT_DESTORY::BOOM_T:
+			if (m_fTime > 0.1f)
+			{
+				++m_fFrame;
+				Scale += {0.2f,0.2f,0.2f};
+				m_pTransform->Set_Scale(Scale);
+				m_fTime = 0.f;
 
-                    SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pDestory);
-
-                }
-
-                if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
-                {
-                    m_bEffect = false;
-                    Set_ObjectDead(TRUE);
-                }
-            }
-            break;
-        case OBJECT_DESTORY::BOOM_T:
-            if (m_fTime > 0.1f)
-            {
-                ++m_fFrame;
-                Scale += {0.2f, 0.2f, 0.2f};
-                m_pTransform->Set_Scale(Scale);
-                m_fTime = 0.f;
-
-                if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
-                {
-                    m_bEffect = false;
-                    Set_ObjectDead(TRUE);
-                }
-            }
-            break;
-        }
-    }
+				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+				{
+					m_bEffect = false;
+					Set_ObjectDead(TRUE);
+				}
+			}
+			break;
+		}
+	}
 }
 
 BOOL TileDestoryEffect::OnCollisionEnter(GameObject* _Other)
 {
 
-    wstring Tag = _Other->Get_ObjectTag();
-    if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T)
-    {
-        _float hp(0);
-        hp = dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
-        dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(hp - m_pCollider->Get_Att());
-    }
-    else
-    {
-        return false;
-    }
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T && m_fFrame == 0)
+	{
+		_float hp(0);
+		hp = dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
+		dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(hp - m_pCollider->Get_Att());
+	}
+	else
+	{
+		return false;
+	}
 
-    return TRUE;
+	return TRUE;
 }
 
 void TileDestoryEffect::Frame_Normal(const FLOAT& _DT)
-{    //Áö³­ ½Ã°£
-    if (m_fTime > 0.1f) //0.1ÃÊ°¡ Áö³ª¸é
+{    //ì§€ë‚œ ì‹œê°„
+    if (m_fTime > 0.1f) //0.1ì´ˆê°€ ì§€ë‚˜ë©´
     {
-        ++m_fFrame;     //ÇÁ·¹ÀÓ Áõ°¡
-        m_fTime = 0.f;   //½Ã°£ ÃÊ±âÈ­
+        ++m_fFrame;     //í”„ë ˆìž„ ì¦ê°€
+        m_fTime = 0.f;   //ì‹œê°„ ì´ˆê¸°í™”
 
         if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
         {
@@ -226,24 +225,24 @@ void TileDestoryEffect::Add_Effect(OBJECT_DESTORY eid, const _tchar* pName)
 
 HRESULT TileDestoryEffect::Component_Initialize(_bool bOther, OBJECT_DESTORY eid) {
 
+	
+	if (bOther)
+	{
+		m_pTileEffectBuff = ADD_COMPONENT_TILE;
+	}
+	else
+		m_pTileEffectBuff = ADD_COMPONENT_TILEFRONT;
 
-    if (bOther)
-    {
-        m_pTileEffectBuff = ADD_COMPONENT_TILE;
-    }
-    else
-        m_pTileEffectBuff = ADD_COMPONENT_TILEFRONT;
-
-    m_pTransform = ADD_COMPONENT_TRANSFORM;
-
-    if (eid == OBJECT_DESTORY::BOOM_T)
-    {
-        m_pCollider = ADD_COMPONENT_COLLIDER;
-        m_pCollider->Set_CenterPos(m_pTransform);
-        m_pCollider->Set_Scale(4.f, 4.f, 4.f);
-        m_pCollider->Set_Att(50.f);
-    }
-    return S_OK;
+	m_pTransform = ADD_COMPONENT_TRANSFORM;
+	
+	if (eid == OBJECT_DESTORY::BOOM_T)
+	{
+		m_pCollider = ADD_COMPONENT_COLLIDER;
+		m_pCollider->Set_CenterPos(m_pTransform);
+		m_pCollider->Set_Scale(4.f, 4.f, 4.f);
+		m_pCollider->Set_Att(50.f);
+	}
+	return S_OK;
 }
 
 TileDestoryEffect* TileDestoryEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther) {
