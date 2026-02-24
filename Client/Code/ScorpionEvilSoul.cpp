@@ -9,7 +9,7 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 
 	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
 
-	m_tInfo.fHP = SCORPIONEVILSOUL_HP;
+	Component_Collider->Set_Hp(SCORPIONEVILSOUL_HP);
 
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
@@ -18,16 +18,15 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 {
 	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-
-	if (m_tInfo.fHP <= 0.f)
+	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
 
 	GameObject::Update_GameObject(_DT);
 
-	if (m_tInfo.fHP <= 0.f)
-		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
+	if (Component_Collider->Get_Hp() <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DISAPPEAR;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -40,7 +39,6 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 		ScorpoinEvilSoul::State_Appear(_DT);
 		break;
 	case MONSTER_STATE_DISAPPEAR:
-
 		break;
 	case MONSTER_STATE_IDLE:
 		ScorpoinEvilSoul::State_Idle(_DT);
@@ -64,7 +62,11 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	}
 
 	if (ObjectDead)
+	{
+		TileManager::GetInstance()->Set_StageArray();
 		return -1;
+	}
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 
@@ -171,13 +173,12 @@ HRESULT ScorpoinEvilSoul::Component_Initialize() {
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
-	Component_Transform->Set_Pos(10.f, 0.5f, 0.f);
+	Component_Transform->Set_Pos(0.f, 0.5f, 0.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.572f, 0.896f, 1.f);
+	Component_Transform->Set_Scale(SCORPIONEVILSOUL_WIDTH, SCORPIONEVILSOUL_HEIGHT, 1.f);
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 
-	Component_Collider->Set_Scale(0.5f, 1.f, 0.5f);
 
 	return S_OK;
 }
@@ -192,20 +193,21 @@ ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
-	if (_Other->Get_ObjectTag() == L"PlayerArrow")
-	{
-		int atk = dynamic_cast<Arrow*>(_Other)->Get_Atk();
-		m_tInfo.fHP -= (_float)atk;
-	}
-	return TRUE;
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+	}return TRUE;
+
+	return FALSE;
 }
 BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other)
 {
-	return TRUE;
+	return FALSE;
 }
 BOOL ScorpoinEvilSoul::OnCollisionExit(GameObject* _Other)
 {
-	return TRUE;
+	return FALSE;
 }
 VOID ScorpoinEvilSoul::Free() {
 
@@ -334,9 +336,11 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 
 	if (m_tInfo.pGameObj[1] == nullptr)
 	{
-		m_tInfo.pGameObj[1] = Monster::Create<ScorpionBullet>(GRPDEV, *MYPOS);
+		m_tInfo.pGameObj[1] = Monster::Create<SCORPIONEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, SCORPIONEVILSOUL_BULLET_SCALEMULT);
 		
-		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Master(this);
+		SCORPIONEVILSOUL_BULLET_TYPE* pBullet = static_cast<SCORPIONEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[1]);
+		pBullet->Set_Master(this);
+		pBullet->Get_Info()->fSpeed *= SCORPIONEVILSOUL_BULLET_SPEEDMULT;
 
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_tInfo.pGameObj[1]->Set_ObjectTag(L"ScorpionBullet");
@@ -353,7 +357,7 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		
 		//CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 
@@ -364,6 +368,5 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpoinEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

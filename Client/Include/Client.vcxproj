@@ -155,7 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\Alert.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\Arrow.h" />
     <ClInclude Include="..\Header\BossEffect.h" />
@@ -201,6 +201,7 @@
     <ClInclude Include="..\Header\DropItem.h" />
     <ClInclude Include="..\Header\DropItemEffect.h" />
     <ClInclude Include="..\Header\EvilSlime.h" />
+    <ClInclude Include="..\Header\EvilSlimeGroundIce.h" />
     <ClInclude Include="..\Header\FieldApostle.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -211,10 +212,13 @@
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
     <ClInclude Include="..\Header\MainUI.h" />
+    <ClInclude Include="..\Header\BossFireBall.h" />
     <ClInclude Include="..\Header\MonsterTest.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\Header\Fireball.h" />
+    <ClInclude Include="..\Header\Fireball.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Header\Augment.h" />
     <ClInclude Include="..\Header\MiniGameScene.h" />
     <ClInclude Include="..\Header\MonsterEffect.h" />
@@ -303,7 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Alert.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Arrow.cpp" />
     <ClCompile Include="..\Code\BossEffect.cpp" />
@@ -346,6 +350,7 @@
     <ClCompile Include="..\Code\DropItem.cpp" />
     <ClCompile Include="..\Code\DropItemEffect.cpp" />
     <ClCompile Include="..\Code\EvilSlime.cpp" />
+    <ClCompile Include="..\Code\EvilSlimeGroundIce.cpp" />
     <ClCompile Include="..\Code\FieldApostle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -356,14 +361,14 @@
     </ClCompile>
     <ClCompile Include="..\Code\FinalBoss.cpp" />
     <ClCompile Include="..\Code\Fireball.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Augment.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MainUI.cpp" />
+    <ClCompile Include="..\Code\BossFireBall.cpp" />
     <ClCompile Include="..\Code\MonsterTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>

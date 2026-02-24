@@ -99,7 +99,11 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
 
 		//PlayerUI->PopUp_Interaction_Notice(L"대화하기", TRUE);
+<<<<<<< LHY
 		//Speech_BubbleUI->Set_Active(TRUE);
+=======
+		Speech_BubbleUI->Set_Active(TRUE);
+>>>>>>> Main
 		return TRUE;
 	}
 	return FALSE;
@@ -112,7 +116,7 @@ BOOL ShopKeeper::OnCollisionStay(GameObject* _Other) {
 }
 BOOL ShopKeeper::OnCollisionExit(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
-		PlayerUI->PopUp_Interaction_Notice(L"", FALSE);
+		//PlayerUI->PopUp_Interaction_Notice(L"", FALSE);
 		Speech_BubbleUI->Set_Active(FALSE);
 		return TRUE;
 	}

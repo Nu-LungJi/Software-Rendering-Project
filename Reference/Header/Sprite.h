@@ -48,6 +48,15 @@ struct ENGINE_DLL ItemINFO {
 	_int					ItemPrice;
 	_int					ItemType;
 
+	VOID	Set_ItemClass(wstring _Class) { ItemDesc[(LONG)CLASS] = _Class; }
+	wstring Get_ItemClass() { return ItemDesc[(LONG)CLASS]; }
+
+	VOID	Set_ItemDesc(wstring _Desc) { ItemDesc[(LONG)DESC] = _Desc; }
+	wstring Get_ItemDesc() { return ItemDesc[(LONG)DESC]; }
+
+	VOID	Set_ItemExDesc(wstring _ExDesc) { ItemDesc[(LONG)EXDESC] = _ExDesc; }
+	wstring Get_ItemExDesc() { return  ItemDesc[(LONG)EXDESC]; }
+
 	ItemINFO() : TEXTURE(nullptr), ItemDesc{}, ItemPrice(0), ItemType(0) { ItemDesc.resize((LONG)ITINFO::INFFRAME + 1); }
 };
 

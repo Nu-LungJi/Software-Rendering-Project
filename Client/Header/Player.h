@@ -123,8 +123,8 @@ public:
 	float	Get_Speed()				{ return _speed;}
 	void	Set_Speed(INT _value)	{ _speed = _value; }
 
-	int		Get_HP() { return _hp; }
-	void	Set_HP(INT _value) { _hp = _value; }
+	int		Get_HP() { return Component_Collider->Get_Hp(); }
+	void	Set_HP(INT _value) { Component_Collider->Set_Hp(_value); }
 
 	int		Get_Key() { return _key; }
 	void	Set_Key(INT _value) { _key = _value; }
@@ -167,6 +167,9 @@ public:
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
+	bool	Get_Invincible() { return _isInvincible; }
+	void	Set_Invincible(bool value) { _isInvincible = value;  }
+
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
 private:
@@ -192,6 +195,7 @@ private:
 	void			SetGrahpic();
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
 	void			Set_Effect(const _float& _DT);
+	void			Calc_Near();
 
 private:
 	bool			Debug;
@@ -215,12 +219,23 @@ private:
 	float			_attackDelay;
 	int				_arrowCount;
 	bool			_isStop;
+	_vec3			_shadowPos;
 
 	float			_dashRefillTimer;
 	float			_skillTimer;
 	bool			_skillNPC_On;
+	bool			_skillArea_On;
 	_vec3			_NPC_Pos;
+	_vec3			_nearPos;
 
+	float			_animSpeed;
+	float			_originArrowSpeed;
+	float			_originDefualtSpeed;
+
+	float			_alphaRatio;
+	bool			_isInvincible;		//	무적 상태
+	float			_invincibleTimer;	//	무적 타이머
+	float			_alphaDelayTimer;	//	깜박임 타이머
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
@@ -236,10 +251,19 @@ private:
 	float			_arrowSpeed;	// 화살 스피드 ex) 1.5면 1.5배 증가
 	float			_maxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
 	float			_slowTime;		// 시간 제어 스킬 지속시간 일단 4초 초기화
+	float			_hit_inv_Time;	// 피격시 무적 유지시간;
+	float			_dash_inv_Time;	// 대시시 무적 유지시간;
 
 	Bow*			_weaponSlot[4];
 	GameObject*		_artifactSlot[4];
 	GameObject*		_inventory[8];
 	int				_equipNum;
 
+
+	//temp
+	public:
+
+		BOOL			OnCollisionEnter(GameObject* _Other)override;
+		BOOL			OnCollisionStay(GameObject* _Other) override;
+		BOOL			OnCollisionExit(GameObject* _Other)		override;
 };

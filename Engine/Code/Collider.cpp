@@ -1,15 +1,17 @@
 #include "Collider.h"
 
 Collider::Collider()							:						ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
-Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
+Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE), fAtt(0.f) ,fHp(0.f) {}
 Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.ColliderPos), Curr_ColState(FALSE), Prev_ColState(FALSE),	
-	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj)																			{}
+	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj), fAtt(_RHS.fAtt) ,fHp(_RHS.fHp)											{}
 Collider::~Collider()																																{}
+
 
 HRESULT		Collider::Ready_Component() {
 	MinPoint = { 0.f, 0.f, 0.f };
 	MaxPoint = { 0.f, 0.f, 0.f };
-
+	fHp = 1.f;
+	fAtt = 0.f;
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
@@ -17,9 +19,12 @@ INT			Collider::Update_Component(CONST FLOAT& _DT) {
 		return 0;
 
 	CenterPos = *ColliderPos->Get_Position();
+	CenterPos += Offset;
 	
-	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
-	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
+	_vec3 ColScale = { fabsf(Scale.x),fabsf(Scale.y),fabsf(Scale.z) };
+
+	MinPoint = { CenterPos.x - ColScale.x, CenterPos.y - ColScale.y, CenterPos.z - ColScale.z };
+	MaxPoint = { CenterPos.x + ColScale.x, CenterPos.y + ColScale.y, CenterPos.z + ColScale.z };
 	// 1차 통합 테스트
 	return 0;
 }

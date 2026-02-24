@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
+CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
 CLAttack::CLAttack(const GameObject& _RHS) : GameObject(_RHS) {}
 CLAttack::~CLAttack() {}
 
@@ -22,6 +22,7 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     {
     case LEAF_ATTACK::LEAF_FIRST:
         Make_TextureList(L"Spr_Bullet_LaulaStandardBullet_0");
+        Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
         Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_Black_0");
@@ -31,30 +32,77 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
         Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0");
         m_iRandCnt = 5 + rand() % 2;
         break;
+    case LEAF_ATTACK::LEAF_EXPLOSION:
+        Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth");
+        Component_Transform->Set_Scale(1.5f, 1.5f, 1.5f);
+        m_fFrameSpeed = 0.08f;
+        break;
     case LEAF_ATTACK::LEAF_FOUR:
         Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv2_0");        
         break;
     }
-
+    CollisionManager::GetInstance()->Add_ColliderObject(this);
     return S_OK;
 }
 
 INT CLAttack::Update_GameObject(const _float& _DT)
 {
+    if (Get_ObjectDead() == TRUE)
+        return -1;
+
     GameObject::Update_GameObject(_DT);
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
     Move_Frame(_DT);
     Move_Leaf(_DT);
-  
-    if (Get_ObjectDead() == TRUE)
-        return -1;
 
     return S_OK;
 }
+BOOL CLAttack::OnCollisionEnter(GameObject* _Other)
+{
+    wstring Tag = _Other->Get_ObjectTag();
+    if (Tag == L"Player" && m_eLeaf != LEAF_ATTACK::LEAF_EXPLOSION)
+    {
+        _float hp(0);
+        MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+        mainUI->Player_LostHP();
+        Set_ObjectDead(TRUE);
+    }
+    else
+    {
+        return false;
+    }
 
+    return TRUE;
+}
+BOOL CLAttack::OnCollisionStay(GameObject* _Other)
+{
+    wstring Tag = _Other->Get_ObjectTag();
+   if(Tag == L"Player" && m_eLeaf == LEAF_ATTACK::LEAF_EXPLOSION && m_TextureIndex == TextureList.size() - 3)
+    {
+        MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+        mainUI->Player_LostHP();
+    }
+    else
+    {
+        return false;
+    }
+
+    return TRUE;
+}
 void CLAttack::LateUpdate_GameObject(const _float& _DT)
 {
     GameObject::LateUpdate_GameObject(_DT);
+  
+    m_fDeadTick += _DT;
+    if (m_fDeadTick > 1)
+    {
+        m_fDeadTick = 0;
+        ++m_iDeadCnt;
+    }
+    
+    if (m_iDeadCnt >= 9)
+        Set_ObjectDead(TRUE);
+
 }
 
 void CLAttack::Render_GameObject()
@@ -75,7 +123,10 @@ HRESULT CLAttack::Component_Initialize()
 {
     Component_Buffer    = ADD_COMPONENT_RECTTEX;
     Component_Transform = ADD_COMPONENT_TRANSFORM;
+    Component_Collider  = ADD_COMPONENT_COLLIDER;
 
+    Component_Collider->Set_CenterPos(Component_Transform);
+    Component_Collider->Set_Scale(1.f, 1.0f, 1.f);
     return S_OK;
 }
 
@@ -83,14 +134,15 @@ void CLAttack::Move_Frame(const _float& _DT)
 {
     m_FrameTick += _DT;
 
-    if (m_FrameTick > 0.1f)
+    if (m_FrameTick > m_fFrameSpeed)
     {
         ++m_TextureIndex;
         m_FrameTick = 0.f;
     }
     if (m_TextureIndex > TextureList.size() - 1)
     {
-        m_TextureIndex = 0;
+        if (m_eLeaf != LEAF_ATTACK::LEAF_EXPLOSION)
+            m_TextureIndex = 0;
     }
 }
 void CLAttack::Move_Leaf(const _float& _DT)
@@ -108,6 +160,9 @@ void CLAttack::Move_Leaf(const _float& _DT)
         break;
     case LEAF_ATTACK::LEAF_FOUR:
         Leaf_Four(_DT);
+        break;
+    case LEAF_ATTACK::LEAF_EXPLOSION:
+        Leaf_Explosion(_DT);
         break;
     }
 }
@@ -134,7 +189,6 @@ void CLAttack::Leaf_First(const _float& _DT)
     Component_Transform->Set_Pos({ matWorld._41 , 0.1f , matWorld._43 });
 
 }
-
 void CLAttack::Leaf_Second(const _float& _DT)
 {
     if (!m_bSpin)
@@ -227,6 +281,36 @@ void CLAttack::Leaf_Four(const _float& _DT)
     Component_Transform->Set_Pos({ matWorld._41 , 0.1f, matWorld._43 });
 }
 
+void CLAttack::Leaf_Explosion(const _float& _DT)
+{
+    Component_Collider->Set_Scale(2.f, 2.f, 2.f);
+    _vec3 vPos;
+    vPos = *Component_Transform->Get_Position();
+
+    if (m_TextureIndex == 16)
+        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,-0.2f,vPos.z - 3 }, TRUE, { 6,0,5 }, { 20,0,0 }, 0.1f));
+    if (m_TextureIndex == 25)
+        Component_Transform->Set_Scale(5.f, 5.f, 5.f);
+
+    if (m_TextureIndex > TextureList.size() - 1)
+        Set_ObjectDead(TRUE);
+
+    _float fAngle;
+    _vec3 vScale;
+    _matrix matScale, RotZ, matWorld, matBill, matView;
+    vScale = *Component_Transform->Get_Scale();
+    matWorld = *Component_Transform->Get_World();
+    GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+    D3DXMatrixInverse(&matBill, nullptr, &matView);
+
+    D3DXMatrixScaling(&matScale, vScale.x, vScale.y, vScale.z);
+
+    matWorld = matScale * matBill;
+    memcpy(matWorld.m[3], vPos, sizeof(_vec3));
+    Component_Transform->Set_World(&matWorld);
+    Component_Transform->Set_Pos({ matWorld._41 , 1.f , matWorld._43 });
+}
+
 void CLAttack::Leaf_Bill(const _float& _DT)
 {
     _float fAngle;
@@ -264,11 +348,6 @@ CLAttack* CLAttack::Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 
     return CL;
 }
 
-BOOL CLAttack::OnCollisionEnter(GameObject* _Other)
-{
-    return 0;
-}
-
 void CLAttack::Free()
 {
     for (auto& iter : TextureList)
@@ -281,7 +360,7 @@ HRESULT CLAttack::Make_TextureList(wstring _FileName) {
     INT FRAME = 0;
 
     while (++FRAME) {
-        wstring FileName = _FileName + to_wstring(FRAME) + L".png";
+        wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
         IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
         if (TEX == nullptr) break;
         else { TEX->AddRef();  TextureList.push_back(TEX); }

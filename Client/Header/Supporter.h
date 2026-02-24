@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "FinalBoss.h"
 
+#define ANIMATION_SUPPORTER_IDLE 24
+
 class Supporter : public GameObject {
 private:
 	explicit Supporter(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -24,8 +26,28 @@ public:
 
 	static	Supporter* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
+	VOID	Supporter_Transform(CONST FLOAT& _DT);
+	VOID	Generate_FireBall(CONST FLOAT& _DT);
+
 private:
 	FinalBoss* Boss;
+
+	vector<LPDIRECT3DTEXTURE9>	Animation_IdleTexList;
+	INT							Animation_CurrentIndex;
+	INT							Animation_PreviousIndex;
+
+	FLOAT	Animation_Timer;
+	INT		Animation_FrameCount;
+	FLOAT	Animation_Interval;
+
+	_vec3	Direction;
+	_vec3	PosinDirection[3];
+
+private:
+	Buffer*			Component_Buffer;
+	Transform*		Component_Transform;
+	Texture*		Component_Texture;
+	Collider*		Component_Collider;
 
 private:
 	virtual		VOID	Free();

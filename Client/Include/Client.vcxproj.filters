@@ -184,9 +184,6 @@
     <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle">
       <UniqueIdentifier>{ed052ccf-fa03-4629-b716-d94adcf42eeb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark">
-      <UniqueIdentifier>{72c1af4c-c6e5-4c66-9ace-ef7ac3c50387}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\05. Tile\01. CubeFloor">
       <UniqueIdentifier>{330c0100-08f5-4694-872c-f0a71d93aa7a}</UniqueIdentifier>
     </Filter>
@@ -210,6 +207,18 @@
     </Filter>
     <Filter Include="03. GameObject\03. NPC\01. Shop\04. DropItemEffect">
       <UniqueIdentifier>{9fd12251-ffa4-4d9d-8467-7920e29ac2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned">
+      <UniqueIdentifier>{8155a5ae-2b7c-4f41-9996-cacddc5e963b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark">
+      <UniqueIdentifier>{72c1af4c-c6e5-4c66-9ace-ef7ac3c50387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\05.EvilSlimeGroundIce">
+      <UniqueIdentifier>{c45efe71-4311-43eb-8fe1-d2596bf2b95e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
+      <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -415,7 +424,7 @@
       <Filter>03. GameObject\02. Monster\02. Monster\03. ShotGunEvilSoul</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DocheolAppearMark.h">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark</Filter>
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Alert.h">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
@@ -442,6 +451,12 @@
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\MonsterTest.h" />
+    <ClInclude Include="..\Header\EvilSlimeGroundIce.h">
+      <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\BossFireBall.h">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -629,7 +644,7 @@
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DocheolAppearMark.cpp">
-      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. DocheolAppearMark</Filter>
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\99. Abandoned\02. DocheolAppearMark</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Alert.cpp">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\01. Alert_Circle</Filter>
@@ -656,6 +671,12 @@
       <Filter>03. GameObject\03. NPC\01. Shop\00. Shop</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterTest.cpp" />
+    <ClCompile Include="..\Code\EvilSlimeGroundIce.cpp">
+      <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\BossFireBall.cpp">
+      <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

@@ -15,9 +15,9 @@ public:
 
 public:
 	HRESULT Component_Initialize();
-	HRESULT Sprite_Initialize();
-	HRESULT Text_Initialize();
 	HRESULT Item_Initialize();
+	HRESULT Text_Initialize();
+	HRESULT Sprite_Initialize();
 
 public:
 	HRESULT Selecting_SavedItem();

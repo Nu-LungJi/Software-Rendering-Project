@@ -34,33 +34,59 @@ BOOL CollisionManager::AABB_Collision() {
 			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ)	continue;
 			Collider* DEST = dynamic_cast<Collider*>(DOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 			if (DEST == nullptr) continue;
+
+			auto iterS = find_if(SRC->Get_ObjList().begin(), SRC->Get_ObjList().end(),
+				[&](GameObject* pObj) {return pObj == DOBJ; });
+
+			auto iterD = find_if(DEST->Get_ObjList().begin(), DEST->Get_ObjList().end(),
+				[&](GameObject* pObj) {return pObj == SOBJ; });
+
 			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
-				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
+				//(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
 				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
+
+				if (iterS == SRC->Get_ObjList().end()) {
+					SOBJ->OnCollisionEnter(DOBJ);
+					SRC->Get_ObjList().push_back(DOBJ);
+				}
+				else SOBJ->OnCollisionStay(DOBJ);
+
+				if (iterD == DEST->Get_ObjList().end()) {
+					DOBJ->OnCollisionEnter(SOBJ);
+					DEST->Get_ObjList().push_back(SOBJ);
+				}
+				else DOBJ->OnCollisionStay(SOBJ);
+
 				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
 					SOBJ->Add_CollisionObject(DOBJ);
 					DOBJ->Add_CollisionObject(SOBJ);
-					SOBJ->OnCollisionEnter(DOBJ);
-					DOBJ->OnCollisionEnter(SOBJ);
+					//			SOBJ->OnCollisionEnter(DOBJ);
+					//			DOBJ->OnCollisionEnter(SOBJ);
 				}
-				SOBJ->OnCollisionStay(DOBJ);
-				DOBJ->OnCollisionStay(SOBJ);
-	
+				//		SOBJ->OnCollisionStay(DOBJ);
+				//		DOBJ->OnCollisionStay(SOBJ);
+
 				return TRUE;
 			}
 			else {
-				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
+				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE) {
 					SOBJ->Delete_CollisionObject(DOBJ);
 					DOBJ->Delete_CollisionObject(SOBJ);
-					DOBJ->OnCollisionExit(SOBJ);
-					SOBJ->OnCollisionExit(DOBJ);
+					//			DOBJ->OnCollisionExit(SOBJ);
+					//			SOBJ->OnCollisionExit(DOBJ);
+
+					//if (iterS != SRC->Get_ObjList().end()) {
+					//	SOBJ->OnCollisionExit(DOBJ); SRC->Get_ObjList().erase(iterS);
+					//}
+
+					//if (iterD != DEST->Get_ObjList().end()) {
+					//	DOBJ->OnCollisionExit(SOBJ); DEST->Get_ObjList().erase(iterD);
+					//}
 				}
 			}
 		}
 	}
 	
-	return FALSE;
-
 	return FALSE;
 }
 
@@ -85,7 +111,7 @@ VOID CollisionManager::Get_AllObjectOfScene() {
 VOID CollisionManager::Delete_ColliderObject(GameObject* _OBJ) {
 	for (auto iter = SceneObjectList.begin(); iter != SceneObjectList.end();) {
 		if (*iter == _OBJ) {
-			Safe_Release((*iter));
+			//Safe_Release((*iter));
 			iter = SceneObjectList.erase(iter);
 			continue;
 		}

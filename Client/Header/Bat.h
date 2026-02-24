@@ -21,6 +21,9 @@ public:
 
 private:
 	HRESULT			Component_Initialize();
+	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+	BOOL			OnCollisionStay(GameObject* _Other)		override;
+	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 private:
 	Buffer*			Component_Buffer;
@@ -29,9 +32,6 @@ private:
 
 public:
 	static			Bat* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-	BOOL			OnCollisionEnter(GameObject* _Other)	override;
-	BOOL			OnCollisionStay(GameObject* _Other)		override;
-	BOOL			OnCollisionExit(GameObject* _Other)		override;
 	MONSTERINFO*		Get_Info() { return &m_tInfo; }
 private:
 	virtual VOID Free();
@@ -39,6 +39,7 @@ private:
 
 	VOID Set_Target(CONST TCHAR* _TAG);
 
+	VOID State_Summon(const _float& _DT);
 	VOID State_Appear(const _float& _DT);
 	VOID State_Idle();
 	VOID State_Tracking(const _float& _DT);

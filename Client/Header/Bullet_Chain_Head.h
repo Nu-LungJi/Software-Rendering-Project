@@ -17,6 +17,8 @@ public:
 	static			Bullet_Chain_Head* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
 	BOOL			OnCollisionEnter(GameObject* _Other)	override;
+	BOOL			OnCollisionStay(GameObject* _Other)		override;
+	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 private:
 	VOID			Free();

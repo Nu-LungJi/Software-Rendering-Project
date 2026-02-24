@@ -15,6 +15,7 @@ public:
 
 public:		// Trigger Function
 	VOID			Player_LostHP();
+	VOID			Player_ReFillHP(INT _HP);
 	VOID			Player_KeyModify();
 	VOID			Player_MoneyModify();
 	VOID			Player_CrystalModify();

@@ -39,16 +39,17 @@ private:
 	Collider*		Component_Collider;
 
 	IDirect3DTexture9* g_pTexture = NULL; // 로드된 이미지
-	ID3DXSprite* g_pSprite = NULL;   // 스프라이트 객체
+	ID3DXSprite*	g_pSprite = NULL;   // 스프라이트 객체
 
 public:
 	static Arrow*	Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir);
 	int				Get_Atk()	{ return _arrowAtk; }
+	void			Set_HP(int hp) { _hp = hp; }
 	BOOL			OnCollisionEnter(GameObject* _Other);
 	BOOL			OnCollisionStay(GameObject* _Other);
 private:
-	virtual VOID Free();
-
+	virtual			VOID Free();
+	void			Search_Target();
 private:
 	ArrowType	_type;
 	BowType		_bowType;
@@ -69,13 +70,15 @@ private:
 
 	float		_lifeTime;
 	float		_speed;
+	float		_calcSpeed;
 	float		_sumSpeed;
 	int			_arrowAtk;
+	_vec3*		_targetPos;
 
 	float		_evilMoveTime;
 	float		_sumEvilSpeed;
 	float		_ThunderDelay;
 
-	float _EvilTime;
+	float		_EvilTime;
 };
 

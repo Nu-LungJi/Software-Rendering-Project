@@ -6,10 +6,16 @@ Bullet_Chain::~Bullet_Chain() {}
 
 HRESULT Bullet_Chain::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
 	return S_OK;
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
+
+	ObjectTAG = L"MonsterBullet";
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+
 	if (m_tInfo.bTrigger[0])
 	{
 		if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_Chain01", &m_tInfo)))
@@ -26,12 +32,14 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 			return 0;
 		}
 	}
-	
-	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x, 1.f * 0.5f, MYSCALE->y * 0.5f);
 
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] >= 2.f)
+	{
+		Component_Collider->Set_Hp(-1.f);
+	}
+
+	if (Component_Collider->Get_Hp() < 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
 
@@ -40,10 +48,12 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		ObjectDead = true;
-		return 0;
 	}
 
 	GameObject::Update_GameObject(_DT);
+
+	if (ObjectDead)
+		return -1;
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -62,10 +72,12 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
 	{
 		m_tInfo.Textureinfo._frameTick = 0.f;
-		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+		if (m_tInfo.Textureinfo._Endframe > 0)
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 
-	Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
+	AlphaZValue=Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
+
 }
 VOID Bullet_Chain::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -100,6 +112,25 @@ Bullet_Chain* Bullet_Chain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return MST;
+}
+BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
+{
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"Player")
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
+}
+BOOL Bullet_Chain::OnCollisionStay(GameObject* _Other)
+{
+	return 0;
+}
+BOOL Bullet_Chain::OnCollisionExit(GameObject* _Other)
+{
+	return 0;
 }
 VOID Bullet_Chain::Free()
 {

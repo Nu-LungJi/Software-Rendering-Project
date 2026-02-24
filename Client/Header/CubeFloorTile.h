@@ -37,7 +37,8 @@ private:
     int                 m_iTileNumber;
 public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid = true);
-    static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vScale, bool _Grid = true);
+    static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
+    static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid = true);
     //static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid = TILE_SIDE::TILE_END, TILE_STATE eState = TILE_STATE::STATE_NORMAL, FLOAT& X1, FLOAT& X2, FLOAT& Y1, FLOAT& Y2);
 
     bool           m_bGrid;
@@ -45,7 +46,7 @@ public:
 private:
     virtual  void            Free();
 
-    bool                m_bTrigger;
+    bool               m_bTrigger;
 };
 
 class CubeFunction

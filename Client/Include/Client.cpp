@@ -80,7 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         MSG_BOX("Cannot Release GameManager");
         return FALSE;
     }
-
+    _CrtDumpMemoryLeaks();
     return (int)msg.wParam;
 }
 
