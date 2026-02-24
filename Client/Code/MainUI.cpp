@@ -281,6 +281,10 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 	}
 }
 
+VOID MainUI::Activate_BossFilter(BOOL _Filter) {
+	Component_Sprite->Get_Texture(L"BossFilter")->VISIBLE = _Filter;
+}
+
 VOID MainUI::All_UI_FadeOUT() {
 
 }
@@ -296,6 +300,8 @@ HRESULT MainUI::Component_Initialize() {
 	return S_OK;
 }
 HRESULT MainUI::Sprite_Initialize() {
+	////////////////////////////////////////////// FILTER ///////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/Filter_RageUp.png",				L"BossFilter", 0.f, 0.f, 1280, 720, FALSE, 50);
 	////////////////////////////////////////////// BACKBAR //////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png",		L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_ArrowCount.png", L"WeaponBG_ArrowCount", 1167.f, 681.f, 108, 30, TRUE, 150);

@@ -32,6 +32,16 @@ HRESULT	BossFireBall::Ready_GameObject() {
 	return S_OK;
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 
+	if (ObjectDead == TRUE) {
+		_vec3 Scale = { 2.f, 2.f, 2.f };
+		if (Boss->Get_RageMode() == TRUE) {
+			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		else {
+			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		return -1;
+	}
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
@@ -67,7 +77,13 @@ VOID	BossFireBall::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-BOOL	BossFireBall::OnCollisionEnter(GameObject* _Other)	{ return TRUE; }
+BOOL	BossFireBall::OnCollisionEnter(GameObject* _Other)	{ 
+	if (_Other->Get_ObjectTag() == L"Player" && dynamic_cast<Player*>(_Other)->Get_Invincible() == FALSE) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Player_LostHP();
+		ObjectDead = TRUE;
+	}
+	return TRUE; 
+}
 BOOL	BossFireBall::OnCollisionStay(GameObject* _Other)	{ return TRUE; }
 BOOL	BossFireBall::OnCollisionExit(GameObject* _Other)	{ return TRUE; }
 
@@ -110,7 +126,7 @@ BossFireBall*	BossFireBall::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	}
 	return BFB;
 }
-VOID BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed) {
+VOID	BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed) {
 	_matrix RotMat;
 	Direction = { 1.f, 0.f, 0.f };
 	_vec3 XAxis = { 1.f, 0.f, 0.f };

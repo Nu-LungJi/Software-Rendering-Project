@@ -23,15 +23,16 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	Action_Mode		= TRUE;		// 다른 행동 간섭 방지
 	//Action_Mode = FALSE;		// 디버깅용
 	Rage_Mode		= FALSE;	// 폭주화 단계
+	//Rage_Mode		= TRUE;	// 디버깅용
 	Death_Mode		= FALSE;	// 사망 단계
 
 	Animation_Timer		 = 0.f;
 	Animation_Interval	 = 0.07f;
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
-	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
-	Animation_TexList = &Animation_NonAnim_TexList;
+	Animation_TexList = &Animation_Normal_Stand_TexList;
 
 	Action_Selector = 0;
 	Action_Timer = 0.f;
@@ -69,13 +70,13 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	FSM->Update_GameObject(_DT);
 
-	if (KEY_DOWN(DIK_L)) 
-		Enable_BossAppearStaging = true;
+	if (Animation_TexList == &Animation_NonAnim_TexList && 
+		dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z >= 90.f)
+		Enable_BossAppearStaging = TRUE;
 
 	Skill_GroundExplosion(_DT);
 	Skill_MeteorExplosion(_DT);
 	Skill_RSwingFireBall(_DT);
-	Skill_FSwingFireBall(_DT);
 	Animation_Appear_Staging(_DT);
 
 	Animation_PreviousIndex = Animation_CurrentIndex;
@@ -86,55 +87,53 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	}
 
 	Animation_Timer += _DT;
-	if (Invalidate_Mode == FALSE || Action_Mode == FALSE) {
+	if (Invalidate_Mode == FALSE || Action_Mode == FALSE)
 		Action_Timer += _DT;
-	}
 	
 	if (Action_Timer > 3.f) {
 		srand(time(NULL));
-		Action_Selector = rand() % 4 + 1;
+		Action_Selector = 1;// rand() % 4 + 1;
 		Action_Timer = 0.f;
 	}
-	if (KEY_DOWN(DIK_I)) {
-		Component_Collider->Set_Hp(500);
-	}
+	if (KEY_DOWN(DIK_I)) Component_Collider->Set_Hp(500);
+
 	if (Rage_Mode == FALSE) {
 		// < Stand -> RSwing >
-		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 1) {
+		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 1) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_RSwing_Normal_TexList;
-			Animation_FrameCount = ANIMATION_RSWING_NORMAL_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_RSwing_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_RSWING_FRAMECOUNT;
 
 			FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
 			Action_Mode		= TRUE;
 			Action_Selector = 0;
 		}
 		// < Stand -> FSwing >
-		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 2) {
+		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 2) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_FSwing_TexList;
-			Animation_FrameCount = ANIMATION_FSWING_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_FSwing_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_FSWING_FRAMECOUNT;
 
 			FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
 			Action_Mode = TRUE;
 			Action_Selector = 0;
 		}
 		// < Stand -> Normal Slam >
-		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 3) {
+		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 3) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_Slam_Normal_TexList;
-			Animation_FrameCount = ANIMATION_SLAM_NORMAL_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_Slam_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
 			FSM->FSM_StateChange(NormalSlamState::GetInstance()->Instance());
 			Action_Mode = TRUE;
 			Action_Selector = 0;
 			//DoubleSlam = TRUE;
 		}
-		// < Stand -> Normal Slam >
-		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 4) {
+		// < Stand -> Meteor Slam >
+		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 4) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_Slam_Normal_TexList;
-			Animation_FrameCount = ANIMATION_SLAM_NORMAL_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_Slam_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
 			FSM->FSM_StateChange(MeteorSlamState::GetInstance()->Instance());
 			Action_Mode = TRUE;
@@ -146,12 +145,12 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 		//	DoubleSlam = FALSE;
 		//}
 		// < RSwing/FSwing/Slam -> Stand >
-		if ((Animation_TexList == &Animation_RSwing_Normal_TexList	&& Animation_CurrentIndex == ANIMATION_RSWING_NORMAL_FRAMECOUNT - 1)
-			|| (Animation_TexList == &Animation_Slam_Normal_TexList && Animation_CurrentIndex == ANIMATION_SLAM_NORMAL_FRAMECOUNT - 1) 
-			|| (Animation_TexList == &Animation_FSwing_TexList		&& Animation_CurrentIndex == ANIMATION_FSWING_FRAMECOUNT - 1))			{
+		if	(	(Animation_TexList == &Animation_Normal_RSwing_TexList	&& Animation_CurrentIndex == ANIMATION_NORMAL_RSWING_FRAMECOUNT - 1	)
+			||	(Animation_TexList == &Animation_Normal_Slam_TexList	&& Animation_CurrentIndex == ANIMATION_NORMAL_SLAM_FRAMECOUNT - 1	) 
+			||	(Animation_TexList == &Animation_Normal_FSwing_TexList			&& Animation_CurrentIndex == ANIMATION_NORMAL_FSWING_FRAMECOUNT - 1		))			{
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_Stand_Normal_TexList;
-			Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_Stand_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
 			Action_Mode = FALSE;
 			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
@@ -160,8 +159,8 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 		// < Appear -> Stand >
 		if (Animation_TexList == &Animation_Appear_TexList && Animation_CurrentIndex == ANIMATION_APPEAR_FRAMECOUNT - 1) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_Stand_Normal_TexList;
-			Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
+			Animation_TexList = &Animation_Normal_Stand_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
 			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
 			Invalidate_Mode = FALSE;
@@ -191,6 +190,59 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 			Death_Mode = TRUE;
 			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
+		// < Stand -> RSwing >
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 1) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_RSwing_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
+
+			FSM->FSM_StateChange(Rage_RSwingState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
+		// < Stand -> Normal Slam >
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 2) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Slam_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
+
+			FSM->FSM_StateChange(Rage_NormalSlamState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
+		// < Stand -> Charge >
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 3) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Charge_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_CHARGE_FRAMECOUNT;
+
+			FSM->FSM_StateChange(Rage_ChargeState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
+		// < Stand -> Supporter >
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 4) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Stand_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+
+			FSM->FSM_StateChange(Rage_SupporterState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
+		if	(	(Animation_TexList == &Animation_Rage_RSwing_TexList	&& Animation_CurrentIndex == ANIMATION_RAGE_RSWING_FRAMECOUNT	- 1	)
+			||	(Animation_TexList == &Animation_Rage_Slam_TexList		&& Animation_CurrentIndex == ANIMATION_RAGE_SLAM_FRAMECOUNT		- 1	)
+			||	(Animation_TexList == &Animation_RageUp_TexList			&& Animation_CurrentIndex == ANIMATION_RAGEUP_FRAMECOUNT		- 1	)
+			||	(Animation_TexList == &Animation_Rage_Charge_TexList	&& Animation_CurrentIndex == ANIMATION_RAGE_CHARGE_FRAMECOUNT	- 1 )
+			||	(Animation_TexList == &Animation_Rage_Stand_TexList		&& Animation_CurrentIndex == ANIMATION_RAGE_STAND_FRAMECOUNT	- 1 
+				&& FSM->FSM_GetCurrentState() != Rage_ChargeState::GetInstance()->Instance())) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Stand_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+
+			Action_Mode = FALSE;
+			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
+		}
 	}
 	
 	return 0;
@@ -215,14 +267,6 @@ BOOL	FinalBoss::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"PlayerArrow" && Invalidate_Mode == FALSE) {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
 		// Delete Arrow Code
-	}
-	//else if (_Other->Get_ObjectTag() == L"PlayerArrow" && Invalidate_Mode == TRUE) {
-	//	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
-	//	// Delete Arrow Code
-	//}
-	if (_Other->Get_ObjectTag() == L"Player") {
-		//Player* PlayerObject = dynamic_cast<Player*>(_Other);
-		//PlayerObject->Set_HP(PlayerObject->Get_HP() - 1);
 	}
 	if (_Other->Get_ObjectTag() == L"Supporter1" || _Other->Get_ObjectTag() == L"Supporter2" || _Other->Get_ObjectTag() == L"Supporter3") {
 		// RageUp 마무리
@@ -270,48 +314,53 @@ HRESULT FinalBoss::Texture_Initialize() {
 		Animation_RageUp_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_RSWING_NORMAL_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_NORMAL_RSWING_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Normal_RSwing" + to_wstring(PIC) + L".png";
-		Animation_RSwing_Normal_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Normal_RSwing_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_RSWING_RAGE_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_RAGE_RSWING_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Rage_RSwing" + to_wstring(PIC) + L".png";
-		Animation_RSwing_Rage_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Rage_RSwing_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 	for (INT PIC = 1; PIC <= ANIMATION_STUNNING_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Stunning" + to_wstring(PIC) + L".png";
 		Animation_Stunning_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_FSWING_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_NORMAL_FSWING_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_FullSwing" + to_wstring(PIC) + L".png";
-		Animation_FSwing_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Normal_FSwing_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_STAND_NORMAL_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_NORMAL_STAND_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Normal_Stand" + to_wstring(PIC) + L".png";
-		Animation_Stand_Normal_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Normal_Stand_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_STAND_RAGE_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_RAGE_STAND_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Rage_Stand" + to_wstring(PIC) + L".png";
-		Animation_Stand_Rage_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Rage_Stand_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_SLAM_NORMAL_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_NORMAL_SLAM_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Normal_THSlam" + to_wstring(PIC) + L".png";
-		Animation_Slam_Normal_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Normal_Slam_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
-	for (INT PIC = 1; PIC <= ANIMATION_SLAM_RAGE_FRAMECOUNT; ++PIC) {
+	for (INT PIC = 1; PIC <= ANIMATION_RAGE_SLAM_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Rage_THSlam" + to_wstring(PIC) + L".png";
-		Animation_Slam_Rage_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+		Animation_Rage_Slam_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
 	for (INT PIC = 1; PIC <= ANIMATION_NONANIM_FRAMECOUNT; ++PIC) {
 		Base = L"DumpTexture" + to_wstring(PIC) + L".png";
 		Animation_NonAnim_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+	}
+
+	for (INT PIC = 1; PIC <= ANIMATION_RAGE_CHARGE_FRAMECOUNT; ++PIC) {
+		Base = L"Boss_Charge" + to_wstring(PIC) + L".png";
+		Animation_Rage_Charge_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
 	return S_OK;
@@ -698,11 +747,8 @@ VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_FSwingFireBall(CONST FLOAT& _DT) {
-	
-}
 VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
-
+	//if()
 }
 
 FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

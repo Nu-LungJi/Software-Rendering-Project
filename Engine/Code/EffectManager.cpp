@@ -60,22 +60,30 @@ VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
 		else { ++iter; }
 	}
 }
-VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV) {
+VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDER _RENDER) {
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-	for (auto& PE : Container_PlayerEffect) 
-		PE->Render_GameObject();
-	for (auto& ME : Container_MonsterEffect) 
-		ME->Render_GameObject();
-	for (auto& EE : Container_BossEffect)
-		EE->Render_GameObject();
-	for (auto& UE : Container_UIEffect) 
-		UE->Render_GameObject();
-
+	if (_RENDER == EFFECT_RENDER::PLAYER_EFFECT) {
+		for (auto& PE : Container_PlayerEffect)
+			PE->Render_GameObject();
+	}
+	if (_RENDER == EFFECT_RENDER::MONSTER_EFFECT) {
+		for (auto& ME : Container_MonsterEffect)
+			ME->Render_GameObject();
+	}
+	if (_RENDER == EFFECT_RENDER::BOSS_EFFECT) {
+		for (auto& EE : Container_BossEffect)
+			EE->Render_GameObject();
+	}
+	if (_RENDER == EFFECT_RENDER::BOSS_EFFECT) {
+		for (auto& UE : Container_UIEffect)
+			UE->Render_GameObject();
+	}
+	
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }

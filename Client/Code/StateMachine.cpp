@@ -10,6 +10,11 @@ IMPLEMENT_SINGLETON(FSwingState)
 IMPLEMENT_SINGLETON(NormalSlamState)
 IMPLEMENT_SINGLETON(MeteorSlamState)
 IMPLEMENT_SINGLETON(StandState)
+IMPLEMENT_SINGLETON(Rage_StandState)
+IMPLEMENT_SINGLETON(Rage_RSwingState)
+IMPLEMENT_SINGLETON(Rage_NormalSlamState)
+IMPLEMENT_SINGLETON(Rage_ChargeState)
+IMPLEMENT_SINGLETON(Rage_SupporterState)
 
 StateMachine:: StateMachine(LPDIRECT3DDEVICE9 _GRPDEV)	:	GameObject(_GRPDEV)	{}
 StateMachine:: StateMachine(CONST GameObject& _RHS)		:	GameObject(_RHS)	{}
@@ -78,7 +83,7 @@ VOID RageUpState::FSM_StateEnter(GameObject* _Owner)	{
 	SPT3->Set_StartPos({ 64.115f + 5.f, 1.5f, 82.03f });
 }
 VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		//dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.07f);
 		float Circlepow = 7.f;
@@ -112,6 +117,9 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEC", &SpoolAppearPos, SpoolAppearSca, 1.f);
 		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEC"))->Set_EffectRotation(0.f, 20.f, 0.f);
 	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 20 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 20) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Activate_BossFilter(TRUE);
+	}
 }
 VOID RageUpState::FSM_StateExit(GameObject* _Owner)		{}
 
@@ -138,7 +146,7 @@ VOID RSwingState::FSM_StateExit(GameObject* _Owner)		{}
 VOID FSwingState::FSM_StateEnter(GameObject* _Owner)	{}
 VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 	// FSWING - ELECTRIC
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 0 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 0) {
+	if		(dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 0  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 0) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.12f);
 		float pow = 3.f;
@@ -157,8 +165,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS, BossEffect::Create(GRPDEV, L"FSwing Charge ElectricR", BOSS_EFFECT::FSWING_CHARGE_ELECTRIC_EFFECT,
 			&PosR, FALSE, 0.6f, Scale, { 0.f, 100.f, 0.f }));
 	}
-	// FSWING - CHARGE EXPLOSION
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
+	// FSWING - CHARGE EXPLOSION												  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float pow = 6.f;
 		_vec3 Scale = { 1.f * pow, 1.f * pow, 1.f * pow };
@@ -168,8 +176,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		};
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_CHARGE_EFFECT,		  L"FSwing Charge", &Pos, Scale, 0.4f);
 	}
-	// FSWING - CIRCLE & ELECTRIC
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
+	// FSWING - CIRCLE & ELECTRIC												  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.07f);
 		float Circlepow = 10.f;
@@ -192,8 +200,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"FSwing Electric Effect")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
 			->Set_Rotation(85.f, 0.f, 0.f);
 	}
-	// FSWING - EXPLOSION
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 6 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 6) {
+	// FSWING - EXPLOSION														  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 6  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 6) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float Firstpow = 9.f;
 		_vec3 FirstScale = { 1.f * Firstpow, 1.f * Firstpow, 1.f * Firstpow };
@@ -210,8 +218,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &FirstPos, FirstScale, 0.4f);
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &SecondPos, SecondScale, 0.7f);
 	}
-	// FSWING - EXPLOSION
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
+	// FSWING - EXPLOSION														  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		Transform* BossTR = dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		float Firstpow = 3.f;
@@ -237,8 +245,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(FBallName.c_str()))->Set_FireBall_Pos(GeneratePos);
 		}
 	}
-	// FSWING - EXPLOSION
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 8 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 8) {
+	// FSWING - EXPLOSION														  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 8  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 8) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float Firstpow = 6.f;
 		_vec3 FirstScale = { 1.f * Firstpow, 1.f * Firstpow, 1.f * Firstpow };
@@ -255,8 +263,8 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &FirstPos, FirstScale, 0.5f);
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &SecondPos, SecondScale, 0.4f);
 	}
-	// FSWING - EXPLOSION
-	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 9 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 9) {
+	// FSWING - EXPLOSION														  
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 9  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 9) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float Firstpow = 4.f;
 		_vec3 FirstScale = { 1.f * Firstpow, 1.f * Firstpow, 1.f * Firstpow };
@@ -310,8 +318,8 @@ VOID FSwingState::FSM_StateExit(GameObject* _Owner)		{
 	PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &SecondPos, SecondScale, 0.45f);
 }
 
-VOID NormalSlamState	::FSM_StateEnter(GameObject* _Owner)	{}
-VOID NormalSlamState	::FSM_StateUpdate(GameObject* _Owner)	{
+VOID NormalSlamState::FSM_StateEnter(GameObject* _Owner)	{}
+VOID NormalSlamState::FSM_StateUpdate(GameObject* _Owner)	{
 	// SLAM - DANGER AREA EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
@@ -347,10 +355,10 @@ VOID NormalSlamState	::FSM_StateUpdate(GameObject* _Owner)	{
 			->Set_Rotation(85.f, 0.f, 0.f);
 	}
 }
-VOID NormalSlamState	::FSM_StateExit(GameObject* _Owner)		{}
+VOID NormalSlamState::FSM_StateExit(GameObject* _Owner)		{}
 
-VOID MeteorSlamState	::FSM_StateEnter(GameObject* _Owner)	{}
-VOID MeteorSlamState	::FSM_StateUpdate(GameObject* _Owner)	{
+VOID MeteorSlamState::FSM_StateEnter(GameObject* _Owner)	{}
+VOID MeteorSlamState::FSM_StateUpdate(GameObject* _Owner)	{
 	// SLAM - DANGER AREA EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
@@ -416,8 +424,28 @@ VOID MeteorSlamState	::FSM_StateUpdate(GameObject* _Owner)	{
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableMeteorExp(TRUE);
 	}
 }
-VOID MeteorSlamState	::FSM_StateExit(GameObject* _Owner)		{}
+VOID MeteorSlamState::FSM_StateExit(GameObject* _Owner)		{}
 
 VOID StandState	::FSM_StateEnter(GameObject* _Owner)	{}
 VOID StandState	::FSM_StateUpdate(GameObject* _Owner)	{}
 VOID StandState	::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_StandState::FSM_StateEnter(GameObject* _Owner)		{}
+VOID Rage_StandState::FSM_StateUpdate(GameObject* _Owner)		{}
+VOID Rage_StandState::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_RSwingState::FSM_StateEnter(GameObject* _Owner)		{}
+VOID Rage_RSwingState::FSM_StateUpdate(GameObject* _Owner)	{}
+VOID Rage_RSwingState::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_NormalSlamState::FSM_StateEnter(GameObject* _Owner) {}
+VOID Rage_NormalSlamState::FSM_StateUpdate(GameObject* _Owner){}
+VOID Rage_NormalSlamState::FSM_StateExit(GameObject* _Owner)	{}
+
+VOID Rage_ChargeState::FSM_StateEnter(GameObject* _Owner)		{}
+VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner)	{}
+VOID Rage_ChargeState::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_SupporterState::FSM_StateEnter(GameObject* _Owner)	{}
+VOID Rage_SupporterState::FSM_StateUpdate(GameObject* _Owner) {}
+VOID Rage_SupporterState::FSM_StateExit(GameObject* _Owner)	{}

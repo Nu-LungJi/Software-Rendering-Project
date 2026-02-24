@@ -48,7 +48,7 @@ private:
 	_vec3	Direction;
 	FLOAT	CurrentAngle;
 	FLOAT	TickAngle;
-	list<BossFireBall*> BossFB;
+	INT		FBNumbering;
 
 private:
 	Buffer*			Component_Buffer;

@@ -21,6 +21,7 @@ HRESULT	Supporter::Ready_GameObject(){
 
 	CurrentAngle = 0.f;
 	TickAngle = 0.f;
+	FBNumbering = 0;
 
 	Component_Transform->Rotation(ROT_X, 80.f);
 
@@ -29,20 +30,14 @@ HRESULT	Supporter::Ready_GameObject(){
 	return S_OK;
 }
 INT		Supporter::Update_GameObject(CONST FLOAT& _DT) { 
-	if (ObjectDead == TRUE) {
-		
-		return -1;
-	}
+	if (ObjectDead == TRUE) return -1;
 	
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	Supporter_Transform(_DT);
 	Generate_FireBall(_DT);
-
-	for (auto& BFB : BossFB)
-		BFB->Update_GameObject(_DT);
-
+	
 	Animation_Timer += _DT;
 	Effect_Timer += _DT;
 
@@ -52,16 +47,17 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Effect", Component_Transform->Get_Position(), Scale, 0.5f);
 
 		for (INT IDX = 0; IDX < 3; IDX++) {
-			BossFB.push_back(BossFireBall::Create(GRPDEV));
-			BossFB.back()->Set_FireBall_Pos(*Component_Transform->Get_Position());
-			BossFB.back()->Set_FireBall_Speed(0.15f);
-			BossFB.back()->Set_FireBall_Duration(30.f);
-			if (IDX == 0)
-				BossFB.back()->Set_FireBall_Angle(CurrentAngle);
-			else if (IDX == 1)
-				BossFB.back()->Set_FireBall_Angle(CurrentAngle - 120);
-			else if (IDX == 2)
-				BossFB.back()->Set_FireBall_Angle(CurrentAngle + 120);
+			wstring FBTag = ObjectTAG + L"_FireBall" + to_wstring(FBNumbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, FBTag.c_str());
+			BossFireBall* FB = dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(FBTag.c_str()));
+			FB->Set_FireBall_Pos(*Component_Transform->Get_Position());
+			FB->Set_FireBall_Pos(*Component_Transform->Get_Position());
+			FB->Set_FireBall_Speed(0.15f);
+			FB->Set_FireBall_Duration(30.f);
+
+			if (IDX == 0)		FB->Set_FireBall_Angle(CurrentAngle);
+			else if (IDX == 1)	FB->Set_FireBall_Angle(CurrentAngle - 120);
+			else if (IDX == 2)	FB->Set_FireBall_Angle(CurrentAngle + 120);
 		}
 
 		Effect_Timer = 0.f;
@@ -86,8 +82,6 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 	if (ObjectDead == TRUE)  return;
 	GameObject::LateUpdate_GameObject(_DT);
-	for (auto& BFB : BossFB)
-		BFB->LateUpdate_GameObject(_DT);
 }
 VOID	Supporter::Render_GameObject(){
 	if (ObjectDead == TRUE)  return;
@@ -101,21 +95,13 @@ VOID	Supporter::Render_GameObject(){
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
-	for (auto& BFB : BossFB)
-		BFB->Render_GameObject();
 }
 
 BOOL	Supporter::OnCollisionEnter(GameObject* _Other)	{ 
 	if (_Other->Get_ObjectTag() == L"Docheol") {
-		// Disappear Effect
-		for (auto& BFB : BossFB) 
-			CollisionManager::GetInstance()->Delete_ColliderObject(BFB);
-		for (auto& BFB : BossFB) 
-			Safe_Release(BFB);
-		
-		BossFB.clear();
 		ObjectDead = TRUE;
 		_vec3 Scale = { 4.f, 4.f, 4.f };
+
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Disappear Effect", Component_Transform->Get_Position(), Scale, 0.5f);
 		return FALSE;
 	}

@@ -24,7 +24,6 @@ VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
 
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
-	EffectManager::GetInstance()->Render_EffectManager(GRPDEV);
 	//TileManager::GetInstance()->Render_TileList();
 	//DEVCLASS->Render_End();
 }

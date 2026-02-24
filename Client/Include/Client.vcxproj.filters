@@ -175,9 +175,6 @@
     <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogEffect">
       <UniqueIdentifier>{f0879c72-92fb-40aa-b302-02bd683ee229}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\08.Rain">
-      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
       <UniqueIdentifier>{e95b52e2-480a-4c4e-86e1-3bfb56eabb61}</UniqueIdentifier>
     </Filter>
@@ -216,9 +213,12 @@
     </Filter>
     <Filter Include="03. GameObject\07. ProJectile\05.EvilSlimeGroundIce">
       <UniqueIdentifier>{c45efe71-4311-43eb-8fe1-d2596bf2b95e}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
       <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\09. Particle">
+      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -412,7 +412,7 @@
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Rain.h">
-      <Filter>03. GameObject\08.Rain</Filter>
+      <Filter>03. GameObject\09. Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Bullet_Chain_Head.h">
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
@@ -453,7 +453,7 @@
     <ClInclude Include="..\Header\MonsterTest.h" />
     <ClInclude Include="..\Header\EvilSlimeGroundIce.h">
       <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
@@ -635,7 +635,7 @@
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Rain.cpp">
-      <Filter>03. GameObject\08.Rain</Filter>
+      <Filter>03. GameObject\09. Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Bullet_Chain_Head.cpp">
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
@@ -673,7 +673,7 @@
     <ClCompile Include="..\Code\MonsterTest.cpp" />
     <ClCompile Include="..\Code\EvilSlimeGroundIce.cpp">
       <Filter>03. GameObject\07. ProJectile\05.EvilSlimeGroundIce</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClCompile>
