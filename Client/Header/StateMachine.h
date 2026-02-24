@@ -63,6 +63,14 @@ public:
 	virtual VOID FSM_StateUpdate(GameObject* _Owner);
 	virtual VOID FSM_StateExit(GameObject* _Owner);
 };
+// PHASE 1
+class StandState : public State {
+	DECLARE_FSM_SINGLETON(StandState);
+public:
+	virtual VOID FSM_StateEnter(GameObject* _Owner);
+	virtual VOID FSM_StateUpdate(GameObject* _Owner);
+	virtual VOID FSM_StateExit(GameObject* _Owner);
+};
 class RSwingState : public State {
 	DECLARE_FSM_SINGLETON(RSwingState);
 public:
@@ -91,10 +99,40 @@ public:
 	virtual VOID FSM_StateUpdate(GameObject* _Owner);
 	virtual VOID FSM_StateExit(GameObject* _Owner);
 };
-class StandState : public State {
-	DECLARE_FSM_SINGLETON(StandState);
+
+// PHASE 2
+class Rage_StandState : public State {
+	DECLARE_FSM_SINGLETON(Rage_StandState);
 public:
-	virtual VOID FSM_StateEnter(GameObject* _Owner);
-	virtual VOID FSM_StateUpdate(GameObject* _Owner);
-	virtual VOID FSM_StateExit(GameObject* _Owner);
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
+class Rage_RSwingState : public State {
+	DECLARE_FSM_SINGLETON(Rage_RSwingState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
+class Rage_NormalSlamState : public State {
+	DECLARE_FSM_SINGLETON(Rage_NormalSlamState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
+class Rage_ChargeState : public State {
+	DECLARE_FSM_SINGLETON(Rage_ChargeState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
+class Rage_SupporterState : public State {
+	DECLARE_FSM_SINGLETON(Rage_SupporterState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
 };

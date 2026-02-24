@@ -5,21 +5,29 @@ DoCheolScene::DoCheolScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV) {}
 DoCheolScene::~DoCheolScene() {}
 HRESULT	DoCheolScene::Ready_Scene() {
 	Scene::Ready_Scene();
+	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
+	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+
+	if (FAILED(Ready_Enviroment_Layer()))			return E_FAIL;
+	if (FAILED(Ready_GameLogic_Layer()))			return E_FAIL;
+	if (FAILED(Ready_UserInterface_Layer()))		return E_FAIL;
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 
-	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
+
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-	Ready_GameLogic_Layer(L"GameLogic_Layer");
 
 	{
 		HANDLE	hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
@@ -129,27 +137,25 @@ VOID DoCheolScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 VOID DoCheolScene::Render_Scene() {
 	//Scene::Render_Scene();
 }
-HRESULT DoCheolScene::Ready_Enviroment_Layer(CONST TCHAR* _LTAG) {
-	Layer* LYR = Layer::Create();
-	if (nullptr == LYR) return E_FAIL;
-
-	GameObject* GOBJ = nullptr;
-
-	LayerList.push_back(LYR);
+HRESULT DoCheolScene::Ready_Enviroment_Layer() {
 
 	return S_OK;
 }
-HRESULT DoCheolScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
+HRESULT DoCheolScene::Ready_GameLogic_Layer() {
 
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 	
-	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
+	//Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
+	//Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter");
+	//Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, L"BossFireBall");
 	return S_OK;
 }
-HRESULT DoCheolScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {
+HRESULT DoCheolScene::Ready_UserInterface_Layer() {
+	Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
 	return S_OK;
 }
 DoCheolScene* DoCheolScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

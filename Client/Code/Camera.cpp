@@ -33,8 +33,8 @@ HRESULT CameraObject::Ready_GameObject() {
 
 	ObjectTAG = L"Camera";
 
-	OriginEye = { 0.f, 0.f, 0.f };
-	OriginAt = { 0.f, 0.f, 0.f };
+	OriginEye = EyeVec;
+	OriginAt = AtVec;
 
 	return S_OK;
 }
@@ -46,9 +46,9 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-	//EyeVec = OriginEye;
-	//AtVec = OriginAt;
+
 	CheonLog_Respawn(_DT);
+
 	if (!Camera_Move)
 	{
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
@@ -94,7 +94,6 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		AtVec += m_vVelocity * 0.02;
 	}
 	if (Shake_Time > 0.f) {
-		
 		OriginEye = EyeVec;
 		OriginAt = AtVec;
 
@@ -109,8 +108,12 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 
-	//EyeVec = OriginEye;
-	//AtVec = OriginAt;
+	if (Shake_Time > 0.f) {
+		Shake_Time -= _DT;
+		EyeVec = OriginEye;
+		AtVec = OriginAt;
+	}
+	
 
 	return 0;
 }

@@ -51,7 +51,7 @@ INT GameObject::LateUpdate_GameObject_Component(const FLOAT& _DT)
 
 		auto& COM = ComponentList[i];
 
-		if (COM == nullptr)	 continue;
+		if (COM == nullptr)    continue;
 		COM->LateUpdate_Component(_DT);
 	}
 	return 0;

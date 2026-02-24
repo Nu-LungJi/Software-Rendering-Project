@@ -17,7 +17,7 @@ public:
 	HRESULT		Ready_EffectManager();
 	INT			Update_EffectManager(CONST FLOAT& _DT);
 	VOID		LateUpdate_EffectManager(CONST FLOAT& _DT);
-	VOID		Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV);
+	VOID		Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDER _RENDER);
 
 public:
 	HRESULT				Append_Effect(EFFECT_OWNER _Owner, GameObject* _Effect);

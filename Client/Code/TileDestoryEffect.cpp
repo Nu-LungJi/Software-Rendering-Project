@@ -177,7 +177,6 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 
 BOOL TileDestoryEffect::OnCollisionEnter(GameObject* _Other)
 {
-
 	wstring Tag = _Other->Get_ObjectTag();
 	if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T && m_fFrame == 0)
 	{
