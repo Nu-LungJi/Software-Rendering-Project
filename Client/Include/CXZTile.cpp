@@ -37,7 +37,6 @@ INT	CXZTile::Update_GameObject(const _float& _DT) {
 
 	Frame_Move(_DT);
 	
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
 
 
 	if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_COLLISION)
@@ -57,6 +56,8 @@ INT	CXZTile::Update_GameObject(const _float& _DT) {
 			m_fAlpha = 0.f;
 	}
 
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
 	return 0;
 
 }
@@ -158,7 +159,7 @@ VOID CXZTile::Render_GameObject()
 			return;
 		break;
 	case TILE_STATE::STATE_BOOM:
-		GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
 		break;
 	}
 
@@ -228,7 +229,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		//Crash_Player();
 		break;
 	case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
-		Tile_Destory(_DT);
+		//Tile_Destory(_DT);
 		break;
 	case TILE_STATE::STATE_POTAL:
 		Tile_Potal(_DT);
@@ -237,7 +238,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		Tile_Potal_Effect(_DT);
 		break;
 	case TILE_STATE::STATE_TRIGGER:
-		Tile_Trigger();
+		//Tile_Trigger();
 		break;
 	case TILE_STATE::STATE_POTALGASI:
 		break;
@@ -313,6 +314,8 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale , Rot));
 		Set_ObjectDead(TRUE);
 		++m_fFrame;
+		SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_BGM01, 0.1f);
+
 	}
 	
 	if (m_bStopFrame && m_bDestroy && m_fFrame < m_pTileInfo->Get_TileTextureNumber() - 1.f)
@@ -322,7 +325,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 		if (!m_pTileInfo->Get_OnlyAnimation())
 		{
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
-		//	SoundManager::GetInstance()->Play_Sound(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01,0.3f);
 		}
 			
 		++m_fFrame;
@@ -333,8 +336,21 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 void CXZTile::Tile_Potal(CONST FLOAT& _DT)
 {
 	Transform*  pTransform = Crash_Player();
-		if(Crash_Player() != nullptr)
-			pTransform->Set_Pos(m_pTileInfo->Get_NextPos());
+	if (Crash_Player() != nullptr)
+	{
+		if (!m_bEffect)
+		{
+			_vec3 vPos = m_pTileInfo->Get_NextPos();
+			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
+			m_bEffect = true;
+		}
+		m_bEffect = false;
+		m_fFrame += _DT;
+
+		TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
+		
+	}
+			
 }
 void CXZTile::Tile_Potal_Effect(CONST FLOAT& _DT)
 {
@@ -358,7 +374,7 @@ void CXZTile::Tile_Trigger()
 {
 	if (Crash_Player() != nullptr )
 	{
-		TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
+		//TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
 	}
 }
 void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
@@ -414,11 +430,11 @@ void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
 }
 void CXZTile::Tile_Boom(const FLOAT& _DT)
 {
-	
+	_vec3 Pos, Scale, Rot;
+
 	if (!m_bDestroy)
 	{
-		_vec3 vPos;
-		m_pTransform->Get_Info(INFO_POS, &vPos);
+		m_pTransform->Get_Info(INFO_POS, &Pos);
 
 		m_fTime += _DT;					//지난 시간
 		if (m_fTime > 0.35f) //0.1초가 지나면
@@ -433,53 +449,50 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
 			}
 		}
 
-		vPos.y += m_fHeightSpeed;
+		Pos.y += m_fHeightSpeed;
 
-		m_pTransform->Set_Pos(vPos);
+		m_pTransform->Set_Pos(Pos);
 
 	}
+
+	
 	if (m_bDestroy)
 	{
-		if (!m_bEffect)
-		{
+		if (m_fHeightSpeed > 1)
+		{	
+			m_fHeightSpeed = 0;
+		}
 
-			_vec3 Pos, Scale, Rot;
 			m_pTransform->Get_Info(INFO_POS, &Pos);
-			Scale = *m_pTransform->Get_Scale();
-			Rot = *m_pTransform->Get_Rotation();
-			Pos.y = 0;
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, {0,0,0}, true));
-			m_bEffect = true;
-		}
-		if (!m_bStopFrame)
-		{
-			m_fHeightSpeed = 0.1f;
-			if (m_fHeightSpeed < 0)
-			{
-				m_fHeightSpeed *= -1;
-			}
-				
-			_vec3 vPos;
-			m_pTransform->Get_Info(INFO_POS, &vPos);
+			m_fTime += _DT;
 
-			m_fTime += _DT;				
-			if (m_fTime > 0.1f) 
+			m_fHeightSpeed -= 0.01f;
+			if (m_fTime > 0.04)
 			{
-				m_fCount += 1;
-				m_fTime = 0.f;	
-
-				if (vPos.y <= 0 )
-				{
-					vPos.y = 0;
-					m_bStopFrame = true;
-				}
+				m_fFrame += 1;
+				m_fTime = 0.f;
+	
 			}
-			vPos.y -= m_fHeightSpeed;
-		
-			if (m_fCount > 10)
+
+			Pos.y -= 0.1f;
+			if (Pos.y <= -0.1)
+			{
+				Pos.y = -0.1;
+			}
+			m_pTransform->Set_Pos(Pos);
+			if (m_fFrame == 17)
+			{
+				m_pTransform->Get_Info(INFO_POS, &Pos);
+				Scale = *m_pTransform->Get_Scale();
+				Rot = *m_pTransform->Get_Rotation();
+				EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, { 0,0,0 }, true));
+
+			}
+			if (m_fFrame > m_pTileInfo->Get_TileTextureName().size() - 3)
+			{
 				Set_ObjectDead(TRUE);
-		}
-		
+			}
+
 	}
 }
 Transform* CXZTile::Crash_Player()
@@ -598,7 +611,6 @@ HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
 	
 	return S_OK;
 }
-
 CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState) {
 	
 	CXZTile* pCXZTile = new CXZTile(_GRPDEV);

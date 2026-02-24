@@ -92,6 +92,7 @@ private:
 	_bool			m_StartAttack;
 	_bool			m_EndEffect;
 	_bool			m_bCrystal;
+	_bool			m_bBgm;
 	_bool		    m_bDead;
 
 	_vec3			m_vCenter;

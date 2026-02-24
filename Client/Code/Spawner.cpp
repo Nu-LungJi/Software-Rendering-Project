@@ -81,16 +81,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		//Monster_Spawn();
+		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		//Monster_Spawn2();
+		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		//Monster_Spawn3();
+		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		//Monster_Spawn4();
+		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 	
@@ -190,7 +190,6 @@ void Spawner::CL_Spawn()
 Transform* Spawner::Crash_Player()
 {
 	_vec3 vPos{}, vTilePos{};
-	//플레이어와 부딪히면 다음 좌표로 이동
 	Transform* pPlayer = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 	Player* OriginPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 

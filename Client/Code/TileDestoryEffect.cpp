@@ -26,8 +26,7 @@ HRESULT TileDestoryEffect::Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3
 		Add_Effect(OBJECT_DESTORY::BOOM_F, L"DangerArea0");
 		break;
 		case OBJECT_DESTORY::BOOM_S:
-		Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");
-		
+		Add_Effect(OBJECT_DESTORY::BOOM_S, L"Spr_Effect_No027_GunpowderBowPulse_0");	
 		break;
 		case OBJECT_DESTORY::BOOM_T:
 		Add_Effect(OBJECT_DESTORY::BOOM_T, L"Spr_Effect_FireBird_FireBallPulse_0");

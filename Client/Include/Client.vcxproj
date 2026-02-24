@@ -183,6 +183,7 @@
     <ClInclude Include="..\Header\CLEffect.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Header\CLoading.h" />
     <ClInclude Include="..\Header\CubeFloorTile.h" />
     <ClInclude Include="..\Header\CubeTile.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -273,6 +274,7 @@
     <ClInclude Include="..\Header\Rain.h" />
     <ClInclude Include="..\Header\ScorpionBullet.h" />
     <ClInclude Include="..\Header\ScorpionEvilSoul.h" />
+    <ClInclude Include="..\Header\StageBlackOut.h" />
     <ClInclude Include="..\Header\Stall.h" />
     <ClInclude Include="..\Header\ShopKeeper.h" />
     <ClInclude Include="..\Header\ShopUI.h" />
@@ -332,6 +334,7 @@
     <ClCompile Include="..\Code\CLEffect.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\CLoading.cpp" />
     <ClCompile Include="..\Code\CubeFloorTile.cpp" />
     <ClCompile Include="..\Code\CubeTile.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -432,6 +435,7 @@
     <ClCompile Include="..\Code\Rain.cpp" />
     <ClCompile Include="..\Code\ScorpionBullet.cpp" />
     <ClCompile Include="..\Code\ScorpionEvilSoul.cpp" />
+    <ClCompile Include="..\Code\StageBlackOut.cpp" />
     <ClCompile Include="..\Code\Stall.cpp" />
     <ClCompile Include="..\Code\ShopKeeper.cpp" />
     <ClCompile Include="..\Code\ShopUI.cpp" />

@@ -4,7 +4,7 @@
 #include "tchar.h"
 
 IMPLEMENT_SINGLETON(TileManager)
-TileManager::TileManager() : m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false){}
+TileManager::TileManager() : m_EndLoading(true), m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false){}
 TileManager::~TileManager()
 {
 	Free();
@@ -37,14 +37,14 @@ HRESULT TileManager::Add_Tile(GameObject* pObject, _vec3 vPos, TILE_STAGE eStage
 
 	return S_OK;
 }
-_bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot,_bool* bAni)
+_bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot,_bool* bAni, TILE_STAGE* esid)
 {
 	_float fu, fv, ft(-1);
 	_float ftCheck = 0;
 	_int iState = (0), iMode(0), iTileN(0);
 	_vec3 vPos, vScale, vRot;
 	_bool bAi = false;
-
+	TILE_STAGE es;
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
 		{
 			for (size_t k = 0 ; k < m_vecTileBuffer[m_eStage][j].size(); ++k)
@@ -82,7 +82,8 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 					vRot = *dynamic_cast<Transform*>
 						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 					ftCheck = ft;
-					
+					es = dynamic_cast<TileInfo*>
+						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_NextStage();
 					bAi = dynamic_cast<TileInfo*>
 						((m_vecTileBuffer[m_eStage][j][k])->Get_Component(Engine::COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
 
@@ -101,15 +102,19 @@ _bool TileManager::Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber,_vec
 		*iTileNumber = iTileN;
 		*returnScale = vScale;
 		*bAni		 = bAi;
+		*esid		 = es;
 		m_bCheck = false;
 		return true;
 	}
 		
 	return false;
 }
-void TileManager::Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni)
+void TileManager::Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni,TILE_STAGE eid)
 {
+	if (m_vecTileBuffer[eStage][eMode][TileNumber]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM) == nullptr)
+		return;
 	Component* pComponent = m_vecTileBuffer[eStage][eMode][TileNumber]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM);
+
 	Transform* pTransform = dynamic_cast<Transform*>(pComponent);
 	TileInfo* pTileInfo = dynamic_cast<TileInfo*>(m_vecTileBuffer[eStage][eMode][TileNumber]->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO));
 	_vec3 Pos;
@@ -117,6 +122,7 @@ void TileManager::Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eS
 	pTransform->Set_Scale(returnPos.x, returnPos.y, returnPos.z);
 	pTransform->Set_Rotation(returnRot.x, returnRot.y, returnRot.z);
 	pTileInfo->Set_OnlyAnimation(bAni);
+	pTileInfo->Set_TileNext(eid);
 }
 void TileManager::Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir)
 {
@@ -196,75 +202,46 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 {
 	if (m_bStageChange) //스테이지 스왑용
 	{
-		m_eStage = m_eCurrent;
 		m_bStageChange = false;
+		//m_eStage = m_eCurrent;
 	}
 
+		
 	if (m_StageCntArray[m_eStage] == 0)
 		Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
-	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
-	{
-		for (auto iter = m_vecTileBuffer[m_eStage][j].begin(); iter != m_vecTileBuffer[m_eStage][j].end();)
-		{
-			(*iter)->Update_GameObject(fTimeDelta);
-			
-			if ((*iter)->Get_ObjectDead() == TRUE)
-			{
-				Safe_Release((*iter));
-				iter = m_vecTileBuffer[m_eStage][j].erase(iter);
-				continue;
-			}
-
-			if (iter != m_vecTileBuffer[m_eStage][j].end())
-				++iter;
-		}
-
-	}
-
-	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
-	{
+	
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
 		{
-			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
+			for (auto iter = m_vecTileBuffer[m_eStage][j].begin(); iter != m_vecTileBuffer[m_eStage][j].end();)
 			{
+				(*iter)->Update_GameObject(fTimeDelta);
 
-				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
-					(*iter)->Update_GameObject(fTimeDelta);
-
-				if (iter != m_vecTileBuffer[i][j].end())
+				if ((*iter)->Get_ObjectDead() == TRUE)
+				{
+					Safe_Release((*iter));
+					iter = m_vecTileBuffer[m_eStage][j].erase(iter);
+					continue;
+				}
 					++iter;
 			}
 
 		}
-	}
+	
+	
 	return S_OK;
 }
 
 void TileManager::Stage_LateUpdate(const _float& fTimeDelta)
 {
-	for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
-	{
-		for (auto& iter : m_vecTileBuffer[m_eStage][j])
-			iter->LateUpdate_GameObject(fTimeDelta);
-
-	}
-	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
-	{
+	
 		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
 		{
-			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
-			{
-
-				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
-					(*iter)->LateUpdate_GameObject(fTimeDelta);
-
-				if (iter != m_vecTileBuffer[i][j].end())
-					++iter;
-			}
+			for (auto& iter : m_vecTileBuffer[m_eStage][j])
+				iter->LateUpdate_GameObject(fTimeDelta);
 
 		}
-	}
+
 }
 void TileManager::Stage_Render()
 {
@@ -274,22 +251,8 @@ void TileManager::Stage_Render()
 			iter->Render_GameObject();
 		
 	}
-	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
-	{
-		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
-		{
-			for (auto iter = m_vecTileBuffer[i][j].begin(); iter != m_vecTileBuffer[i][j].end();)
-			{
 
-				if (dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_TRIGGER)
-					(*iter)->Render_GameObject();
 
-				if (iter != m_vecTileBuffer[i][j].end())
-					++iter;
-			}
-
-		}
-	}
 }
 
 HRESULT TileManager::Update_TileList(const _float& fTimeDetla)
@@ -389,6 +352,7 @@ void TileManager::Save_Tile(HWND g_hWnd)
 	TILE_STATE       eTileState		 = TILE_STATE::STATE_END;
 	TILEMODE_CHANGE  eTileMode		 = TILEMODE_CHANGE::MODE_END;
 	TILE_STAGE		 eTileStage		 = TILE_STAGE::STAGE_END;
+	TILE_STAGE		 eNext			 = TILE_STAGE::STAGE_END;
 	_tchar			 cTileName[128]  = {};
 	_vec3		     Info			 = {};
 	_vec3			 Scale			 = {};
@@ -421,7 +385,7 @@ void TileManager::Save_Tile(HWND g_hWnd)
 				Rotation	= *dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Rotation();
 				dynamic_cast<Transform*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &Info);
 				bOnlyAni	= dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_OnlyAnimation();
-				
+				eNext		= dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_NextStage();
 				TCHAR* dot = _tcsrchr(cTileName, _T('.'));
 				_tcscpy_s(dot, 128 - (dot - cTileName), _T(".dds"));
 				WriteFile(hFile, &Info,			   sizeof(_vec3),			&dwByte, NULL);
@@ -437,7 +401,8 @@ void TileManager::Save_Tile(HWND g_hWnd)
 				WriteFile(hFile, &vNextPos,		   sizeof(_vec3),			&dwByte, NULL);
 				WriteFile(hFile, &bOnlyAni,		   sizeof(_bool),			&dwByte, NULL);
 				WriteFile(hFile, &eSpawn,		   sizeof(TILE_SPAWNER),	&dwByte, NULL);
-				
+				WriteFile(hFile, &eNext,		   sizeof(TILE_STAGE)	  , &dwByte, NULL);
+
 			}
 		}
 	}
@@ -450,16 +415,17 @@ void TileManager::Save_Tile(HWND g_hWnd)
 
 void TileManager::Reset_TileList()
 {
-	for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
-	{
-		for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+	
+		for (size_t i = 0; i < TILE_STAGE::STAGE_END; ++i)
 		{
-			for (auto& iter : m_vecTileBuffer[i][j])
-				Safe_Release(iter);
+			for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
+			{
+				for (auto& iter : m_vecTileBuffer[i][j])
+					Safe_Release(iter);
 
-			m_vecTileBuffer[i][j].clear();
+				m_vecTileBuffer[i][j].clear();
+			}
 		}
-	}
 }
 
 void TileManager::Free()

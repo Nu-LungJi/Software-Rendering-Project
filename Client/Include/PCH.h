@@ -107,7 +107,7 @@
 #include "Rain.h"
 #include "ShopKeeper.h"
 #include "ShopUI.h"
-
+#include "StageBlackOut.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
@@ -117,6 +117,7 @@
 #include "DoCheolScene.h"
 #include "MiniGameScene.h"
 
+#include "CLoading.h"
 //////////////////////////////////////////// Manager
 
 #include "GUIManager.h"

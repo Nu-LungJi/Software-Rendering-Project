@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bDead(false), m_bStartPattern(false), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
+Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bBgm(false), m_bDead(false), m_bStartPattern(false), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
 Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
 Cheonlog::~Cheonlog() {}
 
@@ -199,9 +199,19 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 			m_iFrameCnt = 0;
 		break;
 	case CL_LJUMP:
+		if (m_bBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Move_Jump.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+			m_bBgm = false;
+		}
 		CL_Jump(_DT, iMaxCnt);
 		break;
 	case CL_RJUMP:
+		if (m_bBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Move_Jump.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+			m_bBgm = false;
+		}
 		CL_JumpCenter(_DT, iMaxCnt);
 		break;
 	case CL_DEAD:
@@ -222,9 +232,19 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		}
 		break;
 	case CL_RUJUMP:
+		if (m_bBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Move_Jump.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+			m_bBgm = false;
+		}
 		CL_Jump(_DT, iMaxCnt);
 		break;
 	case CL_LUJUMP:
+		if (m_bBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Move_Jump.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+			m_bBgm = false;
+		}
 		CL_JumpCenter(_DT, iMaxCnt);
 		break;
 	}
@@ -244,6 +264,11 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		AttackLeaf_Second(_DT, vPos);
 		break;
 	case ATTACK_C:
+		if (m_bBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_AntlerSpin.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+			m_bBgm = false;
+		}
 		AttackLeaf_Third(_DT, vPos);
 		break;
 	case ATTACK_D:
@@ -307,8 +332,9 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 5 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 14)
+		if (m_framePattern > 18)
 		{
+
 			Reset_Pattern(ATTACK_C, CL_IDELR);
 			return;
 		}
@@ -316,7 +342,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill < 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 20)
+		if (m_framePattern > 23)
 		{
 			Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
@@ -325,7 +351,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 25)
+		if (m_framePattern > 30)
 		{
 			Reset_Pattern(ATTACK_D, CL_IDELR);
 			return;
@@ -335,6 +361,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 void Cheonlog::Reset_Pattern(CL_CHECK eCheck, CL_STATU eStatu)
 {
 	m_iFrameCnt = 0;
+	m_bBgm = true;
 	m_EndEffect = true;
 	m_eCheck = eCheck;
 	m_eStatu = eStatu;
@@ -350,6 +377,7 @@ void Cheonlog::AttackLeaf_First(const _float& _DT, _vec3 vPos)
 	{
 		vPos += { 1.1f, 1.5f, 3.7f };
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_FIRST, vPos, TRUE));
+		
 		m_EndEffect = false;
 		m_StartAttack = true;
 		m_iSkillDelay = 0;
@@ -386,6 +414,8 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 	case 0:
 		if (m_EndEffect)
 		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, {vPos.x,-0.2f,vPos.z}, FALSE, {6,0,5}, {0,0,0}, 0.2f));
 			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(Create_Leaf_Second({ vPos.x,2.f,vPos.z + 3.f }));
 			m_EndEffect = false;
@@ -394,6 +424,8 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 	case 1:
 		if (m_EndEffect)
 		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_pattern_range_01.wav", CHANNELID::SOUND_EFFECT02, 0.5f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 		for (_int i = 0; i < 4; ++i)
 		{
 			D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 90));
@@ -412,6 +444,8 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 	case 2:
 		if (m_EndEffect)
 		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_pattern_range_01.wav", CHANNELID::SOUND_EFFECT02, 0.5f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 			for (_int i = 0; i < 9; ++i)
 			{
 				D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 40));
@@ -462,7 +496,7 @@ void Cheonlog::AttackLeaf_Third(const _float& _DT, _vec3 vPos)
 			m_fAttackSecondTick = 0.f;
 		}
 		
-		if (m_iSkillCnt > 20)
+		if (m_iSkillCnt > 25)
 		{
 			m_eCheck = IDEL;
 			m_iBulletCnt = 0;
@@ -522,6 +556,8 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 3;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x,6,vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
 		++m_iSkillDelay;
 		break;
 	case 1:
@@ -529,12 +565,14 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 4;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x  ,6,vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
+		
 		break;
 	case 2:
 		D3DXMatrixRotationY(&matRotY, D3DXToRadian(50));
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 4;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_R, { vPos.x ,0.5,vPos.z }, TRUE, { 3.f,3.f,3.f }, { 55,0,0 }, 0.2f, { 0,0,1 }, FALSE));
+	
 		++m_iSkillDelay;
 		break;
 	case 3:
@@ -543,12 +581,14 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 5;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
+	
 		break;
 	case 5:
 		D3DXMatrixRotationY(&matRotY, D3DXToRadian(-120));
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 6;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
+	
 		break;
 	case 6:
 
@@ -556,13 +596,13 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 7;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_L, { vPos.x ,0.5, vPos.z }, TRUE, { 3.f,3.f,3.f }, { 55,0,0 }, 0.2f, { 0,0,1 }, FALSE));
+	
 		++m_iSkillDelay;
 		return;
 	case 7:
 		D3DXMatrixRotationY(&matRotY, D3DXToRadian(-120));
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 6;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
 		++m_iSkillDelay;
 		return;
 	case 9:
@@ -570,6 +610,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 8;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, TRUE));
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 		++m_iSkillDelay;
 		break;
 	}
@@ -585,7 +626,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT,_vec3 vPos)
 			D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 			vPos += vLook * 6;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
-
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 		}
 		
 	}
@@ -611,6 +652,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 			vPos += vLookReset * 4;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
 			vLookReset = { 0,0,0 };
+			if (i == 11) SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Pattern_Range_01_04.wav", CHANNELID::SOUND_EFFECT01, 0.3f);
 			vPos = vOrigin;
 		}
 		

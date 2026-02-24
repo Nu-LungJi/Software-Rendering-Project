@@ -7,12 +7,13 @@ HRESULT	MapScene::Ready_Scene() {
 	Scene::Ready_Scene();
 
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 	Ready_UserInterface_Layer(L"UI_Layer");
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
-{
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+
+
+	{
 	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
 		GENERIC_READ,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
 		NULL,				// 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
@@ -33,6 +34,7 @@ HRESULT	MapScene::Ready_Scene() {
 	TILE_STATE       eTileState = TILE_STATE::STATE_END;
 	TILEMODE_CHANGE  eTileMode = TILEMODE_CHANGE::MODE_END;
 	TILE_STAGE	     eTileStage = TILE_STAGE::STAGE_END;
+	TILE_STAGE		 eNext = TILE_STAGE::STAGE_END;
 	_tchar			 cTileName[128] = {};
 	_vec3		     Info  = {};
 	_vec3			 Scale = {};
@@ -58,7 +60,7 @@ HRESULT	MapScene::Ready_Scene() {
 		ReadFile(hFile, &vNextPos,		  sizeof(_vec3),		   &dwByte, NULL);
 		ReadFile(hFile, &bAni,			  sizeof(_bool),	       &dwByte, NULL);
 		ReadFile(hFile, &eSpawn,		  sizeof(TILE_SPAWNER),    &dwByte, NULL);
-		
+		ReadFile(hFile, &eNext,			  sizeof(TILE_SPAWNER), &dwByte, NULL);
 
 		if (0 == dwByte)
 			break;
@@ -71,9 +73,10 @@ HRESULT	MapScene::Ready_Scene() {
 		}else
 			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 		
-		if (eSpawn == TILE_SPAWNER::CL_SPAWN)
-			++i;
+		
 
+		if (eNext == TILE_STAGE::TILE_STAGE2)
+			++i;
 		GOBJ->Set_ObjectTag(L"CXZTile");
 		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
@@ -81,7 +84,7 @@ HRESULT	MapScene::Ready_Scene() {
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
 		else
 		{
-			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos);
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, eNext);
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 				->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 		}
@@ -90,9 +93,11 @@ HRESULT	MapScene::Ready_Scene() {
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
 		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
+		if (TILE_STATE::STATE_BOOM == eTileState)
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
 
 		TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
-	
+		
 	}
 	TileManager::GetInstance()->Set_StageCnt();
 	MSG_BOX("로드 성공");
@@ -101,6 +106,10 @@ HRESULT	MapScene::Ready_Scene() {
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+	SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01,0.1f);
+	
+	pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
+	
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
@@ -109,13 +118,26 @@ INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
 		DoCheolScene* pDocher = DoCheolScene::Create(GRPDEV);
 		SceneManager::GetInstance()->Set_CurrentScene(pDocher);
 	}
-	TileManager::GetInstance()->Stage_Update(_DT);
-
+	
 	CollisionManager::GetInstance()->Update_CollisionManager();
+	
+	
+	if (!TileManager::GetInstance()->Get_Loading())
+	{
+		if (pLoading->Get_Finish())
+		{
+			TileManager::GetInstance()->Set_Stage();
+			TileManager::GetInstance()->Set_EndLoading(TRUE);
+			
+		}
+	}else 
+		TileManager::GetInstance()->Stage_Update(_DT);
 	return Scene::Update_Scene(_DT);
 }
 VOID MapScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	Scene::LateUpdate_Scene(_DT);
+
+
 	TileManager::GetInstance()->Stage_LateUpdate(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
@@ -169,5 +191,6 @@ MapScene* MapScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return LS;
 }
 void MapScene::Free() {
+	Safe_Release(pLoading);
 	Scene::Free();
 }
