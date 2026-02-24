@@ -8,14 +8,14 @@ PlayerEffect::~PlayerEffect(){}
 HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, BOOL PosChase) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	if		(_SKILLTYPE == PLAYER_SKILL::SKILL_1)	{ Make_TextureList(L"Spr_Effect_ExplosionNormal02_");		}
-	else if (_SKILLTYPE == PLAYER_SKILL::SKILL_2)	{ Make_TextureList(L"Spr_Ui_Effect_BossClear_lraCharge_");	}
-	else if (_SKILLTYPE == PLAYER_SKILL::SKILL_3)	{ Make_TextureList(L"Spr_Ui_Stage01_TureMapEffect_");		}
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+	if		(_SKILLTYPE == PLAYER_SKILL::SKILL_1)	{ Make_TextureList(L"BalckHole_Loop");		}
+	else if (_SKILLTYPE == PLAYER_SKILL::SKILL_2)	{ Make_TextureList(L"Sheep_LD");	}
+	else if (_SKILLTYPE == PLAYER_SKILL::SKILL_3)	{ Make_TextureList(L"Chaos_Pulse");		}
 	else if (_SKILLTYPE == PLAYER_SKILL::FAIRY_PULSE) { Make_TextureList(L"Fairy_Pulse"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::ICEARROW_PULSE) { Make_TextureList(L"IceArrow_Pulse"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::EVILHEAD_PULSE) { Make_TextureList(L"EvilHeadBow_Pulse"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE) { Make_TextureList(L"Wind_Charge"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::WIND_CHARGING) { Make_TextureList(L"Wind_Charging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::FAIRY_HITEFFECT) { Make_TextureList(L"Fariy_HitEffect"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::ICE_CHARGING) { Make_TextureList(L"IceBowCharging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::ICE_CHARGE) { Make_TextureList(L"IceArrow_Charge"); }
@@ -39,7 +39,20 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_SPIRIT) { Make_TextureList(L"Wind_Spirit"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_WINDY) { Make_TextureList(L"Wind_Windy"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_HITEFFECT) { Make_TextureList(L"Wind_HitEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE) { Make_TextureList(L"Wind_Charge"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::WIND_CHARGING) { Make_TextureList(L"Wind_Charging"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE2) { Make_TextureList(L"Wind_Charging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::GREEN_SHADER) { Make_TextureList(L"GreenShader"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_OPEN) { Make_TextureList(L"BlackHole_Open"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_LOOP) { Make_TextureList(L"BalckHole_Loop"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::CHAOS_PULSE) { Make_TextureList(L"Chaos_Pulse"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_DEATH) { Make_TextureList(L"Spr_Effect_ChaosPhase02Death_"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::SKILL2_HAND) { Make_TextureList(L"Skill2_Hand"); }
+
+	SKILL_TYPE = _SKILLTYPE;
+	if (_SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER) {
+		Make_TextureList(player->Get_FileName());
+	}
 
 	//if (!AngleChase)
 	//{
@@ -65,7 +78,6 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 			_playerPos = &_effectPos;
 		}
 		_effectSize = _Size;
-		SKILL_TYPE = _SKILLTYPE;
 		Repeatable = _Repeatable;
 		_angleChase = PosChase;
 		_effectTimer = 0.f;
@@ -74,7 +86,6 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 		_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
 		D3DXVec3Normalize(&cameraDir, &cameraDir);
 
-		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 		_vec3 MouseDir = player->Get_MouseDir();
 
 		_vec2 dir2D = { MouseDir.x, MouseDir.z };
@@ -98,7 +109,10 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 		_matrix matRotZ;
 		D3DXMatrixRotationZ(&matRotZ, _angle - D3DX_PI);
 
-		_matrix matWorld = matSize * matBillboard;
+		_matrix matRotY;
+		D3DXMatrixRotationY(&matRotY, D3DX_PI);
+
+		_matrix matWorld = matSize * matRotY * matBillboard;
 
 		matWorld._41 = (*_playerPos).x;
 		matWorld._42 = (*_playerPos).y;
@@ -111,12 +125,12 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 
 	ObjectTAG = L"Player_Effect";
 
-	if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW || _SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF)
+	if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW || _SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
 		ObjectTAG = L"NPC_TIMESLOW";
 
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
 	_alphaRatio = 1.f;
-	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER || _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER)
+	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER || _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
 		_alphaRatio = 0.5f;
 	return S_OK;
 }
@@ -126,10 +140,13 @@ HRESULT PlayerEffect::Make_TextureList(wstring _FileName) {
 	INT FRAME = 0;
 	while (++FRAME){
 		wstring FileName = _FileName + to_wstring(FRAME) + L".png";
+		if (SKILL_TYPE == PLAYER_SKILL::SHADOW_PARTNER) FileName = _FileName;
 		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
 		if (TEX == nullptr) break;
-		else { TextureList.push_back(TEX); }
+		else { TextureList.push_back(TEX); if (SKILL_TYPE == PLAYER_SKILL::SHADOW_PARTNER) break;}
 	}
+
+	
 
 	ENDFRAME = TextureList.size() + 1;
 
@@ -163,6 +180,10 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		_effectSize = { _effectSize.x - _DT * 0.3f, _effectSize.y - _DT * 0.3f, _effectSize.z - _DT * 0.3f };
 		}
 	}
+	if (SKILL_TYPE == PLAYER_SKILL::SHADOW_PARTNER) {
+		_alphaRatio -= _DT * 0.3;
+		_alphaRatio = max(_alphaRatio, 0.f);
+	}
 
 	switch (SKILL_TYPE)
 	{
@@ -185,7 +206,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::WIND_PULSE:
-		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
+		//if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::NPC_TIMESLOW_LOOF:
 		if (_effectTimer > (*player->Get_SlowTime()) - 1.f ) ObjectDead = true;
@@ -221,15 +242,32 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
 		D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
+		_matrix matRotX;
+		D3DXMatrixRotationX(&matRotX, D3DXToRadian(80.f));
+
 		_matrix matRotZ;
 		D3DXMatrixRotationZ(&matRotZ, _angle - D3DX_PI);
+
 		_matrix matWorld;
 		if (_angleChase) matWorld = matSize * matRotZ * matBillboard;
-		else matWorld = matSize * matBillboard;
+		else matWorld = matSize * matRotX;
 
 		matWorld._41 = (*_playerPos).x;
 		matWorld._42 = (*_playerPos).y;
 		matWorld._43 = (*_playerPos).z;
+
+		if (SKILL_TYPE == PLAYER_SKILL::SKILL_2) {
+			_offsetX += _DT * 3.f;
+
+			float wavePower = 1.f;
+			float waveSpeed = 5.f;
+
+			float wave = sinf(_effectTimer * waveSpeed) * wavePower;
+
+			matWorld._41 = (*_playerPos).x - _offsetX;
+			matWorld._42 = (*_playerPos).y + wave * 0.5;
+			matWorld._43 = (*_playerPos).z;
+		}
 
 		Component_Transform->Set_World(&matWorld);
 	}

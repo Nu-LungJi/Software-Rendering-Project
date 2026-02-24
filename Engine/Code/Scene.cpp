@@ -59,6 +59,7 @@ GameObject* Scene::Search_Target_Object(_vec3* myPos, _float radius, const TCHAR
         if (tempTarget == nullptr) continue;
         if (TargetPos == nullptr) {
             TargetPos = tempTarget;
+            target = LYR->Search_Target_Object(myPos, radius, _TAG);
             continue;
         }
         _vec3 vlength1 = *TargetPos - *myPos;
