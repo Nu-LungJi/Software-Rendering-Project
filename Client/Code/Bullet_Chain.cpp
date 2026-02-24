@@ -117,11 +117,6 @@ BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"Player")
-	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
 	return FALSE;
 }
 BOOL Bullet_Chain::OnCollisionStay(GameObject* _Other)

@@ -21,9 +21,8 @@ public:
 	HRESULT            Item_Initialize();
 	void			   Show_Item();
 public:
-	static   ShopUI* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-	VOID Display_ShopItemInfo(ItemINFO* _pItem);
-
+	static	ShopUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	VOID Display_ShopItemInfo(ItemINFO* _pItem); 
 
 public:
 	BOOL               Get_Collision_Enter(GameObject* _Other);
@@ -36,11 +35,10 @@ private:
 	Buffer* Component_Buffer;
 
 	vector<SpriteINFO*> ItemInfo_Screen;
+
 	vector<FontObject*>   ItemInfo_Text;
 	vector<ItemINFO*>      Item_Index;
 	INT      m_iCurrentItemIndex;
-
-
 
 	BOOL         isActive;
 	ItemINFO* m_pShopItem;

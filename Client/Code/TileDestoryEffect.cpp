@@ -1,9 +1,9 @@
 #include "TileDestoryEffect.h"
 #include "../Include/PCH.h"
 
-TileDestoryEffect::TileDestoryEffect(LPDIRECT3DDEVICE9 _GRPDEV) :GameObject(_GRPDEV), m_bEffect(true), m_fTime(0), m_fFrame(0), m_pTileEffectBuff(nullptr), m_pTransform(nullptr){}
+TileDestoryEffect::TileDestoryEffect(LPDIRECT3DDEVICE9 _GRPDEV) :GameObject(_GRPDEV), m_bEffect(true), m_fTime(0), m_fFrame(0), m_pTileEffectBuff(nullptr), m_pTransform(nullptr) {}
 TileDestoryEffect::TileDestoryEffect(const GameObject& _RHS) : GameObject(_RHS) {}
-TileDestoryEffect::~TileDestoryEffect() {  }
+TileDestoryEffect::~TileDestoryEffect() {}
 
 HRESULT TileDestoryEffect::Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther) {
 
@@ -71,27 +71,27 @@ INT	TileDestoryEffect::Update_GameObject(const _float& _DT) {
 		return 0;
 }
 VOID TileDestoryEffect::LateUpdate_GameObject(const _float& _DT) {
-	GameObject::LateUpdate_GameObject(_DT);
+    GameObject::LateUpdate_GameObject(_DT);
 
 }
 
 VOID TileDestoryEffect::Render_GameObject()
 {
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	if (m_bEffect)
-	{
-		GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
-		GRPDEV->SetTexture(0, m_vecTileEffectList[static_cast<int>(m_eDestory)][m_fFrame]);
+    GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    if (m_bEffect)
+    {
+        GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
+        GRPDEV->SetTexture(0, m_vecTileEffectList[static_cast<int>(m_eDestory)][m_fFrame]);
 
-		m_pTileEffectBuff->Render_Buffer();
+        m_pTileEffectBuff->Render_Buffer();
 
-	}
+    }
 
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 
@@ -113,11 +113,11 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 			Frame_Normal(_DT);
 			break;
 		case OBJECT_DESTORY::BOOM_F:
-		 //Áö³­ ½Ã°£
-			if (m_fTime > 0.1f) //0.1ÃÊ°¡ Áö³ª¸é
+		 //ì§€ë‚œ ì‹œê°„
+			if (m_fTime > 0.1f) //0.1ì´ˆê°€ ì§€ë‚˜ë©´
 			{
-				++m_fFrame;     //ÇÁ·¹ÀÓ Áõ°¡
-				m_fTime = 0.f;	//½Ã°£ ÃÊ±âÈ­
+				++m_fFrame;     //í”„ë ˆìž„ ì¦ê°€
+				m_fTime = 0.f;	//ì‹œê°„ ì´ˆê¸°í™”
 
 				if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
 				{
@@ -194,31 +194,31 @@ BOOL TileDestoryEffect::OnCollisionEnter(GameObject* _Other)
 }
 
 void TileDestoryEffect::Frame_Normal(const FLOAT& _DT)
-{	 //Áö³­ ½Ã°£
-	if (m_fTime > 0.1f) //0.1ÃÊ°¡ Áö³ª¸é
-	{
-		++m_fFrame;     //ÇÁ·¹ÀÓ Áõ°¡
-		m_fTime = 0.f;	//½Ã°£ ÃÊ±âÈ­
+{    //ì§€ë‚œ ì‹œê°„
+    if (m_fTime > 0.1f) //0.1ì´ˆê°€ ì§€ë‚˜ë©´
+    {
+        ++m_fFrame;     //í”„ë ˆìž„ ì¦ê°€
+        m_fTime = 0.f;   //ì‹œê°„ ì´ˆê¸°í™”
 
-		if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
-		{
-			m_fFrame = 1.f;
-			m_bEffect = false;
-			Set_ObjectDead(TRUE);
-		}
-	}
+        if (m_fFrame > m_vecTileEffectList[static_cast<int>(m_eDestory)].size() - 1)
+        {
+            m_fFrame = 1.f;
+            m_bEffect = false;
+            Set_ObjectDead(TRUE);
+        }
+    }
 }
 
 void TileDestoryEffect::Add_Effect(OBJECT_DESTORY eid, const _tchar* pName)
 {
-	INT FRAME = 0;
+    INT FRAME = 0;
 
-	while (++FRAME) {
-		wstring FileName = pName + to_wstring(FRAME) + L".dds";
-		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-		if (TEX == nullptr) break;
-		else { TEX->AddRef();  m_vecTileEffectList[static_cast<int>(eid)].push_back(TEX); }
-	}
+    while (++FRAME) {
+        wstring FileName = pName + to_wstring(FRAME) + L".dds";
+        IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
+        if (TEX == nullptr) break;
+        else { TEX->AddRef();  m_vecTileEffectList[static_cast<int>(eid)].push_back(TEX); }
+    }
 
 }
 
@@ -246,23 +246,23 @@ HRESULT TileDestoryEffect::Component_Initialize(_bool bOther, OBJECT_DESTORY eid
 }
 
 TileDestoryEffect* TileDestoryEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther) {
-	
-	TileDestoryEffect* pTileDestoryEffect = new TileDestoryEffect(_GRPDEV);
-	
-	if (FAILED(pTileDestoryEffect->Ready_GameObject(eid, iCnt, vPos, vScale, vRot, bOther))) {
-		MSG_BOX("Cannot Create TileDestoryEffect.");
-		Safe_Release(pTileDestoryEffect);
-		return nullptr;
-	}
-	
-	return pTileDestoryEffect;
+
+    TileDestoryEffect* pTileDestoryEffect = new TileDestoryEffect(_GRPDEV);
+
+    if (FAILED(pTileDestoryEffect->Ready_GameObject(eid, iCnt, vPos, vScale, vRot, bOther))) {
+        MSG_BOX("Cannot Create TileDestoryEffect.");
+        Safe_Release(pTileDestoryEffect);
+        return nullptr;
+    }
+
+    return pTileDestoryEffect;
 }
 VOID TileDestoryEffect::Free() {
 
-	for (auto& iter : m_vecTileEffectList[static_cast<int>(m_eDestory)])
-			Safe_Release(iter);
-	
-	m_vecTileEffectList->clear();
+    for (auto& iter : m_vecTileEffectList[static_cast<int>(m_eDestory)])
+        Safe_Release(iter);
 
-	GameObject::Free();
+    m_vecTileEffectList->clear();
+
+    GameObject::Free();
 }

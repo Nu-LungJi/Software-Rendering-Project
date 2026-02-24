@@ -2,9 +2,12 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Buffer.h"
-#include "GameObject.h"
+//#include "GameObject.h"
+
 
 BEGIN(Engine)
+
+class GameObject;
 
 class ENGINE_DLL Collider : public Component {
 private:
@@ -20,9 +23,9 @@ public:
 	virtual VOID		Render_Component();
 	
 public:
-	BOOL		OnCollisionEnter();
-	BOOL		OnCollisionStay();
-	BOOL		OnCollisionExit();
+	//BOOL		OnCollisionEnter();
+	//BOOL		OnCollisionStay();
+	//BOOL		OnCollisionExit();
 
 	VOID		Set_CenterPos(Transform* _ColliderPos) { ColliderPos = _ColliderPos; }
 
@@ -45,11 +48,14 @@ public:
 	_float      Get_Att() { return fAtt; }
 	_float      Get_Hp() { return fHp; }
 
+	list<GameObject*>& Get_ObjList() { return ObjList; }
+
 public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
 
 private:
+	list<GameObject*> ObjList;
 	Transform*		ColliderPos;
 	Buffer*			ColliderArea;
 	_vec3			CenterPos;

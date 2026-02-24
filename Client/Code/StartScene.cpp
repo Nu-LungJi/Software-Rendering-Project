@@ -14,21 +14,21 @@ HRESULT	StartScene::Ready_Scene() {
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 	//Load Tile
 	{
-		HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // ÆÄÀÏ ÀÌ¸§ÀÌ Æ÷ÇÔµÈ °æ·Î
-			GENERIC_READ,		// ÆÄÀÏ Á¢±Ù ¸ðµå(GENERIC_WRITE : ¾²±â, GENERIC_READ : ÀÐ±â)
-			NULL,				// °øÀ¯ ¹æ½Ä(ÆÄÀÏÀÌ ¿­·Á ÀÖ´Â »óÅÂ¿¡¼­ ´Ù¸¥ ÇÁ·Î¼¼½º°¡ ¿ÀÇÂ ÇÒ ¶§ Çã°¡ÇÏ´Â °Í¿¡ ´ëÇØ ¼³Á¤, ÁöÁ¤ÇÏÁö ¾ÊÀ» °æ¿ì NULL)
-			NULL,				// º¸¾È ¼Ó¼º(±âº»°ªÀÎ °æ¿ì NULL)
-			OPEN_EXISTING,		// ÆÄÀÏÀÌ ¾øÀ» °æ¿ì ÆÄÀÏÀ» »ý¼ºÇÏ¿© ÀúÀå(OPEN_EXISTING : ÆÄÀÏÀÌ ÀÖÀ» °æ¿ì¿¡¸¸ ·Îµå)
-			FILE_ATTRIBUTE_NORMAL,	// ÆÄÀÏ ¼Ó¼º(¾Æ¹«·± ¼Ó¼ºÀÌ ¾ø´Â ÀÏ¹Ý ÆÄÀÏ)
-			NULL);				// »ý¼ºµÉ ÆÄÀÏÀÇ ¼Ó¼º¤·¸£ Á¦°øÇÒ ÅÛÇÃ¸´ ÆÄÀÏ
+		HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // íŒŒì¼ ì´ë¦„ì´ í¬í•¨ëœ ê²½ë¡œ
+			GENERIC_READ,		// íŒŒì¼ ì ‘ê·¼ ëª¨ë“œ(GENERIC_WRITE : ì“°ê¸°, GENERIC_READ : ì½ê¸°)
+			NULL,				// ê³µìœ  ë°©ì‹(íŒŒì¼ì´ ì—´ë ¤ ìžˆëŠ” ìƒíƒœì—ì„œ ë‹¤ë¥¸ í”„ë¡œì„¸ìŠ¤ê°€ ì˜¤í”ˆ í•  ë•Œ í—ˆê°€í•˜ëŠ” ê²ƒì— ëŒ€í•´ ì„¤ì •, ì§€ì •í•˜ì§€ ì•Šì„ ê²½ìš° NULL)
+			NULL,				// ë³´ì•ˆ ì†ì„±(ê¸°ë³¸ê°’ì¸ ê²½ìš° NULL)
+			OPEN_EXISTING,		// íŒŒì¼ì´ ì—†ì„ ê²½ìš° íŒŒì¼ì„ ìƒì„±í•˜ì—¬ ì €ìž¥(OPEN_EXISTING : íŒŒì¼ì´ ìžˆì„ ê²½ìš°ì—ë§Œ ë¡œë“œ)
+			FILE_ATTRIBUTE_NORMAL,	// íŒŒì¼ ì†ì„±(ì•„ë¬´ëŸ° ì†ì„±ì´ ì—†ëŠ” ì¼ë°˜ íŒŒì¼)
+			NULL);				// ìƒì„±ë  íŒŒì¼ì˜ ì†ì„±ã…‡ë¥´ ì œê³µí•  í…œí”Œë¦¿ íŒŒì¼
 
 		if (hFile == INVALID_HANDLE_VALUE)
 		{
-			MSG_BOX("·Îµå ½ÇÆÐ");
+			MSG_BOX("ë¡œë“œ ì‹¤íŒ¨");
 			return E_FAIL;
 		}
 
-		DWORD	dwByte(0);		// eof ¿ªÇÒ
+		DWORD	dwByte(0);		// eof ì—­í• 
 		_int             iTilenum = 0;
 		TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
 		TILE_STATE       eTileState = TILE_STATE::STATE_END;
@@ -97,7 +97,8 @@ HRESULT	StartScene::Ready_Scene() {
 
 		}
 
-		MSG_BOX("·Îµå ¼º°ø");
+		TileManager::GetInstance()->Set_StageCnt();
+		MSG_BOX("ë¡œë“œ ì„±ê³µ");
 		CloseHandle(hFile);
 	}
 
@@ -108,15 +109,20 @@ HRESULT	StartScene::Ready_Scene() {
 	return S_OK;
 }
 INT	 StartScene::Update_Scene(CONST FLOAT& _DT) {
+	if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_TAB) == TRUE) {
+		int  a = 0;
+	}
 	TileManager::GetInstance()->Stage_Update(_DT);
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
 VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
+	
 	TileManager::GetInstance()->Stage_LateUpdate(_DT);
+	Scene::LateUpdate_Scene(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
-	Scene::LateUpdate_Scene(_DT);
+	
 }
 VOID StartScene::Render_Scene() {
 
@@ -135,10 +141,6 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 	Add_GameObjectToScene<Player>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER , L"Player"		);
 	//Add_GameObjectToScene<Bat>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
 	//Add_GameObjectToScene<ScorpoinEvilSoul>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-	//GameObject* obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
-	//obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"ScorpoinEvilSoul"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
 
 
 	//Add_GameObjectToScene<FinalBoss>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
@@ -149,13 +151,15 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 HRESULT StartScene::Ready_UserInterface_Layer() {
 	Add_GameObjectToScene<MainMenuButton>	(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  ,	L"MainButton"	);
 	Add_GameObjectToScene<MainMenu>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  ,	L"MainMenu"		);
-	Add_GameObjectToScene<MainUI>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"MainUI"		);
+	//Add_GameObjectToScene<MainUI>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"MainUI"		);
 
-	Add_GameObjectToScene<PlayerInven>		(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"PlayerInven"	);
+	//Add_GameObjectToScene<PlayerInven>		(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"PlayerInven"	);
 	//Add_GameObjectToScene<Augment>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"Augment"		);
 
-	//Add_GameObjectToScene<NPCTalk>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"NPCTalk"		);
+	Add_GameObjectToScene<NPCTalk>			(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI	  , L"NPCTalk"		);
 	Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
+	Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
+
 	return S_OK;
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

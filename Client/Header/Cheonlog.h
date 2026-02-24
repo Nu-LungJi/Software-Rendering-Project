@@ -4,6 +4,7 @@
 
 enum  CL_CHECK { IDEL, SPAWN_AFTER, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHECK_END };
 enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP,CL_LUJUMP,CL_RUJUMP, CL_DEAD, CL_END};
+
 class CLAttack;
 class Cheonlog : public GameObject
 {
@@ -97,7 +98,7 @@ private:
 
 	_vec3			m_vCenter;
 private:
-	//µð¹ö±×¿ë
+	//ÂµÃ°Â¹Ã¶Â±Ã—Â¿Ã«
 	_float			m_fPivot;
 	_vec3			m_vDebug;
 private:

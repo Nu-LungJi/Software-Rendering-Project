@@ -22,7 +22,6 @@ public:
     void            Frame_Move(CONST FLOAT& _DT);
     void            Frame_Normal(CONST FLOAT& _DT);
     void            Add_Effect(OBJECT_DESTORY eid,const _tchar* pName);
-
     BOOL			OnCollisionEnter(GameObject* _Other);
 
 private:

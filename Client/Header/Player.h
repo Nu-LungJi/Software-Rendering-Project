@@ -4,7 +4,7 @@
 
 enum class skillState {
 	STATE_TIMESLOW,
-
+	STATE_SKILL2,
 	NONE
 };
 enum class pState
@@ -174,6 +174,8 @@ public:
 	bool			Get_CameraMove()		  { return CameraMove; }
 	void			CheonLog_Spawn();
 
+	TCHAR*	Get_FileName() { return FileName; }
+
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
 private:
@@ -195,6 +197,7 @@ private:
 
 	void			SKILL_NONE(const _float& _DT);
 	void			SKILL_TIMESLOW(const _float& _DT);
+	void			SKILL2(const _float& _DT);
 
 	void			SetGrahpic();
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
@@ -226,13 +229,20 @@ private:
 	int				_arrowCount;
 	bool			_isStop;
 	_vec3			_shadowPos;
+	float			_popupTimer;
+	bool			_bPopup;
 
 	float			_dashRefillTimer;
 	float			_skillTimer;
+	float			_partnerTimer;
 	bool			_skillNPC_On;
 	bool			_skillArea_On;
 	_vec3			_NPC_Pos;
 	_vec3			_nearPos;
+
+	bool			_Skill2;
+	bool			_Skill2_Death;
+	float			_Sheep_Summon_Timer;
 
 	float			_animSpeed;
 	float			_originArrowSpeed;
@@ -265,7 +275,7 @@ private:
 	GameObject*		_inventory[8];
 	int				_equipNum;
 
-
+	TCHAR FileName[128] = L"";
 	//temp
 	public:
 

@@ -16,13 +16,13 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"MonsterBullet";
+
   ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
 	Monster::Destory_Tile(this);
-	if (!m_tInfo.bTrigger[0])
-  {
-		Component_Collider->Set_Hp(-1.f);
-	}
+
 	m_tInfo.fTimer[0] += _DT;
+
 	if (m_tInfo.fTimer[0] > 10.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
@@ -49,6 +49,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 				static_cast<Bullet_Chain_Head*>(m_tInfo.pGameObj[1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
 				Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+				m_tInfo.pGameObj[1] = nullptr;
 			}
 			m_tInfo.bTrigger[1] = true;
 		}
@@ -91,28 +92,28 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
+	_float fRadian = m_tInfo.fTimer[0] * D3DX_PI * 6.f;
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
 
-	Monster::BillBoard(Component_Transform, GRPDEV);
-
-	_matrix* pmatWorld = Component_Transform->Get_World();
-	_matrix matView, matRot;
-	_vec3* vAxis = (_vec3*)&matView._31;
+	//_matrix* pmatWorld = Component_Transform->Get_World();
+	//_matrix matView, matRot;
+	//_vec3* vAxis = (_vec3*)&matView._31;
 
 	//_float Radian = D3DX_PI / 2 * m_tInfo.Textureinfo._frame / m_tInfo.Textureinfo._Endframe;
 
-	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-	D3DXMatrixInverse(&matView, NULL, &matView);
-	D3DXMatrixRotationAxis(&matRot, vAxis, m_tInfo.fTimer[0] * 12.f);
+	//GRPDEV->GetTransform(D3DTS_VIEW, &matView);
+	//D3DXMatrixInverse(&matView, NULL, &matView);
+	//D3DXMatrixRotationAxis(&matRot, vAxis, m_tInfo.fTimer[0] * 12.f);
 
-	_vec3 vPos = { pmatWorld->_41,pmatWorld->_42, pmatWorld->_43 };
-	pmatWorld->_41 = pmatWorld->_42 = pmatWorld->_43 = 0.f;
+	//_vec3 vPos = { pmatWorld->_41,pmatWorld->_42, pmatWorld->_43 };
+	//pmatWorld->_41 = pmatWorld->_42 = pmatWorld->_43 = 0.f;
 
-	*Component_Transform->Get_World() *= matRot;
-	pmatWorld->_41 = vPos.x;
-	pmatWorld->_42 = vPos.y;
-	pmatWorld->_43 = vPos.z;
+	//*Component_Transform->Get_World() *= matRot;
+	//pmatWorld->_41 = vPos.x;
+	//pmatWorld->_42 = vPos.y;
+	//pmatWorld->_43 = vPos.z;
 
-	Component_Collider->Set_Scale(MYSCALE->x, 1.f, MYSCALE->z);
+	//Component_Collider->Set_Scale(MYSCALE->x, 1.f, MYSCALE->z);
 	//AlphaSorting(Component_Transform->Get_Position());
 	//AlphaSorting((_vec3*)&Component_Transform->Get_World()->_41);
 
@@ -143,47 +144,63 @@ HRESULT ScorpionBullet::Component_Initialize() {
 
 BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 {
+	wstring Tag = _Other->Get_ObjectTag();
 	MainUI* mainUI;
-	if (!m_tInfo.bTrigger[0])
-	{
-		if (_Other->Get_ObjectTag() == L"Player") {
-			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-			mainUI->Player_LostHP();
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			m_tInfo.fSpeed = 0.f;
-			m_tInfo.bTrigger[0] = true;
-			m_tInfo.fTimer[0] = 8.f;
-		}
-		switch (_Other->Get_ObjectType())
-		{
-		default:
-			//break;
-		case GAMEOBJECT_TYPE::OBJECT_PLAYER:
-		case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
-			m_tInfo.fSpeed = 0.f;
-			m_tInfo.bTrigger[0] = true;
-			m_tInfo.fTimer[0] = 8.f;
-			break;
-		}
-		if (!m_tInfo.bTrigger[1])
-		{
-			m_tInfo.bTrigger[1] = true;
-			for (int i = 0; i < SCORPIONBULLET_CHAINBULLET_NUM; ++i)
-			{
-				m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain_Head>(GRPDEV, *MYPOS);
-				m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-			}
-		}
-		wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"PlayerArrow") {
 
-
-		if (Tag == L"PlayerArrow") {
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			return TRUE;
-			// 플레이어는 겹쳐서 합쳤는데 화살은 어디둘지 잘 모르겠어서 일단 놔두었습니다
-		}
-		return FALSE;
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
 	}
+	else if (Tag == L"Player")
+	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	return FALSE;
+
+	//MainUI* mainUI;
+	//if (!m_tInfo.bTrigger[0])
+	//{
+	//	if (_Other->Get_ObjectTag() == L"Player") {
+	//		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	//		mainUI->Player_LostHP();
+	//		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+	//		m_tInfo.fSpeed = 0.f;
+	//		m_tInfo.bTrigger[0] = true;
+	//		m_tInfo.fTimer[0] = 8.f;
+	//	}
+	//	switch (_Other->Get_ObjectType())
+	//	{
+	//	default:
+	//		//break;
+	//	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+	//	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
+	//		m_tInfo.fSpeed = 0.f;
+	//		m_tInfo.bTrigger[0] = true;
+	//		m_tInfo.fTimer[0] = 8.f;
+	//		break;
+	//	}
+	//	if (!m_tInfo.bTrigger[1])
+	//	{
+	//		m_tInfo.bTrigger[1] = true;
+	//		for (int i = 0; i < SCORPIONBULLET_CHAINBULLET_NUM; ++i)
+	//		{
+	//			m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain_Head>(GRPDEV, *MYPOS);
+	//			m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	//		}
+	//	}
+	//	wstring Tag = _Other->Get_ObjectTag();
+
+
+	//	if (Tag == L"PlayerArrow") {
+	//		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+	//		return TRUE;
+	//		// 플레이어는 겹쳐서 합쳤는데 화살은 어디둘지 잘 모르겠어서 일단 놔두었습니다
+	//	}
+	//	return FALSE;
+	//}
 }
 
 BOOL ScorpionBullet::OnCollisionStay(GameObject* _Other)
