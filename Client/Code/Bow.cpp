@@ -25,6 +25,8 @@ HRESULT Bow::Ready_GameObject()
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
 	_Charging = 0;
+	_attackDelay = 0.6;
+	if (_type == BowType::WindBow) _attackDelay = 1.f;
 
 	return S_OK;
 }
@@ -55,6 +57,8 @@ INT Bow::Update_GameObject(const _float& _DT)
 		float alphaSpeed = 3.f;
 
 		bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
+		_attackTimer += _DT;
 
 		if (mouseLB || KEY_HOLD(DIK_SPACE)) {
 			if (_alphaRatio < 1.f)
@@ -143,7 +147,7 @@ INT Bow::Update_GameObject(const _float& _DT)
 						break;
 					case BowType::WindBow:
 						Size = { 1.f, 1.f, 1.f };
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 1.f, Size, true);
+						//PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 1.f, Size, true);
 						break;
 					}
 				}
@@ -153,16 +157,16 @@ INT Bow::Update_GameObject(const _float& _DT)
 			CreateChargingEffect(_DT);
 
 			if (_ChargingTime > _chargingTime && MOUSE_LBUTTON) {
-				CreateEffect(_DT);
 				CreateArrow(_DT);
+				CreateEffect(_DT);
 				_ChargingTime = 0.f;
 				_Charge = 0;
 				_Charging = 0;
 			}
 		}
 		else {
-			CreateEffect(_DT);
 			CreateArrow(_DT);
+			CreateEffect(_DT);
 		}
 
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
@@ -259,9 +263,17 @@ void Bow::CreateArrow(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
+	if (_type == BowType::WindBow && !mouseLB) {
+		_attackDelay = 1.f;
+	}
+
 	if (mouseLB)
 	{
-		if (_attackDelay > 0.6) {
+		if (_type == BowType::WindBow && _attackDelay > 0.2f) {
+			_attackDelay -= _DT * 0.4;
+		}
+
+		if (_attackTimer > _attackDelay) {
 			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 			_vec3 MouseDir = player->Get_MouseDir();
 
@@ -328,8 +340,6 @@ void Bow::CreateArrow(const _float& _DT)
 				MakeArrow(_arrowPos, dir2D);
 
 			}
-
-			_attackDelay = 0.f;
 		}
 	}
 
@@ -338,7 +348,6 @@ void Bow::CreateArrow(const _float& _DT)
 void Bow::CreateEffect(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
-	_attackDelay += _DT;
 
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 	_vec3 MouseDir = player->Get_MouseDir();
@@ -359,10 +368,11 @@ void Bow::CreateEffect(const _float& _DT)
 
 	_pulsepos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
 
+	// normal attack
 	if (mouseLB)
 	{
 		// 이펙트
-		if (_attackDelay > 0.6) {
+		if (_attackTimer > _attackDelay) {
 			_vec3 Size = { 1.f, 1.f, 1.f };
 			switch (_type)
 			{
@@ -378,13 +388,15 @@ void Bow::CreateEffect(const _float& _DT)
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVILHEAD_PULSE, &_pulsepos, 0.5f, Size, true);
 				break;
 			case BowType::WindBow:
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
-				Size = { 1.f, 1.f, 1.f };
-				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.6f, Size, true);
+				if (_attackDelay > 0.3f) {
+					Size = { 1.f, 1.f, 1.f };
+					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
+					Size = { 1.f, 1.f, 1.f };
+					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE2, &_pulsepos, 0.6f, Size, true);
+				}
 				break;
 			}
-			
+			_attackTimer = 0.f;
 		}
 	}
 }
@@ -416,14 +428,11 @@ void Bow::CreateChargingArrow(const _float& _DT)
 	_vec3 leftPos = _arrowPos;
 
 	MakeArrow(_arrowPos, dir2D, true);
-
-	_attackDelay = 0.f;
 }
 
 void Bow::CreateChargingEffect(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
-	_attackDelay += _DT;
 
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 	_vec3 MouseDir = player->Get_MouseDir();
@@ -465,7 +474,7 @@ void Bow::CreateChargingEffect(const _float& _DT)
 				break;
 			case BowType::WindBow:
 				Size = { 1.2f, 1.2f, 1.2f };
-				PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.6f, Size, true);
+				//PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.6f, Size, true);
 				break;
 			}
 		}

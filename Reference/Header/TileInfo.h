@@ -19,13 +19,14 @@ public:
     //이건.. 지형이 가지고 있는 타일의 인덱스 정보를 담기위함 해당 인덱스가 가진 위치위에 이 타일이 놓여있다는걸 확인하기 위해서
     void            Set_TileId(TILE_SIDE eid) { m_eTileSide = eid; }
     void            Set_TileNumber(_int iTileNumber) { m_iTileNumber = iTileNumber; }
-    void            Set_TileAll(const _tchar* pPath, const _tchar* pName, Engine::TILE_SIDE eId, TILE_STATE eState, TILEMODE_CHANGE eMode, _int iTileNumber = 0, _vec3 vNext = {})
+    void            Set_TileAll(const _tchar* pPath, const _tchar* pName, Engine::TILE_SIDE eId, TILE_STATE eState, TILEMODE_CHANGE eMode, _int iTileNumber = 0, _vec3 vNext = {}, TILE_STAGE eStENd = TILE_STAGE::STAGE_END )
     {
         m_pTileName = pName;
         m_eTileSide = eId;
         m_eTileState = eState;
         m_eTileMode = eMode;
         m_iTileNumber = iTileNumber;
+        m_eNextStage = eStENd;
         m_NextPos = vNext;
     }
     void            Set_TileAnimaiton(const _tchar* pName, _int iCnt, Engine::TILE_SIDE eId, TILE_STATE eState, TILEMODE_CHANGE eMode, _int iTileNumber = 0, _vec3 vNext = {}, _bool bAni = false)
@@ -45,6 +46,18 @@ public:
             m_vecAnimationName.push_back(Name);
         }
     
+    }
+    void                Set_Boom(wstring _FileName) {
+        INT FRAME = 0;
+
+        while (++FRAME) {
+            wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
+            m_vecAnimationName.push_back(FileName);
+            
+            if (FRAME == 33)
+                return;
+        }
+
     }
    void            Set_TileSpawnerDefault(const _tchar* pName, _int iCnt, Engine::TILE_SIDE eId, TILE_STATE eState, TILEMODE_CHANGE eMode, _int iTileNumber = 0, _vec3 vNext = {}, _bool bAni = false, TILE_SPAWNER eSpawn = TILE_SPAWNER::SPAWN_END)
     {
@@ -74,9 +87,11 @@ public:
         m_vecBackGround.push_back(L"SMT_Stage02_Base3.png");
         
     }
+                      
     void                   Set_TileState(TILE_STATE eid)        { m_eTileState = eid; }
     void                   Set_TileStage(TILE_STAGE eid)        { m_eTileStage = eid; }
     void                   Set_TileSpawner(TILE_SPAWNER eid)    { m_eTileSpawner = eid; }
+    void                   Set_TileNext(TILE_STAGE eid) { m_eNextStage = eid; }
     _int                   Get_TileNumber()              { return m_iTileNumber;}
     TILE_SIDE              Get_TileSideName()            { return m_eTileSide;  }
     TILE_STATE             Get_TileStateName()           { return m_eTileState; }
@@ -90,7 +105,7 @@ public:
     _bool                  Get_PotalOpen()               { return m_bPortal; }
     _bool                  Get_OnlyAnimation()           { return m_bOnlyAnimation; }
     TILE_SPAWNER           Get_Spawner()                 { return m_eTileSpawner; }
-
+    TILE_STAGE             Get_NextStage()               { return m_eNextStage; }
     void                   Set_OnlyAnimation(_bool bAni) { m_bOnlyAnimation = bAni; }
     void                   Set_PotalOpen()               { m_bPortal = true; }
     void                   Set_TextureID(IDirect3DBaseTexture9* pTexture) { 
@@ -110,6 +125,7 @@ private:
     TILE_STATE             m_eTileState;
     TILEMODE_CHANGE        m_eTileMode;
     TILE_STAGE             m_eTileStage;
+    TILE_STAGE             m_eNextStage;
     TILE_SPAWNER           m_eTileSpawner;
     wstring                m_pTileName;
     IDirect3DBaseTexture9* m_pTexture;

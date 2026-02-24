@@ -19,7 +19,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	// <ÇÃ·¹ÀÌ¾î ¾÷µ¥ÀÌÆ® ½ÃÁ¡>
+	// <í”Œë ˆì´ì–´ ì—…ë°ì´íŠ¸ ì‹œì >
 
 	GameObject::Update_GameObject(_DT);
 
@@ -33,7 +33,8 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
-		if (MYSCALE->x < 1.f)
+		_float fsize = MYSCALE->x;
+		if (fsize <= 1.f)
 		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
 		}
@@ -151,6 +152,7 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID EvilSlime::Render_GameObject() {
+	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -200,14 +202,14 @@ BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 	default:
 		Tag = _Other->Get_ObjectTag();
 		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
-		return 0;
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_DISAPPEAR:
-	case MONSTER_STATE_CASTING:
-	case EVILSLIME_FISSION:
-		return 0;
+		return true;
+	//case MONSTER_STATE_SUMMON:
+	//case MONSTER_STATE_APPEAR:
+	//case MONSTER_STATE_DEAD:
+	//case MONSTER_STATE_DISAPPEAR:
+	//case MONSTER_STATE_CASTING:
+	//case EVILSLIME_FISSION:
+	//	return 0;
 	}
 
 	return FALSE;

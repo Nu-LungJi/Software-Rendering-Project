@@ -42,6 +42,7 @@ public:
 	// ½ºÅ³¿ë
 	_vec3* Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
 	void Set_TimeSlow(bool isTimeSlow) {for (auto& LYR : LayerList) {LYR->Set_TimeSlow(isTimeSlow);}}
+	GameObject* Search_Target_Object(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
 protected:
 	vector<Layer*>				LayerList;
 	LPDIRECT3DDEVICE9			GRPDEV;

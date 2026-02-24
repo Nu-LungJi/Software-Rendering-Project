@@ -38,28 +38,29 @@ BOOL CollisionManager::AABB_Collision() {
 			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&
 				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
 				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
-
-				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE){// && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
+				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE ) {
 					SOBJ->Add_CollisionObject(DOBJ);
-					//DOBJ->Add_CollisionObject(SOBJ);
 					SOBJ->OnCollisionEnter(DOBJ);
-					//DOBJ->OnCollisionEnter(SOBJ);
 				}
-				//SOBJ->OnCollisionEnter(DOBJ);
-				//DOBJ->OnCollisionEnter(SOBJ);
 				SOBJ->OnCollisionStay(DOBJ);
-				//DOBJ->OnCollisionStay(SOBJ);
 
 				ret = true;
-				//
-				//return TRUE;
+
 			}
 			else {
-				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE ){//&& DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
+				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE) {
 					SOBJ->Delete_CollisionObject(DOBJ);
-					//DOBJ->Delete_CollisionObject(SOBJ);
-					//DOBJ->OnCollisionExit(SOBJ);
+					DOBJ->Delete_CollisionObject(SOBJ);
+					//			DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
+
+					//if (iterS != SRC->Get_ObjList().end()) {
+					//	SOBJ->OnCollisionExit(DOBJ); SRC->Get_ObjList().erase(iterS);
+					//}
+
+					//if (iterD != DEST->Get_ObjList().end()) {
+					//	DOBJ->OnCollisionExit(SOBJ); DEST->Get_ObjList().erase(iterD);
+					//}
 				}
 			}
 		}
@@ -93,7 +94,7 @@ VOID CollisionManager::Add_ColliderObject(GameObject* _OBJ) {
 VOID CollisionManager::Delete_ColliderObject(GameObject* _OBJ) {
 	for (auto iter = SceneObjectList.begin(); iter != SceneObjectList.end();) {
 		if (*iter == _OBJ) {
-			Safe_Release((*iter));
+			//Safe_Release((*iter));
 			iter = SceneObjectList.erase(iter);
 			continue;
 		}

@@ -15,10 +15,8 @@ HRESULT		Collider::Ready_Component() {
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
-
-	
-
-	// 1차 통합 테스트
+	if (nullptr == ColliderPos)
+		return 0;
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
