@@ -6,11 +6,11 @@ Augment::Augment(CONST GameObject& _RHS)		: GameObject(_RHS)		{}
 Augment::~Augment()													{}
 
 HRESULT	Augment::Ready_GameObject() {
-	if (FAILED(Component_Initialize()))		return E_FAIL;
+	if (FAILED(Component_Initialize()))	return E_FAIL;
+	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	if (FAILED(Perk_Initialize()))			return E_FAIL;
-	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 	
@@ -55,36 +55,43 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 			isActive = !isActive;
 			if (!isActive) {
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
-				PlayerObject->Set_PlayerStop(FALSE);
+					PlayerObject->Set_PlayerStop(FALSE);
 			}
 		}
 		if (isActive) {
 			PlayerObject->Set_PlayerStop(TRUE);
 
 			Perk_Text[2]->Text = L"가호 선택";
-      Perk_Text[2]->Visible = TRUE;
+			Perk_Text[2]->Visible = TRUE;
 
 			INT iType = IsMouseOnPerk();
 			Display_PerkInfo(Perk_Info[iType]);
 			if (iType != m_iPrevHoverType) {
-				if (iType != INIT) { 
+				wstring prevAnim = L"Perk_Effect" + to_wstring(m_iPrevHoverType);
+
+				if (iType != INIT) {
 					Perk_Selected_Effect(iType);
 				}
 				m_iPrevHoverType = iType;
-			}
-			wstring anim = L"Perk_Effect" + to_wstring(iType);
-			UIEffect* pEffect = dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, anim));
-			if (pEffect) pEffect->Set_All_Visible(FALSE);
-
-			if (IsMouseOnPerk())
-			{
-				if (KeyManager::GetInstance()->MOUSE_LB_DOWN())
+				
+				if (IsMouseOnPerk())
 				{
-					Add_PlayerStatus(iType);
+					if (KeyManager::GetInstance()->MOUSE_LB_DOWN())
+					{
+						Add_PlayerStatus(iType);
+						isActive = FALSE;
+						for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
+						PlayerObject->Set_PlayerStop(FALSE);
+					}
+				}
+
+				UIEffect* pPrevEffect = dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, prevAnim));
+				if (pPrevEffect) {
+					pPrevEffect->Set_All_Visible(FALSE);
+					pPrevEffect->Set_ObjectDead(TRUE); 
 				}
 			}
 		}
-		
 		return 0;
 }
 VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -92,8 +99,7 @@ VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
 }
 VOID	Augment::Render_GameObject() {
 	if(isActive)
-		Component_Sprite->Render_Sprite();
-	
+		Component_Sprite->Render_Sprite();	
 }
 
 HRESULT Augment::Component_Initialize() {
@@ -120,9 +126,9 @@ HRESULT Augment::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_LevelV2_Frame.png", L"Perk_Frame2", 560.f, 230.f, 140, 140, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_Ui_LevelV2_Frame.png", L"Perk_Frame3", 800.f, 230.f, 140, 140, TRUE, 255);
 	//////////////////////////////////////PERK//////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-04.png", L"Perk_01", 340.f, 270.f, 80.f, 80.f, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-05.png", L"Perk_02", 590.f, 260.f, 108.f, 108.f, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-30.png", L"Perk_03", 820.f, 260.f, 108.f, 108.f, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-04.png", L"Perk_01", 333.f, 255.f, 80.f, 80.f, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-05.png", L"Perk_02", 580.f, 247.f, 108.f, 108.f, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/Augments/Spr_PerkIcon_1-30.png", L"Perk_03", 816.f, 250.f, 108.f, 108.f, TRUE, 255);
 	return S_OK;
 }
 
@@ -136,7 +142,7 @@ HRESULT Augment::Text_Initialize() {
 }
 
 HRESULT Augment::Effect_Initialize()
-{	
+{
 	return S_OK;
 }
 
@@ -172,7 +178,7 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 			PlayerObject->Set_ArrowSpeed(*PlayerObject->Get_ArrowSpeed() * 1.2f);
       break;
 		case THIRD:
-			PlayerObject->Set_Range(*PlayerObject->Get_Range() * 1.15f);
+			PlayerObject->Set_Speed(PlayerObject->Get_Speed() * 1.25f);
       break;
 	}
 	return S_OK;
@@ -198,11 +204,11 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {  
 	if (_PerkType == FIRST)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 300.f, 260.f, 150, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 175);
 	if(_PerkType == SECOND)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 560.f, 260.f, 150, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 175);
   if (_PerkType == THIRD)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 820.f, 260.f, 150, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 175);
 }
 
 INT Augment::IsMouseOnPerk()
@@ -242,5 +248,8 @@ Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 VOID  Augment::Free() {
 	for (auto& PI : Perk_Info)
 		Safe_Delete(PI);
+
+  isActive = FALSE;
+
 	GameObject::Free();
 }

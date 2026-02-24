@@ -27,7 +27,7 @@ public:
 
 	VOID Display_PerkInfo(ItemINFO* _pItem);
 	VOID Perk_Selected_Effect(INT _PerkType);
-	
+	VOID FadeOut(FLOAT Frame);
 public:
 	INT IsMouseOnPerk();
 
@@ -39,8 +39,7 @@ private:
 	Texture* Component_Texture;
 	Transform* Component_Transform;
 
-private:
-	
+private:	
 	FLOAT Screen_Timer;
 	FLOAT Anim_Timer;
 
