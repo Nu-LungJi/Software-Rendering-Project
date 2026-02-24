@@ -26,6 +26,7 @@ public:
 	HRESULT		Ready_TileBACK_Buffer(); //타일 옆면 비교용
 	HRESULT		Ready_Tile_Buffer(); // 타일 추가 윗면 비교용
 	HRESULT		Ready_Cube_Buffer(); // 큐브타일 추가
+	HRESULT		Ready_Cube_Batch(); // 큐브 한번에 여러개 배치
 protected:
 	LPDIRECT3DVERTEXBUFFER9		VertexBuffer;
 	LPDIRECT3DINDEXBUFFER9		IndexBuffer;

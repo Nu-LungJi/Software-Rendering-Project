@@ -88,6 +88,7 @@ private:
     TILE_STATE                   m_eTileState;
     TILEMODE_CHANGE              m_eMode;
     TILE_STAGE                   m_eStage;
+    TILE_STAGE                   m_eNextStage;
     TILE_SPAWNER                 m_eSpawner;
     INSTALL_MODE                 m_eTileInstall;
 public:

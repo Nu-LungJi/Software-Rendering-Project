@@ -21,10 +21,11 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 		Make_TextureList(L"Spr_Effect_Cheonlog_AttackModeEffect_0");
 		break;
 	case CL_EFFECT::LEAF_FIRST:
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 		Make_TextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0");
 		break;
 	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
-		Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0");
+	Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0");
 		break;
 	case CL_EFFECT::LEAF_CHARGING:
 		Make_TextureList(L"Spr_Effect_Cheonlog_ChargeAccelReturn_Birth01_0");
@@ -39,6 +40,7 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 		Make_TextureList(L"Spr_Effect_Cheonlog_Appear_Electric01_0");
 		break;
 	case CL_EFFECT::SPAWN_THUNDER:
+		
 		Make_TextureList(L"Green_Evil_Thunder0");
 		break;
 	case CL_EFFECT::SPAWN_BOOM_CIRCLE:
@@ -93,7 +95,9 @@ INT  CLEffect::Update_GameObject(const _float& _DT) {
 	return 0;
 }
 void CLEffect::LateUpdate_GameObject(const _float& _DT) {
-
+	
+	if (dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu() == CL_DEAD)
+		Set_ObjectDead(TRUE);
 
 }
 void CLEffect::Render_GameObject() {

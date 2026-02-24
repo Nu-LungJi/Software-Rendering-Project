@@ -44,7 +44,6 @@ VOID RenderManager::Render_NonAlpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 }
 VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	//_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -57,8 +56,10 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 		if(_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
 	}
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::MONSTER_EFFECT);
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_EFFECT);
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::PLAYER_EFFECT);
 
-	//_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
@@ -67,7 +68,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 		if (_OBJ->Get_ObjectDead() == FALSE) {
 			if (_OBJ->Get_ObjectTag() == L"MainUI") {
 				_OBJ->Render_GameObject();
-				EffectManager::GetInstance()->Render_EffectManager(_GRPDEV);
+				EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::UI_EFFECT);
 				UIManager::GetInstance()->Render_FontObjects();
 			}
 			else {

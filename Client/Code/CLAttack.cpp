@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
+CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bBgm(false), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
 CLAttack::CLAttack(const GameObject& _RHS) : GameObject(_RHS) {}
 CLAttack::~CLAttack() {}
 
@@ -22,14 +22,18 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     {
     case LEAF_ATTACK::LEAF_FIRST:
         Make_TextureList(L"Spr_Bullet_LaulaStandardBullet_0");
+        SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Leaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
         Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
         Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_Black_0");
+
         m_iRandCnt = 5 + rand() % 2;
         break;
     case LEAF_ATTACK::LEAF_THIRD:
         Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0");
+
         m_iRandCnt = 5 + rand() % 2;
         break;
     case LEAF_ATTACK::LEAF_EXPLOSION:
@@ -100,7 +104,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 9)
+    if (m_iDeadCnt >= 9 || dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu()==CL_DEAD)
         Set_ObjectDead(TRUE);
 
 }
@@ -209,12 +213,21 @@ void CLAttack::Leaf_Second(const _float& _DT)
             vCLPos += { 0.9f, 1.f, 3.1f };
             m_vLook = vCLPos - vPos;
             D3DXVec3Normalize(&m_vLook, &m_vLook);
-        }
+
+              }
 
         Leaf_Bill(_DT);
     }
     else
     {
+        if (!m_bBgm)
+        {
+            _int iRand = rand() % 3;
+            if(iRand ==0)
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+            m_bBgm = true;
+        }
+        
         m_fSpeed = 7.f;
         Leaf_Bill(_DT);
     }
@@ -238,12 +251,21 @@ void CLAttack::Leaf_Third(const _float& _DT)
             vCLPos += { 0.9f, 1.f, 3.1f };
             m_vLook = vCLPos - vPos;
             D3DXVec3Normalize(&m_vLook, &m_vLook);
-        }
+
+                 }
 
         Leaf_Bill(_DT);
     }
     else
     {
+        if (!m_bBgm)
+        {
+            _int iRand = rand() % 3;
+            if (iRand == 0)
+                SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+            m_bBgm = true;
+        }
+
         m_fSpeed = 7.f;
         Leaf_Bill(_DT);
     }
@@ -288,12 +310,15 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
     vPos = *Component_Transform->Get_Position();
 
     if (m_TextureIndex == 16)
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,-0.2f,vPos.z - 3 }, TRUE, { 6,0,5 }, { 20,0,0 }, 0.1f));
+        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,vPos.y,vPos.z }, TRUE, { 6,0,5 }, { 0,0,0 }, 0.1f));
     if (m_TextureIndex == 25)
         Component_Transform->Set_Scale(5.f, 5.f, 5.f);
 
     if (m_TextureIndex > TextureList.size() - 1)
+    {
         Set_ObjectDead(TRUE);
+
+    }
 
     _float fAngle;
     _vec3 vScale;

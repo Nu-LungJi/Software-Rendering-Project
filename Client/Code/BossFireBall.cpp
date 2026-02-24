@@ -6,30 +6,51 @@ BossFireBall::BossFireBall(CONST GameObject& _RHS)		: GameObject(_RHS)		{}
 BossFireBall::~BossFireBall()													{}
 
 HRESULT	BossFireBall::Ready_GameObject() { 
+	Boss = dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+	BossPosition = dynamic_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
-	Boss = dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
 
 	Animation_TexList		= &Animation_NormalTexList;
 	Animation_Timer			= 0.f;
 	Animation_CurrentIndex	= 0;
 	Animation_PreviousIndex = 0;
-	Animation_Interval		= 0.07f;
+	Animation_Interval		= 0.035f;
 	Animation_FrameCount	= ANIMATION_BOSS_FIREBALL;
 
 	Component_Transform->Rotation(ROT_X, 80.f);
 	Direction = { 1.f, 0.f, 0.f };
-	angle = 0.f;
+	FireBall_DirectionAngle = 0.f;
+	FireBall_Speed = 0.25f;
+	Duration = 2.f;
+
+	Timer = 0.f;
 
 	return S_OK;
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 
+	if (ObjectDead == TRUE) {
+		_vec3 Scale = { 2.f, 2.f, 2.f };
+		if (Boss->Get_RageMode() == TRUE) {
+			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		else {
+			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		return -1;
+	}
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	angle = 180.f;
 
-	FireBall_Linear_Movement(&Direction, angle, 0.03f);
+	FireBall_Linear_Movement(&Direction, FireBall_DirectionAngle, FireBall_Speed);
+	Timer += _DT;
+	if (Timer >= Duration) {
+		ObjectDead = TRUE;
+		return -1;
+	}
 	Animation_Timer += _DT;
 
 	Animation_PreviousIndex = Animation_CurrentIndex;
@@ -57,8 +78,11 @@ VOID	BossFireBall::Render_GameObject() {
 }
 
 BOOL	BossFireBall::OnCollisionEnter(GameObject* _Other)	{ 
-	
-	return TRUE;
+	if (_Other->Get_ObjectTag() == L"Player" && dynamic_cast<Player*>(_Other)->Get_Invincible() == FALSE) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Player_LostHP();
+		ObjectDead = TRUE;
+	}
+	return TRUE; 
 }
 BOOL	BossFireBall::OnCollisionStay(GameObject* _Other)	{ return TRUE; }
 BOOL	BossFireBall::OnCollisionExit(GameObject* _Other)	{ return TRUE; }
@@ -68,9 +92,10 @@ HRESULT	BossFireBall::Component_Initialize()	{
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-	Component_Transform->Set_Pos(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(5.f, 1.5f, 2.f);
-	Component_Transform->Set_Pos({ 64.595f, 0.263f, 90.137f }); // ±¤À± µð¹ö±ë¿ë
+	_vec3 Generate_Pos = { BossPosition->Get_Position()->x, BossPosition->Get_Position()->y - 0.5f, BossPosition->Get_Position()->z - 5.f};
+	Component_Transform->Set_Pos(Generate_Pos);
+	Component_Transform->Set_Scale(5.f / 3.f, 1.5f / 3.f, 2.f / 3.f);
+	//Component_Transform->Set_Pos({ 28.814f, 0.5f, 34.78f }); // ±¤À± µð¹ö±ë¿ë
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
@@ -101,7 +126,7 @@ BossFireBall*	BossFireBall::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	}
 	return BFB;
 }
-VOID BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed) {
+VOID	BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed) {
 	_matrix RotMat;
 	Direction = { 1.f, 0.f, 0.f };
 	_vec3 XAxis = { 1.f, 0.f, 0.f };
@@ -122,10 +147,10 @@ VOID BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLO
 	FLOAT Angle = 0.f, RealAngle = 0.f;
 	
 	
-	if (((INT)_Angle % 720) < 360.f) {
+	if (((INT)fabsf(_Angle) % 360) < 180.f) {
 		Angle = D3DXToDegree(acosf(D3DXVec3Dot(_Direction, &XAxis)));
 	}
-	else {
+	else if(((INT)fabsf(_Angle) % 360) >= 180.f){
 		Angle = -D3DXToDegree(acosf(D3DXVec3Dot(_Direction, &XAxis)));
 	}
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);

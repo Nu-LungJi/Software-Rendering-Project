@@ -52,19 +52,20 @@ VOID	MainUI::Render_GameObject() {
 VOID MainUI::Player_LostHP() {
 
 	INT PlayerHP = COLLIDER(PlayerObject)->Get_Hp();
-	if (PlayerHP > 0) {
+	if (PlayerHP > 0 && !PlayerObject->Get_Invincible()) {
 		if (PlayerHP > 5) { PlayerHP = 5; }
 		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
 		REPLAY_UI_EFFECT(UIKey_HP);
-
-		UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
-		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
-
-		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
-		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
 	}
+	//	UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
+	//	Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+
+	//	UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
+	//	Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+	//}
+
 }
 VOID MainUI::Player_ReFillHP(INT _HP) {
 	INT PlayerHP = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Get_HP();
@@ -281,6 +282,10 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 	}
 }
 
+VOID MainUI::Activate_BossFilter(BOOL _Filter) {
+	Component_Sprite->Get_Texture(L"BossFilter")->VISIBLE = _Filter;
+}
+
 VOID MainUI::All_UI_FadeOUT() {
 
 }
@@ -296,6 +301,8 @@ HRESULT MainUI::Component_Initialize() {
 	return S_OK;
 }
 HRESULT MainUI::Sprite_Initialize() {
+	////////////////////////////////////////////// FILTER ///////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/Filter_RageUp.png",				L"BossFilter", 0.f, 0.f, 1280, 720, FALSE, 50);
 	////////////////////////////////////////////// BACKBAR //////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png",		L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_ArrowCount.png", L"WeaponBG_ArrowCount", 1167.f, 681.f, 108, 30, TRUE, 150);

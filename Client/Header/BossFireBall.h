@@ -26,9 +26,22 @@ public:
 
 	static	BossFireBall* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
+	VOID	Set_FireBall_Angle(FLOAT _Degree)	{ FireBall_DirectionAngle = _Degree;	}
+	FLOAT	Get_FireBall_Angle()				{ return FireBall_DirectionAngle;		}
+
+	VOID	Set_FireBall_Speed(FLOAT _Speed)	{ FireBall_Speed = _Speed;	}
+	FLOAT	Get_FireBall_Speed()				{ return FireBall_Speed;	}
+
+	VOID	Set_FireBall_Duration(FLOAT _Dur)	{ Duration = _Dur; }
+	FLOAT	Get_FireBall_Duration()				{ return Duration; }
+
+	VOID	Set_FireBall_Pos(_vec3 _Pos)		{ Component_Transform->Set_Pos(_Pos);			}
+	_vec3	Get_FireBall_Pos()					{ return *Component_Transform->Get_Position();	}
+
 	VOID	FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed);
 private:
 	FinalBoss* Boss;
+	Transform* BossPosition;
 
 	vector<LPDIRECT3DTEXTURE9>* Animation_TexList;
 	INT							Animation_CurrentIndex;
@@ -41,11 +54,16 @@ private:
 	INT		Animation_FrameCount;
 	FLOAT	Animation_Interval;
 
+	FLOAT	Timer;
+	FLOAT	Duration;
+
 	_vec3	Direction;
 
 	_vec3	FireBallType;
 
-	float angle;
+	FLOAT	FireBall_DirectionAngle;
+	FLOAT	FireBall_Speed;
+	_vec3	FireBall_Pos;
 
 private:
 	Buffer*		Component_Buffer;

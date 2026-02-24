@@ -10,13 +10,16 @@ HRESULT Bat::Ready_GameObject() {
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 
 	Component_Collider->Set_Hp(BAT_HP);
+	Component_Collider->Set_Att(1.f);
 
 	return S_OK;
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"Monster";
+
 	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 3.f, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
@@ -53,30 +56,30 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		break;
 	}
 
-	if (KEY_DOWN(DIK_L)) {
-		//Set_ObjectDead(TRUE);
-		//Bat::Change_State(BAT_SUMMON);
-		GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)});
-		Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//if (KEY_DOWN(DIK_L)) {
+	//	//Set_ObjectDead(TRUE);
+	//	//Bat::Change_State(BAT_SUMMON);
+	//	GameObject* test = Monster::Create<EvilSlime>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)});
+	//	Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
-	}
-	if (KEY_DOWN(DIK_O)) {
-		//Set_ObjectDead(TRUE);
-		//Bat::Change_State(BAT_SUMMON);
-		GameObject* test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)});
-		Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//}
+	//if (KEY_DOWN(DIK_O)) {
+	//	//Set_ObjectDead(TRUE);
+	//	//Bat::Change_State(BAT_SUMMON);
+	//	GameObject* test = Monster::Create<ShotGunEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20)});
+	//	Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
-	}
-	if (KEY_DOWN(DIK_K))
-	{
-		GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) });
-		Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	}
-	if (KEY_DOWN(DIK_J))
-	{
-		GameObject* test = Monster::Create<Bat>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) });
-		Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	}
+	//}
+	//if (KEY_DOWN(DIK_K))
+	//{
+	//	GameObject* test = Monster::Create<ScorpoinEvilSoul>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) });
+	//	Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//}
+	//if (KEY_DOWN(DIK_J))
+	//{
+	//	GameObject* test = Monster::Create<Bat>(GRPDEV, { (_float)(rand() % 20), 0.5f, (_float)(rand() % 20) });
+	//	Monster::Add_Monster_to_Scene(test,L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//}
 
 	if (ObjectDead)
 		return -1;
@@ -102,10 +105,9 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 		}
 		break;
 	}
+	//Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 
-	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
-
-	Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID Bat::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -125,6 +127,7 @@ VOID Bat::Render_GameObject() {
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
 }
 HRESULT Bat::Component_Initialize() {
 
@@ -155,11 +158,10 @@ BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")
-	{
-	 	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	} 
-	return TRUE;
+	if (Tag == L"PlayerArrow") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
 
 	return FALSE;
 }

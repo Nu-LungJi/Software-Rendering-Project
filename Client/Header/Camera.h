@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
+enum class FRUSTUMPLANE : UINT64 { Left = 0, Right, bottom, Top, Near, Far, End };
+
 class CameraObject : public GameObject {
 private:
 	explicit CameraObject(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -16,6 +18,10 @@ public:
 	VOID			Camera_Transform_Control(CONST FLOAT& _DT);
 	VOID			Camera_Rotation_Control(CONST FLOAT& _DT);
 	VOID			Camera_Shaking(INT _Strength, FLOAT _Time);
+
+	VOID			Update_Frustum();
+	D3DXPLANE*		Get_FrustumPlane(FRUSTUMPLANE side) { return (side == FRUSTUMPLANE::End) ? FrustumPlane : &FrustumPlane[(UINT64)side]; }
+	BOOL			IsIn_Frustum(GameObject* pObj);
 
 	_matrix*		Get_ViewMatrix() { return &ViewMatrix; }
 	_matrix*		Get_ProjMatrix() { return &ProjMatrix; }
@@ -33,6 +39,10 @@ public:
 	FLOAT*			Get_Speed() { return &CameraSpeed; }
 	BOOL			Set_Speed(FLOAT _Value) { CameraSpeed = _Value; return TRUE; }
 
+	void			Set_Tracking_Player(BOOL bCameMove) { Camera_Move = bCameMove; }
+	void			Set_Obj(GameObject* pDst, _vec3 Center) { pObj = pDst; vCenter = Center; }
+	void			Set_Move(BOOL bMove) { StopMove = bMove; }
+	void			CheonLog_Respawn(CONST FLOAT& _DT);
 private:
 	HRESULT			Component_Initialize();
 
@@ -51,6 +61,7 @@ private:
 
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
+	BOOL		StopMove;
 
 	//GameObject* Player;
 
@@ -62,8 +73,13 @@ private:
 	_vec3		OriginEye;
 	_vec3		OriginAt;
 
-
+	_vec3		vCenter;
+	_vec3		vPlayer;
 	_vec3		m_vVelocity;
+
+	GameObject*		pObj;
+	D3DXPLANE	FrustumPlane[(UINT64)FRUSTUMPLANE::End];
+
 
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);

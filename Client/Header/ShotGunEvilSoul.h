@@ -25,12 +25,12 @@ private:
 	Buffer* Component_Buffer;
 	Transform* Component_Transform;
 	Collider* Component_Collider;
-
-public:
-	static			ShotGunEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 	BOOL			OnCollisionStay(GameObject* _Other)		override;
 	BOOL			OnCollisionExit(GameObject* _Other)		override;
+
+public:
+	static			ShotGunEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	MONSTERINFO* Get_Info() { return &m_tInfo; }
 
 private:

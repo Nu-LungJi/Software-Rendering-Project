@@ -33,8 +33,8 @@
 #define BAT_WIDTH					1.f
 #define BAT_HEIGHT					BAT_WIDTH * BATIMG_ASPECTRATIO
 
-#define BAT_SPEED					3.f					//	이속
-#define BAT_HP						100.f				//	체력
+#define BAT_SPEED					3.5f					//	이속
+#define BAT_HP						30.f				//	체력
 
 #define BAT_TRACKINGDIS				20.f				//	추적&이동	시작거리
 #define BAT_TRACKINGMIN				10.f					//  이동			종료거리
@@ -70,7 +70,7 @@
 #define SCORPIONEVILSOULIMGY					254
 #define SCORPIONEVILSOULIMG_ASPECTRATIO			((FLOAT)SCORPIONEVILSOULIMGY / (FLOAT)SCORPIONEVILSOULIMGX)
 
-#define SCORPIONEVILSOUL_WIDTH					1.f
+#define SCORPIONEVILSOUL_WIDTH					0.7f
 #define SCORPIONEVILSOUL_HEIGHT					SCORPIONEVILSOUL_WIDTH * SCORPIONEVILSOULIMG_ASPECTRATIO
 
 #define SCORPIONEVILSOUL_SPEED					2.f			//	이속
@@ -119,7 +119,7 @@
 #define SHOTGUNEVILSOULIMGY						284
 #define SHOTGUNEVILSOULIMG_ASPECTRATIO			((FLOAT)SHOTGUNEVILSOULIMGY / (FLOAT)SHOTGUNEVILSOULIMGX)
 
-#define SHOTGUNEVILSOUL_WIDTH					0.8f
+#define SHOTGUNEVILSOUL_WIDTH					0.7f
 #define SHOTGUNEVILSOUL_HEIGHT					SHOTGUNEVILSOUL_WIDTH * SHOTGUNEVILSOULIMG_ASPECTRATIO
 
 #define SHOTGUNEVILSOUL_SPEED					1.f	
@@ -158,7 +158,7 @@
 #define EVILSLIMEIMGY						207
 #define EVILSLIMEIMG_ASPECTRATIO			((FLOAT)EVILSLIMEIMGY / (FLOAT)EVILSLIMEIMGX)
 
-#define EVILSLIME_WIDTH						2.f
+#define EVILSLIME_WIDTH						1.5f
 #define EVILSLIME_HEIGHT					(EVILSLIME_WIDTH * EVILSLIMEIMG_ASPECTRATIO)
 
 #define EVILSLIME_SPEED						2.f
@@ -168,7 +168,7 @@
 #define EVILSLIME_TRACKING_TIME				1.f	
 #define EVILSLIME_LOST_TIME					1.f	
 
-#define EVILSLIME_CASTING_TIME				1.f	
+#define EVILSLIME_CASTING_TIME				2.f	
 #define EVILSIME_JUMP_HEIGHT				10.f
 
 #define EVILSLIME_CHANNELING_TIME			0.3f
@@ -308,7 +308,6 @@ public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
 	static	_vec3		Normalize(_vec3 vec);
 
-//·»´õ¸µ °ü·Ã
 public:
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
@@ -316,8 +315,7 @@ public:
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
-	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
-	uint64_t XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2);
+
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr

@@ -52,24 +52,30 @@ public:
     HRESULT                 Stage_Update(const _float& fTimeDelta);
     void                    Stage_LateUpdate(const _float& fTimeDelta);
     void                    Stage_Render();
-
+ 
+    
    
     HRESULT                 Update_TileList(const _float& fTimeDetla);
     void                    LateUpdate_Tile(const _float& fTimeDelta);
     void                    Render_TileList();
     
+    void                    Set_EndLoading(_bool bLoading) { m_EndLoading = bLoading; }
     void                    Set_TileMode(TILEMODE_CHANGE eMode) { m_eMode = eMode; }
     _int                    Set_StageArray() { return --m_StageCntArray[m_eStage]; }
     void                    Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STATE eState);
+    void                    Set_Stage() { m_eStage = m_eCurrent; }
+    void                    Set_CurStage(TILE_STAGE es) { m_eCurrent = es; }
 
+    TILE_STAGE              Get_CurrentStage() { return m_eCurrent; };
     TILE_STAGE              Get_Stage() { return m_eStage; };
     TILEMODE_CHANGE         Get_Mode() { return m_eMode; }
+    _bool                   Get_Loading() { return m_EndLoading; }
 
     void                    Save_Tile(HWND g_hWnd);
     void                    Load_TilePush(GameObject* pGame,TILE_STAGE eStage, TILEMODE_CHANGE eMod) { m_vecTileBuffer[eStage][eMod].push_back(pGame); }
 
-    _bool                   Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber, _vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot, _bool* bAni);
-    void                    Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni);
+    _bool                   Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber, _vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot, _bool* bAni, TILE_STAGE* eid);
+    void                    Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni, TILE_STAGE eid);
     void                    Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir);
     void                    Change_Stage(TILE_STAGE eStage) { m_eCurrent = eStage; m_bStageChange = true; }
     void                    Reset_TileList();
@@ -77,6 +83,8 @@ public:
 private:
     _bool                   m_bStageChange;
     _bool                   m_bCheck;
+    _bool                   m_EndLoading;
+
     TILE_STAGE              m_eCurrent;
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;

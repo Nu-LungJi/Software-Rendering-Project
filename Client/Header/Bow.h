@@ -3,6 +3,7 @@
 #include "Player.h"
 
 static int			_arrowCount = 1;
+static int			_windArrowCount = 0;
 enum class BowType {
 	FairyBow,
 	IceBow,
@@ -81,6 +82,7 @@ private:
 	_vec3		_pulsepos;
 	_vec3		_arrowPos;
 	float		_attackDelay;
+	float		_attackTimer;
 
 	_int		_Charge;
 	_int		_Charging;
