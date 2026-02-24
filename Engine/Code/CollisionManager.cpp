@@ -39,13 +39,13 @@ BOOL CollisionManager::AABB_Collision() {
 				(SRC->Get_MaxPoint().y >= DEST->Get_MinPoint().y) && (DEST->Get_MaxPoint().y >= SRC->Get_MinPoint().y) &&
 				(SRC->Get_MaxPoint().z >= DEST->Get_MinPoint().z) && (DEST->Get_MaxPoint().z >= SRC->Get_MinPoint().z)) {
 
-				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
+				if (SOBJ->Search_CollisionObject(DOBJ) == FALSE){// && DOBJ->Search_CollisionObject(SOBJ) == FALSE) {
 					SOBJ->Add_CollisionObject(DOBJ);
-					DOBJ->Add_CollisionObject(SOBJ);
-					//SOBJ->OnCollisionEnter(DOBJ);
+					//DOBJ->Add_CollisionObject(SOBJ);
+					SOBJ->OnCollisionEnter(DOBJ);
 					//DOBJ->OnCollisionEnter(SOBJ);
 				}
-				SOBJ->OnCollisionEnter(DOBJ);
+				//SOBJ->OnCollisionEnter(DOBJ);
 				//DOBJ->OnCollisionEnter(SOBJ);
 				SOBJ->OnCollisionStay(DOBJ);
 				//DOBJ->OnCollisionStay(SOBJ);
@@ -55,10 +55,10 @@ BOOL CollisionManager::AABB_Collision() {
 				//return TRUE;
 			}
 			else {
-				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
+				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE ){//&& DOBJ->Search_CollisionObject(SOBJ) == TRUE)	{
 					SOBJ->Delete_CollisionObject(DOBJ);
-					DOBJ->Delete_CollisionObject(SOBJ);
-					DOBJ->OnCollisionExit(SOBJ);
+					//DOBJ->Delete_CollisionObject(SOBJ);
+					//DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
 				}
 			}

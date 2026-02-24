@@ -180,7 +180,7 @@ BOOL TileDestoryEffect::OnCollisionEnter(GameObject* _Other)
 {
 
     wstring Tag = _Other->Get_ObjectTag();
-    if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T)
+    if (Tag == L"Monster" && m_eDestory == OBJECT_DESTORY::BOOM_T && m_fFrame == 0)
     {
         _float hp(0);
         hp = dynamic_cast<Collider*>(_Other->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();

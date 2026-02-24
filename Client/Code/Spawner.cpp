@@ -108,6 +108,7 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 
 	case TILE_SPAWNER::CL_SPAWN:
  		CL_Spawn();
+		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
 		Boss();
 		break;
@@ -121,7 +122,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -132,7 +133,7 @@ void Spawner::Monster_Spawn2()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -142,7 +143,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -152,7 +153,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -162,12 +163,12 @@ void Spawner::CL_Spawn()
 	if (!m_bSpawn)
 	{
 		_vec3 vPos;
-		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
+		//m_pTransform->Get_Info(INFO_POS, &vPos);
+		//Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
 
-		pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-		pCL->Set_ObjectTag(L"CheonLog");
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+		//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//pCL->Set_ObjectTag(L"CheonLog");
+		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 		m_bSpawn = true;
 	}
 }

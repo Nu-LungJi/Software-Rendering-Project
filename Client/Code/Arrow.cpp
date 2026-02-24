@@ -478,6 +478,14 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         Component_Collider->Set_Hp(hp - atk);
         return TRUE;
     }
+    else if (_Other->Get_ObjectTag() == L"Docheol") {
+        atk = 1.f;
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        if (_type == ArrowType::EvilHeadCharging) return TRUE;
+        Component_Collider->Set_Hp(hp - atk);
+
+        return TRUE;
+    }
 
     return FALSE;
 }

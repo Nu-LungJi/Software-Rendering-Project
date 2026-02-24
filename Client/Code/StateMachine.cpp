@@ -1,5 +1,6 @@
 #include "../Include/PCH.h"
 #include "StateMachine.h"
+#include <random>
 
 IMPLEMENT_SINGLETON(AppearState)
 IMPLEMENT_SINGLETON(DeadState)
@@ -57,11 +58,29 @@ VOID DeadState	::FSM_StateEnter(GameObject* _Owner)	{}
 VOID DeadState	::FSM_StateUpdate(GameObject* _Owner)	{}
 VOID DeadState	::FSM_StateExit(GameObject* _Owner)		{}
 
-VOID RageUpState::FSM_StateEnter(GameObject* _Owner)	{}
+VOID RageUpState::FSM_StateEnter(GameObject* _Owner)	{
+	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter1");
+	Supporter* SPT1 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter1"));
+	SPT1->Set_StartAngle(360.f);
+	SPT1->Set_TickAngle(0.25f);
+	SPT1->Set_StartPos({64.115f - 18.3f, 1.5f, 109.03f});
+
+	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter2");
+	Supporter* SPT2 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter2"));
+	SPT2->Set_StartAngle(160.f);
+	SPT2->Set_TickAngle(0.25f);
+	SPT2->Set_StartPos({ 64.115f + 21.3f, 1.5f, 100.03f });
+
+	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter3");
+	Supporter* SPT3 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter3"));
+	SPT3->Set_StartAngle(230.f);
+	SPT3->Set_TickAngle(0.25f);
+	SPT3->Set_StartPos({ 64.115f + 5.f, 1.5f, 82.03f });
+}
 VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
-		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.07f);
+		//dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.07f);
 		float Circlepow = 7.f;
 		_vec3 CircleScale = { 1.f * Circlepow, 0.7f * Circlepow, 0.7f * Circlepow };
 		_vec3 CirclePos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
@@ -70,11 +89,38 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
 		};
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_CIRCLE_EFFET, L"FSwing Circle Effect", &CirclePos, CircleScale, 0.4f);
 	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 10 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 10) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		Transform* BossTR = dynamic_cast<Transform*>((_Owner)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+		_vec3 GlobalPosition = { BossTR->Get_Position()->x, BossTR->Get_Position()->y - 1.f,  BossTR->Get_Position()->z - 7.5f };
+		FLOAT GloabalScale = 2.f;
+		_vec3 SpoolAppearSca = { 3.5f * GloabalScale, 3.5f * GloabalScale, 3.5f * GloabalScale };
+		_vec3 SpoolAppearPos = { GlobalPosition.x - 4.5f, GlobalPosition.y + 3.f / 2.f, GlobalPosition.z + 4.f };
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEL", &SpoolAppearPos, SpoolAppearSca, 1.f);
+		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 10.f);
+	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 11 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 11) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		Transform* BossTR = dynamic_cast<Transform*>((_Owner)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+		_vec3 GlobalPosition = { BossTR->Get_Position()->x - 1.f, BossTR->Get_Position()->y - 1.f,  BossTR->Get_Position()->z - 7.5f };
+		FLOAT GloabalScale = 2.f;
+
+		_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
+		_vec3 SpoolAppearPos = { GlobalPosition.x + 4.5f, GlobalPosition.y + 2.5f, GlobalPosition.z + 6.3f };
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMER", &SpoolAppearPos, SpoolAppearSca, 1.f);
+		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMER"))->Set_EffectRotation(0.f, 60.f, -10.f);
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEC", &SpoolAppearPos, SpoolAppearSca, 1.f);
+		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEC"))->Set_EffectRotation(0.f, 20.f, 0.f);
+	}
 }
 VOID RageUpState::FSM_StateExit(GameObject* _Owner)		{}
 
 VOID RSwingState::FSM_StateEnter(GameObject* _Owner)	{}
 VOID RSwingState::FSM_StateUpdate(GameObject* _Owner)	{
+	// RSWING - CREATE PROJECTILE 
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
+		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableCreateFireBall(TRUE);
+	}
 	// RSWING - PUNCH FLAME EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
@@ -85,13 +131,6 @@ VOID RSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 4.f,
 		};
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RSWING_EFFECT, L"Punch Flame Effect", &Pos, Scale, 0.35f);
-	}
-	// RSWING - CREATE PROJECTILE 
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
-		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
-		_vec3 Scale = { 2.4f / 2.f, 1.f/ 2.f, 1.f / 2.f };
-		PLAY_BOSS_EFFECT(BOSS_EFFECT::RSWING_PROJ_EFFECT, L"Flame Projectile" ,dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position(),
-			Scale, 0.2f);
 	}
 }
 VOID RSwingState::FSM_StateExit(GameObject* _Owner)		{}
@@ -174,20 +213,29 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 	// FSWING - EXPLOSION
 	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		Transform* BossTR = dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		float Firstpow = 3.f;
 		_vec3 FirstScale = { 1.f * Firstpow, 1.f * Firstpow, 1.f * Firstpow };
-		_vec3 FirstPos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 2.5f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y + 0.1005f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 7.f
-		};
+		_vec3 FirstPos = { BossTR->Get_Position()->x - 2.5f, BossTR->Get_Position()->y + 0.1005f, BossTR->Get_Position()->z - 7.f };
 		float Secondpow = 2.f;
 		_vec3 SecondScale = { 1.f * Secondpow, 1.f * Secondpow, 1.f * Secondpow };
-		_vec3 SecondPos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x + 1.5f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y + 0.1006f,
-						 (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 6.f
-		};
+		_vec3 SecondPos = { BossTR->Get_Position()->x + 1.5f, BossTR->Get_Position()->y + 0.1006f, BossTR->Get_Position()->z - 6.f };
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &FirstPos, FirstScale, 0.3f);
 		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FSWING_EXP_EFFECT, L"FSwing EXP", &SecondPos, SecondScale, 0.5f);
+
+		for (INT IDX = 0; IDX < 30; IDX++) {
+			wstring FBallName = L"Docheol" + to_wstring(IDX);
+			_vec3 GeneratePos = { BossTR->Get_Position()->x - 0.5f, BossTR->Get_Position()->y - 1.f, BossTR->Get_Position()->z - 4.f };
+
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, FBallName.c_str());
+			srand(time(NULL));
+			random_device rd;
+			mt19937 gen(rd());
+
+			uniform_int_distribution<int> dis(0, 359);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(FBallName.c_str()))->Set_FireBall_Angle(dis(gen));
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(FBallName.c_str()))->Set_FireBall_Pos(GeneratePos);
+		}
 	}
 	// FSWING - EXPLOSION
 	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 8 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 8) {

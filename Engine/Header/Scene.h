@@ -30,6 +30,14 @@ public:
 		if (FAILED(LayerList[(LONG)_LTYPE]->Add_GameObject(GOBJ)))	return E_FAIL;
 		return S_OK;
 	}
+	HRESULT		Add_GameObjectToScene(LAYER_TYPE _LTYPE, GAMEOBJECT_TYPE _GTYPE, GameObject* GOBJ, CONST TCHAR* _TAG = L"") {
+		GOBJ->Set_ObjectTag(_TAG);
+		GOBJ->Set_ObjectType(_GTYPE);
+
+		if (nullptr == GOBJ)										return E_FAIL;
+		if (FAILED(LayerList[(LONG)_LTYPE]->Add_GameObject(GOBJ)))	return E_FAIL;
+		return S_OK;
+	}
 
 	// ½ºÅ³¿ë
 	_vec3* Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG);

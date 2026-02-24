@@ -25,6 +25,7 @@ public:
 	BOOL		OnCollisionExit();
 
 	VOID		Set_CenterPos(Transform* _ColliderPos) { ColliderPos = _ColliderPos; }
+	Transform* Get_CenterPos()							{return ColliderPos;}
 
 	VOID		Set_Offset(_vec3 _Offset) { Offset = _Offset;}
 

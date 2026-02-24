@@ -29,9 +29,9 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	Animation_Interval	 = 0.07f;
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
-	Animation_FrameCount = ANIMATION_STAND_NORMAL_FRAMECOUNT;
+	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
 
-	Animation_TexList = &Animation_Stand_Normal_TexList;
+	Animation_TexList = &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 	Action_Timer = 0.f;
@@ -44,10 +44,15 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	Staging_Timer = 0.f;
 	Enable_BossAppearStaging = FALSE;
 
+	PlayerToAxisXDegree = 0.f;
+	RSwing_Timer = 0.f;
+	GeneratePos = { 0.f, 0.f, 0.f };
+
 	memset(MeteorTransform, 0, sizeof(MeteorTransform));
 	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
 	memset(EXPLOSION_TRIGGER, TRUE, sizeof(EXPLOSION_TRIGGER));
 	memset(METEOR_TRIGGER, TRUE, sizeof(METEOR_TRIGGER));
+	memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 
 	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
 	_vec3 planeDir = { 0.f, 1.f, 0.f };
@@ -69,6 +74,8 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 
 	Skill_GroundExplosion(_DT);
 	Skill_MeteorExplosion(_DT);
+	Skill_RSwingFireBall(_DT);
+	Skill_FSwingFireBall(_DT);
 	Animation_Appear_Staging(_DT);
 
 	Animation_PreviousIndex = Animation_CurrentIndex;
@@ -85,10 +92,12 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	
 	if (Action_Timer > 3.f) {
 		srand(time(NULL));
-		Action_Selector = 4;//rand() % 4 + 1;
+		Action_Selector = rand() % 4 + 1;
 		Action_Timer = 0.f;
 	}
-
+	if (KEY_DOWN(DIK_I)) {
+		Component_Collider->Set_Hp(500);
+	}
 	if (Rage_Mode == FALSE) {
 		// < Stand -> RSwing >
 		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 1) {
@@ -121,7 +130,6 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 			Action_Selector = 0;
 			//DoubleSlam = TRUE;
 		}
-
 		// < Stand -> Normal Slam >
 		if (Animation_TexList == &Animation_Stand_Normal_TexList && Action_Selector == 4) {
 			Animation_CurrentIndex = 0;
@@ -163,8 +171,9 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 		// <<< RageMode >>>
 		if (Component_Collider->Get_Hp() <= 500.f && Rage_Mode == FALSE) {
 			Animation_CurrentIndex = 0;
-			Animation_TexList = &Animation_RageUp_TexList;
-			Animation_FrameCount = ANIMATION_RAGEUP_FRAMECOUNT;
+			Animation_TexList = &Animation_Stunning_TexList;
+			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
+			Animation_Interval	= 0.25f;
 
 			FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
 			Invalidate_Mode = TRUE;
@@ -203,32 +212,36 @@ VOID	FinalBoss::Render_GameObject() {
 }
 
 BOOL	FinalBoss::OnCollisionEnter(GameObject* _Other) {
-	if (_Other->Get_ObjectTag() == L"Arrow" && Invalidate_Mode == FALSE) {
+	if (_Other->Get_ObjectTag() == L"PlayerArrow" && Invalidate_Mode == FALSE) {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
 		// Delete Arrow Code
 	}
-	else if (_Other->Get_ObjectTag() == L"Arrow" && Invalidate_Mode == TRUE) {
-		// Delete Arrow Code
-	}
+	//else if (_Other->Get_ObjectTag() == L"PlayerArrow" && Invalidate_Mode == TRUE) {
+	//	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
+	//	// Delete Arrow Code
+	//}
 	if (_Other->Get_ObjectTag() == L"Player") {
-		Player* PlayerObject = dynamic_cast<Player*>(_Other);
-		PlayerObject->Set_HP(PlayerObject->Get_HP() - 1);
+		//Player* PlayerObject = dynamic_cast<Player*>(_Other);
+		//PlayerObject->Set_HP(PlayerObject->Get_HP() - 1);
+	}
+	if (_Other->Get_ObjectTag() == L"Supporter1" || _Other->Get_ObjectTag() == L"Supporter2" || _Other->Get_ObjectTag() == L"Supporter3") {
+		// RageUp ¸¶¹«¸®
+		Animation_CurrentIndex = 0;
+		Animation_TexList = &Animation_RageUp_TexList;
+		Animation_FrameCount = ANIMATION_RAGEUP_FRAMECOUNT;
+		Animation_Interval = 0.1f;
 	}
 	return TRUE;
 }
-BOOL	FinalBoss::OnCollisionStay(GameObject* _Other) {
-	return TRUE;
-}
-BOOL	FinalBoss::OnCollisionExit(GameObject* _Other) {
-	return TRUE;
-}
+BOOL	FinalBoss::OnCollisionStay(GameObject* _Other) { return TRUE; }
+BOOL	FinalBoss::OnCollisionExit(GameObject* _Other) { return TRUE; }
 
 HRESULT	FinalBoss::Component_Initialize() {
 	Component_Buffer		= ADD_COMPONENT_RECTTEX;
 	Component_Texture		= ADD_COMPONENT_TEXTURE;
 
 	Component_Transform		= ADD_COMPONENT_TRANSFORM;
-	Component_Transform->Set_Pos(-0.4f, 1.5f, 1.7f);
+	Component_Transform->Set_Pos(-0.4f, 1.7f, 1.7f);
 	Component_Transform->Set_Scale(9.f, 9.f, 9.f);
 
 	Component_Collider		= ADD_COMPONENT_COLLIDER;
@@ -265,6 +278,10 @@ HRESULT FinalBoss::Texture_Initialize() {
 	for (INT PIC = 1; PIC <= ANIMATION_RSWING_RAGE_FRAMECOUNT; ++PIC) {
 		Base = L"Boss_Rage_RSwing" + to_wstring(PIC) + L".png";
 		Animation_RSwing_Rage_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
+	}
+	for (INT PIC = 1; PIC <= ANIMATION_STUNNING_FRAMECOUNT; ++PIC) {
+		Base = L"Boss_Stunning" + to_wstring(PIC) + L".png";
+		Animation_Stunning_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 
 	for (INT PIC = 1; PIC <= ANIMATION_FSWING_FRAMECOUNT; ++PIC) {
@@ -307,44 +324,44 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 		FLOAT GloabalScale = 2.f;
 		// Floor Glow
 		// Floor Pool
-		if		(Staging_Timer > 2.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_APPEAR]) {
+		if		(Staging_Timer > 2.f && STAGING_TRIGGER	[(INT)STAGING::SPOOL_APPEAR]) {
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f};
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_APPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_APPEAR] = FALSE;
 		}
-		else if (Staging_Timer > 3.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW1]) {
+		else if (Staging_Timer > 3.f && STAGING_TRIGGER	[(INT)STAGING::SPOOL_FLOW1]) {
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW1] = FALSE;
 		}
-		else if (Staging_Timer > 4.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW2]) {
+		else if (Staging_Timer > 4.f && STAGING_TRIGGER	[(INT)STAGING::SPOOL_FLOW2]) {
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW2] = FALSE;
 		}
-		else if (Staging_Timer > 5.f && STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW3]) {
+		else if (Staging_Timer > 5.f && STAGING_TRIGGER	[(INT)STAGING::SPOOL_FLOW3]) {
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale, 112.5f / 100.f * GloabalScale, 300.f / 100.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 0.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::SPOOL_FLOW3] = FALSE;
 		}
 		// Emblem Staging
-		if		(Staging_Timer > 4.f && STAGING_TRIGGER[(INT)STAGING::EMBLEM_APPEAR]) {
+		if		(Staging_Timer > 4.f && STAGING_TRIGGER	[(INT)STAGING::EMBLEM_APPEAR]) {
 			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::EMBLEM_APPEAR_EFFECT, L"EMBLEM_APPEAR", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::EMBLEM_APPEAR] = FALSE;
 		}
-		else if (Staging_Timer > 5.f && STAGING_TRIGGER[(INT)STAGING::EMBLEM_DESTROY]) {
+		else if (Staging_Timer > 5.f && STAGING_TRIGGER	[(INT)STAGING::EMBLEM_DESTROY]) {
 			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::EMBLEM_DESTROY_EFFECT, L"EMBLEM_DESTROY", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::EMBLEM_DESTROY] = FALSE;
 		}
-		if (Staging_Timer > 5.8f && STAGING_TRIGGER[(INT)STAGING::ANIMATION]) {
+		if		(Staging_Timer > 5.8f && STAGING_TRIGGER[(INT)STAGING::ANIMATION]) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Appear_TexList;
 			Animation_FrameCount = ANIMATION_APPEAR_FRAMECOUNT;
@@ -352,7 +369,7 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 			STAGING_TRIGGER[(INT)STAGING::ANIMATION] = FALSE;
 		}
 		// Blue Water Staging
-		if		(Staging_Timer > 6.f && STAGING_TRIGGER[(INT)STAGING::WATER_POPUP]) {
+		if		(Staging_Timer > 6.f && STAGING_TRIGGER	[(INT)STAGING::WATER_POPUP]) {
 			Camera->Camera_Shaking(10, 0.5f);
 			_vec3 SpoolAppearSca = { 3.f * GloabalScale, 2.5f * 2.f * GloabalScale, 5.f * 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y + 2.f, GlobalPosition.z + 8.4f };
@@ -360,21 +377,21 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 			STAGING_TRIGGER[(INT)STAGING::WATER_POPUP] = FALSE;
 		}
 		// Small Flame Staging
-		if (Staging_Timer > 6.f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEL]) {
+		if		(Staging_Timer > 6.f && STAGING_TRIGGER	[(INT)STAGING::SMALL_FLAMEL]) {
 			_vec3 SpoolAppearSca = { 3.5f * GloabalScale, 3.5f * GloabalScale, 3.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 4.5f, GlobalPosition.y + 3.f / 2.f, GlobalPosition.z + 4.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEL", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 10.f);
 			STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEL] = FALSE;
 		}
-		if (Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMER]) {
+		if		(Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMER]) {
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x + 4.5f, GlobalPosition.y + 2.5f, GlobalPosition.z + 6.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMER", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMER"))->Set_EffectRotation(0.f, 60.f, -10.f);
 			STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMER] = FALSE;
 		}
-		if (Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEC]) {
+		if		(Staging_Timer > 6.2f && STAGING_TRIGGER[(INT)STAGING::SMALL_FLAMEC]) {
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x + 2.5f, GlobalPosition.y + 2.5f , GlobalPosition.z + 6.3f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEC", &SpoolAppearPos, SpoolAppearSca, 1.f);
@@ -384,21 +401,21 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 		}
 
 		// Big Flame Staging
-		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::BIG_FLAME]) {
+		if		(Staging_Timer > 8.f && STAGING_TRIGGER	[(INT)STAGING::BIG_FLAME]) {
 			Camera->Camera_Shaking(30, 1.f);
 			_vec3 SpoolAppearSca = { 5.f * GloabalScale, 5.f * GloabalScale, 5.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.25f, GlobalPosition.y + 3.1f / 2.f, GlobalPosition.z + 6.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"BIG_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::BIG_FLAME] = FALSE;
 		}
-		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::BIG_CIRCLE_FLAME]) {
+		if		(Staging_Timer > 8.f && STAGING_TRIGGER	[(INT)STAGING::BIG_CIRCLE_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 1.f, GlobalPosition.z + 1.f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::CIRCLE_FLAME_EFFECT, L"BIG_CIRCLE_FLAME", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)STAGING::BIG_CIRCLE_FLAME] = FALSE;
 		}
 		// Circle Flame Staging
-		if (Staging_Timer > 8.f && STAGING_TRIGGER[(INT)STAGING::SPIRAL_FLAME]) {
+		if		(Staging_Timer > 8.f && STAGING_TRIGGER	[(INT)STAGING::SPIRAL_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 2.1f / 2.f , GlobalPosition.z + 3.5f };
 			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::SPIRAL_FLAME_EFFECT, L"SPIRAL_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.4f);
@@ -407,27 +424,14 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 			Component_Transform->Set_Pos(Component_Transform->Get_Position()->x + 0.3f, Component_Transform->Get_Position()->y, Component_Transform->Get_Position()->z - 0.5f);
 		}
 
-		if (Staging_Timer > 9.5f && STAGING_TRIGGER[(INT)STAGING::CAMERA_SHAKE]) {
+		if		(Staging_Timer > 9.5f && STAGING_TRIGGER[(INT)STAGING::CAMERA_SHAKE]) {
 			Camera->Camera_Shaking(30, 1.f);
+			Animation_Interval = 0.07f;
 			STAGING_TRIGGER[(INT)STAGING::CAMERA_SHAKE] = FALSE;
 			//Component_Transform->Set_Pos(0.f, 1.f, 0.f);
 		}
-		//if (Staging_Timer > 11.5f) {
-		//	Animation_Interval = 0.07f;
-		//	Animation_CurrentIndex = 0;
-		//	Animation_TexList = &Animation_NonAnim_TexList;
-		//	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
-		//
-		//	FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
-		//	Staging_Timer = 0.f;
-		//	Enable_Staging = 0.f;
-		//	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
-		//}
-		// Animation
-
 	}
 }
-
 VOID FinalBoss::Set_StartPos(_vec3 _StartPos) {
 	Component_Transform->Set_Pos(Component_Transform->Get_Position()->x + _StartPos.x, 
 		Component_Transform->Get_Position()->y + _StartPos.y, Component_Transform->Get_Position()->z + _StartPos.z);
@@ -495,7 +499,6 @@ VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 		}
 	}
 }
-
 VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 	if (Enable_MeteorExplosion) {
 		MeteorExplosion_Timer += _DT;
@@ -573,6 +576,133 @@ VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 			MeteorExplosion_Timer = 0.f;
 		}
 	}
+}
+VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
+	if (Enable_CreateFireBall) {
+		RSwing_Timer += _DT;
+
+		FLOAT SectorAngle = 20.f;
+
+		if		(RSwing_Timer > 0.10f && FIREBALL_TRIGGER[(INT)FIREBALL::ANGLE_GENERATE]){
+			GeneratePos = { Component_Collider->Get_CenterPos()->Get_Position()->x - 0.5f, Component_Collider->Get_CenterPos()->Get_Position()->y - 1.f, Component_Collider->Get_CenterPos()->Get_Position()->z - 4.f};
+			_vec3 PlayerPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")
+				->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() - GeneratePos;
+			_vec3 AxisXVec = { GeneratePos.x + 1, GeneratePos.y, GeneratePos.z };
+			AxisXVec = AxisXVec - GeneratePos;
+			D3DXVec3Normalize(&AxisXVec, &AxisXVec); 
+			D3DXVec3Normalize(&PlayerPos, &PlayerPos);
+			
+			if(GeneratePos.z >= dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")
+				->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z)
+				PlayerToAxisXDegree = D3DXToDegree(acosf(D3DXVec3Dot(&PlayerPos, &AxisXVec)));
+			else
+				PlayerToAxisXDegree = 360 - D3DXToDegree(acosf(D3DXVec3Dot(&PlayerPos, &AxisXVec)));
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::ANGLE_GENERATE] = FALSE;
+		}
+		else if (RSwing_Timer > 0.15f && FIREBALL_TRIGGER[(INT)FIREBALL::FIRST_FIREBALL]) {
+			int Numbering = 0;
+
+			wstring temp = L"FIRST_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIRST_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIRST_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIRST_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIRST_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::FIRST_FIREBALL] = FALSE;
+		}
+		else if (RSwing_Timer > 0.25f && FIREBALL_TRIGGER[(INT)FIREBALL::SECOND_FIREBALL]) {
+			int Numbering = 0;
+			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
+
+			wstring temp = L"SECOND_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SECOND_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SECOND_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SECOND_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SECOND_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::SECOND_FIREBALL] = FALSE;
+		}
+		else if (RSwing_Timer > 0.35f && FIREBALL_TRIGGER[(INT)FIREBALL::THIRD_FIREBALL]) {
+			int Numbering = 0;
+			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
+
+			wstring temp = L"THIRD_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"THIRD_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"THIRD_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"THIRD_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle / 2);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"THIRD_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + SectorAngle);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::THIRD_FIREBALL] = FALSE;
+
+			RSwing_Timer = 0.f;
+			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
+			Enable_CreateFireBall = false;
+		}
+	}
+}
+VOID FinalBoss::Skill_FSwingFireBall(CONST FLOAT& _DT) {
+	
+}
+VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
+
 }
 
 FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

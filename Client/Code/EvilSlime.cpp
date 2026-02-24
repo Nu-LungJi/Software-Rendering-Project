@@ -33,7 +33,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
-		if (MYSCALE->x < 0.5f)
+		if (MYSCALE->x < 1.f)
 		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
 		}
