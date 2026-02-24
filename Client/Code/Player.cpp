@@ -1314,12 +1314,14 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 	{
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
+
 		return TRUE;
 	}
 	else if(Tag == L"Monster")
 	{
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
+
 		return TRUE;
 	}
 

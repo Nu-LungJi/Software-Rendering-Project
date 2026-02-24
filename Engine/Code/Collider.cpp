@@ -16,9 +16,8 @@ HRESULT		Collider::Ready_Component() {
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
 
-	
 
-	// 1Â÷ ÅëÇÕ Å×½ºÆ®
+	// 1Ã‚Ã· Ã…Ã«Ã‡Ã• Ã…Ã—Â½ÂºÃ†Â®
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {

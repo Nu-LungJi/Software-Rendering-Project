@@ -40,6 +40,8 @@ HRESULT CameraObject::Ready_GameObject() {
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
 
+	CameraObject::Update_Frustum();
+
 	if (KEY_DOWN(DIK_F2)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
@@ -211,6 +213,58 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 VOID CameraObject::Camera_Shaking(INT _Strength, FLOAT _Time) {
 	Shake_Strength = _Strength;
 	Shake_Time = _Time;
+}
+
+VOID CameraObject::Update_Frustum()
+{
+	_matrix matVP = ViewMatrix * ProjMatrix;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].a   = matVP._14 + matVP._11;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].b   = matVP._24 + matVP._21;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].c   = matVP._34 + matVP._31;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].d   = matVP._44 + matVP._41;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].a  = matVP._14 - matVP._11;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].b  = matVP._24 - matVP._21;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].c  = matVP._34 - matVP._31;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].d  = matVP._44 - matVP._41;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].a = matVP._14 + matVP._12;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].b = matVP._24 + matVP._22;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].c = matVP._34 + matVP._32;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].d = matVP._44 + matVP._42;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].a    = matVP._14 - matVP._12;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].b    = matVP._24 - matVP._22;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].c    = matVP._34 - matVP._32;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].d    = matVP._44 - matVP._42;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].a   = matVP._13;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].b   = matVP._23;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].c   = matVP._33;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].d   = matVP._43;
+
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].a    = matVP._14 - matVP._13;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].b    = matVP._24 - matVP._23;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].c    = matVP._34 - matVP._33;
+	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].d    = matVP._44 - matVP._43;
+
+	for (UINT64 i = 0; i < (UINT64)FRUSTUMPLANE::End; ++i)
+	{
+		D3DXPlaneNormalize(&FrustumPlane[i], &FrustumPlane[i]);
+	}
+}
+
+BOOL CameraObject::IsIn_Frustum(GameObject* pObj)
+{
+	_vec3 vPos = *POS(pObj);
+	_vec3 vScale = *SCALE(pObj);
+	_float fDis = (vScale.x > vScale.y) ? (vScale.x > vScale.z ? vScale.x : vScale.z) : (vScale.y > vScale.z ? vScale.y : vScale.z);
+	for (UINT i = 0; i < (UINT)FRUSTUMPLANE::End; ++i)
+		if (D3DXPlaneDotCoord(FrustumPlane, &vPos) <= fDis + 5.f)
+			return FALSE;
+	
+	return TRUE;
 }
 
 

@@ -415,7 +415,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-    return S_OK;
+    return 0;
 }
 
 VOID Arrow::LateUpdate_GameObject(const _float& _DT)
@@ -560,7 +560,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
-        
+
         return TRUE;
     }
 

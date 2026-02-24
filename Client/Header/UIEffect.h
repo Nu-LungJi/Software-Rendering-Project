@@ -48,6 +48,10 @@ public:
 public:
 	// Utility
 	static	VOID				Replay_Effect(wstring _TAG);
+
+	VOID Set_All_Visible(BOOL _B) {
+		for (auto& info : TextureList) info.Set_Visible(_B);
+	}
 private:
 	HRESULT						Component_Initialize();
 	virtual			VOID		Free();

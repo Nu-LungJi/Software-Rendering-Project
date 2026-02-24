@@ -11,20 +11,28 @@ HRESULT		Layer::Ready_Layer() {
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	if (!_isTimeSlow) {
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
-			int ObjectResult = (*iter)->Update_GameObject(_DT);
-			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
+			if ((*iter)->Get_ObjectDead())
+			{
 				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-				GameObject* OBJ = *iter;
-				iter = GameObjectList.erase(iter);
-				Safe_Release(OBJ);
+				++iter;
 				continue;
 			}
-			else { ++iter; }
-			if (_isTimeSlow) break;
+			
+			int ObjectResult = (*iter)->Update_GameObject(_DT);
+			if (ObjectResult == -1) (*iter)->Set_ObjectDead(true);
+			++iter;
+			//if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
+			//	CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+			//	GameObject* OBJ = *iter;
+			//	iter = GameObjectList.erase(iter);
+			//	Safe_Release(OBJ);
+			//	continue;
+			//}
+			//else { ++iter; }
+			//if (_isTimeSlow) break;
 		}
 	}
 	else {
-		// Ÿ�ӽ��ο�
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
 			int ObjectResult = 0;
 			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"

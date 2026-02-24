@@ -15,6 +15,8 @@ INT	Alert::Update_GameObject(const _float& _DT)
 	// <플레이어 업데이트 시점>
 	GameObject::Update_GameObject(_DT);
 
+	m_tInfo.fTimer[0] += _DT;
+
 	if (!m_tInfo.bTrigger[0])
 	{
 		MYPOS->y = 0.002f;
@@ -34,6 +36,7 @@ INT	Alert::Update_GameObject(const _float& _DT)
 			pAlert->Get_Info()->pGameObj[1] = m_tInfo.pGameObj[1];
 			pAlert->Get_Info()->bTrigger[0] = true;
 
+			pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
 			_vec3 vScale = *SCALE(m_tInfo.pGameObj[1]);
 			vScale.y = vScale.x;
 
@@ -41,6 +44,12 @@ INT	Alert::Update_GameObject(const _float& _DT)
 
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[2], L"Alert", GAMEOBJECT_TYPE::MONSTER_EFFECT);
 		}
+	}
+
+
+	if (m_tInfo.fTimer[0] >= m_tInfo.fTimer[1])
+	{
+		ObjectDead = true;
 	}
 
 	if (ObjectDead)
@@ -63,7 +72,7 @@ VOID Alert::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV,{1.f,0.f,0.f},0);
 }
 VOID Alert::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

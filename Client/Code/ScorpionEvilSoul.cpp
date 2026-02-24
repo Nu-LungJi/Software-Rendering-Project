@@ -39,7 +39,6 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 		ScorpoinEvilSoul::State_Appear(_DT);
 		break;
 	case MONSTER_STATE_DISAPPEAR:
-
 		break;
 	case MONSTER_STATE_IDLE:
 		ScorpoinEvilSoul::State_Idle(_DT);
@@ -368,6 +367,6 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpoinEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	
+
 	ObjectDead = true;
 }
