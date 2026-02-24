@@ -58,7 +58,7 @@ VOID MainUI::Player_LostHP() {
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
 		REPLAY_UI_EFFECT(UIKey_HP);
-
+	}
 	//	UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
 	//	Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 

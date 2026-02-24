@@ -3,171 +3,165 @@
 
 DoCheolScene::DoCheolScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV) {}
 DoCheolScene::~DoCheolScene() {}
-HRESULT	DoCheolScene::Ready_Scene() {
-	Scene::Ready_Scene();
-	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
-	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+HRESULT   DoCheolScene::Ready_Scene() {
+    Scene::Ready_Scene();
 
-	if (FAILED(Ready_Enviroment_Layer()))			return E_FAIL;
-	if (FAILED(Ready_GameLogic_Layer()))			return E_FAIL;
-	if (FAILED(Ready_UserInterface_Layer()))		return E_FAIL;
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+    ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+    Ready_GameLogic_Layer();
 
+    {
+        HANDLE   hFile = CreateFile(L"../../Data/Docheol.dat", // ÌååÏùº Ïù¥Î¶ÑÏù¥ Ìè¨Ìï®Îêú Í≤ΩÎ°ú
+            GENERIC_READ,      // ÌååÏùº Ï†ëÍ∑º Î™®Îìú(GENERIC_WRITE : Ïì∞Í∏∞, GENERIC_READ : ÏùΩÍ∏∞)
+            NULL,            // Í≥µÏú† Î∞©Ïãù(ÌååÏùºÏù¥ Ïó¥Î†§ ÏûàÎäî ÏÉÅÌÉúÏóêÏÑú Îã§Î•∏ ÌîÑÎ°úÏÑ∏Ïä§Í∞Ä Ïò§Ìîà Ìï† Îïå ÌóàÍ∞ÄÌïòÎäî Í≤ÉÏóê ÎåÄÌï¥ ÏÑ§Ï†ï, ÏßÄÏ†ïÌïòÏßÄ ÏïäÏùÑ Í≤ΩÏö∞ NULL)
+            NULL,            // Î≥¥Ïïà ÏÜçÏÑ±(Í∏∞Î≥∏Í∞íÏù∏ Í≤ΩÏö∞ NULL)
+            OPEN_EXISTING,      // ÌååÏùºÏù¥ ÏóÜÏùÑ Í≤ΩÏö∞ ÌååÏùºÏùÑ ÏÉùÏÑ±ÌïòÏó¨ Ï†ÄÏû•(OPEN_EXISTING : ÌååÏùºÏù¥ ÏûàÏùÑ Í≤ΩÏö∞ÏóêÎßå Î°úÎìú)
+            FILE_ATTRIBUTE_NORMAL,   // ÌååÏùº ÏÜçÏÑ±(ÏïÑÎ¨¥Îü∞ ÏÜçÏÑ±Ïù¥ ÏóÜÎäî ÏùºÎ∞ò ÌååÏùº)
+            NULL);            // ÏÉùÏÑ±Îê† ÌååÏùºÏùò ÏÜçÏÑ±„ÖáÎ•¥ Ï†úÍ≥µÌï† ÌÖúÌîåÎ¶ø ÌååÏùº
 
+        if (hFile == INVALID_HANDLE_VALUE)
+        {
+            MSG_BOX("Î°úÎìú Ïã§Ìå®");
+            return E_FAIL;
+        }
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+        DWORD   dwByte(0);      // eof Ïó≠Ìï†
+        _int             iTilenum = 0;
+        TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
+        TILE_STATE       eTileState = TILE_STATE::STATE_END;
+        TILEMODE_CHANGE  eTileMode = TILEMODE_CHANGE::MODE_END;
+        TILE_STAGE        eTileStage = TILE_STAGE::STAGE_END;
+        TILE_STAGE       eNext = TILE_STAGE::STAGE_END;
+        _tchar          cTileName[128] = {};
+        _vec3           Info = {};
+        _vec3          Scale = {};
+        _vec3          Rotation = {};
+        _int           iTileTextureCnt = 0;
+        _vec3          vNextPos = {};
+        _bool           bAni = false;
+        _int      i = 0;
+        TILE_SPAWNER      eSpawn = TILE_SPAWNER::SPAWN_END;
+        //TileManager::GetInstance()->Render_TileList();
+        while (true)
+        {
+            ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
+            ReadFile(hFile, &iTilenum, sizeof(_int), &dwByte, NULL);
+            ReadFile(hFile, &eTileSide, sizeof(TILE_SIDE), &dwByte, NULL);
+            ReadFile(hFile, &eTileState, sizeof(TILE_STATE), &dwByte, NULL);
+            ReadFile(hFile, &eTileMode, sizeof(TILEMODE_CHANGE), &dwByte, NULL);
+            ReadFile(hFile, &cTileName, sizeof(_tchar) * 128, &dwByte, NULL);
+            ReadFile(hFile, &Scale, sizeof(_vec3), &dwByte, NULL);
+            ReadFile(hFile, &Rotation, sizeof(_vec3), &dwByte, NULL);
+            ReadFile(hFile, &eTileStage, sizeof(TILE_STAGE), &dwByte, NULL);
+            ReadFile(hFile, &iTileTextureCnt, sizeof(_int), &dwByte, NULL);
+            ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
+            ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
+            ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
+            ReadFile(hFile, &eNext, sizeof(TILE_SPAWNER), &dwByte, NULL);
 
-	{
-		HANDLE	hFile = CreateFile(L"../../Data/Docheol.dat", // ∆ƒ¿œ ¿Ã∏ß¿Ã ∆˜«‘µ» ∞Ê∑Œ
-			GENERIC_READ,		// ∆ƒ¿œ ¡¢±Ÿ ∏µÂ(GENERIC_WRITE : æ≤±‚, GENERIC_READ : ¿–±‚)
-			NULL,				// ∞¯¿Ø πÊΩƒ(∆ƒ¿œ¿Ã ø≠∑¡ ¿÷¥¬ ªÛ≈¬ø°º≠ ¥Ÿ∏• «¡∑ŒººΩ∫∞° ø¿«¬ «“ ∂ß «„∞°«œ¥¬ ∞Õø° ¥Î«ÿ º≥¡§, ¡ˆ¡§«œ¡ˆ æ ¿ª ∞ÊøÏ NULL)
-			NULL,				// ∫∏æ» º”º∫(±‚∫ª∞™¿Œ ∞ÊøÏ NULL)
-			OPEN_EXISTING,		// ∆ƒ¿œ¿Ã æ¯¿ª ∞ÊøÏ ∆ƒ¿œ¿ª ª˝º∫«œø© ¿˙¿Â(OPEN_EXISTING : ∆ƒ¿œ¿Ã ¿÷¿ª ∞ÊøÏø°∏∏ ∑ŒµÂ)
-			FILE_ATTRIBUTE_NORMAL,	// ∆ƒ¿œ º”º∫(æ∆π´∑± º”º∫¿Ã æ¯¥¬ ¿œπ› ∆ƒ¿œ)
-			NULL);				// ª˝º∫µ… ∆ƒ¿œ¿« º”º∫§∑∏£ ¡¶∞¯«“ ≈€«√∏¥ ∆ƒ¿œ
+            if (0 == dwByte)
+                break;
 
-		if (hFile == INVALID_HANDLE_VALUE)
-		{
-			MSG_BOX("∑ŒµÂ Ω«∆–");
-			return E_FAIL;
-		}
+            GameObject* GOBJ = nullptr;
+            //GRPDEV->AddRef();
+            if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
+            {
+                GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
+            }
+            else
+                GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 
-		DWORD	dwByte(0);		// eof ø™«“
-		_int             iTilenum = 0;
-		TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
-		TILE_STATE       eTileState = TILE_STATE::STATE_END;
-		TILEMODE_CHANGE  eTileMode = TILEMODE_CHANGE::MODE_END;
-		TILE_STAGE	     eTileStage = TILE_STAGE::STAGE_END;
-		TILE_STAGE		 eNext = TILE_STAGE::STAGE_END;
-		_tchar			 cTileName[128] = {};
-		_vec3		     Info = {};
-		_vec3			 Scale = {};
-		_vec3			 Rotation = {};
-		_int		     iTileTextureCnt = 0;
-		_vec3			 vNextPos = {};
-		_bool		     bAni = false;
-		_int      i = 0;
-		TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
-		//TileManager::GetInstance()->Render_TileList();
-		while (true)
-		{
-			ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
-			ReadFile(hFile, &iTilenum, sizeof(_int), &dwByte, NULL);
-			ReadFile(hFile, &eTileSide, sizeof(TILE_SIDE), &dwByte, NULL);
-			ReadFile(hFile, &eTileState, sizeof(TILE_STATE), &dwByte, NULL);
-			ReadFile(hFile, &eTileMode, sizeof(TILEMODE_CHANGE), &dwByte, NULL);
-			ReadFile(hFile, &cTileName, sizeof(_tchar) * 128, &dwByte, NULL);
-			ReadFile(hFile, &Scale, sizeof(_vec3), &dwByte, NULL);
-			ReadFile(hFile, &Rotation, sizeof(_vec3), &dwByte, NULL);
-			ReadFile(hFile, &eTileStage, sizeof(TILE_STAGE), &dwByte, NULL);
-			ReadFile(hFile, &iTileTextureCnt, sizeof(_int), &dwByte, NULL);
-			ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
-			ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
-			ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
-			ReadFile(hFile, &eNext, sizeof(TILE_SPAWNER), &dwByte, NULL);
+            if (eNext == TILE_STAGE::TILE_STAGE2)
+                ++i;
+            GOBJ->Set_ObjectTag(L"CXZTile");
+            dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
-			if (0 == dwByte)
-				break;
+            if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
+                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
+            else
+            {
+                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, eNext);
+                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
+                    ->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
+            }
 
-			GameObject* GOBJ = nullptr;
-			//GRPDEV->AddRef();
-			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
-			{
-				GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
-			}
-			else
-				GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
+            dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
+            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
+            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
+            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
 
-			if (eNext == TILE_STAGE::TILE_STAGE2)
-				++i;
-			GOBJ->Set_ObjectTag(L"CXZTile");
-			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
+            TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 
-			if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
-				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
-			else
-			{
-				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, eNext);
-				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
-					->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
-			}
+        }
+    }
 
-			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
-			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
-			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
-			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
+    TileManager::GetInstance()->Set_StageCnt();
 
-			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
+    TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+    TileManager::GetInstance()->Set_Stage();
 
-		}
-	}
-
-	TileManager::GetInstance()->Set_StageCnt();
-
-	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
-	TileManager::GetInstance()->Set_Stage();
-
-	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
-	CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	return S_OK;
+    KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
+    CollisionManager::GetInstance()->Get_AllObjectOfScene();
+    return S_OK;
 }
-INT	 DoCheolScene::Update_Scene(CONST FLOAT& _DT) {
-	TileManager::GetInstance()->Stage_Update(_DT);
-	CollisionManager::GetInstance()->Update_CollisionManager();
-	return Scene::Update_Scene(_DT);
+INT    DoCheolScene::Update_Scene(CONST FLOAT& _DT) {
+    TileManager::GetInstance()->Stage_Update(_DT);
+    CollisionManager::GetInstance()->Update_CollisionManager();
+    return Scene::Update_Scene(_DT);
 }
 VOID DoCheolScene::LateUpdate_Scene(CONST FLOAT& _DT) {
-	Scene::LateUpdate_Scene(_DT);
-	TileManager::GetInstance()->Stage_LateUpdate(_DT);
-	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
-	CollisionManager::GetInstance()->Render_CollisionManager();
+    Scene::LateUpdate_Scene(_DT);
+    TileManager::GetInstance()->Stage_LateUpdate(_DT);
+    CollisionManager::GetInstance()->LateUpdate_CollisionManager();
+    CollisionManager::GetInstance()->Render_CollisionManager();
 }
 VOID DoCheolScene::Render_Scene() {
-	//Scene::Render_Scene();
+    //Scene::Render_Scene();
 }
 HRESULT DoCheolScene::Ready_Enviroment_Layer() {
+    Layer* LYR = Layer::Create();
+    if (nullptr == LYR) return E_FAIL;
 
-	return S_OK;
+    GameObject* GOBJ = nullptr;
+
+    LayerList.push_back(LYR);
+
+    return S_OK;
 }
 HRESULT DoCheolScene::Ready_GameLogic_Layer() {
 
-	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
-	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
-	
-	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+    Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
+    Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 
-	//Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
-	//Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter");
-	//Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, L"BossFireBall");
-	return S_OK;
+    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+    //Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+    //Ïù¥Í±∞ ÏïàÌï¥ÎëêÎê® Ìä∏Î¶¨Í±∞Ïóê Ï£ºÏÑù Ï≥êÎÜìÍ≥† ÏôúÏïàÎèºÏßÄ ÌïòÍ≥† ÏûàÏóàÎÑ§;;
+    return S_OK;
 }
 HRESULT DoCheolScene::Ready_UserInterface_Layer() {
-	Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
-	return S_OK;
+    return S_OK;
 }
 DoCheolScene* DoCheolScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
-	DoCheolScene* LS = new DoCheolScene(_GRPDEV);
-	SceneManager::GetInstance()->Set_CurrentScene(LS);
-	if (FAILED(LS->Ready_Scene())) {
-		MSG_BOX("Cannot Create DoCheolScene.");
-		Safe_Release(LS);
-		return nullptr;
-	}
-	return LS;
+    DoCheolScene* LS = new DoCheolScene(_GRPDEV);
+    SceneManager::GetInstance()->Set_CurrentScene(LS);
+    if (FAILED(LS->Ready_Scene())) {
+        MSG_BOX("Cannot Create DoCheolScene.");
+        Safe_Release(LS);
+        return nullptr;
+    }
+    return LS;
 }
 void DoCheolScene::Free() {
-	Scene::Free();
+    Scene::Free();
 }

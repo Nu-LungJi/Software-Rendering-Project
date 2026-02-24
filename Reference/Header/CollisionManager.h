@@ -27,7 +27,6 @@ public:
   // 충돌처리 오류 해결로 인한 주석처리
 	VOID	Delete_ColliderObject(GameObject* _Effect);
 
-
 private:
 	list<GameObject*>		SceneObjectList;
 

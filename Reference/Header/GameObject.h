@@ -36,7 +36,6 @@ public:
 	// 스킬용
 	INT			Update_GameObject_Component(CONST FLOAT& _DT);
 	INT         LateUpdate_GameObject_Component(CONST FLOAT& _DT);
-public:
 	virtual BOOL		OnCollisionEnter(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionStay	(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionExit	(GameObject* _Other)	{ return TRUE; }

@@ -547,9 +547,6 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     int hp = Component_Collider->Get_Hp();
     int atk = COLLIDER(_Other)->Get_Att();
 
-    int hp = Component_Collider->Get_Hp();
-    int atk = COLLIDER(_Other)->Get_Att();
-
     if (Tag == L"Monster") {
         atk = 1.f;
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
