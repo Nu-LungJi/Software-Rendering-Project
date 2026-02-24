@@ -35,6 +35,8 @@ HRESULT Player::Ready_GameObject() {
 	_invincibleTimer	= 0.f;
 	_alphaRatio			= 1.f;
 	_alphaDelayTimer	= 0.f;
+	_partnerTimer		= 0.f;
+	_Skill2				= false;
 
 	// UI
 	Component_Collider->Set_Hp(50.f);
@@ -53,6 +55,7 @@ HRESULT Player::Ready_GameObject() {
 	_slowTime			= 4.f;
 	_hit_inv_Time		= 2.f;
 	_dash_inv_Time		= 2.f;
+	
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -105,16 +108,41 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	if (KEY_DOWN(DIK_Y)) {
-		//Set_ObjectDead(TRUE);
-		_frame = 1;
-		_pState = pState::STATE_DEATH;
-		Component_Collider->Set_Hp(0);
+		_Skill2 = true;
+		_Skill2_Death = true;
+		_vec3 Size = { 5.f, 5.f, 5.f };
+		_vec3 effectPos = *Component_Transform->Get_Position();
+		effectPos.y += 4.f;
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLACKHOLE_OPEN, &effectPos, 1.2f, Size, false);
+
+		
+		_Sheep_Summon_Timer = 0.f;
+	}
+
+	if (_Skill2) {
+		_Sheep_Summon_Timer += _DT;
+		if (_Sheep_Summon_Timer > 1.2f) {
+			_vec3 Size = { 5.f, 5.f, 5.f };
+			_vec3 effectPos = *Component_Transform->Get_Position();
+			effectPos.y += 4.f;
+			PLAY_PLAYER_EFFECT(PLAYER_SKILL::BLACKHOLE_LOOP, &effectPos, 0.6f, Size, false);
+			Size = { 3.f, 3.f, 3.f };
+			PLAY_PLAYER_EFFECT(PLAYER_SKILL::CHAOS_PULSE, &effectPos, 0.6f, Size, false);
+			Size = { 1.f, 1.f, 1.f };
+			PLAY_PLAYER_EFFECT(PLAYER_SKILL::SKILL_2, &effectPos, 15.f, Size, false);
+			//Size = { 15.f, 15.f, 15.f };
+			//PLAY_PLAYER_EFFECT(PLAYER_SKILL::SKILL2_HAND, &effectPos, 1.0f, Size, false);
+			_Skill2 = false;
+			_Sheep_Summon_Timer = 0.f;
+		}
 	}
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 	}
+
+	if(!_isInvincible) _alphaRatio = 1.f;
 
 	// 피격무적
 	if ( _isInvincible && _pState != pState::STATE_DEATH && _pState != pState::STATE_DASH) {
@@ -123,7 +151,6 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		if (_invincibleTimer > _hit_inv_Time) {
 			_invincibleTimer = 0.f;
 			_alphaDelayTimer = 0.f;
-			_alphaRatio		 = 1.f;
 			_isInvincible = false;
 		}
 		if (_alphaDelayTimer < 0.1f) {
@@ -162,6 +189,9 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	switch (_skillState) {
 	case skillState::STATE_TIMESLOW :
 		SKILL_TIMESLOW(_DT);
+		break;
+	case skillState::STATE_SKILL2:
+		SKILL2(_DT);
 		break;
 	case skillState::NONE :
 		SKILL_NONE(_DT);
@@ -221,7 +251,7 @@ HRESULT Player::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);				// 충돌체의 범위 조절
+	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);				// 충돌체의 범위 조절
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
@@ -250,7 +280,7 @@ void Player::Reset()
 	_isInvincible = false;
 
 	// UI
-	Component_Collider->Set_Hp(5);
+	//Component_Collider->Set_Hp(5);
 	_dashstock			= 3;
 	_key				= 0;
 	_coin				= 0;
@@ -896,6 +926,7 @@ void Player::SKILL_NONE(const _float& _DT)
 void Player::SKILL_TIMESLOW(const _float& _DT)
 {
 	_skillTimer += _DT;
+	_partnerTimer += _DT;
 	Calc_Near();
 	if (_skillTimer > 0.4f && !_skillArea_On) {
 		_vec3 Size = { 5.f, 5.f, 5.f };
@@ -925,7 +956,18 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 		_animSpeed = 1.f;
 		_arrowSpeed = _originArrowSpeed;
 	}
-		
+	
+	if (_partnerTimer > 0.2f) {
+		_vec3 dest = *Component_Transform->Get_Position();
+		dest.z += 0.01;
+		_vec3 Size = { 2.f, 2.f, 2.f };
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SHADOW_PARTNER, &dest, max(0.f, _slowTime - _skillTimer), Size, false);
+		_partnerTimer = 0.f;
+	}
+}
+
+void Player::SKILL2(const _float& _DT)
+{
 }
 
 void Player::SetGrahpic()
@@ -939,8 +981,6 @@ void Player::SetGrahpic()
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
-
-	TCHAR FileName[128] = L"";
 
 	switch (_eState)
 	{
@@ -1267,16 +1307,21 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
+	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
-
+	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		//Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+
 		return TRUE;
 	}
 	else if(Tag == L"Monster")
 	{
-		//Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+
 		return TRUE;
 	}
 

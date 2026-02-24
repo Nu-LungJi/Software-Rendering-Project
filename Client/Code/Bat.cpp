@@ -105,8 +105,7 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 		}
 		break;
 	}
-
-	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
+	//Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
@@ -128,6 +127,7 @@ VOID Bat::Render_GameObject() {
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
 }
 HRESULT Bat::Component_Initialize() {
 

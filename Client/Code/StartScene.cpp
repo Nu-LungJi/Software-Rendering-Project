@@ -107,15 +107,20 @@ HRESULT	StartScene::Ready_Scene() {
 	return S_OK;
 }
 INT	 StartScene::Update_Scene(CONST FLOAT& _DT) {
+	if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_TAB) == TRUE) {
+		int  a = 0;
+	}
 	TileManager::GetInstance()->Stage_Update(_DT);
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
 VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
+	
 	TileManager::GetInstance()->Stage_LateUpdate(_DT);
+	Scene::LateUpdate_Scene(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
-	Scene::LateUpdate_Scene(_DT);
+	
 }
 VOID StartScene::Render_Scene() {
 
@@ -134,10 +139,6 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 	Add_GameObjectToScene<Player>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER , L"Player"		);
 	//Add_GameObjectToScene<Bat>				(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
 	//Add_GameObjectToScene<ScorpoinEvilSoul>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-	//GameObject* obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Bat"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
-	//obj = dynamic_cast<GameObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"ScorpoinEvilSoul"));
-	//CollisionManager::GetInstance()->Add_ColliderObject(obj);
 
 
 	//Add_GameObjectToScene<FinalBoss>			(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");

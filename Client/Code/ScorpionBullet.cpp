@@ -16,6 +16,8 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+	ObjectTAG = L"MonsterBullet";
+
   ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
 	Monster::Destory_Tile(this);
 

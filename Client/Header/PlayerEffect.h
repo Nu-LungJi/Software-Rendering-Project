@@ -46,5 +46,9 @@ private:
 
 	float			_effectTimer;
 	float			_alphaRatio;
+
+	float _offsetX;
+	float _offsetY;
+	float _offsetZ;
 };
 

@@ -3,7 +3,7 @@
 
 
 enum  CL_CHECK { IDEL, SPAWN_AFTER, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHECK_END };
-enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP, CL_END};
+enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP, CL_DEAD, CL_END};
 class CLAttack;
 class Cheonlog : public GameObject
 {
@@ -92,6 +92,7 @@ private:
 	_bool			m_StartAttack;
 	_bool			m_EndEffect;
 	_bool			m_bCrystal;
+	_bool          m_bDead;
 
 	_vec3			m_vCenter;
 private:

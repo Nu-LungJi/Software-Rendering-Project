@@ -15,21 +15,20 @@ HRESULT		Collider::Ready_Component() {
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
-	if (nullptr == ColliderPos)
-		return 0;
 
-	CenterPos = *ColliderPos->Get_Position();
-	CenterPos += Offset;
-	
-	_vec3 ColScale = { fabsf(Scale.x),fabsf(Scale.y),fabsf(Scale.z) };
 
-	MinPoint = { CenterPos.x - ColScale.x, CenterPos.y - ColScale.y, CenterPos.z - ColScale.z };
-	MaxPoint = { CenterPos.x + ColScale.x, CenterPos.y + ColScale.y, CenterPos.z + ColScale.z };
-	// 1Â÷ ÅëÇÕ Å×½ºÆ®
+	// 1Ã‚Ã· Ã…Ã«Ã‡Ã• Ã…Ã—Â½ÂºÃ†Â®
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
-	
+	//if (nullptr == ColliderPos)
+	//	return;
+
+	CenterPos = *ColliderPos->Get_Position();
+	//CenterPos += Offset;
+
+	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
+	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;

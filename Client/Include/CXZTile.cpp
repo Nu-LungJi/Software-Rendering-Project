@@ -248,7 +248,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 		Tile_Gasi_Destory(_DT);
 		break;
 	case TILE_STATE::STATE_BOOM:
-		//Tile_Boom(_DT);
+		Tile_Boom(_DT);
 		break;
 	}
 	
