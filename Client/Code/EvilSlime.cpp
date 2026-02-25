@@ -76,7 +76,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 	{
-		for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+		for (int i = 1; i < _countof(m_tInfo.pGameObj); ++i)
 			if (m_tInfo.pGameObj[i] != nullptr) m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 
 		return -1;

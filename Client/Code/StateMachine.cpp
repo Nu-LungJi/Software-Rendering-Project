@@ -435,11 +435,62 @@ VOID Rage_StandState::FSM_StateUpdate(GameObject* _Owner)		{}
 VOID Rage_StandState::FSM_StateExit(GameObject* _Owner)		{}
 
 VOID Rage_RSwingState::FSM_StateEnter(GameObject* _Owner)		{}
-VOID Rage_RSwingState::FSM_StateUpdate(GameObject* _Owner)	{}
+VOID Rage_RSwingState::FSM_StateUpdate(GameObject* _Owner)	{
+	// RSWING - CREATE PROJECTILE 
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
+		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableCreateFireBall(2);
+	}
+	// RSWING - PUNCH FLAME EFFECT
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float pow = 6.f;
+		_vec3 Scale = { 1.f * pow, 0.7f * pow, 0.7f * pow };
+		_vec3 Pos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 1.5f,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 4.f,
+		};
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_RSWING_EFFECT, L"Punch Flame Effect", &Pos, Scale, 0.35f);
+	}
+}
 VOID Rage_RSwingState::FSM_StateExit(GameObject* _Owner)		{}
 
 VOID Rage_NormalSlamState::FSM_StateEnter(GameObject* _Owner) {}
-VOID Rage_NormalSlamState::FSM_StateUpdate(GameObject* _Owner){}
+VOID Rage_NormalSlamState::FSM_StateUpdate(GameObject* _Owner){
+	// SLAM - DANGER AREA EFFECT
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float Playerpow = 3.5f;
+		_vec3 PlayerScale = { 1.f * Playerpow, 1.f * Playerpow, 1.f * Playerpow };
+		Transform* PL = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+		_vec3 PlayerPos = { PL->Get_Position()->x, PL->Get_Position()->y, PL->Get_Position()->z - 1.5f };
+		dynamic_cast<FinalBoss*>(_Owner)->Set_PlayerPosition({ PL->Get_Position()->x, PL->Get_Position()->y + 1.f, PL->Get_Position()->z + 0.01f });
+		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableGroundExp(2);
+
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Explosion Warning")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
+			->Set_Rotation(85.f, 0.f, 0.f);
+	}
+	// SLAM - CIRCLE EFFECT
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float pow = 7.f;
+		_vec3 Scale = { 1.f * pow, 0.7f * pow, 0.7f * pow };
+		_vec3 PosL = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 5.7f,
+					   (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.5f,
+					   (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 7.6f
+		};
+		_vec3 PosR = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x - 0.5f,
+					   (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.5f,
+					   (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 8.3f
+		};
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_CIRCLE_EFFET, L"Slam EffectL", &PosL, Scale, 0.4f);
+		PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_CIRCLE_EFFET, L"Slam EffectR", &PosR, Scale, 0.4f);
+		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Slam EffectL")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
+			->Set_Rotation(85.f, 0.f, 0.f);
+		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Slam EffectR")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
+			->Set_Rotation(85.f, 0.f, 0.f);
+	}
+}
 VOID Rage_NormalSlamState::FSM_StateExit(GameObject* _Owner)	{}
 
 VOID Rage_ChargeState::FSM_StateEnter(GameObject* _Owner)		{}

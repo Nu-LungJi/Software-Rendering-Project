@@ -176,13 +176,12 @@ void Spawner::CL_Spawn()
 	
 	if (!m_bSpawn)
 	{
-		Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
-		pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-		pCL->Set_ObjectTag(L"CheonLog");
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+		//Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
+		//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//pCL->Set_ObjectTag(L"CheonLog");
+		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 		m_bSpawn = true;
 	}
-		
 }
 
 

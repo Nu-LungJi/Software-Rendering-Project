@@ -15,8 +15,8 @@ public:
 	IDirect3DTexture9* Find_Texture(wstring _FileName);
 
 private:
-	map<CONST TCHAR*, IDirect3DTexture9*>		TextureList;
-	vector<wstring*>							KEY_Array;
+	unordered_map<CONST TCHAR*, IDirect3DTexture9*>		TextureList;
+	vector<wstring*>									KEY_Array;
 public:
 	virtual			VOID	Free();
 };

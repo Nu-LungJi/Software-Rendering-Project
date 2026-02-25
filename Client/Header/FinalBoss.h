@@ -55,16 +55,16 @@ public:
 	VOID	Set_PlayerPosition(_vec3 _PPos)				{ PlayerPos = _PPos;	}
 
 	INT		Get_EnableGroundExp()						{ return Enable_GroundExplosion; }
-	VOID	Set_EnableGroundExp(BOOL _EXP)				{ Enable_GroundExplosion = _EXP; }
+	VOID	Set_EnableGroundExp(INT _EXP)				{ Enable_GroundExplosion = _EXP; }
 
 	INT		Get_EnableQuadGroundExp()					{ return Enable_GroundQuadExplosion; }
-	VOID	Set_EnableQuadGroundExp(BOOL _EXP)			{ Enable_GroundQuadExplosion = _EXP; }
+	VOID	Set_EnableQuadGroundExp(INT _EXP)			{ Enable_GroundQuadExplosion = _EXP; }
 
 	INT		Get_EnableMeteorExp()						{ return Enable_MeteorExplosion; }
-	VOID	Set_EnableMeteorExp(BOOL _EXP)				{ Enable_MeteorExplosion = _EXP; }
+	VOID	Set_EnableMeteorExp(INT _EXP)				{ Enable_MeteorExplosion = _EXP; }
 
 	INT		Get_EnableCreateFireBall()					{ return Enable_CreateFireBall; }
-	VOID	Set_EnableCreateFireBall(BOOL _EXP)			{ Enable_CreateFireBall = _EXP; }
+	VOID	Set_EnableCreateFireBall(INT _EXP)			{ Enable_CreateFireBall = _EXP; }
 
 	BOOL	Get_RageMode()								{ return Rage_Mode; }
 	VOID	Set_RageMode(BOOL _EXP)						{ Rage_Mode = _EXP; }
@@ -117,17 +117,18 @@ private:
 
 	BOOL			DoubleSlam;
 
-	BOOL			Enable_BossAppearStaging;
-	BOOL			Enable_GroundExplosion;
-	BOOL			Enable_GroundQuadExplosion;
-	BOOL			Enable_MeteorExplosion;
-	BOOL			Enable_CreateFireBall;
+	INT				Enable_BossAppearStaging;
+	INT				Enable_GroundExplosion;
+	INT				Enable_GroundQuadExplosion;
+	INT				Enable_MeteorExplosion;
+	INT				Enable_CreateFireBall;
 
 	Transform*		MeteorTransform[4];
 	FLOAT			RanPosX[4], RanPosZ[4];
 
 	FLOAT			PlayerToAxisXDegree;
 	_vec3			GeneratePos;
+	INT				Numbering;
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;

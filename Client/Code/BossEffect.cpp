@@ -35,7 +35,7 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 
 	else if (_SKILLTYPE == BOSS_EFFECT::DANGER_AREA_EFFECT)				{ Make_TextureList(L"DangerArea");				}
 	else if (_SKILLTYPE == BOSS_EFFECT::FIREBALL_EFFECT)				{ Make_TextureList(L"Effect_FireBall_End");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_EFFECT)				{ Make_TextureList(L"Supporter_Effect");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_EFFECT)				{ Make_TextureList(L"Rage_Supporter_Effect");	}
 
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_RSWING_EFFECT)				{ Make_TextureList(L"Effect_RageRSwing");		}
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_FIREBALL_EFFECT)			{ Make_TextureList(L"Effect_Rage_FireBall_End");}

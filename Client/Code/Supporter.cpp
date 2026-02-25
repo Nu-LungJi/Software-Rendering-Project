@@ -136,7 +136,7 @@ HRESULT	Supporter::Component_Initialize()	{
 HRESULT Supporter::Texture_Initialize()		{ 
 	wstring Base = L"";
 	for (INT PIC = 1; PIC <= ANIMATION_SUPPORTER_IDLE; ++PIC) {
-		Base = L"Supporter_Idle" + to_wstring(PIC) + L".png";
+		Base = L"Rage_Supporter_Idle" + to_wstring(PIC) + L".png";
 		Animation_IdleTexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
 	return S_OK; 
