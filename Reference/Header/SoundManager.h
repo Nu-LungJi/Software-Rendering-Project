@@ -19,8 +19,8 @@ public:
 	HRESULT		Ready_SoundManager();
 	VOID		Update_SoundManager();
 
-	HRESULT	    Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID eID, float fVolume);
-	HRESULT		Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel);
+	HRESULT	    Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume = 0.5f);
+	HRESULT		Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel,_float Volume = 0.5f);
 	HRESULT		Stop_Sound(CHANNELID _SoundChannel);
 	HRESULT		Stop_AllSound();
 	HRESULT		IsPlaying(CHANNELID _SoundChannel);
@@ -30,6 +30,7 @@ private:
 
 	map<CONST TCHAR*, Sound*>	SoundMap;
 	
+	ChannelGroup* ChannelGroup[(LONG)CHANNELID::SOUND_END];
 	Channel* SoundChannel[(LONG)CHANNELID::SOUND_END];
 
 private:

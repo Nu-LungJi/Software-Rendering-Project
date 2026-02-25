@@ -7,18 +7,18 @@
 
 #define		ANIMATION_APPEAR_FRAMECOUNT			39
 #define		ANIMATION_DEATH_FRAMECOUNT			27
-#define		ANIMATION_RAGEUP_FRAMECOUNT			33
+#define		ANIMATION_RAGEUP_FRAMECOUNT			28
+#define		ANIMATION_STUNNING_FRAMECOUNT		10
 
-#define		ANIMATION_RSWING_NORMAL_FRAMECOUNT	12
-#define		ANIMATION_RSWING_RAGE_FRAMECOUNT	11
+#define		ANIMATION_NORMAL_STAND_FRAMECOUNT	14
+#define		ANIMATION_NORMAL_RSWING_FRAMECOUNT	12
+#define		ANIMATION_NORMAL_FSWING_FRAMECOUNT	12
+#define		ANIMATION_NORMAL_SLAM_FRAMECOUNT	11
 
-#define		ANIMATION_FSWING_FRAMECOUNT			12
-
-#define		ANIMATION_STAND_NORMAL_FRAMECOUNT	14
-#define		ANIMATION_STAND_RAGE_FRAMECOUNT		16
-
-#define		ANIMATION_SLAM_NORMAL_FRAMECOUNT	11
-#define		ANIMATION_SLAM_RAGE_FRAMECOUNT		11
+#define		ANIMATION_RAGE_STAND_FRAMECOUNT		16
+#define		ANIMATION_RAGE_RSWING_FRAMECOUNT	11
+#define		ANIMATION_RAGE_SLAM_FRAMECOUNT		11
+#define		ANIMATION_RAGE_CHARGE_FRAMECOUNT	8
 
 class FinalBoss : public GameObject {
 private:
@@ -63,10 +63,18 @@ public:
 	INT		Get_EnableMeteorExp()						{ return Enable_MeteorExplosion; }
 	VOID	Set_EnableMeteorExp(BOOL _EXP)				{ Enable_MeteorExplosion = _EXP; }
 
+	INT		Get_EnableCreateFireBall()					{ return Enable_CreateFireBall; }
+	VOID	Set_EnableCreateFireBall(BOOL _EXP)			{ Enable_CreateFireBall = _EXP; }
+
+	BOOL	Get_RageMode()								{ return Rage_Mode; }
+	VOID	Set_RageMode(BOOL _EXP)						{ Rage_Mode = _EXP; }
+
 	VOID	Set_StartPos(_vec3 _StartPos);
 
 	VOID	Skill_GroundExplosion(CONST FLOAT& _DT);
 	VOID	Skill_MeteorExplosion(CONST FLOAT& _DT);
+	VOID	Skill_RSwingFireBall(CONST FLOAT& _DT);
+	VOID	Skill_RageUpFireBall(CONST FLOAT& _DT);
 
 	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -80,6 +88,8 @@ public:
 	enum class EXPLOSION	{ NORMAL_EXPLOSION, METEOR_SLAM_EXPLOSION1, METEOR_SLAM_EXPLOSION2, METEOR_SLAM_EXPLOSION3, METEOR_SLAM_EXPLOSION4 };
 
 	enum class METEOR		{ DANGER_AREA, METEOR_CREATE, METEOR_EXPLOSION };
+
+	enum class FIREBALL		{ ANGLE_GENERATE, FIRST_FIREBALL, SECOND_FIREBALL, THIRD_FIREBALL };
 
 private:
 	Player*			PlayerObject;
@@ -96,10 +106,12 @@ private:
 	FLOAT			Action_Timer;
 	FLOAT			Explosion_Timer;
 	FLOAT			MeteorExplosion_Timer;
+	FLOAT			RSwing_Timer;
 
 	BOOL			STAGING_TRIGGER[20];
 	BOOL			EXPLOSION_TRIGGER[5];
 	BOOL			METEOR_TRIGGER[5];
+	BOOL			FIREBALL_TRIGGER[5];
 
 	INT				Action_Selector;
 
@@ -109,10 +121,13 @@ private:
 	BOOL			Enable_GroundExplosion;
 	BOOL			Enable_GroundQuadExplosion;
 	BOOL			Enable_MeteorExplosion;
+	BOOL			Enable_CreateFireBall;
 
 	Transform*		MeteorTransform[4];
 	FLOAT			RanPosX[4], RanPosZ[4];
 
+	FLOAT			PlayerToAxisXDegree;
+	_vec3			GeneratePos;
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;
@@ -122,24 +137,21 @@ private:
 	INT							Animation_FrameCount;
 
 	vector<LPDIRECT3DTEXTURE9>	Animation_NonAnim_TexList;
-
 	vector<LPDIRECT3DTEXTURE9>	Animation_Appear_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Death_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Stunning_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_RageUp_TexList;
 
-	vector<LPDIRECT3DTEXTURE9>	Animation_RSwing_Normal_TexList;
-	vector<LPDIRECT3DTEXTURE9>	Animation_RSwing_Rage_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_Stand_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_RSwing_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_FSwing_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_Slam_TexList;
 
-	vector<LPDIRECT3DTEXTURE9>	Animation_FSwing_TexList;
 
-	vector<LPDIRECT3DTEXTURE9>	Animation_Stand_Normal_TexList;
-	vector<LPDIRECT3DTEXTURE9>	Animation_Stand_Rage_TexList;
-
-	vector<LPDIRECT3DTEXTURE9>	Animation_Slam_Normal_TexList;
-	vector<LPDIRECT3DTEXTURE9>	Animation_Slam_Rage_TexList;
-
-	vector<LPDIRECT3DTEXTURE9>	Animation_Slam_TexList;
-	vector<LPDIRECT3DTEXTURE9>	Animation_Stand_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Stand_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_RSwing_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Slam_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Charge_TexList;
 
 private:
 	Buffer*			Component_Buffer;

@@ -116,6 +116,7 @@ VOID Bat::Render_GameObject() {
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
 }
 HRESULT Bat::Component_Initialize() {
 

@@ -13,6 +13,7 @@ HRESULT GameManager::Ready_GameManager() {
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
 	//TileManager::GetInstance()->Update_TileList(_DT);
+	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
 }
@@ -24,7 +25,6 @@ VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
 
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
-	EffectManager::GetInstance()->Render_EffectManager(GRPDEV);
 	//TileManager::GetInstance()->Render_TileList();
 	//DEVCLASS->Render_End();
 }

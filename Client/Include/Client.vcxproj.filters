@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="01. GameManager">
@@ -172,9 +172,6 @@
     <Filter Include="03. GameObject\05. Tile\Cheonglog\CheonglogEffect">
       <UniqueIdentifier>{f0879c72-92fb-40aa-b302-02bd683ee229}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\08.Rain">
-      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\07. ProJectile\04.Bullet_Chain">
       <UniqueIdentifier>{e95b52e2-480a-4c4e-86e1-3bfb56eabb61}</UniqueIdentifier>
     </Filter>
@@ -216,6 +213,15 @@
     </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
       <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\09. Particle">
+      <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="03. GameObject\06. Effect\05.BlackOut">
+      <UniqueIdentifier>{30ee23f7-31bb-4b55-ade1-56ef856070ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Loading">
+      <UniqueIdentifier>{b455ca32-e0a2-46bc-adeb-4db60f6b32b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\09. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
@@ -415,7 +421,7 @@
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Rain.h">
-      <Filter>03. GameObject\08.Rain</Filter>
+      <Filter>03. GameObject\09. Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Bullet_Chain_Head.h">
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
@@ -459,6 +465,12 @@
     </ClInclude>
     <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\StageBlackOut.h">
+      <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLoading.h">
+      <Filter>99.Loading</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\09. Hurdle</Filter>
@@ -641,7 +653,7 @@
       <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Rain.cpp">
-      <Filter>03. GameObject\08.Rain</Filter>
+      <Filter>03. GameObject\09. Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Bullet_Chain_Head.cpp">
       <Filter>03. GameObject\07. ProJectile\04.Bullet_Chain</Filter>
@@ -682,6 +694,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StageBlackOut.cpp">
+      <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLoading.cpp">
+      <Filter>99.Loading</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
       <Filter>03. GameObject\09. Hurdle</Filter>

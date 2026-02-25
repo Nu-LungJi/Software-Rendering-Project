@@ -99,7 +99,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
 
 		//PlayerUI->PopUp_Interaction_Notice(L"대화하기", TRUE);
-		Speech_BubbleUI->Set_Active(TRUE);
+		//Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}
 	return FALSE;

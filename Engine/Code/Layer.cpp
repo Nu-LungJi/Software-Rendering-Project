@@ -56,10 +56,24 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 	return 0;
 }
 VOID		Layer::LateUpdate_Layer(const FLOAT& _DT) {
-	for (auto& GOBJ : GameObjectList) {
-		if (!GOBJ->Get_ObjectDead() && (!_isTimeSlow))
-			GOBJ->LateUpdate_GameObject(_DT);
+	if (!_isTimeSlow) {
+		for (auto& GOBJ : GameObjectList) {
+			if (!GOBJ->Get_ObjectDead())
+				GOBJ->LateUpdate_GameObject(_DT);
+		}
 	}
+	else {
+		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end(); iter++) {
+			if ((*iter)->Get_ObjectTag() == L"Player" || (*iter)->Get_ObjectTag() == L"PlayerArrow"
+				|| (*iter)->Get_ObjectTag() == L"NPC_TIMESLOW" || (*iter)->Get_ObjectTag() == L"Camera"
+				|| (*iter)->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_UI || (*iter)->Get_ObjectTag() == L"Bow")
+					(*iter)->LateUpdate_GameObject(_DT);
+			else {
+				(*iter)->LateUpdate_GameObject_Component(_DT);
+			}
+		}
+	}
+
 }
 HRESULT Layer::Delete_Object(GameObject* _OBJ) {
 	for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
@@ -115,4 +129,25 @@ _vec3* Layer::Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG)
 	}
 
 	return targetPos;
+}
+
+GameObject* Layer::Search_Target_Object(_vec3* myPos, _float radius, const TCHAR* _TAG)
+{
+	GameObject* target = nullptr;
+	_vec3* targetPos = nullptr;
+	_float minLength = radius + 1.f;
+	for (auto& OBJ : GameObjectList) {
+		if (OBJ->Get_ObjectTag() == _TAG) {
+			_vec3* tempPos = (dynamic_cast<Transform*>(OBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
+			_vec3 vlength = *tempPos - *myPos;
+			float length = D3DXVec3Length(&vlength);
+			if (length < minLength) {
+				minLength = length;
+				targetPos = tempPos;
+				target = OBJ;
+			}
+		}
+	}
+
+	return target;
 }

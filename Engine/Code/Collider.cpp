@@ -17,19 +17,17 @@ HRESULT		Collider::Ready_Component() {
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
 	if (nullptr == ColliderPos)
 		return 0;
-
-	CenterPos = *ColliderPos->Get_Position();
-	CenterPos += Offset;
-	
-	_vec3 ColScale = { fabsf(Scale.x),fabsf(Scale.y),fabsf(Scale.z) };
-
-	MinPoint = { CenterPos.x - ColScale.x, CenterPos.y - ColScale.y, CenterPos.z - ColScale.z };
-	MaxPoint = { CenterPos.x + ColScale.x, CenterPos.y + ColScale.y, CenterPos.z + ColScale.z };
-	// 1차 통합 테스트
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
-	
+	//if (nullptr == ColliderPos)
+	//	return;
+
+	CenterPos = *ColliderPos->Get_Position();
+	//CenterPos += Offset;
+
+	MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
+	MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;
