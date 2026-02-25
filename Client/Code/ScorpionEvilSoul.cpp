@@ -160,6 +160,8 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
+
+	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID ScorpionEvilSoul::Render_GameObject() {

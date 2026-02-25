@@ -31,7 +31,7 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 		MYPOS->y = MYSCALE->y * 0.5f;
 	}
 	
-	Monster::Destory_Tile(this);
+	Monster::Destory_Tile(this);	
 	//GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
@@ -86,7 +86,7 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
@@ -101,7 +101,7 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID Bullet_Standard::Render_GameObject() {
 
-	if (m_tInfo.fTimer[0] < 0.9f)
+	if (m_tInfo.fTimer[0] < 1.f)
 		return;
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());

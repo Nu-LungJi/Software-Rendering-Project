@@ -34,9 +34,9 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
-	Component_Collider->Update_Component(_DT);
+	GameObject::Update_GameObject(_DT);
+	//Component_Buffer->Update_Component(_DT);
+	//Component_Collider->Update_Component(_DT);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
@@ -77,20 +77,27 @@ INT	Bat::Update_GameObject(const _float& _DT)
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
-
-	Monster::Set_TextureList(L"Spr_Monster_BlueEvilBat", &m_tInfo.Textureinfo);
-	m_tInfo.Textureinfo._frameTick += _DT;
-	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
-	{
-		m_tInfo.Textureinfo._frameTick = 0.f;
-		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
-	}
+	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
 		m_tInfo.vDirection.y = 0.f;
+		if(FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilBat", &m_tInfo.Textureinfo)))
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
+		m_tInfo.Textureinfo._frameTick += _DT;
+		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		{
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
+			m_tInfo.Textureinfo._frameTick = 0.f;
+
+			if (fabsf(m_tInfo.vDirection.z) > 0.1f)
+				if (m_tInfo.vDirection.z > 0.f)
+					m_tInfo.Textureinfo._frame += m_tInfo.Textureinfo._Endframe / 2;
+		}
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
@@ -103,7 +110,7 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID Bat::Render_GameObject() {
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 

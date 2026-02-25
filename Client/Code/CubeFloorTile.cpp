@@ -13,24 +13,31 @@ HRESULT CubeFloorTile::Ready_GameObject() {
 }
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 
-	CubeFunction::Grid(m_pTransform, m_bGrid);
+	if (!m_bTrigger) {
+		CubeFunction::Grid(m_pTransform, m_bGrid);
+		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
+		m_bTrigger = true;
+	}
 
-	m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return 0;
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	m_pBuffer->Update_Component(_DT);
+	m_pCollider->Update_Component(_DT);
 
-	return GameObject::Update_GameObject(_DT);
+	return 0;
 }
 VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
-	if (m_bTrigger) return;
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return;
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
+
 	GameObject::LateUpdate_GameObject(_DT);
 }
 
 VOID CubeFloorTile::Render_GameObject()
 {
-
-	if (m_bTrigger) return;
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return;
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -47,17 +54,11 @@ HRESULT CubeFloorTile::Component_Initialize() {
 
 	m_pBuffer		= ADD_COMPONENT_CUBE;
 	m_pTransform	= ADD_COMPONENT_TRANSFORM;
-	m_pTransform->Set_Pos(0.f, 0.f, 0.f);
-
-	// ONLY MINIGAME
-	//m_pTexture		= MINIGAMESCENE->Set_Texture(L"CubeFloorTile", m_bTrigger);
+	m_pTransform->Set_Scale(4.f, 4.f, 4.f);
+	m_pTransform->Set_Pos(0.f, -0.5f, 0.f);
 
 	m_pCollider		= ADD_COMPONENT_COLLIDER;
 	m_pCollider->Set_CenterPos(m_pTransform);
-	//CollisionManager::GetInstance()->Add_ColliderObject(this);
-
-	//if (m_bTrigger)
-	//	m_pTexture->Import_TextureFromFolder(L"../../Tile/CubeFloorTile");
 
 	m_bTrigger = false;
 
@@ -66,7 +67,7 @@ HRESULT CubeFloorTile::Component_Initialize() {
 
 CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid)
 {
-	CubeFloorTile* pCubeFloorTile = new CubeFloorTile(pGraphicDev);
+	CubeFloorTile* pCubeFloorTile =DBG_NEWW CubeFloorTile(pGraphicDev);
 
 	pCubeFloorTile->m_bGrid = _Grid;
 

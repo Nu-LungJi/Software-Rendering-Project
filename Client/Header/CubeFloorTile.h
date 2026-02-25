@@ -46,7 +46,7 @@ public:
 private:
     virtual  void            Free();
 
-    bool               m_bTrigger;
+    bool               m_bTrigger = false;
 };
 
 class CubeFunction

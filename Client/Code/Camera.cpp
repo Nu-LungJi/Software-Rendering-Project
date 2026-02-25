@@ -263,9 +263,14 @@ BOOL CameraObject::IsIn_Frustum(GameObject* pObj)
 {
 	_vec3 vPos = *POS(pObj);
 	_vec3 vScale = *SCALE(pObj);
-	_float fDis = (vScale.x > vScale.y) ? (vScale.x > vScale.z ? vScale.x : vScale.z) : (vScale.y > vScale.z ? vScale.y : vScale.z);
+	_float fRadius = vScale.x;
+	fRadius = (vScale.x > vScale.y) ? vScale.x :
+		(vScale.y > vScale.z) ?  vScale.y : vScale.z;
+	fRadius = (fRadius < 10.f) * 10.f;
+
+	//_float fDis = (vScale.x > vScale.y) ? (vScale.x > vScale.z ? vScale.x : vScale.z) : (vScale.y > vScale.z ? vScale.y : vScale.z);
 	for (UINT i = 0; i < (UINT)FRUSTUMPLANE::End; ++i)
-		if (D3DXPlaneDotCoord(FrustumPlane, &vPos) <= fDis)
+		if (D3DXPlaneDotCoord(&FrustumPlane[i], &vPos) <= fRadius)
 			return FALSE;
 	
 	return TRUE;
