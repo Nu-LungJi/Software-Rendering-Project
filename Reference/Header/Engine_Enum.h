@@ -7,7 +7,7 @@ namespace Engine
 	enum class TIMERTYPE		{ TIMER_WORLD, TIMER_FPS, TIMER_END };
 	// 타이머 필요시에 Enum값(T) 추가 후, Activate_Timer(TIMERTYPE::T) [타이머 초기화] -> Update_TimeManager(TIMERTYPE::T) [타이머 카운팅]
 
-	enum class CHANNELID		{ SOUND_BGM01, SOUND_BGM02, SOUND_BGM03, SOUND_EFFECT01, SOUND_EFFECT02, SOUND_EFFECT03, SOUND_END };
+	enum class CHANNELID		{ SOUND_BGM01, SOUND_BGM02, SOUND_BGM03, SOUND_EFFECT01, SOUND_EFFECT02, SOUND_EFFECT03, SOUND_EFFECT04, SOUND_EFFECT05, SOUND_EFFECT06, SOUND_EFFECT07, SOUND_EFFECT08, SOUND_END };
 
 	enum class SCENE_TYPE		{ SCENE_LOGO, SCENE_STAGE, SCENE_END };
 
@@ -40,11 +40,11 @@ namespace Engine
 	enum	   TILEMODE_CHANGE  { MODE_TILE, MODE_CUBE, MODE_OBJECT, MODE_END };
 
 
-	enum class EFFECT_OWNER { PLAYER, MONSTER, ENVIROMENT, BOSS, UI };
+	enum class EFFECT_OWNER { PLAYER, MONSTER, ENVIROMENT, BOSS, UI, SCENE };
 	/////////////////////////////////// KEYMANAGER ///////////////////////////////////
 	enum class KEY_STATE { DOWN, HOLD, UP, NONE };
 	////////////////////////////////////////////////////////////////////////////////////
-
+	enum class EFFECT_RENDER { PLAYER_EFFECT, MONSTER_EFFECT, BOSS_EFFECT, UI_EFFECT };
 	//////////////////////////////////////////////////////////////// Customized
 	enum WINMODE { MODE_FULL, MODE_WIN };
 

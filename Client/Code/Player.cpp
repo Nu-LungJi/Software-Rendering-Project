@@ -55,7 +55,8 @@ HRESULT Player::Ready_GameObject() {
 	_slowTime			= 4.f;
 	_hit_inv_Time		= 2.f;
 	_dash_inv_Time		= 2.f;
-	
+	//연출용
+	CameraMove = false;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -69,7 +70,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	//Component_Transform->Set_Pos({  64.595f, 0.263f, 90.137f }); // 광윤 디버깅용
+	//Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -224,6 +225,9 @@ INT	Player::Update_GameObject(const _float& _DT) {
 }
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
+
+	CheonLog_Spawn();
+
 	if (_isStop) return;
 	Set_Effect(_DT);
 }
@@ -879,23 +883,23 @@ void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	if (MOUSE_RBUTTON && _dashstock > 0) {
-		_pState = pState::STATE_DASH;
-		_dashStart = true;
-		_frame = 1;
-		_dashstock--;
-		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-		_isInvincible = true;
-	}
-	else if (mouseLB) {
-		_pState = pState::STATE_ATTACK;
-		_attackDelay = 2.0f;
-		_frame = 1;
-	}
-	else if (KEY_HOLD(DIK_SPACE)) {
-		_pState = pState::STATE_ATTACK;
-		_frame = 1;
-	}
+	//if (MOUSE_RBUTTON && _dashstock > 0) {
+	//	_pState = pState::STATE_DASH;
+	//	_dashStart = true;
+	//	_frame = 1;
+	//	_dashstock--;
+	//	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+	//	_isInvincible = true;
+	//}
+	//else if (mouseLB) {
+	//	_pState = pState::STATE_ATTACK;
+	//	_attackDelay = 2.0f;
+	//	_frame = 1;
+	//}
+	//else if (KEY_HOLD(DIK_SPACE)) {
+	//	_pState = pState::STATE_ATTACK;
+	//	_frame = 1;
+	//}
 }
 
 void Player::SKILL_NONE(const _float& _DT)
@@ -1458,6 +1462,15 @@ Player* Player::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return PLAYER;
+}
+void Player::CheonLog_Spawn()
+{
+	if (CameraMove)
+	{
+		_pState = pState::STATE_IDLE;
+		_eState = eState::STATE_RUN_UP;
+		_see	= pSee::SEE_UP;
+	}
 }
 _vec3 Player::Get_MouseDir()
 {

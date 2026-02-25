@@ -26,6 +26,8 @@ public:		// Trigger Function
 
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Speech_Bubble = TRUE; }
 
+	VOID			Activate_BossFilter(BOOL _Filter);
+
 	VOID			All_UI_FadeOUT();
 	VOID			All_UI_FadeIN();
 

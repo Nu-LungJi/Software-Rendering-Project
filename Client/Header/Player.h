@@ -169,6 +169,10 @@ public:
 
 	bool	Get_Invincible() { return _isInvincible; }
 	void	Set_Invincible(bool value) { _isInvincible = value;  }
+	
+	void			Set_CameraMove(bool Came) { CameraMove = Came; }
+	bool			Get_CameraMove()		  { return CameraMove; }
+	void			CheonLog_Spawn();
 
 	TCHAR*	Get_FileName() { return FileName; }
 
@@ -200,8 +204,10 @@ private:
 	void			Set_Effect(const _float& _DT);
 	void			Calc_Near();
 
+	
 private:
 	bool			Debug;
+	bool			CameraMove;
 	float			_cameraAngle;
 
 	pState			_pState;

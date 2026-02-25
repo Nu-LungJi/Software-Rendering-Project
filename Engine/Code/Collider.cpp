@@ -15,9 +15,8 @@ HRESULT		Collider::Ready_Component() {
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
-
-
-	// 1Â÷ ÅëÇÕ Å×½ºÆ®
+	if (nullptr == ColliderPos)
+		return 0;
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
@@ -27,8 +26,8 @@ VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
 	CenterPos = *ColliderPos->Get_Position();
 	//CenterPos += Offset;
 
-	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
-	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
+	MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
+	MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;

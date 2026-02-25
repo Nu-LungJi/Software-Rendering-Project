@@ -50,6 +50,7 @@ private:
 
 	_bool					        m_bCheck;
 	_bool							m_bSpin;
+	_bool							m_bBgm;
 private:
 	LEAF_ATTACK						m_eLeaf;
 private:

@@ -19,7 +19,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	// <ÇÃ·¹ÀÌ¾î ¾÷µ¥ÀÌÆ® ½ÃÁ¡>
+	// <í”Œë ˆì´ì–´ ì—…ë°ì´íŠ¸ ì‹œì >
 
 	GameObject::Update_GameObject(_DT);
 

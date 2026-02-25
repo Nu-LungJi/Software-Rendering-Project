@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "FinalBoss.h"
+#include "BossFireBall.h"
 
 #define ANIMATION_SUPPORTER_IDLE 24
 
@@ -29,19 +30,25 @@ public:
 	VOID	Supporter_Transform(CONST FLOAT& _DT);
 	VOID	Generate_FireBall(CONST FLOAT& _DT);
 
-private:
-	FinalBoss* Boss;
+	VOID	Set_StartAngle(FLOAT _Angle)	{ CurrentAngle = _Angle; };
+	VOID	Set_TickAngle(FLOAT _Angle)		{ TickAngle = _Angle; };
+	VOID	Set_StartPos(_vec3 _Pos)		{ Component_Transform->Set_Pos(_Pos); };
 
+private:
 	vector<LPDIRECT3DTEXTURE9>	Animation_IdleTexList;
 	INT							Animation_CurrentIndex;
 	INT							Animation_PreviousIndex;
+
+	FLOAT	Effect_Timer;
 
 	FLOAT	Animation_Timer;
 	INT		Animation_FrameCount;
 	FLOAT	Animation_Interval;
 
 	_vec3	Direction;
-	_vec3	PosinDirection[3];
+	FLOAT	CurrentAngle;
+	FLOAT	TickAngle;
+	INT		FBNumbering;
 
 private:
 	Buffer*			Component_Buffer;

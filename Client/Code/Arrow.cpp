@@ -544,7 +544,6 @@ Arrow* Arrow::Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int
 BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 {
     wstring Tag = _Other->Get_ObjectTag();
-
     int hp = Component_Collider->Get_Hp();
     int atk = COLLIDER(_Other)->Get_Att();
 
@@ -558,6 +557,20 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     else if (Tag == L"CheonLog") {
         atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        if (_type == ArrowType::EvilHeadCharging) return TRUE;
+        Component_Collider->Set_Hp(hp - atk);
+
+        return TRUE;
+    }
+    else if (Tag == L"CheonLog") {
+        atk = 1.f;
+        Component_Collider->Set_Hp(hp - atk);
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        return TRUE;
+    }
+    else if (_Other->Get_ObjectTag() == L"Docheol") {
+        atk = 1.f;
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
 

@@ -42,7 +42,8 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
-		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+		if (m_tInfo.Textureinfo._Endframe > 0)
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 
 	if (ObjectDead)
 		return -1;
