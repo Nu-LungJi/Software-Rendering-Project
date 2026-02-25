@@ -81,7 +81,7 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDE
 		for (auto& EE : Container_BossEffect)
 			EE->Render_GameObject();
 	}
-	if (_RENDER == EFFECT_RENDER::BOSS_EFFECT) {
+	if (_RENDER == EFFECT_RENDER::UI_EFFECT) {
 		for (auto& UE : Container_UIEffect)
 			UE->Render_GameObject();
 	}

@@ -92,7 +92,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT)		{
 	
 	if (Action_Timer > 3.f) {
 		srand(time(NULL));
-		Action_Selector = rand() % 4 + 1;
+		Action_Selector = 1;//rand() % 4 + 1;
 		Action_Timer = 0.f;
 	}
 	if (KEY_DOWN(DIK_I)) Component_Collider->Set_Hp(500);
@@ -695,7 +695,7 @@ VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
 
 		FLOAT SectorAngle = 20.f;
 
-		if (RSwing_Timer > 0.10f && FIREBALL_TRIGGER[(INT)FIREBALL::ANGLE_GENERATE]) {
+		if		(RSwing_Timer > 0.10f && FIREBALL_TRIGGER[(INT)FIREBALL::ANGLE_GENERATE]) {
 			GeneratePos = { Component_Collider->Get_CenterPos()->Get_Position()->x - 0.5f, Component_Collider->Get_CenterPos()->Get_Position()->y - 1.f, Component_Collider->Get_CenterPos()->Get_Position()->z - 4.f };
 			_vec3 PlayerPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")
 				->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() - GeneratePos;
@@ -916,11 +916,118 @@ VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
 			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
 
 			FIREBALL_TRIGGER[(INT)FIREBALL::THIRD_FIREBALL] = FALSE;
+		}
+		else if (RSwing_Timer > 0.65f && FIREBALL_TRIGGER[(INT)FIREBALL::FOURTH_FIREBALL]) {
+
+			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
+
+			wstring temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FOURTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::FOURTH_FIREBALL] = FALSE;
+		}
+		else if (RSwing_Timer > 0.75f && FIREBALL_TRIGGER[(INT)FIREBALL::FIFTH_FIREBALL]) {
+			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
+
+			wstring temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"FIFTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::FIFTH_FIREBALL] = FALSE;
+		}
+		else if (RSwing_Timer > 0.85f && FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL]) {
+			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
+
+			wstring temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree + 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 5);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 15);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, temp.c_str());
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 25);
+			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
+
+			FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL] = FALSE;
 
 			RSwing_Timer = 0.f;
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_CreateFireBall = false;
 		}
+		
 	}		
 }
 VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
