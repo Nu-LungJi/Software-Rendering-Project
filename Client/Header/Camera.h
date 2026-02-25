@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-enum class FRUSTUMPLANE : uint8_t { Left = 0, Right, bottom, Top, Near, Far, End };
+enum class FRUSTUMPLANE : uint8_t { Far = 0, Left, Right, bottom, Top, Near, End };
 
 class CameraObject : public GameObject {
 private:
@@ -21,7 +21,7 @@ public:
 
 	VOID			 Update_Frustum();
 	const D3DXPLANE* Get_FrustumPlane(FRUSTUMPLANE side = FRUSTUMPLANE::End) { return (side == FRUSTUMPLANE::End) ? FrustumPlane : &FrustumPlane[(uint8_t)side]; }
-	BOOL			 IsIn_Frustum(GameObject* pObj);
+	BOOL			 IsIn_Frustum(_vec3 _vPos, _float _fRadius);
 
 	_matrix*		Get_ViewMatrix() { return &ViewMatrix; }
 	_matrix*		Get_ProjMatrix() { return &ProjMatrix; }

@@ -31,6 +31,9 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
+
+	//if (!IsIn_Cam) return 0;
+
 	GameObject::Update_GameObject(_DT);
 
 	//if (KEY_DOWN(DIK_H))
@@ -103,6 +106,12 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
+	//if (m_pCam == nullptr)
+	//	m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
+	//IsIn_Cam = m_pCam->IsIn_Frustum(*Component_Transform->Get_Position(), 10.f);
+
+	if (!IsIn_Cam) return;
+
 	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
@@ -163,7 +172,6 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID EvilSlime::Render_GameObject() {
 	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 

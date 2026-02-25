@@ -1,7 +1,7 @@
 #include "CubeFloorTile.h"
 #include "../Include/PCH.h"
 
-CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_eTileState(TILE_STATE::STATE_END), m_iTileNumber(0), m_eTileSide(TILE_SIDE::TILE_END) {}
+CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr){}
 CubeFloorTile::CubeFloorTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CubeFloorTile::~CubeFloorTile() {}
 
@@ -14,21 +14,45 @@ HRESULT CubeFloorTile::Ready_GameObject() {
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 
 	if (!m_bTrigger) {
+
+		_vec3 vPos = *m_pTransform->Get_Position();
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 		CubeFunction::Grid(m_pTransform, m_bGrid);
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 		m_bTrigger = true;
 	}
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return 0;
+	if (!IsIn_Cam) return 0;
 
-	m_pBuffer->Update_Component(_DT);
-	m_pCollider->Update_Component(_DT);
+	GameObject::Update_GameObject(_DT);
+	//m_pBuffer->Update_Component(_DT);
+	//m_pCollider->Update_Component(_DT);
 
 	return 0;
 }
 VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return;
+	if (m_pCam == nullptr)	
+		m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
+	IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), 10.f);
+
+	if (!IsIn_Cam) return;
+
+	if (!m_bTrigger) {
+
+		_vec3 vPos = *m_pTransform->Get_Position();
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
+		CubeFunction::Grid(m_pTransform, m_bGrid);
+		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
+		m_bTrigger = true;
+	}
+	/*m_fTimer += _DT;
+
+	_float fRadian = m_fTimer * D3DX_PI * 6.f;
+	AlphaZValue = Monster::BillBoard(m_pTransform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
+*/
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -37,7 +61,6 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 VOID CubeFloorTile::Render_GameObject()
 {
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this))	return;
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -54,7 +77,7 @@ HRESULT CubeFloorTile::Component_Initialize() {
 
 	m_pBuffer		= ADD_COMPONENT_CUBE;
 	m_pTransform	= ADD_COMPONENT_TRANSFORM;
-	m_pTransform->Set_Scale(4.f, 4.f, 4.f);
+	m_pTransform->Set_Scale(4.f, 1.f, 4.f);
 	m_pTransform->Set_Pos(0.f, -0.5f, 0.f);
 
 	m_pCollider		= ADD_COMPONENT_COLLIDER;

@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 #include "Camera.h"
 
-CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV), StopMove(true){}
+CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), StopMove(true), FrustumPlane{} {}
 CameraObject::CameraObject(const GameObject& _RHS)		: GameObject(_RHS)		{}
 CameraObject::~CameraObject() {}
 
@@ -259,21 +259,21 @@ VOID CameraObject::Update_Frustum()
 	}
 }
 
-BOOL CameraObject::IsIn_Frustum(GameObject* pObj)
+BOOL CameraObject::IsIn_Frustum(_vec3 _vPos, _float _fRadius)
 {
-	_vec3 vPos = *POS(pObj);
-	_vec3 vScale = *SCALE(pObj);
-	_float fRadius = vScale.x;
-	fRadius = (vScale.x > vScale.y) ? vScale.x :
-		(vScale.y > vScale.z) ?  vScale.y : vScale.z;
-	fRadius = (fRadius < 10.f) * 10.f;
+	if (this == NULL)	return false;
 
-	//_float fDis = (vScale.x > vScale.y) ? (vScale.x > vScale.z ? vScale.x : vScale.z) : (vScale.y > vScale.z ? vScale.y : vScale.z);
-	for (UINT i = 0; i < (UINT)FRUSTUMPLANE::End; ++i)
-		if (D3DXPlaneDotCoord(&FrustumPlane[i], &vPos) <= fRadius)
+	for (uint8_t i = 0; i < (uint8_t)FRUSTUMPLANE::End; ++i)
+	{
+		if (FrustumPlane[i].a * _vPos.x +
+			FrustumPlane[i].b * _vPos.y +
+			FrustumPlane[i].c * _vPos.z +
+			FrustumPlane[i].d < -_fRadius)
+		{
 			return FALSE;
-	
-	return TRUE;
+		}
+	}
+	return true;
 }
 
 

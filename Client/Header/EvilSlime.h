@@ -40,6 +40,8 @@ private:
 
 	MONINFO m_tInfo;
 	_vec3	m_vFissionDst;
+	CameraObject* m_pCam;
+	bool	IsIn_Cam =true;
 
 	VOID State_Summon(const _float& _DT);
 	VOID State_Idle(const _float& _DT);

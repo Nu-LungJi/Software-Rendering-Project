@@ -109,10 +109,13 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 {
 	//TCHAR Classname[256];
 	//swprintf_s(Classname, 256, L"%S", typeid(*pMonster).name());
-
 	//CONST TCHAR* pName = wcschr(Classname, L' ');
-
 	//pName = (pName != nullptr) ? pName + 1 : Classname;
+
+	TCHAR Classname[256];
+	swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
+	CONST TCHAR* pName = wcschr(Classname, L' ');
+	pName = (pName != nullptr) ? pName + 1 : Classname;
 
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);

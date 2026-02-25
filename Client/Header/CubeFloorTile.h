@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
+class CameraObject;
+
 class CubeFloorTile :
     public GameObject
 {
@@ -18,23 +20,23 @@ public:
     virtual			VOID		Render_GameObject();
 
     //이건.. 지형이 가지고 있는 타일의 인덱스 정보를 담기위함 해당 인덱스가 가진 위치위에 이 타일이 놓여있다는걸 확인하기 위해서
-    int             Get_TileNumber()                    { return m_iTileNumber; }
-    void            Set_TileNumber(_int iTileNumber)    { m_iTileNumber = iTileNumber; }
-    void            Set_TileState(TILE_STATE eid)       { m_eTileState = eid; }
+    //int             Get_TileNumber()                    { return m_iTileNumber; }
+    //void            Set_TileNumber(_int iTileNumber)    { m_iTileNumber = iTileNumber; }
+    //void            Set_TileState(TILE_STATE eid)       { m_eTileState = eid; }
 
 private:
     HRESULT			Component_Initialize();
-    TILE_STATE      m_eTileState;
-    TILE_SIDE       m_eTileSide;
+    //TILE_STATE      m_eTileState;
+    //TILE_SIDE       m_eTileSide;
 
     const  _tchar*      m_pTileName;
 
     Buffer*             m_pBuffer;
     Transform*          m_pTransform;
-    Texture*            m_pTexture;
     Collider*           m_pCollider;
 
-    int                 m_iTileNumber;
+    //Texture*            m_pTexture;
+    //int                 m_iTileNumber;
 public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
@@ -46,7 +48,12 @@ public:
 private:
     virtual  void            Free();
 
-    bool               m_bTrigger = false;
+
+private:
+    CameraObject*   m_pCam = nullptr;
+    bool            m_bTrigger = false;
+    bool            IsIn_Cam = true;
+    _float          m_fTimer = 0.f;
 };
 
 class CubeFunction

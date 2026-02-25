@@ -6,6 +6,10 @@ Bat::~Bat() {}
 
 HRESULT Bat::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+	TCHAR Classname[256];
+	swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
+	CONST TCHAR* pName = wcschr(Classname, L' ');
+	pName = (pName != nullptr) ? pName + 1 : Classname;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 
@@ -77,7 +81,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -109,8 +112,6 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID Bat::Render_GameObject() {
-
-	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 

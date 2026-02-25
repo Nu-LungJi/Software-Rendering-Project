@@ -96,8 +96,6 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
-	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
-
 	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
@@ -167,8 +165,6 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 VOID ScorpionEvilSoul::Render_GameObject() {
 	if (!ObjectDead)
 	{
-		if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
-
 		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
