@@ -103,6 +103,19 @@
 #define SCORPIONBULLET_CHAINBULLET_NUM			6
 #pragma endregion
 
+#pragma region EvilFrog
+#define EVILFROGIMGX									63
+#define EVILFROGIMGY									127
+#define EVILFROGIMG_ASPECTRATIO						((FLOAT)EVILFROGIMGY / (FLOAT)EVILFROGIMGX)
+
+#define EVILFROG_WIDTH									1.f
+#define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
+
+#define EVILFROG_SPEED									2.f
+#define EVILFROG_HP										100.f
+#define EVILFROG_TRACKINGDIS							20.f
+#define EVIL_FROG_TRACKINGMIN							10.f
+
 #pragma region BULLET_CHAIN
 #define BULLET_CHAIN_IMGX						120
 #define BULLET_CHAIN_IMGY						120
