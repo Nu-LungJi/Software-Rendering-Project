@@ -23,7 +23,6 @@
 
 // 1.	씬 시작시 배치된 오브젝트의 경우 Create 도중 이미지를 가져올 수 없음	( RESOURCEMANAGER 가 LAYER 배치보다 후순위)
 // 2.	렌더링 리스트에 추가된 후 삭제되지 않도록 조건을 미리 걸어야함		( 오브젝트 삭제가 Update 이후, Late_Update 전에 이루어짐)
-// 3.	주석이 깨지는 현상 발견, 이번에는 괜찮기를..
 
 #pragma region Bat
 #define BATIMGX						289
@@ -212,6 +211,9 @@ enum MONSTER_STATE
 
 	EVILSLIME_FISSION,
 
+	MONSTER_STATE_MINIGAME_IDLE,
+	MONSTER_STATE_MINIGAME_MOVE,
+
 	//BOSS_DOCHEOL_SUMMON,
 	//BOSS_DOCHEOL_HANDUPAPPEAR,
 	//BOSS_DOCHEOL_APPEAR,
@@ -224,11 +226,6 @@ enum MONSTER_STATE
 	MONSTER_STATE_END
 };
 
-enum MONSTER_STATISTICS {
-	MONSTER_STAT_HP,
-	MONSTER_STAT_ATK,
-	MONSTER_STAT_END
-};
 
 typedef struct tagTextureInfo
 {
@@ -282,7 +279,7 @@ typedef struct tagRandomGenerator {
 	return Seed[1] + y;
 	}
 
-	static _float Get_float(_float _Dst, _float _Src, void* _Seed = nullptr)
+	static _float Get_float(_float _Dst, _float _Src, void* _Seed = nullptr)	// A 이상 B 이하 (숫자 순서 상관없음)
 	{
 		if (_Dst == _Src) return _Dst;
 
@@ -291,13 +288,13 @@ typedef struct tagRandomGenerator {
 			: _Src + ((Xorshift128p(_Seed) % 1001) * 0.001f) * (_Dst - _Src);
 	}
 
-	static int Get_int(int _Dst, int _Src, void* _Seed = nullptr)
+	static int Get_int(int _Dst, int _Src, void* _Seed = nullptr)				// A 이상 B 이하  (숫자 순서 상관없음)
 	{
 		if (_Dst == _Src) return _Dst;
 
 		return (_Dst < _Src) ?
-			_Dst + (int)Xorshift128p(_Seed) % (_Src - _Dst + 1)
-			: _Src + (int)Xorshift128p(_Seed) % (_Dst - _Src + 1);
+			_Dst + (int)Xorshift128p(_Seed) % (_Src - _Dst+1)
+			: _Src + (int)Xorshift128p(_Seed) % (_Dst - _Src+1);
 	}
 }RANDOM;
 
@@ -306,7 +303,6 @@ class Monster
 public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG, GameObject*& GameObj);
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
-	static	_vec3		Normalize(_vec3 vec);
 
 public:
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
@@ -340,9 +336,17 @@ public:
 
 		Transform* pTransCom = static_cast<Transform*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		pTransCom->Set_Pos(_vPos);
-		*pTransCom->Get_Scale() *= _fScalemult;
 
-		pTransCom->Get_Position()->y = pTransCom->Get_Scale()->y * 0.5f;
+		_vec2	vScale = { pTransCom->Get_Scale()->x,pTransCom->Get_Scale()->y};
+
+		D3DXVec2Normalize(&vScale, &vScale);
+		vScale *= _fScalemult;
+
+		pTransCom->Set_Scale({ vScale.x, vScale.y, _fScalemult });
+
+		//*pTransCom->Get_Scale() *= _fScalemult;
+
+		//pTransCom->Get_Position()->y = pTransCom->Get_Scale()->y * 0.5f;
 		//static_cast<Collider*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Scale();
 		return MST;
 	}

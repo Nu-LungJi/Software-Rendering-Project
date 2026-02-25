@@ -16,20 +16,28 @@ HRESULT EvilSlime::Ready_GameObject() {
 }
 INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
-	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else
+	{
+		MYPOS->y = MYSCALE->y * 0.5f;
+	}
 
-	// <플레이어 업데이트 시점>
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
 	GameObject::Update_GameObject(_DT);
 
-
-	if (KEY_DOWN(DIK_H))
-	{
-		m_tInfo.bTrigger[2] = true;
-		m_tInfo.Change_State(EVILSLIME_FISSION);
-	}
-
+	//if (KEY_DOWN(DIK_H))
+	//{
+	//	m_tInfo.bTrigger[2] = true;
+	//	m_tInfo.Change_State(EVILSLIME_FISSION);
+	//}
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{

@@ -103,9 +103,6 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\01. Bat">
       <UniqueIdentifier>{47a98307-749c-40cc-a1ff-9d9504e380c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
-      <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\01. Player\01. Arrow">
       <UniqueIdentifier>{876f658b-2647-4f66-9e4e-b05122adf8d0}</UniqueIdentifier>
     </Filter>
@@ -219,6 +216,12 @@
     </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Projectile">
       <UniqueIdentifier>{b8dd36a8-5a45-4a4f-8733-a98523d3af54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\09. Hurdle">
+      <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
+      <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -457,6 +460,9 @@
     <ClInclude Include="..\Header\BossFireBall.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Hurdle.h">
+      <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -676,6 +682,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\BossFireBall.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Hurdle.cpp">
+      <Filter>03. GameObject\09. Hurdle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

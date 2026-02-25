@@ -12,10 +12,22 @@ HRESULT Fireball::Ready_GameObject() {
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
 {
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else
+	{
+		MYPOS->y = MYSCALE->y * 0.5f;
+	}
+
+
 	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
-
-	ObjectTAG = L"MonsterBullet";
 
 	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
 	{

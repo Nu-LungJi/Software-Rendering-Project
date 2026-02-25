@@ -1,10 +1,10 @@
 #include "../Include/PCH.h"
 
-ScorpoinEvilSoul::ScorpoinEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-ScorpoinEvilSoul::ScorpoinEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
-ScorpoinEvilSoul::~ScorpoinEvilSoul() {}
+ScorpionEvilSoul::ScorpionEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+ScorpionEvilSoul::ScorpionEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
+ScorpionEvilSoul::~ScorpionEvilSoul() {}
 
-HRESULT ScorpoinEvilSoul::Ready_GameObject() {
+HRESULT ScorpionEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
@@ -15,9 +15,21 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 
 	return S_OK;
 }
-INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
+INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 {
-	MYPOS->y = MYSCALE->y * 0.5f;
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else
+	{
+		MYPOS->y = MYSCALE->y * 0.5f;
+	}
+
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
@@ -33,27 +45,27 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	default:
 		break;
 	//case MONSTER_STATE_SUMMON:
-	//	ScorpoinEvilSoul::State_Summon(_DT);
+	//	ScorpionEvilSoul::State_Summon(_DT);
 	//	break;
 	case MONSTER_STATE_APPEAR:
-		ScorpoinEvilSoul::State_Appear(_DT);
+		ScorpionEvilSoul::State_Appear(_DT);
 		break;
 	case MONSTER_STATE_DISAPPEAR:
 		break;
 	case MONSTER_STATE_IDLE:
-		ScorpoinEvilSoul::State_Idle(_DT);
+		ScorpionEvilSoul::State_Idle(_DT);
 		break;
 	case MONSTER_STATE_TRACKING:
-		ScorpoinEvilSoul::State_Tracking(_DT);
+		ScorpionEvilSoul::State_Tracking(_DT);
 		break;
 	case MONSTER_STATE_CASTING:
-		ScorpoinEvilSoul::State_Casting(_DT);
+		ScorpionEvilSoul::State_Casting(_DT);
 		break;
 	case MONSTER_STATE_CHANNELING:
-		ScorpoinEvilSoul::State_Channeling(_DT);
+		ScorpionEvilSoul::State_Channeling(_DT);
 		break;
 	case MONSTER_STATE_DEAD:
-		ScorpoinEvilSoul::State_Dead();
+		ScorpionEvilSoul::State_Dead();
 		break;
 	}
 
@@ -76,7 +88,7 @@ INT	ScorpoinEvilSoul::Update_GameObject(const _float& _DT)
 	}
 	return 0;
 }
-VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
+VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	
 	GameObject::LateUpdate_GameObject(_DT);
 	
@@ -147,7 +159,7 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	}
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
-VOID ScorpoinEvilSoul::Render_GameObject() {
+VOID ScorpionEvilSoul::Render_GameObject() {
 	if (!ObjectDead)
 	{
 
@@ -168,7 +180,7 @@ VOID ScorpoinEvilSoul::Render_GameObject() {
 		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	}
 }
-HRESULT ScorpoinEvilSoul::Component_Initialize() {
+HRESULT ScorpionEvilSoul::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
@@ -182,16 +194,16 @@ HRESULT ScorpoinEvilSoul::Component_Initialize() {
 
 	return S_OK;
 }
-ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
-	ScorpoinEvilSoul* MST = new ScorpoinEvilSoul(_GRPDEV);
+ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+	ScorpionEvilSoul* MST = new ScorpionEvilSoul(_GRPDEV);
 	if (FAILED(MST->Ready_GameObject())) {
-		MSG_BOX("Cannot Create ScorpoinEvilSoul.");
+		MSG_BOX("Cannot Create ScorpionEvilSoul.");
 		Safe_Release(MST);
 		return nullptr;
 	}
 	return MST;
 }
-BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
+BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
@@ -201,20 +213,20 @@ BOOL ScorpoinEvilSoul::OnCollisionEnter(GameObject* _Other)
 
 	return FALSE;
 }
-BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other)
+BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other)
 {
 	return FALSE;
 }
-BOOL ScorpoinEvilSoul::OnCollisionExit(GameObject* _Other)
+BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)
 {
 	return FALSE;
 }
-VOID ScorpoinEvilSoul::Free() {
+VOID ScorpionEvilSoul::Free() {
 
 	GameObject::Free();
 }
 
-VOID ScorpoinEvilSoul::State_Summon(const _float& _DT)
+VOID ScorpionEvilSoul::State_Summon(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
 	if (nullptr == m_tInfo.pGameObj[0])
@@ -244,7 +256,7 @@ VOID ScorpoinEvilSoul::State_Summon(const _float& _DT)
 		}
 }
 
-VOID ScorpoinEvilSoul::State_Appear(const _float& _DT)
+VOID ScorpionEvilSoul::State_Appear(const _float& _DT)
 {
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
@@ -258,7 +270,7 @@ VOID ScorpoinEvilSoul::State_Appear(const _float& _DT)
 	}
 }
 
-VOID ScorpoinEvilSoul::State_Idle(const _float& _DT)
+VOID ScorpionEvilSoul::State_Idle(const _float& _DT)
 {
 	if (m_tInfo.pGameObj[0] == nullptr)
 		m_tInfo.pGameObj[0] = (Monster::Set_Target(L"Player"));
@@ -270,7 +282,7 @@ VOID ScorpoinEvilSoul::State_Idle(const _float& _DT)
 		m_tInfo.Change_State(MONSTER_STATE_TRACKING);
 }
 
-VOID ScorpoinEvilSoul::State_Tracking(const _float& _DT)
+VOID ScorpionEvilSoul::State_Tracking(const _float& _DT)
 {
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
@@ -301,7 +313,7 @@ VOID ScorpoinEvilSoul::State_Tracking(const _float& _DT)
 	}
 }
 
-VOID ScorpoinEvilSoul::State_Casting(const _float& _DT)
+VOID ScorpionEvilSoul::State_Casting(const _float& _DT)
 {
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
@@ -326,7 +338,7 @@ VOID ScorpoinEvilSoul::State_Casting(const _float& _DT)
 	}
 }
 
-VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
+VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 {
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
@@ -365,7 +377,7 @@ VOID ScorpoinEvilSoul::State_Channeling(const _float& _DT)
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 	}
 }
-VOID ScorpoinEvilSoul::State_Dead()
+VOID ScorpionEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
 	ObjectDead = true;

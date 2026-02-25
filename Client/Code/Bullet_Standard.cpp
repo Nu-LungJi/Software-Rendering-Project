@@ -18,13 +18,23 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else
+	{
+		MYPOS->y = MYSCALE->y * 0.5f;
+	}
+	
 	Monster::Destory_Tile(this);
 	GameObject::Update_GameObject(_DT);
-
-	ObjectTAG = L"MonsterBullet";
-
-	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x* 0.5f, 1.f, MYSCALE->x * 0.5f);
+	
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.fTimer[0] = 5.f;

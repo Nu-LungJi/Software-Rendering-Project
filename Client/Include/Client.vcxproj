@@ -211,6 +211,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
+    <ClInclude Include="..\Header\Hurdle.h" />
     <ClInclude Include="..\Header\MainUI.h" />
     <ClInclude Include="..\Header\BossFireBall.h" />
     <ClInclude Include="..\Header\MonsterTest.h">
@@ -367,6 +368,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\Hurdle.cpp" />
     <ClCompile Include="..\Code\MainUI.cpp" />
     <ClCompile Include="..\Code\BossFireBall.cpp" />
     <ClCompile Include="..\Code\MonsterTest.cpp">

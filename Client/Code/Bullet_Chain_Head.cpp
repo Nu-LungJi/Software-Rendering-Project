@@ -14,17 +14,16 @@ HRESULT Bullet_Chain_Head::Ready_GameObject() {
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
-	Monster::Destory_Tile(this);
-
-	MYPOS->y = 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
-
-	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo)))
-	{
-		ObjectDead = true;
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
 		return 0;
 	}
-
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	
+	Monster::Destory_Tile(this);
 
 	m_tInfo.fTimer[0] += _DT;
 	if (m_tInfo.fTimer[0] >= 2.f)
@@ -48,7 +47,6 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	ObjectTAG = L"MonsterBullet";
 	return 0;
 }
 
@@ -113,6 +111,11 @@ HRESULT Bullet_Chain_Head::Component_Initialize() {
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Scale(BULLET_CHAIN_WIDTH, 1.f, BULLET_CHAIN_HEIGHT);
+
+	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo))) {
+		ObjectDead = true;
+		return 0;
+	}
 
 	return S_OK;
 }

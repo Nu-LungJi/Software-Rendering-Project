@@ -6,6 +6,7 @@ HRESULT	MiniGameScene::Ready_Scene() {
 	Scene::Ready_Scene();
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Monster");
 	if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
 	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
 	if (FAILED(Ready_UserInterface_Layer()))		return E_FAIL;
@@ -28,20 +29,22 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 
 	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 
-	for (_float z = 0; z < 256.f; ++z)
-	{
-		for (_float x = 0; x < 10.f; ++x)
-		{
-			Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV, { x* 2.f,-1.f,z*2.f }), L"CUBE");
-		}
-	}
+	//for (_float z = 0; z < 256.f; ++z)
+	//{
+	//	for (_float x = 0; x < 10.f; ++x)
+	//	{
+	//		Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV, { x* 2.f,-1.f,z*2.f }), L"CUBE");
+	//	}
+	//}
 
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Monster::Add_Monster_to_Scene(Player::Create(GRPDEV), L"Player", GAMEOBJECT_TYPE::OBJECT_PLAYER);
+	//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{0.f,0.f,0.f},1.f), L"");
 	//Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV), L"Cube", GAMEOBJECT_TYPE::OBJECT_END);
+	Monster::Add_Monster_to_Scene(Hurdle::Create(GRPDEV, { 20.f,0.f,0.f }, { 0.f,0.f,0.f }), L"");
 
 	return S_OK;
 }
@@ -60,3 +63,4 @@ void MiniGameScene::Free() {
 
 	Scene::Free();
 }
+

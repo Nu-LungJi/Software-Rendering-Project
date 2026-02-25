@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-enum class FRUSTUMPLANE : UINT64 { Left = 0, Right, bottom, Top, Near, Far, End };
+enum class FRUSTUMPLANE : uint8_t { Left = 0, Right, bottom, Top, Near, Far, End };
 
 class CameraObject : public GameObject {
 private:
@@ -19,9 +19,9 @@ public:
 	VOID			Camera_Rotation_Control(CONST FLOAT& _DT);
 	VOID			Camera_Shaking(INT _Strength, FLOAT _Time);
 
-	VOID			Update_Frustum();
-	D3DXPLANE*		Get_FrustumPlane(FRUSTUMPLANE side) { return (side == FRUSTUMPLANE::End) ? FrustumPlane : &FrustumPlane[(UINT64)side]; }
-	BOOL			IsIn_Frustum(GameObject* pObj);
+	VOID			 Update_Frustum();
+	const D3DXPLANE* Get_FrustumPlane(FRUSTUMPLANE side = FRUSTUMPLANE::End) { return (side == FRUSTUMPLANE::End) ? FrustumPlane : &FrustumPlane[(uint8_t)side]; }
+	BOOL			 IsIn_Frustum(GameObject* pObj);
 
 	_matrix*		Get_ViewMatrix() { return &ViewMatrix; }
 	_matrix*		Get_ProjMatrix() { return &ProjMatrix; }
@@ -71,7 +71,7 @@ private:
 
 	_vec3		m_vVelocity;
 
-	D3DXPLANE	FrustumPlane[(UINT64)FRUSTUMPLANE::End];
+	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
 
 
 public:

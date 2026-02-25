@@ -24,7 +24,6 @@ HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 	__Textures->_frameTick = 0.f;
 	__Textures->_Endframe = 0;
 	__Textures->_vecTexture.clear();
-	__Textures->_vecTexture.reserve(32);
 	wcscpy_s(__Textures->_Filename, 256, __FileName);
 
 	while (true)
@@ -38,7 +37,7 @@ HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 	}
 
 	if (--__Textures->_Endframe) return S_OK;
-	else						return E_FAIL;
+	else						 return E_FAIL;
 }
 
 HRESULT Monster::Set_TextureList(const TCHAR* __FileName, MONINFO* _MonsterInfo)

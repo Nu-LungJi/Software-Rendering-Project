@@ -16,6 +16,17 @@ HRESULT ScorpionBullet::Ready_GameObject() {
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 {
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->z * 0.5f);
+
   ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
 	Monster::Destory_Tile(this);
 
@@ -56,11 +67,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 	{
 		Monster::Set_TextureList(L"Spr_Bullet_ScorpionBullet", &m_tInfo);
 	}
-
-
-	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
-
 
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
