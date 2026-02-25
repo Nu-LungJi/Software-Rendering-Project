@@ -35,7 +35,9 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
 
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DISAPPEAR;
@@ -94,6 +96,8 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+
 	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
@@ -115,11 +119,11 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 
-		//if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
-		//{
-		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
-		//	return;
-		//}
+		if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER)))
+		{
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
 
 		//if (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe / 2)
 		break;
@@ -156,11 +160,12 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
-	Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID ScorpionEvilSoul::Render_GameObject() {
 	if (!ObjectDead)
 	{
+		if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -204,11 +209,6 @@ ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
-	return TRUE;
-
-	return FALSE;
-}
-BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other) {
 	wstring Tag = _Other->Get_ObjectTag();
 
 	if (Tag == L"PlayerArrow") {
@@ -217,8 +217,8 @@ BOOL ScorpoinEvilSoul::OnCollisionStay(GameObject* _Other) {
 
 	return FALSE;
 }
-BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other)
-{
+BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
+
 	return FALSE;
 }
 BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)

@@ -57,7 +57,9 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 		ObjectDead = true;
 	}
 
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
 		return -1;
@@ -83,7 +85,7 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 	}
 
-	AlphaZValue=Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, { -m_tInfo.vDirection.x ,0.f, -m_tInfo.vDirection.z }, false);
 
 }
 VOID Bullet_Chain::Render_GameObject() {

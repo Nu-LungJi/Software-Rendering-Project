@@ -1,4 +1,5 @@
 #include"GameObject.h"
+#include"SceneManager.h"
 
 #define FRAMETICK 0.1f
 
@@ -293,10 +294,13 @@ typedef struct tagRandomGenerator {
 		if (_Dst == _Src) return _Dst;
 
 		return (_Dst < _Src) ?
-			_Dst + (int)Xorshift128p(_Seed) % (_Src - _Dst+1)
-			: _Src + (int)Xorshift128p(_Seed) % (_Dst - _Src+1);
+			_Dst + (int)(Xorshift128p(_Seed) % (_Src - _Dst + 1))
+			: _Src + (int)(Xorshift128p(_Seed) % (_Dst - _Src + 1));
 	}
 }RANDOM;
+
+
+//class SceneManager;
 
 class Monster
 {
@@ -326,6 +330,18 @@ public:
 			Safe_Release(MST);
 			return nullptr;
 		}
+
+		//CameraObject* Camera = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
+
+		//_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
+		//_vec3 planeDir = { 0.f, 1.f, 0.f };
+
+		//_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
+		//_float _cameraAngle = angle / D3DX_PI * 180.f;
+
+		//static_cast<Transform*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Rotation(ROT_X, 90.f - _cameraAngle);
+
+
 		return MST;
 	}
 
@@ -343,11 +359,10 @@ public:
 		vScale *= _fScalemult;
 
 		pTransCom->Set_Scale({ vScale.x, vScale.y, _fScalemult });
+		
+		Collider* pCollider = static_cast<Collider*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+		if (nullptr != pCollider)	pCollider->Set_Scale(vScale.x * 0.5f, vScale.y, vScale.x * 0.5f);
 
-		//*pTransCom->Get_Scale() *= _fScalemult;
-
-		//pTransCom->Get_Position()->y = pTransCom->Get_Scale()->y * 0.5f;
-		//static_cast<Collider*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Scale();
 		return MST;
 	}
 };

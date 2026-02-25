@@ -27,7 +27,9 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 
 
 	Monster::Destory_Tile(this);
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 
 	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
 	{
@@ -69,7 +71,7 @@ VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 	//m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 
 }
 VOID Fireball::Render_GameObject() {

@@ -1,11 +1,11 @@
 #pragma once
 #include"GameObject.h"
 
-enum class eHurdleType	: uint8_t { Bat = 0, Scorpion, Shotgun, Slime, Cube, Random };	//must 0~64
+enum class eHurdleType	: uint8_t { Bat = 0, Scorpion, Shotgun, Slime, Random };	//must 0~64
 
 typedef struct tagHurdleComponent
 {
-	uint16_t	ID					= 0;
+	uint16_t	ID					= 0x0000;
 	Buffer*		Component_Buffer	= nullptr;
 	Transform*	Component_Transform = nullptr;
 	Collider*	Component_Collider	= nullptr;
@@ -37,7 +37,7 @@ public:
 	BOOL			OnCollisionEnter(GameObject* _Other)	override;
 
 private:
-	VOID		Free() {};
+	VOID		Free();
 
 	Transform*	Component_Transform;
 	Collider*	Component_Collider;

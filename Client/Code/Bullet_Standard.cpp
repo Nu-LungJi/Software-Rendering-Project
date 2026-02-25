@@ -32,7 +32,9 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 	}
 	
 	Monster::Destory_Tile(this);
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 	
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
@@ -84,6 +86,8 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
 	{
@@ -91,7 +95,6 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
 		m_tInfo.Textureinfo._frameTick = 0.f;
 	}
-
 
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 
@@ -129,6 +132,7 @@ HRESULT Bullet_Standard::Component_Initialize() {
 BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
+
 	if (Tag == L"PlayerArrow") {
 		
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());

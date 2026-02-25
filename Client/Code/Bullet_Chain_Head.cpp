@@ -42,7 +42,9 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 		ObjectDead = true;
 	}
 
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
 		return -1;

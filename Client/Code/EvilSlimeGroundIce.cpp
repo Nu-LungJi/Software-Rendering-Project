@@ -10,43 +10,48 @@ HRESULT EvilSlimeGroundIce::Ready_GameObject() {
 
 	m_tInfo.Change_State(MONSTER_STATE::MONSTER_STATE_SUMMON);
 
-	MYPOS->z + 0.001f;
-	m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, { MYPOS->x, 0.002f, MYPOS->z });
-	Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
-	pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
-	pAlert->Get_Info()->pGameObj[1] = this;
-	pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
-	Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
+	//MYPOS->z + 0.001f;
+	//m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, { MYPOS->x, 0.002f, MYPOS->z });
+	//Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
+	//pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
+	//pAlert->Get_Info()->pGameObj[1] = this;
+	//pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
+	//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
 
 	return	S_OK;
 }
 INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
+
+
+	m_tInfo.fTimer[0] += _DT;
+
+	//Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
 	{
 		m_tInfo.Change_State(MONSTER_STATE_APPEAR);
-		Component_Collider = ADD_COMPONENT_COLLIDER;
-		Component_Collider->Set_CenterPos(Component_Transform);
-		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
 		Component_Collider->Set_Hp(1.f);
 		Component_Collider->Set_Att(1.f);
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
 	}
 
 	switch (m_tInfo.eState[0])
 	{
 	case MONSTER_STATE::MONSTER_STATE_SUMMON:
-		//if (m_tInfo.pGameObj[1] == nullptr)
-		//{
-		//	MYPOS->z + 0.001f;
-		//	m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, {MYPOS->x, 0.002f, MYPOS->z});
-		//	Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
-		//	pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
-		//	pAlert->Get_Info()->pGameObj[1] = this;
-		//	pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
-		//	Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
-		//}
-		//else
+		if (m_tInfo.pGameObj[1] == nullptr)
+		{
+			MYPOS->z + 0.001f;
+			m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, {MYPOS->x, 0.002f, MYPOS->z});
+			Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
+			pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
+			pAlert->Get_Info()->pGameObj[1] = this;
+			pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
+		}
+		else
 		{
 			_float	fRatio = m_tInfo.fTimer[0] / m_tInfo.fTimer[1];
 			_vec3	vScale = *MYSCALE;
@@ -89,7 +94,7 @@ VOID EvilSlimeGroundIce::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	//Monster::BillBoard_Standard(GRPDEV, Component_Transform);
-	Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV,{1.f,0.f,0.f}, 0);
 }
 VOID EvilSlimeGroundIce::Render_GameObject() {
 
@@ -117,6 +122,12 @@ HRESULT EvilSlimeGroundIce::Component_Initialize() {
 	Component_Transform->Set_Pos(1.f, 0.5f, 1.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 	Component_Transform->Set_Scale(EVILSLIMEGROUNDICE_WIDTH, EVILSLIMEGROUNDICE_HEIGHT, 1.f);
+
+	Component_Collider = ADD_COMPONENT_COLLIDER;
+	Component_Collider->Set_CenterPos(Component_Transform);
+
+	Component_Collider->Set_Hp(0.f);
+	Component_Collider->Set_Att(0.f);
 
 	return FAILED(Monster::Set_TextureList(L"Spr_Effect_BlueEvilSlimeGroudIceEffect", &m_tInfo));
 	

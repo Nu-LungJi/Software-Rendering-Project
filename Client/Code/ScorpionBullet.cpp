@@ -27,7 +27,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->z * 0.5f);
 
-  ////////////////////////////////////////////// 에러 발생할 수도 있으니 확인하고 한 번만 
 	Monster::Destory_Tile(this);
 
 	m_tInfo.fTimer[0] += _DT;
@@ -36,7 +35,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 	{
 		Component_Collider->Set_Hp(-1.f);
 	}
-  ///////////////////////////////////////////////
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
@@ -50,7 +48,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 			m_tInfo.fSpeed *= 0.3f;
 			for (int i = 0; i < SCORPIONBULLET_CHAINBULLET_NUM; ++i)
 			{
-				m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain_Head>(GRPDEV, *MYPOS);
+				m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain_Head>(GRPDEV, *MYPOS, MYSCALE->x * 0.5f);
 
 				_float fRadian = 2.f * D3DX_PI * ((_float)i / SCORPIONBULLET_CHAINBULLET_NUM);
 				fRadian = (fRadian > D3DX_PI) ? fRadian - (2.f * D3DX_PI) : fRadian;
@@ -83,7 +81,9 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 		}
 	}
 
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
 		return -1;

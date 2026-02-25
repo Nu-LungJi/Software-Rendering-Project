@@ -22,18 +22,17 @@ HRESULT Hurdle::Ready_Hurdle(_vec3 __vSrc, _vec3 __vDst, _float __fSpeed, _float
 
 	m_vDir = __vDst - __vSrc;
 
-	if (m_vDir.x == 0.f)	++Count;
-	if (m_vDir.y == 0.f)	++Count;
-	if (m_vDir.z == 0.f)	++Count;
-	if (Count == 0)			return E_FAIL;
+	if (m_vDir.x != 0.f)	++Count;
+	if (m_vDir.y != 0.f)	++Count;
+	if (m_vDir.z != 0.f)	++Count;
+	if (Count > 1)			return E_FAIL;
 
 	m_fDis = D3DXVec3Length(&m_vDir);
-	D3DXVec3Normalize(&m_vDir, &m_vDir);
 
 	if (__fScale == 0 || m_fDis < fabsf(__fSpeed) || m_fDis < __fScale)
 		return E_FAIL;
 
-	Count = (int)fabsf(m_fDis / __fSpeed) + 1;
+	Count = (uint16_t)fabsf(m_fDis / __fSpeed);
 
 	if (Count > 0xff)
 		return E_FAIL;
@@ -45,9 +44,13 @@ HRESULT Hurdle::Ready_Hurdle(_vec3 __vSrc, _vec3 __vDst, _float __fSpeed, _float
 	m_ubType	= __Type;
 
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-
+	Component_Transform->Set_Pos(m_vDir * 0.5f);
 
 	Component_Collider	= ADD_COMPONENT_COLLIDER;
+	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Scale(m_vDir.x + m_fScale, m_vDir.y + m_fScale, m_vDir.z + m_fScale);
+
+	D3DXVec3Normalize(&m_vDir, &m_vDir);
 
 	HRESULT		Result = S_OK;
 
@@ -61,7 +64,7 @@ HRESULT Hurdle::Ready_Hurdle(_vec3 __vSrc, _vec3 __vDst, _float __fSpeed, _float
 		pHurdle->Component_Collider		= static_cast<Collider*>(ProtoManager::GetInstance()->Clone_Prototype(COMPONENT_TYPE::COMPONENT_COLLIDER));
 		
 		if (ubType ==	(uint8_t)eHurdleType::Random)
-			ubType =	(uint8_t)RANDOM::Get_int((uint8_t)eHurdleType::Bat, (uint8_t)eHurdleType::Random -1);
+			ubType =	(uint8_t)RANDOM::Get_int((uint8_t)eHurdleType::Bat, (uint8_t)((uint8_t)eHurdleType::Random - 1));
 
 		pHurdle->ID = (uint16_t)ubType << 8 | (uint16_t)i;
 
@@ -116,8 +119,6 @@ HRESULT Hurdle::Ready_Hurdle(_vec3 __vSrc, _vec3 __vDst, _float __fSpeed, _float
 
 INT Hurdle::Update_GameObject(const _float& _DT)
 {
-	if (nullptr == m_pPlayer)	Monster::Set_Target(L"Player", m_pPlayer);
-
 	GameObject::Update_GameObject(_DT);
 
 	for (auto iter : m_vecComponent) {
@@ -161,12 +162,14 @@ VOID Hurdle::Render_GameObject()
 
 BOOL Hurdle::OnCollisionEnter(GameObject* _Other)
 {
-	if (_Other->Get_ObjectType() != GAMEOBJECT_TYPE::OBJECT_PLAYER) return false;
+	wstring	Tag = _Other->Get_ObjectTag();
 
-	Collider* pPlayer = COLLIDER(m_pPlayer);
+	if (Tag != L"Player") return false;
+
+	Collider* pPlayer = COLLIDER(_Other);
 	for (auto iter : m_vecComponent) {
 		if ((iter->Component_Collider->Get_MaxPoint().x >= pPlayer->Get_MinPoint().x) && (pPlayer->Get_MaxPoint().x >= iter->Component_Collider->Get_MinPoint().x) &&
-			//(iter->Component_Collider->Get_MaxPoint().y >= pPlayer->Get_MinPoint().y) && (pPlayer->Get_MaxPoint().y >= iter->Component_Collider->Get_MinPoint().y) &&
+			(iter->Component_Collider->Get_MaxPoint().y >= pPlayer->Get_MinPoint().y) && (pPlayer->Get_MaxPoint().y >= iter->Component_Collider->Get_MinPoint().y) &&
 			(iter->Component_Collider->Get_MaxPoint().z >= pPlayer->Get_MinPoint().z) && (pPlayer->Get_MaxPoint().z >= iter->Component_Collider->Get_MinPoint().z)) 
 		{
 			// юс╫ц
@@ -174,5 +177,12 @@ BOOL Hurdle::OnCollisionEnter(GameObject* _Other)
 		}
 	}
 
-	return false;
+	return true;
+}
+
+VOID Hurdle::Free() {
+	for (auto& iter : m_vecComponent)	{
+		Safe_Delete(iter);
+	}
+	m_vecComponent.clear();
 }

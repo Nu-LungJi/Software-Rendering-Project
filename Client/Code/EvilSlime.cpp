@@ -84,7 +84,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 	{
-		for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+		for (int i = 1; i < _countof(m_tInfo.pGameObj); ++i)
 			if (m_tInfo.pGameObj[i] != nullptr) m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 
 		return -1;
@@ -97,6 +97,8 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
+
+	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
@@ -157,10 +159,11 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
-	Monster::BillBoard(Component_Transform, GRPDEV);
+	AlphaZValue =	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID EvilSlime::Render_GameObject() {
 	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
