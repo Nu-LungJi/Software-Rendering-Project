@@ -3,7 +3,6 @@
 EvilSlime::EvilSlime(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
 EvilSlime::EvilSlime(const GameObject& _RHS) : GameObject(_RHS) {}
 EvilSlime::~EvilSlime() {}
-
 HRESULT EvilSlime::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
@@ -14,8 +13,37 @@ HRESULT EvilSlime::Ready_GameObject() {
 
 	return S_OK;
 }
+HRESULT EvilSlime::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	Component_Collider->Set_Hp(EVILSLIME_HP);
+	Component_Collider->Set_Att(1.f);
+	m_tInfo.vDirection = { -1.f,0.f,0.f };
+
+	m_tInfo.bMiniGame = true;
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
+		ObjectTAG = L"Monster";
+		Component_Transform->Set_Pos(vPos);
+	}
+
+	return S_OK;
+}
 INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		GameObject::Update_GameObject(_DT);
+		EvilSlime::State_Tracking(_DT);
+		MYPOS->y = MYSCALE->y * 0.5f;
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+		return 1;
+	}
+
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
@@ -76,7 +104,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 	{
-		for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+		for (int i = 1; i < _countof(m_tInfo.pGameObj); ++i)
 			if (m_tInfo.pGameObj[i] != nullptr) m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 
 		return -1;
@@ -156,16 +184,24 @@ VOID EvilSlime::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	switch (m_tInfo.eState[0])
+	if (m_tInfo.bMiniGame)// 창준 추가
 	{
-	default:
 		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DEAD:
-		break;
+	}
+	else
+	{
+		switch (m_tInfo.eState[0])
+		{
+		default:
+			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+			break;
+		case MONSTER_STATE_SUMMON:
+		case MONSTER_STATE_APPEAR:
+		case MONSTER_STATE_DEAD:
+			break;
+		}
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -185,9 +221,9 @@ HRESULT EvilSlime::Component_Initialize() {
 
 	return S_OK;
 }
-EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos, BOOL bMini) {
 	EvilSlime* MST = new EvilSlime(_GRPDEV);
-	if (FAILED(MST->Ready_GameObject())) {
+	if (FAILED(MST->Ready_GameObject(vPos,bMini))) {
 		MSG_BOX("Cannot Create EvilSlime.");
 		Safe_Release(MST);
 		return nullptr;
@@ -267,6 +303,13 @@ VOID EvilSlime::State_Idle(const _float& _DT)
 
 VOID EvilSlime::State_Tracking(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// 창준 추기
+		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		m_tInfo.vDirection = vPos - *MYPOS;
+		m_tInfo.fSpeed = 3.f;
+		return;
+	}
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 

@@ -328,7 +328,10 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 }
 
 VOID	ShopUI::Free() {
-	for (auto& II : Item_Index)
-		Safe_Delete(II);
+    for (auto& II : Item_Index)
+    {
+        Safe_Release(II->TEXTURE);
+            Safe_Delete(II);
+    }
 	GameObject::Free();
 }

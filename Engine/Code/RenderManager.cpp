@@ -77,7 +77,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			}
 		}
 	}
-	
+	EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {
@@ -104,7 +104,7 @@ VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 VOID	RenderManager::Free() {

@@ -17,13 +17,55 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	m_eCheck = IDEL;
 	m_eStatu = SPAWN;
 	m_vCenter = vPos;
+	Make_TextureList(L"Spr_Bullet_LaulaStandardBullet_0",LEAF_ATTACK::LEAF_FIRST);
+	Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_Black_0", LEAF_ATTACK::LEAF_SECOND);
+	Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0", LEAF_ATTACK::LEAF_THIRD);
+	Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth", LEAF_ATTACK::LEAF_EXPLOSION);
+	Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv2_0", LEAF_ATTACK::LEAF_FOUR);
 
-	//m_eStatu = CL_IDELR;
-	
-	
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0", CL_EFFECT::LEFT_HORN);
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0", CL_EFFECT::RIGHT_HORN);		
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackModeEffect_0", CL_EFFECT::CL_BODY);		
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0", CL_EFFECT::LEAF_FIRST);
+	Make_EffectTextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0", CL_EFFECT::LEAF_EXPLOSION_CIRCLE);
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_ChargeAccelReturn_Birth01_0", CL_EFFECT::LEAF_CHARGING);
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Loop_0", CL_EFFECT::LEAF_SPIN);
+	Make_EffectTextureList(L"Spr_Bullet_Cheonlog_DivideFlower_Death_0", CL_EFFECT::LEAF_SPIN_DEATH);
+	Make_EffectTextureList(L"Spr_Effect_Cheonlog_Appear_Electric01_0", CL_EFFECT::SPAWN_BOOM);
+	Make_EffectTextureList(L"Green_Evil_Thunder0", CL_EFFECT::SPAWN_THUNDER);
+	Make_EffectTextureList(L"Green_Shader0", CL_EFFECT::SPAWN_BOOM_CIRCLE);
+	Make_EffectTextureList(L"Cheonlog_Spawn_L0", CL_EFFECT::SPAWN_L);
+	Make_EffectTextureList(L"Cheonlog_Spawn0", CL_EFFECT::SPAWN_R);
+
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
+
+	return S_OK;
+}
+HRESULT	 Cheonlog::Make_TextureList(wstring _FileName, LEAF_ATTACK eid)
+{
+	INT FRAME = 0;
+
+	while (++FRAME) {
+		wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
+		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
+		if (TEX == nullptr) break;
+		else { TEX->AddRef();  m_vecBullet[(int)eid].push_back(TEX); }
+	}
+
+	return S_OK;
+}
+HRESULT Cheonlog::Make_EffectTextureList(wstring _FileName, CL_EFFECT eid)
+{
+	INT FRAME = 0;
+
+	while (++FRAME) {
+		wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
+		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
+		if (TEX == nullptr) break;
+		else { TEX->AddRef();  m_vecEffect[(int)eid].push_back(TEX); }
+	}
 
 	return S_OK;
 }
@@ -31,6 +73,7 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 {
 	if (Component_Collider->Get_Hp() <= 0)
 	{
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		m_bStartPattern = false;
 		m_eStatu = CL_DEAD;
 	}
@@ -104,7 +147,7 @@ HRESULT Cheonlog::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Hp(100);
+	Component_Collider->Set_Hp(1000);
 
 	Component_Collider->Set_Scale(2.f, 1.5f, 2.f);
 
@@ -307,7 +350,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill < 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 3)
+		if (m_framePattern > 6)
 		{
 				Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
@@ -317,7 +360,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 7)
+		if (m_framePattern > 12)
 		{
 			if(m_eCurr == CL_LJUMP)
 				Reset_Pattern(IDEL, CL_RJUMP);
@@ -329,7 +372,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 4 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 8)
+		if (m_framePattern > 18)
 		{
 			Reset_Pattern(ATTACK_B, CL_IDELR);
 			return;
@@ -338,7 +381,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 5 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 18)
+		if (m_framePattern > 28)
 		{
 
 			Reset_Pattern(ATTACK_C, CL_IDELR);
@@ -348,7 +391,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill < 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 23)
+		if (m_framePattern >35)
 		{
 			Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
@@ -357,10 +400,19 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 30)
+		if (m_framePattern >45)
 		{
 			Reset_Pattern(ATTACK_D, CL_IDELR);
 			return;
+		}
+	}
+	if (m_iNextSkill >= 9 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
+	{
+		m_framePattern += _DT;
+		if (m_framePattern > 15)
+		{
+			m_iNextSkill = 0;
+			m_framePattern = 0;
 		}
 	}
 }
@@ -538,7 +590,7 @@ void Cheonlog::AttackLeaf_Four(const _float& _DT, _vec3 vPos)
 			m_iBulletCnt = 0;
 			m_fRotY = 0;
 			m_iSkillCnt = 0;
-			m_iNextSkill = 0;
+			++m_iNextSkill;
 			m_iSkillDelay = 0;
 			m_iFrameCnt = 0;
 		}
@@ -849,7 +901,6 @@ void Cheonlog::Create_Leaf_Four(_vec3 vPos, _float fRot)
     pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
     SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pAttack);
 }
-
 void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 {
 		_vec3 vRight,vUp(0,1,0);
@@ -1058,5 +1109,21 @@ void Cheonlog::Free()
         m_vecCheonlogTexture[i].clear();
     }
 
+	for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+	{
+		for(auto& iter : m_vecBullet[i])
+		{
+			Safe_Release(iter);
+		}
+		m_vecBullet[i].clear();
+	}
+	for (_int i = 0; i < (int)CL_EFFECT::CL_EFFECTEND; ++i)
+	{
+		for (auto& iter : m_vecEffect[i])
+		{
+			Safe_Release(iter);
+		}
+		m_vecEffect[i].clear();
+	}
     GameObject::Free();
 }

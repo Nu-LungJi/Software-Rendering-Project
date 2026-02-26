@@ -69,7 +69,6 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 		break;
 	}
 
-	
 	if (ObjectDead)
 	{
 		if(m_tInfo.pGameObj[1] != nullptr)

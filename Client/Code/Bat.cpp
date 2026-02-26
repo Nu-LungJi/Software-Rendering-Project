@@ -3,23 +3,47 @@
 Bat::Bat(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
 Bat::Bat(const GameObject& _RHS) : GameObject(_RHS) {}
 Bat::~Bat() {}
-
 HRESULT Bat::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-
 	Component_Collider->Set_Hp(BAT_HP);
 	Component_Collider->Set_Att(1.f);
 
 	return S_OK;
 }
+HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	m_tInfo.bMiniGame = bMini;
+	Component_Collider->Set_Hp(BAT_HP);
+	Component_Collider->Set_Att(1.f);
+
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		ObjectTAG = L"Monster";
+		Component_Transform->Set_Pos(vPos);
+	}
+		
+	return S_OK;
+}
 INT	Bat::Update_GameObject(const _float& _DT)
 {
-	ObjectTAG = L"Monster";
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		GameObject::Update_GameObject(_DT);
+		Bat::State_Tracking(_DT);
+		MYPOS->y = MYSCALE->y * 0.5f;
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+		return 1;
+	}
 
+	ObjectTAG = L"Monster";
+		
 	MYPOS->y = MYSCALE->y * 0.5f;
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 3.f, MYSCALE->x * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
@@ -89,8 +113,8 @@ INT	Bat::Update_GameObject(const _float& _DT)
 }
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-
 	m_tInfo.vDirection.y = 0.f;
+
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
 	switch (m_tInfo.eState[0])
@@ -113,17 +137,25 @@ VOID Bat::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-	
-	switch (m_tInfo.eState[0])
+
+	if (m_tInfo.bMiniGame)// 창준 추가
 	{
-	default:
 		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
-		break;
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_DEAD:
-		break;
+	}
+	else
+	{
+		switch (m_tInfo.eState[0])
+		{
+		default:
+			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+			break;
+		case MONSTER_STATE_SUMMON:
+		case MONSTER_STATE_APPEAR:
+		case MONSTER_STATE_DEAD:
+			break;
+		}
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -145,9 +177,9 @@ HRESULT Bat::Component_Initialize() {
 
 	return S_OK;
 }
-Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
 	Bat* MST = new Bat(_GRPDEV);
-	if (FAILED(MST->Ready_GameObject())) {
+	if (FAILED(MST->Ready_GameObject(vPos, bMini))) {
 		MSG_BOX("Cannot Create Bat.");
 		Safe_Release(MST);
 		return nullptr;
@@ -228,7 +260,7 @@ VOID Bat::State_Idle()
 {
 	if (m_tInfo.pGameObj[0] == nullptr)
 		m_tInfo.pGameObj[0]=(Monster::Set_Target(L"Player"));
-
+	
 	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 	vDir.y = 0.f;
 
@@ -238,6 +270,13 @@ VOID Bat::State_Idle()
 
 VOID Bat::State_Tracking(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// 창준 추기
+		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		m_tInfo.vDirection = vPos - *MYPOS;
+		m_tInfo.fSpeed = 3.f;
+		return;
+	}
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 

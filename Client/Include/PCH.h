@@ -38,6 +38,7 @@
 
 #include "Object_Explain.h"
 
+#include "BossUI.h"
 #pragma region Monster
 
 #include "Monster.h"
@@ -66,7 +67,6 @@
 #include "Supporter.h"
 #include "BossFireBall.h"
 #include "FinalBoss.h"
-
 #pragma endregion
 
 

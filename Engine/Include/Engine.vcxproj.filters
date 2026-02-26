@@ -171,6 +171,9 @@
     <ClInclude Include="..\Header\ParticleRain.h">
       <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\ParticleEffect.h">
+      <Filter>99. Component\08. Paticle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDevice.cpp">
@@ -243,6 +246,9 @@
       <Filter>99. Component\08. Paticle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ParticleRain.cpp">
+      <Filter>99. Component\08. Paticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ParticleEffect.cpp">
       <Filter>99. Component\08. Paticle</Filter>
     </ClCompile>
   </ItemGroup>

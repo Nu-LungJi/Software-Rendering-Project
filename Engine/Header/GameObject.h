@@ -28,6 +28,7 @@ public:
 	BOOL				Get_ObjectDead()							{	return ObjectDead;	 }
 
 public:
+
 	virtual	HRESULT		Ready_GameObject();
 	virtual INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual VOID		LateUpdate_GameObject(CONST FLOAT& _DT);

@@ -123,7 +123,7 @@ void CDYBuffer::removeDead_Particle()
 		if (bLive == false)
 		{
 			iter = m_ParticleList.erase((iter));
-
+			continue;
 		}
 
 		if (iter != m_ParticleList.end())

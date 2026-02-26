@@ -76,4 +76,6 @@ VOID UIManager::Free() {
     for (auto& FO : FontList)
         Safe_Delete(FO.second);
     ItemList.clear();
+
+    Safe_Release(DXSprite);
 }

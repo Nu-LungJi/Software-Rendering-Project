@@ -114,7 +114,6 @@ public:
         
         if (iter != nullptr)
         {
-            iter->AddRef();
             m_pTexture = iter;
         }
     }

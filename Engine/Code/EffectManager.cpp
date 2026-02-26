@@ -81,11 +81,13 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDE
 		for (auto& EE : Container_BossEffect)
 			EE->Render_GameObject();
 	}
-	if (_RENDER == EFFECT_RENDER::BOSS_EFFECT) {
+	if (_RENDER == EFFECT_RENDER::UI_EFFECT) {
 		for (auto& UE : Container_UIEffect)
 			UE->Render_GameObject();
 	}
 	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
+	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
@@ -113,6 +115,8 @@ GameObject* EffectManager::Get_Effect(EFFECT_OWNER _Owner, wstring _TAG) {
 			if (UE->Get_ObjectTag() == _TAG) {
 				return UE;
 			}
+			if (_TAG == L"BlackOut")
+				return Scene_Effect;
 		}
 	}
 	else if (_Owner == EFFECT_OWNER::BOSS) {
