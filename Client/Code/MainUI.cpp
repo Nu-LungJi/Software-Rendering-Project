@@ -49,19 +49,20 @@ VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID	MainUI::Render_GameObject() {
 	Component_Sprite->Render_Sprite();
 }
+
 VOID MainUI::Player_LostHP() {
 
-	INT PlayerHP = COLLIDER(PlayerObject)->Get_Hp();
-	if (PlayerHP > 0 && !PlayerObject->Get_Invincible()) {
-		if (PlayerHP > 5) { PlayerHP = 5; }
-		wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
-		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
-		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
-		REPLAY_UI_EFFECT(UIKey_HP);
-	}
+	//INT PlayerHP = COLLIDER(PlayerObject)->Get_Hp();
+	//if (PlayerHP > 0 && !PlayerObject->Get_Invincible()) {
+	//	if (PlayerHP > 5) { PlayerHP = 5; }
+	//	wstring UIKey_HP = L"HP_EFFECT" + to_wstring(PlayerHP);
+	//	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_HP(PlayerHP - 1);
+	//	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_Invincible(true);
+	//	REPLAY_UI_EFFECT(UIKey_HP);
+	//}
 	//	UIKey_HP = L"HP_SPRITE" + to_wstring(PlayerHP);
 	//	Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
-
+	//
 	//	UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 	//	Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
 	//}

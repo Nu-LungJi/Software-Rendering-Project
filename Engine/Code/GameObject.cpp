@@ -1,9 +1,11 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 
-GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV)
-	: GRPDEV(_GRPDEV)	 , ObjectTAG(L""), ObjectDead(FALSE), ObjectTYPE(), AlphaZValue(0.f)
-									{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
+GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV) : GRPDEV(_GRPDEV), ObjectTAG(L""), ObjectDead(FALSE), ObjectTYPE(), AlphaZValue(0.f)
+{
+	GRPDEV->AddRef();
+	ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);
+};
 GameObject::GameObject(const GameObject& _RHS)	 
 	: GRPDEV(_RHS.GRPDEV), ObjectTAG(_RHS.ObjectTAG), ObjectTYPE(_RHS.ObjectTYPE), ComponentList(_RHS.ComponentList), AlphaZValue(_RHS.AlphaZValue)
 	, ObjectDead(_RHS.ObjectDead)	{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
@@ -11,7 +13,7 @@ GameObject::GameObject(LPDIRECT3DDEVICE9 _GRPDEV, CONST TCHAR* _TAG)
 	: GRPDEV(_GRPDEV)	 , ObjectTAG(_TAG), ObjectDead(FALSE) 
 									{ GRPDEV->AddRef(); ComponentList.resize((LONG)COMPONENT_TYPE::COMPONENT_END);	}
 GameObject::~GameObject()			{																				}
-
+	
 HRESULT		GameObject::Ready_GameObject() {
 	CollisionList.resize(0);
 	return S_OK;

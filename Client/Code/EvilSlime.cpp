@@ -7,29 +7,36 @@ EvilSlime::~EvilSlime() {}
 HRESULT EvilSlime::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	Component_Collider->Set_Hp(EVILSLIME_HP);
-	Component_Collider->Set_Att(1.f);
-	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 	return S_OK;
 }
 INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
-	MYPOS->y = MYSCALE->y * 0.5f;
+	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		ObjectDead = false;
+		return 0;
+	}
+	else
+	{
+		MYPOS->y = MYSCALE->y * 0.5f;
+	}
+
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	// <플레이어 업데이트 시점>
+
+	//if (!IsIn_Cam) return 0;
 
 	GameObject::Update_GameObject(_DT);
 
-
-	if (KEY_DOWN(DIK_H))
-	{
-		m_tInfo.bTrigger[2] = true;
-		m_tInfo.Change_State(EVILSLIME_FISSION);
-	}
-
+	//if (KEY_DOWN(DIK_H))
+	//{
+	//	m_tInfo.bTrigger[2] = true;
+	//	m_tInfo.Change_State(EVILSLIME_FISSION);
+	//}
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
@@ -76,7 +83,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 	{
-		for (int i = 0; i < _countof(m_tInfo.pGameObj); ++i)
+		for (int i = 1; i < _countof(m_tInfo.pGameObj); ++i)
 			if (m_tInfo.pGameObj[i] != nullptr) m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 
 		return -1;
@@ -90,19 +97,30 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
+	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
+
+	//if (m_pCam == nullptr)
+	//	m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
+	//IsIn_Cam = m_pCam->IsIn_Frustum(*Component_Transform->Get_Position(), 10.f);
+
+	if (!IsIn_Cam) return;
 
 	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Move", &m_tInfo)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Move", &m_tInfo)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
+
+		//m_tInfo.ID = MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Stand);
+		//if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) return;
 
 		if (m_tInfo.Textureinfo._frameTick > 2.f * D3DX_PI)
 			m_tInfo.Textureinfo._frameTick -= (2.f * D3DX_PI);
@@ -116,11 +134,11 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 		break;
 
 	case MONSTER_STATE_TRACKING:
-		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Move", &m_tInfo)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Move", &m_tInfo)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
 
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
@@ -131,11 +149,11 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 
 	case	MONSTER_STATE_CASTING:
 	case MONSTER_STATE_CHANNELING:
-		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Attack", &m_tInfo)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
+		//if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilSlime_Attack", &m_tInfo)))
+		//{
+		//	m_tInfo.Change_State(MONSTER_STATE_DEAD);
+		//	return;
+		//}
 
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
@@ -148,18 +166,25 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:
 		break;
+	}	
+	
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
-	Monster::BillBoard(Component_Transform, GRPDEV);
+
 }
 VOID EvilSlime::Render_GameObject() {
+
 	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
+
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
 		break;
 	case MONSTER_STATE_APPEAR:
@@ -181,9 +206,18 @@ HRESULT EvilSlime::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(EVILSLIME_WIDTH, 1.f, EVILSLIME_HEIGHT);
+	Component_Collider->Set_Scale(EVILSLIME_WIDTH * 0.5f, 1.f, EVILSLIME_HEIGHT * 0.5f);
+	Component_Collider->Set_Hp(EVILSLIME_HP);
+	Component_Collider->Set_Att(1.f);
 
-	return S_OK;
+	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	m_tInfo.vDirection = { -1.f,0.f,0.f };
+
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+										(uint8_t)MONSTER_TYPE::EvilSlime,
+										(uint8_t)MONSTER_ANIM::Stand);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	EvilSlime* MST = new EvilSlime(_GRPDEV);
@@ -288,6 +322,8 @@ VOID EvilSlime::State_Tracking(const _float& _DT)
 
 	if (m_tInfo.fTimer[0] >= EVILSLIME_TRACKING_TIME)
 	{
+		m_tInfo.ID = MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Attack);
+		if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) return;
 		m_tInfo.Change_State(MONSTER_STATE_CASTING);
 	}
 	else if (m_tInfo.fTimer[1] >= EVILSLIME_LOST_TIME)
@@ -298,7 +334,6 @@ VOID EvilSlime::State_Tracking(const _float& _DT)
 
 VOID EvilSlime::State_Casting(const _float& _DT)
 {
-
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 

@@ -240,6 +240,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
+    <ClInclude Include="..\Header\Hurdle.h" />
     <ClInclude Include="..\Header\MainUI.h" />
     <ClInclude Include="..\Header\BossFireBall.h" />
     <ClInclude Include="..\Header\MonsterTest.h">
@@ -254,7 +255,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\MiniGameScene.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\MonsterEffect.h" />
     <ClInclude Include="..\Header\Object_Explain.h">
@@ -449,13 +450,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\Hurdle.cpp" />
     <ClCompile Include="..\Code\MainUI.cpp" />
     <ClCompile Include="..\Code\BossFireBall.cpp" />
     <ClCompile Include="..\Code\MonsterTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MiniGameScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp" />
     <ClCompile Include="..\Code\Object_Explain.cpp">

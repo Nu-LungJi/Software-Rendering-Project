@@ -12,6 +12,30 @@ GameObject* Monster::Set_Target(CONST TCHAR* _TAG)
 }
 
 
+HRESULT Monster::Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo)
+{
+	if (nullptr == _TexInfo)
+		return E_POINTER;
+
+	uint16_t SearchKey = _Key & 0xffc0;
+
+	const vector<IDirect3DTexture9*>* pNewTex = MonsterManager::GetInstance()->Find_Textures(SearchKey);
+	if (nullptr == pNewTex)				return E_POINTER;
+	if (pNewTex == _TexInfo->pTexture)	return S_OK;
+	
+	//_TexInfo->pTexture = MonsterManager::GetInstance()->Find_Textures(SearchKey);
+	//if (nullptr == _TexInfo->pTexture)				return E_POINTER;
+
+	_TexInfo->pTexture = pNewTex;
+	_TexInfo->_vecTexture.clear();
+
+	_TexInfo->_frame = 0;
+	_TexInfo->_frameTick = 0.f;
+	_TexInfo->_Endframe = _TexInfo->pTexture->size() -1 ;
+
+	return S_OK;
+}
+
 HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 {
 	if (nullptr == __Textures)
@@ -24,7 +48,9 @@ HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 	__Textures->_frameTick = 0.f;
 	__Textures->_Endframe = 0;
 	__Textures->_vecTexture.clear();
-	__Textures->_vecTexture.reserve(32);
+
+	__Textures->pTexture = &__Textures->_vecTexture;
+
 	wcscpy_s(__Textures->_Filename, 256, __FileName);
 
 	while (true)
@@ -38,7 +64,7 @@ HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 	}
 
 	if (--__Textures->_Endframe) return S_OK;
-	else						return E_FAIL;
+	else						 return E_FAIL;
 }
 
 HRESULT Monster::Set_TextureList(const TCHAR* __FileName, MONINFO* _MonsterInfo)
@@ -110,10 +136,13 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 {
 	//TCHAR Classname[256];
 	//swprintf_s(Classname, 256, L"%S", typeid(*pMonster).name());
-
 	//CONST TCHAR* pName = wcschr(Classname, L' ');
-
 	//pName = (pName != nullptr) ? pName + 1 : Classname;
+
+	TCHAR Classname[256];
+	swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
+	CONST TCHAR* pName = wcschr(Classname, L' ');
+	pName = (pName != nullptr) ? pName + 1 : Classname;
 
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);

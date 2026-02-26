@@ -1,16 +1,12 @@
 #pragma once
 #include "GameObject.h"
 
-#define SCROPOINEVILSOULIMGX 143
-#define SCROPOINEVILSOULIMGY 224
-
-
-class ScorpoinEvilSoul : public GameObject
+class ScorpionEvilSoul : public GameObject
 {
 public:
-	explicit ScorpoinEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV);
-	explicit ScorpoinEvilSoul(CONST GameObject& _RHS);
-	virtual ~ScorpoinEvilSoul();
+	explicit ScorpionEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV);
+	explicit ScorpionEvilSoul(CONST GameObject& _RHS);
+	virtual ~ScorpionEvilSoul();
 
 public:
 	virtual			HRESULT		Ready_GameObject();
@@ -30,7 +26,7 @@ private:
 	Collider*		Component_Collider;
 
 public:
-	static			ScorpoinEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static			ScorpionEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	MONSTERINFO*		Get_Info() { return &m_tInfo; }
 
 private:

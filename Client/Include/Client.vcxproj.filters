@@ -103,9 +103,6 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\01. Bat">
       <UniqueIdentifier>{47a98307-749c-40cc-a1ff-9d9504e380c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
-      <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\01. Player\01. Arrow">
       <UniqueIdentifier>{876f658b-2647-4f66-9e4e-b05122adf8d0}</UniqueIdentifier>
     </Filter>
@@ -225,6 +222,12 @@
     </Filter>
     <Filter Include="99.Loading">
       <UniqueIdentifier>{b455ca32-e0a2-46bc-adeb-4db60f6b32b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\09. Hurdle">
+      <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
+      <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\05. EvilFrog">
       <UniqueIdentifier>{bd0680c2-0764-4ba1-8a4f-dd4b3285f757}</UniqueIdentifier>
@@ -472,6 +475,9 @@
     <ClInclude Include="..\Header\CLoading.h">
       <Filter>99.Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Hurdle.h">
+      <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClInclude>
     <ClInclude Include="..\Header\EvilFrog.h">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClInclude>
@@ -700,6 +706,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\CLoading.cpp">
       <Filter>99.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Hurdle.cpp">
+      <Filter>03. GameObject\09. Hurdle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\EvilFrog.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>

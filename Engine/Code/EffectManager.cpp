@@ -19,7 +19,7 @@ INT EffectManager::Update_EffectManager(CONST FLOAT& _DT) {
 	}for (auto& UE : Container_UIEffect) {
 		UE->Update_GameObject(_DT);
 	}
-	Scene_Effect->Update_GameObject(_DT);
+	if(nullptr != Scene_Effect)	Scene_Effect->Update_GameObject(_DT);
 	return 0;
 }
 VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
@@ -60,7 +60,7 @@ VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
 		}
 		else { ++iter; }
 	}
-	Scene_Effect->LateUpdate_GameObject(_DT);
+	if (nullptr != Scene_Effect)	Scene_Effect->LateUpdate_GameObject(_DT);
 }
 VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDER _RENDER) {
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
@@ -145,5 +145,5 @@ VOID	EffectManager::Free() {
 		Safe_Release(EFF);
 	for (auto& EFF : Container_UIEffect)
 		Safe_Release(EFF);
-	Safe_Release(Scene_Effect);
+	if (nullptr != Scene_Effect)	Safe_Release(Scene_Effect);
 }

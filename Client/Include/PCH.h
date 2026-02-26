@@ -40,6 +40,8 @@
 
 #pragma region Monster
 
+#include "MonsterManager.h"
+
 #include "Monster.h"
 #include "MonsterEffect.h"
 #include "Bat.h"
@@ -73,6 +75,7 @@
 
 #pragma region MiniGame
 #include "CubeFloorTile.h"
+#include "Hurdle.h"
 
 #pragma endregion
 

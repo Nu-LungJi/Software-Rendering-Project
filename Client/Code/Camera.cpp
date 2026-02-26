@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 #include "Camera.h"
 
-CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV), StopMove(true){}
+CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), StopMove(true), FrustumPlane{} {}
 CameraObject::CameraObject(const GameObject& _RHS)		: GameObject(_RHS)		{}
 CameraObject::~CameraObject() {}
 
@@ -223,52 +223,57 @@ VOID CameraObject::Update_Frustum()
 {
 	_matrix matVP = ViewMatrix * ProjMatrix;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].a   = matVP._14 + matVP._11;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].b   = matVP._24 + matVP._21;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].c   = matVP._34 + matVP._31;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Left].d   = matVP._44 + matVP._41;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].a   = matVP._14 + matVP._11;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].b   = matVP._24 + matVP._21;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].c   = matVP._34 + matVP._31;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].d   = matVP._44 + matVP._41;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].a  = matVP._14 - matVP._11;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].b  = matVP._24 - matVP._21;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].c  = matVP._34 - matVP._31;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Right].d  = matVP._44 - matVP._41;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].a  = matVP._14 - matVP._11;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].b  = matVP._24 - matVP._21;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].c  = matVP._34 - matVP._31;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].d  = matVP._44 - matVP._41;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].a = matVP._14 + matVP._12;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].b = matVP._24 + matVP._22;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].c = matVP._34 + matVP._32;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::bottom].d = matVP._44 + matVP._42;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].a = matVP._14 + matVP._12;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].b = matVP._24 + matVP._22;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].c = matVP._34 + matVP._32;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].d = matVP._44 + matVP._42;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].a    = matVP._14 - matVP._12;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].b    = matVP._24 - matVP._22;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].c    = matVP._34 - matVP._32;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Top].d    = matVP._44 - matVP._42;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].a    = matVP._14 - matVP._12;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].b    = matVP._24 - matVP._22;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].c    = matVP._34 - matVP._32;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].d    = matVP._44 - matVP._42;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].a   = matVP._13;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].b   = matVP._23;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].c   = matVP._33;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Near].d   = matVP._43;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].a   = matVP._13;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].b   = matVP._23;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].c   = matVP._33;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].d   = matVP._43;
 
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].a    = matVP._14 - matVP._13;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].b    = matVP._24 - matVP._23;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].c    = matVP._34 - matVP._33;
-	FrustumPlane[(UINT64)FRUSTUMPLANE::Far].d    = matVP._44 - matVP._43;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].a    = matVP._14 - matVP._13;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].b    = matVP._24 - matVP._23;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].c    = matVP._34 - matVP._33;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].d    = matVP._44 - matVP._43;
 
-	for (UINT64 i = 0; i < (UINT64)FRUSTUMPLANE::End; ++i)
+	for (uint8_t i = 0; i < (uint8_t)FRUSTUMPLANE::End; ++i)
 	{
 		D3DXPlaneNormalize(&FrustumPlane[i], &FrustumPlane[i]);
 	}
 }
 
-BOOL CameraObject::IsIn_Frustum(GameObject* pObj)
+BOOL CameraObject::IsIn_Frustum(_vec3 _vPos, _float _fRadius)
 {
-	_vec3 vPos = *POS(pObj);
-	_vec3 vScale = *SCALE(pObj);
-	_float fDis = (vScale.x > vScale.y) ? (vScale.x > vScale.z ? vScale.x : vScale.z) : (vScale.y > vScale.z ? vScale.y : vScale.z);
-	for (UINT i = 0; i < (UINT)FRUSTUMPLANE::End; ++i)
-		if (D3DXPlaneDotCoord(FrustumPlane, &vPos) <= fDis + 5.f)
+	if (this == NULL)	return false;
+
+	for (uint8_t i = 0; i < (uint8_t)FRUSTUMPLANE::End; ++i)
+	{
+		if (FrustumPlane[i].a * _vPos.x +
+			FrustumPlane[i].b * _vPos.y +
+			FrustumPlane[i].c * _vPos.z +
+			FrustumPlane[i].d < -_fRadius)
+		{
 			return FALSE;
-	
-	return TRUE;
+		}
+	}
+	return true;
 }
 
 
