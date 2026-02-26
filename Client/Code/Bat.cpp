@@ -90,23 +90,41 @@ INT	Bat::Update_GameObject(const _float& _DT)
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	m_tInfo.vDirection.y = 0.f;
-	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
+	if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
+
+	m_tInfo.Textureinfo._frameTick += _DT;
+	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
+	{
+		m_tInfo.Textureinfo._frameTick = 0.f;
+		++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
+	}
 
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		Monster::Set_TextureList(L"Spr_Monster_BlueEvilBat", &m_tInfo.Textureinfo);
-		m_tInfo.Textureinfo._frameTick += _DT;
-		if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
+		m_tInfo.vDirection.y = 0.f;
+		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEvilBat", &m_tInfo.Textureinfo)))
 		{
-			m_tInfo.Textureinfo._frameTick = 0.f;
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
+			return;
+		}
+
+
+		m_tInfo.Textureinfo._frameTick += _DT;
+		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		{
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
+			m_tInfo.Textureinfo._frameTick = 0.f;
+
+			if (fabsf(m_tInfo.vDirection.z) > 0.1f)
+				if (m_tInfo.vDirection.z > 0.f)
+					m_tInfo.Textureinfo._frame += m_tInfo.Textureinfo._Endframe / 2;
 		}
 		break;
 	}
-	//Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
+	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
+	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID Bat::Render_GameObject() {

@@ -1,5 +1,9 @@
 #pragma once
 #include "GameObject.h"
+
+#define EVILFROGIMGX 79
+#define EVILFROGIMGY 129
+
 class EvilFrog :  public GameObject
 {
 	explicit EvilFrog(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -30,12 +34,9 @@ public:
 private:
 	virtual VOID Free();
 
-	VOID Set_Target(CONST TCHAR* _TAG);
-
 	MONINFO m_tInfo;
 	_vec3	m_vFissionDst;
 
-	VOID State_Appear(const _float& _DT);
 	VOID State_Idle(const _float& _DT);
 	VOID State_Tracking(const _float& _DT);
 	VOID State_Casting(const _float& _DT);

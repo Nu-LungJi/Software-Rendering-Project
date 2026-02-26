@@ -226,7 +226,7 @@
     <Filter Include="99.Loading">
       <UniqueIdentifier>{b455ca32-e0a2-46bc-adeb-4db60f6b32b0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\02. Monster\02. Monster\05.">
+    <Filter Include="03. GameObject\02. Monster\02. Monster\05. EvilFrog">
       <UniqueIdentifier>{bd0680c2-0764-4ba1-8a4f-dd4b3285f757}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -472,6 +472,9 @@
     <ClInclude Include="..\Header\CLoading.h">
       <Filter>99.Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\EvilFrog.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -697,6 +700,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\CLoading.cpp">
       <Filter>99.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\EvilFrog.cpp">
+      <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
