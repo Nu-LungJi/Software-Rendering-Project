@@ -233,6 +233,20 @@ void Spawner::Defense_Spawn(const _float& _DT)
 {
 	m_fDefense += _DT;
 
+	if (m_fDefense > 3)
+	{
+		m_fDefense = 0;
+		if (m_vecMonsterDefense.size() < 4)
+		{
+			if (TileManager::GetInstance()->Get_Defense().size() == 0)
+				return;
+
+			m_vecMonsterDefense.push_back(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
+			CollisionManager::GetInstance()->Add_ColliderObject(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
+			TileManager::GetInstance()->Get_Defense().pop_back();
+		}
+	}
+
 	for (auto iter = m_vecMonsterDefense.begin(); iter != m_vecMonsterDefense.end();)
 	{
 
@@ -242,7 +256,7 @@ void Spawner::Defense_Spawn(const _float& _DT)
 		{
 			dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*m_pTransform->Get_Position());
 			dynamic_cast<Collider*>(((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER)))->Set_Hp(50);
-
+			//dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Set_Count();
 			CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
 			TileManager::GetInstance()->Get_Defense().push_back(*iter);
 			iter = m_vecMonsterDefense.erase(iter);
@@ -254,19 +268,7 @@ void Spawner::Defense_Spawn(const _float& _DT)
 			++iter;
 	}
 
-	if (m_fDefense > 3)
-	{
-		m_fDefense = 0;
-		if (m_vecMonsterDefense.size() < 4)
-		{
-			if (TileManager::GetInstance()->Get_Defense().size() == 0)
-				return;
-			
-			m_vecMonsterDefense.push_back(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
-			CollisionManager::GetInstance()->Add_ColliderObject(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
-			TileManager::GetInstance()->Get_Defense().pop_back();
-		}
-	}
+
 	
 }
 

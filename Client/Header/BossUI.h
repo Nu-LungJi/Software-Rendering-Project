@@ -16,7 +16,7 @@ public:
 	virtual VOID		Render_GameObject();
 
 public:
-	VOID			    Set_HpInfo(GameObject* pObj) { Component_Collider = dynamic_cast<Collider*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER)); MaxHp = Component_Collider->Get_Hp(); };
+	VOID			    Set_HpInfo(GameObject* pObj) {  Component_Collider = dynamic_cast<Collider*>(pObj->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER)); MaxHp = Component_Collider->Get_Hp(); };
 public:
 	HRESULT				Component_Initialize();
 	static	BossUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV, BOSSUI_INFO eid);

@@ -45,6 +45,8 @@ private:
     _bool                   m_bSpawn;
     _bool                   m_bTrigger;
 
+    _int                    m_iCnt;
+    _int                    m_StageCnt[3];
 public:
     static         Spawner* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos);
 

@@ -229,6 +229,9 @@
     <Filter Include="04. UI\06. BossUI">
       <UniqueIdentifier>{fc9f92f2-60b9-4c63-9fc8-7271ee9b4f51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\02. Monster\01. Boss\02. CheonLog">
+      <UniqueIdentifier>{94438416-989b-47fd-af80-797b0bf860de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -417,9 +420,6 @@
     <ClInclude Include="..\Header\CLEffect.h">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\CLcrystal.h">
-      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\Rain.h">
       <Filter>03. GameObject\09. Particle</Filter>
     </ClInclude>
@@ -474,6 +474,12 @@
     </ClInclude>
     <ClInclude Include="..\Header\BossUI.h">
       <Filter>04. UI\06. BossUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLcrystal.h">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MiniGameCounter.h">
+      <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -649,9 +655,6 @@
     <ClCompile Include="..\Code\CLEffect.cpp">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\CLcrystal.cpp">
-      <Filter>03. GameObject\05. Tile\Cheonglog</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Rain.cpp">
       <Filter>03. GameObject\09. Particle</Filter>
     </ClCompile>
@@ -703,6 +706,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\BossUI.cpp">
       <Filter>04. UI\06. BossUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLcrystal.cpp">
+      <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MiniGameCounter.cpp">
+      <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

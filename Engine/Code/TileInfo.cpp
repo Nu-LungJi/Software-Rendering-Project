@@ -5,7 +5,8 @@ m_eTileState(TILE_STATE::STATE_END), m_bPortal(false), m_bOnlyAnimation(false), 
 }
 TileInfo::TileInfo(const TileInfo& _RHS) : Component(_RHS),m_bOnlyAnimation(_RHS.m_bOnlyAnimation), m_eNextStage(_RHS.m_eNextStage), m_eTileStage(_RHS.m_eTileStage), m_eTileSide(_RHS.m_eTileSide), m_bPortal(_RHS.m_bPortal), m_pTexture(_RHS.m_pTexture),
 m_eTileState(_RHS.m_eTileState), m_eTileMode(_RHS.m_eTileMode),m_iTextureCount(_RHS.m_iTextureCount), m_pTileName(_RHS.m_pTileName), m_iTileNumber(_RHS.m_iTileNumber) {
-	
+	if (m_pTexture != nullptr)
+		m_pTexture->AddRef();
 }
 TileInfo::~TileInfo() { }
 
@@ -40,6 +41,9 @@ Component* TileInfo::Clone() {
 	return new TileInfo(*this);
 }
 VOID TileInfo::Free() {
-
+	
+	if(m_pTexture != nullptr)
+	Safe_Release(m_pTexture);
+	
 	Component::Free();
 }

@@ -111,7 +111,6 @@ HRESULT	MapScene::Ready_Scene() {
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01,0.1f);
 	
-	
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
@@ -176,11 +175,12 @@ HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 HRESULT MapScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {
 	Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
 	Add_GameObjectToScene<ShopUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"ShopUI");
+	Add_GameObjectToScene<MiniGameCounter>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"DefenseUI");
 
+	//BossUi
 	BossUI* pBossUi = BossUI::Create(GRPDEV,BOSSUI_INFO::CHLG);
 	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
 	pBossUi->Set_ObjectTag(L"BossUI");
-
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
 	//Add_GameObjectToScene<BossUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"BossUI");

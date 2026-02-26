@@ -72,7 +72,7 @@
 
 #pragma region MiniGame
 #include "CubeFloorTile.h"
-
+#include "MiniGameCounter.h"
 #pragma endregion
 
 #pragma region Shop
