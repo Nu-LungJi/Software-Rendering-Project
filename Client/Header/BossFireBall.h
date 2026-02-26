@@ -32,11 +32,14 @@ public:
 	VOID	Set_FireBall_Speed(FLOAT _Speed)	{ FireBall_Speed = _Speed;	}
 	FLOAT	Get_FireBall_Speed()				{ return FireBall_Speed;	}
 
-	VOID	Set_FireBall_Duration(FLOAT _Dur)	{ Duration = _Dur; }
-	FLOAT	Get_FireBall_Duration()				{ return Duration; }
+	VOID	Set_FireBall_Duration(FLOAT _Dur)	{ FireBall_Duration = _Dur; }
+	FLOAT	Get_FireBall_Duration()				{ return FireBall_Duration; }
 
 	VOID	Set_FireBall_Pos(_vec3 _Pos)		{ Component_Transform->Set_Pos(_Pos);			}
 	_vec3	Get_FireBall_Pos()					{ return *Component_Transform->Get_Position();	}
+
+	VOID	Set_Boss(FinalBoss* _Boss)			{ Boss = _Boss; }
+	VOID	Set_BossPosition(Transform* _Transform) { BossPosition = _Transform; }
 
 	VOID	FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed);
 private:
@@ -54,8 +57,8 @@ private:
 	INT		Animation_FrameCount;
 	FLOAT	Animation_Interval;
 
-	FLOAT	Timer;
-	FLOAT	Duration;
+	FLOAT	FireBall_Timer;
+	FLOAT	FireBall_Duration;
 
 	_vec3	Direction;
 

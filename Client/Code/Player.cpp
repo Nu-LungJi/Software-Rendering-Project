@@ -69,8 +69,8 @@ HRESULT Player::Ready_GameObject() {
 
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
-	Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	//Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
+	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
+	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -255,17 +255,17 @@ HRESULT Player::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);				// 충돌체의 범위 조절
+	Component_Collider->Set_Scale(0.5f, 0.7f, 0.5f);				// 충돌체의 범위 조절
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
@@ -883,23 +883,23 @@ void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	//if (MOUSE_RBUTTON && _dashstock > 0) {
-	//	_pState = pState::STATE_DASH;
-	//	_dashStart = true;
-	//	_frame = 1;
-	//	_dashstock--;
-	//	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-	//	_isInvincible = true;
-	//}
-	//else if (mouseLB) {
-	//	_pState = pState::STATE_ATTACK;
-	//	_attackDelay = 2.0f;
-	//	_frame = 1;
-	//}
-	//else if (KEY_HOLD(DIK_SPACE)) {
-	//	_pState = pState::STATE_ATTACK;
-	//	_frame = 1;
-	//}
+	if (MOUSE_RBUTTON && _dashstock > 0) {
+		_pState = pState::STATE_DASH;
+		_dashStart = true;
+		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
+	}
+	else if (mouseLB) {
+		_pState = pState::STATE_ATTACK;
+		_attackDelay = 2.0f;
+		_frame = 1;
+	}
+	else if (KEY_HOLD(DIK_SPACE)) {
+		_pState = pState::STATE_ATTACK;
+		_frame = 1;
+	}
 }
 
 void Player::SKILL_NONE(const _float& _DT)

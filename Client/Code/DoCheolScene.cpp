@@ -6,20 +6,27 @@ DoCheolScene::~DoCheolScene() {}
 HRESULT   DoCheolScene::Ready_Scene() {
     Scene::Ready_Scene();
 
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+    UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+    
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect/Staging");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
-
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Weapon/FairyBow");
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-    Ready_GameLogic_Layer();
+    if (FAILED(Ready_Enviroment_Layer()))           return E_FAIL;
+    if (FAILED(Ready_GameLogic_Layer()))            return E_FAIL;
+    if (FAILED(Ready_UserInterface_Layer()))        return E_FAIL;
 
     {
         HANDLE   hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
@@ -102,7 +109,6 @@ HRESULT   DoCheolScene::Ready_Scene() {
             dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
 
             TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
-
         }
     }
 
@@ -144,12 +150,13 @@ HRESULT DoCheolScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 
-    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+    //Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
     //Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
     //이거 안해두됨 트리거에 주석 쳐놓고 왜안돼지 하고 있었네;;
     return S_OK;
 }
 HRESULT DoCheolScene::Ready_UserInterface_Layer() {
+    Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
     return S_OK;
 }
 DoCheolScene* DoCheolScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

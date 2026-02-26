@@ -69,6 +69,7 @@ private:
 	bool		Camera_Move;
 
 	INT			Shake_Strength;
+	FLOAT		Original_Shake_Time;
 	FLOAT		Shake_Time;
 	_vec3		OriginEye;
 	_vec3		OriginAt;

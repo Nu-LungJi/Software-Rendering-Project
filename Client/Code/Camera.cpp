@@ -16,6 +16,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
 	Shake_Strength = 0;
+	Original_Shake_Time = 0.f;
 	Shake_Time = 0.f;
 
 	MouseCheck = FALSE;
@@ -96,7 +97,10 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	if (Shake_Time > 0.f) {
 		OriginEye = EyeVec;
 		OriginAt = AtVec;
-
+		float ratio = Shake_Time / Original_Shake_Time;
+		if (ratio > 0.3f) {
+			Shake_Strength = Shake_Time / Original_Shake_Time * Shake_Strength;
+		}
 		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
@@ -112,6 +116,10 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		Shake_Time -= _DT;
 		EyeVec = OriginEye;
 		AtVec = OriginAt;
+	}
+	else if (Shake_Time <= 0.f && Original_Shake_Time > 0.f) {
+		Shake_Time = 0.f;
+		Original_Shake_Time = 0.f;
 	}
 	
 
@@ -216,6 +224,7 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 
 VOID CameraObject::Camera_Shaking(INT _Strength, FLOAT _Time) {
 	Shake_Strength = _Strength;
+	Original_Shake_Time = _Time;
 	Shake_Time = _Time;
 }
 
