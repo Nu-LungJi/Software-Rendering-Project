@@ -47,6 +47,7 @@
 //#include "DocheolAppearMark.h"
 //#include "Docheol.h"
 
+#include "EvilFrog.h"
 
 #include "Alert.h"
 

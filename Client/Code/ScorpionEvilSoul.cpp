@@ -144,6 +144,7 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
+	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID ScorpoinEvilSoul::Render_GameObject() {
