@@ -12,48 +12,33 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 	switch (eEffect)
 	{
 	case CL_EFFECT::LEFT_HORN:
-		Make_TextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0");
 		break;
 	case CL_EFFECT::RIGHT_HORN:
-		Make_TextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0");
 		break; 
 	case CL_EFFECT::CL_BODY:
-		Make_TextureList(L"Spr_Effect_Cheonlog_AttackModeEffect_0");
 		break;
 	case CL_EFFECT::LEAF_FIRST:
 		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
-		Make_TextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0");
 		break;
 	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
-	Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0");
 		break;
 	case CL_EFFECT::LEAF_CHARGING:
-		Make_TextureList(L"Spr_Effect_Cheonlog_ChargeAccelReturn_Birth01_0");
 		break;
 	case CL_EFFECT::LEAF_SPIN:
-		Make_TextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Loop_0");
 		break;
 	case CL_EFFECT::LEAF_SPIN_DEATH:
-		Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlower_Death_0");
 		break;
 	case CL_EFFECT::SPAWN_BOOM:
-		Make_TextureList(L"Spr_Effect_Cheonlog_Appear_Electric01_0");
 		break;
 	case CL_EFFECT::SPAWN_THUNDER:
-		
-		Make_TextureList(L"Green_Evil_Thunder0");
 		break;
 	case CL_EFFECT::SPAWN_BOOM_CIRCLE:
-		Make_TextureList(L"Green_Shader0");
 		break;
 	case CL_EFFECT::SPAWN_L:
-		Make_TextureList(L"Cheonlog_Spawn_L0");
 		break;
 	case CL_EFFECT::SPAWN_R:
-		Make_TextureList(L"Cheonlog_Spawn0");
 		break;
 	}
-
 	m_vScale = vScale;
 	Component_Transform->Set_Pos(vPos);
 	Component_Transform->Set_Rotation(vRot);
@@ -66,19 +51,6 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 	m_fFrame = fFrame;
 	m_fAlpha = 1.f;
 	m_bNextEffect = bNext;
-
-	return S_OK;
-}
-
-HRESULT CLEffect::Make_TextureList(wstring _FileName) {
-	INT FRAME = 0;
-
-	while (++FRAME) {
-		wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
-		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-		if (TEX == nullptr) break;
-		else { TEX->AddRef();  TextureList.push_back(TEX); }
-	}
 
 	return S_OK;
 }
@@ -107,7 +79,7 @@ void CLEffect::Render_GameObject() {
 		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-		GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
+		GRPDEV->SetTexture(0, CHEONLOG->Get_EffectTexture(m_eEffect)[m_TextureIndex]);
 	}
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	Component_Buffer->Render_Buffer();
@@ -133,7 +105,7 @@ _bool CLEffect::AlphaStart(CL_EFFECT eid)
 		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
 
-		GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
+		GRPDEV->SetTexture(0, CHEONLOG->Get_EffectTexture(m_eEffect)[m_TextureIndex]);
 
 		// COLOR = Texture * TFACTOR
 		GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
@@ -190,7 +162,7 @@ void CLEffect::Move_Normal(const _float& _DT)
 			Component_Transform->Set_Scale(vScale);
 		}
 
-		if (m_TextureIndex > TextureList.size() - 1)
+		if (m_TextureIndex > CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1)
 		{
 			m_TextureIndex = 0;
 
@@ -237,9 +209,9 @@ void CLEffect::Move_Frame(const _float& _DT)
 				m_FrameTick = 0.f;
 				++m_iCnt;
 			}
-			if (m_TextureIndex > TextureList.size() - 1)
+			if (m_TextureIndex > CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1)
 			{
-				m_TextureIndex = TextureList.size() - 1;
+				m_TextureIndex = CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1;
 			}
 			if (m_iCnt > 17)
 				Set_ObjectDead(TRUE);
@@ -249,7 +221,7 @@ void CLEffect::Move_Frame(const _float& _DT)
 			++m_TextureIndex;
 			m_FrameTick = 0.f;
 
-			if (m_TextureIndex > TextureList.size() - 1)
+			if (m_TextureIndex > CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1)
 			{
 				m_TextureIndex = 0;
 
@@ -399,9 +371,5 @@ CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 v
 	return EFT;
 }
 void CLEffect::Free() {
-	for (auto& iter : TextureList)
-		Safe_Release(iter);
-
-	TextureList.clear();
 	GameObject::Free();
 }

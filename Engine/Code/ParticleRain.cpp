@@ -24,7 +24,7 @@ HRESULT ParticleRain::Ready_Buffer(_Bound* BoundingBox, _int NumParticles)
 	m_bBoundingBox = *BoundingBox;
 	m_dwVtxSize = sizeof(VTXCOL);
 	m_dwVtxCnt = 2048;
-	m_fsize = 0.2;
+	m_fsize = 0.5;
 	m_dwFVF = FVF_COL;
 	m_dwOffset = 0;
 	m_dwBatchSize = 512;
@@ -72,10 +72,10 @@ void  ParticleRain::PreRedner_Particle()
 	//초기 렌더링 상태를 지정한다
 	GRPDEV->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
 	GRPDEV->SetRenderState(D3DRS_POINTSCALEENABLE, true);
-	GRPDEV->SetRenderState(D3DRS_POINTSIZE, FtoDw(m_fsize));
-	GRPDEV->SetRenderState(D3DRS_POINTSIZE_MIN, FtoDw(0.0f));
-	GRPDEV->SetRenderState(D3DRS_POINTSCALE_A, FtoDw(0.0f));
-	GRPDEV->SetRenderState(D3DRS_POINTSCALE_B, FtoDw(0.0f));
+	GRPDEV->SetRenderState(D3DRS_POINTSIZE, FtoDw(0.2F));
+	//GRPDEV->SetRenderState(D3DRS_POINTSIZE_MIN, FtoDw(0.0f));
+	//GRPDEV->SetRenderState(D3DRS_POINTSCALE_A, FtoDw(0.0f));
+	//GRPDEV->SetRenderState(D3DRS_POINTSCALE_B, FtoDw(0.0f));
 	GRPDEV->SetRenderState(D3DRS_POINTSCALE_C, FtoDw(1.0f));
 
 
@@ -90,12 +90,19 @@ void  ParticleRain::PostRender_Particle()
 }
 void  ParticleRain::Reset_Particle(ATTR* attribute, _vec3* Look)
 {
+	_vec3 vRot = { 1,0,0 };
+	_matrix  matRotx;
 	attribute->bIsAlive = true;
 	CDYBuffer::Get_RandomVector(&attribute->vPosition,
 		&m_bBoundingBox.vMin, &m_bBoundingBox.vMax);
-	attribute->vVelocity.x = CDYBuffer::Get_RandomFloat(0.0f, 1.0f) * -3.0f;
-	attribute->vVelocity.y = CDYBuffer::Get_RandomFloat(0.0f, 1.0f) * -10.0f;
+
+	attribute->vVelocity.x = CDYBuffer::Get_RandomFloat(0.5f, 1.0f) * -10.0f;
+	attribute->vVelocity.y = CDYBuffer::Get_RandomFloat(0.5f, 1.0f) * -10.0f;
 	attribute->vVelocity.z = 0.0f;
+
+	//D3DXMatrixRotationX(&matRotx, 55);
+	//
+	//D3DXVec3TransformNormal(&attribute->vVelocity, &vRot, &matRotx);
 
 	attribute->dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 0.f);
 }

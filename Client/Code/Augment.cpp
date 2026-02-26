@@ -168,11 +168,11 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {  
 	if (_PerkType == FIRST)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 200);
 	if(_PerkType == SECOND)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 200);
   if (_PerkType == THIRD)
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 175);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 200);
 }
 
 VOID Augment::FadeOut(FLOAT Frame)
@@ -216,7 +216,10 @@ Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 VOID  Augment::Free() {
 	for (auto& PI : Perk_Info)
+	{
+		Safe_Release(PI->TEXTURE);
 		Safe_Delete(PI);
+	}
 
   isActive = FALSE;
 

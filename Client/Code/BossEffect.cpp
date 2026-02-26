@@ -8,8 +8,9 @@ BossEffect::~BossEffect()													{}
 HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, wstring _TAG, _vec3 _Rot) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	if		(_SKILLTYPE == BOSS_EFFECT::SPOOL_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Spool_Appear"); }
-	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_FLOW_EFFECT)				{ Make_TextureList(L"Effect_Spool"); }
+	if		(_SKILLTYPE == BOSS_EFFECT::SPOOL_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Spool_Appear");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_FLOW_EFFECT)				{ Make_TextureList(L"Effect_Spool");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::SPOOL_DISAPPEAR_EFFECT)			{ Make_TextureList(L"Effect_Spool_DisAppear");	}
 	else if	(_SKILLTYPE == BOSS_EFFECT::EMBLEM_APPEAR_EFFECT)			{ Make_TextureList(L"Effect_Emblem_Appear");	}
 	else if (_SKILLTYPE == BOSS_EFFECT::EMBLEM_DESTROY_EFFECT)			{ Make_TextureList(L"Effect_Emblem");			}
 	else if (_SKILLTYPE == BOSS_EFFECT::WATER_POPUP_EFFECT)				{ Make_TextureList(L"Effect_Water_PopUp");		}
@@ -35,7 +36,10 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 
 	else if (_SKILLTYPE == BOSS_EFFECT::DANGER_AREA_EFFECT)				{ Make_TextureList(L"DangerArea");				}
 	else if (_SKILLTYPE == BOSS_EFFECT::FIREBALL_EFFECT)				{ Make_TextureList(L"Effect_FireBall_End");		}
-	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_EFFECT)				{ Make_TextureList(L"Supporter_Effect");		}
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_EFFECT)				{ Make_TextureList(L"Rage_Supporter_Effect");	}
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT)		{ Make_TextureList(L"Effect_Supporter_Appear"); }
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_STAY_EFFECT)			{ Make_TextureList(L"Effect_Supporter_Stay");	}
+	else if (_SKILLTYPE == BOSS_EFFECT::SUPPORTER_DISAPPEAR_EFFECT)		{ Make_TextureList(L"Effect_Supporter_Disappear"); }
 
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_RSWING_EFFECT)				{ Make_TextureList(L"Effect_RageRSwing");		}
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_FIREBALL_EFFECT)			{ Make_TextureList(L"Effect_Rage_FireBall_End");}
@@ -43,6 +47,7 @@ HRESULT BossEffect::Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_SLAM_CIRCLE_EFFET)			{ Make_TextureList(L"Effect_RageSlam_Circle");	}
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_SLAM_FLAME_EFFECT)			{ Make_TextureList(L"Effect_RageSlamFlame");	}
 	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT)	{ Make_TextureList(L"Effect_Charge");			}
+	else if (_SKILLTYPE == BOSS_EFFECT::RAGE_CHARGE_ROAR_EFFECT)		{ Make_TextureList(L"Effect_Roar");				}
 
 	EffectSize = _Size;
 	PlayTime = _PlayTime;

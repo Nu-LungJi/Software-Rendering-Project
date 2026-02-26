@@ -111,5 +111,4 @@ void CLoading::Free()
 
     Safe_Release(m_pGraphicDev);
 
-
 }

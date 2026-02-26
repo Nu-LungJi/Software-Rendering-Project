@@ -48,6 +48,8 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_BACK_EFFECT);
+
 	RenderGroup[RENDER_ALPHA].sort([](GameObject* DEST, GameObject* SRC)->bool
 		{
 			return DEST->Get_AlphaZValue() > SRC->Get_AlphaZValue();
@@ -56,8 +58,9 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 		if(_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
 	}
+
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::MONSTER_EFFECT);
-	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_EFFECT);
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_FRONT_EFFECT);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::PLAYER_EFFECT);
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
@@ -77,7 +80,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			}
 		}
 	}
-	
+	EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {
@@ -104,7 +107,7 @@ VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	_GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 VOID	RenderManager::Free() {

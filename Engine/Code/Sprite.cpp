@@ -2,7 +2,7 @@
 
 SpriteObject:: SpriteObject()							:					  Sprite(nullptr){}
 SpriteObject:: SpriteObject(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV), Sprite(nullptr){}
-SpriteObject:: SpriteObject(CONST SpriteObject& _RHS)	: Component(_RHS)	, Sprite(_RHS.Sprite), TextureList(_RHS.TextureList){}
+SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_RHS.Sprite), TextureList(_RHS.TextureList) { Sprite->AddRef(); }
 SpriteObject::~SpriteObject()																									{}
 
 HRESULT SpriteObject::Ready_Sprite() {
@@ -68,5 +68,9 @@ Component* SpriteObject::Clone() {
 	return new SpriteObject(*this);
 }
 VOID		SpriteObject::Free() {
+	for (auto& iter : TextureList)
+		Safe_Release(iter.TEXTURE);
+
+	Safe_Release(Sprite);
 	Component::Free();
 }

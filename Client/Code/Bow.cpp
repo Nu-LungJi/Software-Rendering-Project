@@ -209,7 +209,7 @@ HRESULT Bow::Component_Initialize()
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Texture = ADD_COMPONENT_TEXTURE;
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Weapon/IceBow");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Weapon/IceBow");
 
 	//D3DXCreateTextureFromFile(g_pd3dDevice, L"image.png", &g_pTexture);
 	//D3DXCreateSprite(g_pd3dDevice, &g_pSprite);
@@ -261,7 +261,7 @@ void Bow::SetGrahpic()
 void Bow::CreateArrow(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
-
+	
 	if (_type == BowType::WindBow && !mouseLB) {
 		_attackDelay = 1.f;
 	}
@@ -274,23 +274,23 @@ void Bow::CreateArrow(const _float& _DT)
 		if (_type == BowType::WindBow && _attackDelay > 0.2f) {
 			_attackDelay -= _DT * 0.4;
 		}
-
+	
 		if (_attackTimer > _attackDelay) {
 			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 			_vec3 MouseDir = player->Get_MouseDir();
-
+	
 			_vec2 dir2D = { MouseDir.x, MouseDir.z };
 			D3DXVec2Normalize(&dir2D, &dir2D);
-
+	
 			float angle = atan2f(-dir2D.y, dir2D.x);
-
+	
 			float radius = 1.8f;
-
+	
 			float offsetX = cosf(angle) * radius;
 			float offsetY = sinf(angle) * radius;
-
+	
 			_arrowPos = { _bowPos->x + offsetX , _bowPos->y, _bowPos->z - offsetY };
-
+	
 			_vec2 side = { dir2D.y, dir2D.x };
 			D3DXVec2Normalize(&side, &side);
 			_vec3 rightPos = _arrowPos;
@@ -305,7 +305,7 @@ void Bow::CreateArrow(const _float& _DT)
 				cosf(angle - convergeAngle),
 				-sinf(angle - convergeAngle)
 			};
-
+	
 			switch (_type)
 			{
 			case BowType::FairyBow :
@@ -348,7 +348,7 @@ void Bow::CreateArrow(const _float& _DT)
 				break;
 			default :
 				MakeArrow(_arrowPos, dir2D);
-
+	
 			}
 		}
 	}

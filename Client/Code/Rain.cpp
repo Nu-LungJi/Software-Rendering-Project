@@ -15,7 +15,9 @@ INT	Rain::Update_GameObject(const _float& _DT) {
 
 	dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &vPos);
-
+	_vec3 vRight{ -1,0,0 };
+	Component_Transform->Set_Rotation(80.f, 0.f, 60.f);
+	Component_Transform->Move_Pos(&vRight,1.f,_DT);
 	Component_Transform->Set_Pos(vPos);
 	Component_Buffer->Update_Particle(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
@@ -41,14 +43,17 @@ VOID Rain::Render_GameObject() {
 HRESULT Rain::Component_Initialize() {
 
 	BoundingBox bound;
-	bound.vMin = { -10,-10, -10 };
-	bound.vMax = { 10,10, 10 };
-	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,1000);
+	bound.vMin = { -15,-15, -15 };
+	bound.vMax = { 15,10, 15 };
+	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,1500);
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-	Component_Texture = ADD_COMPONENT_TEXTURE;
-	Component_Texture->Import_TextureFromFolder(L"../../Tile/Stage1");
+	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
 
-	StaticTexture = Component_Texture->Find_Texture(L"Spr_Effect_WaterWave02_12.png");
+	IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(L"Spr_Effect_WaterWave02_12.dds");
+
+	if (TEX == nullptr) return E_FAIL;
+	else { TEX->AddRef();  StaticTexture = TEX; }
+
 	return S_OK;
 }
 Rain* Rain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
@@ -61,6 +66,8 @@ Rain* Rain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return pRain;
 }
 VOID Rain::Free() {
+
 	Safe_Release(Component_Buffer);
+	Safe_Release(StaticTexture);
 	GameObject::Free();
 }

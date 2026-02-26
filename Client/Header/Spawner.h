@@ -11,7 +11,7 @@ private:
 
 public:
 
-    virtual			HRESULT		Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn);
+    virtual			HRESULT		Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos);
     virtual			INT			Update_GameObject(CONST FLOAT& _DT);
     virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
     virtual			VOID		Render_GameObject();
@@ -25,7 +25,7 @@ public:
     void                    Monster_Spawn4();
     void                    CL_Spawn();
     void                    Set_Spawn(_bool bSpawn) { m_bSpawn = bSpawn; }
-
+    void                    Defense_Spawn(const _float& _DT);
     Transform*               Crash_Player();
     void                      Boss();
 private:
@@ -34,14 +34,21 @@ private:
     TileInfo*               m_pTileInfo;
     Transform*              m_pTransform;
     Buffer*                 m_pBuffer;
+    
+    vector<GameObject*>     m_vecMonsterDefense;
+    
 private:
     _float                  m_fFrame;
     _float                  m_fTime;
+    _float                  m_fDefense;
     _bool                   m_bStopFrame;
     _bool                   m_bSpawn;
     _bool                   m_bTrigger;
+
+    _int                    m_iCnt;
+    _int                    m_StageCnt[3];
 public:
-    static         Spawner* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_SPAWNER eSpawn);
+    static         Spawner* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos);
 
 private:
     virtual  void            Free();

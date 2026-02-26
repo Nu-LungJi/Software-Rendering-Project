@@ -335,11 +335,11 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTile[]	         = { "TILE_FRONT","TILE_RIGHT","TILE_LEFT","TILE_OTHER"};
 	static const char* cTileStater[]     = { "NORMAL", "COLLISION", "TRIGGER","ANIMATION","DESTORY","POTAL","POTALEFFECT","POTALGASI","POTALGASIEFFECT","UNDERTILE","GASIBREAK","BOOM","END"};
 	static const char* cTileMode[]	     = { "TILE","CUBE","OBJECT","END" };
-	static const char* cTileStage[]      = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS", "END" };
+	static const char* cTileStage[]      = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" ,"END" };
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
-	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_END"};
-	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS", "END" };
+	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_RANDOM","SPAWN_END"};
+	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "END" };
 
 	static const char* cSelect_Tile      = nullptr;
 	static const char* cSelect_State     = nullptr;
@@ -428,7 +428,8 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_Stage, cTileStage[5])) m_eStage = TILE_STAGE::TILE_DOCHER1;
 						else if (!strcmp(cSelect_Stage, cTileStage[6])) m_eStage = TILE_STAGE::TILE_DOCHER2;
 						else if (!strcmp(cSelect_Stage, cTileStage[7])) m_eStage = TILE_STAGE::TILE_DOCHERBOSS;
-						else if (!strcmp(cSelect_Stage, cTileStage[8])) m_eStage = TILE_STAGE::STAGE_END;
+						else if (!strcmp(cSelect_Stage, cTileStage[8])) m_eStage = TILE_STAGE::TILE_DEFENSE;
+						else if (!strcmp(cSelect_Stage, cTileStage[9])) m_eStage = TILE_STAGE::STAGE_END;
 					}
 					if (bSelect)
 						ImGui::SetItemDefaultFocus();
@@ -502,7 +503,8 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[11]))  m_eSpawner = TILE_SPAWNER::MONSTER_SPAWN4;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::BOSS_SPAWN;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[13]))  m_eSpawner = TILE_SPAWNER::CL_SPAWN;
-						else if (!strcmp(cSelect_Spawner, cTileSpawner[14]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[14]))  m_eSpawner = TILE_SPAWNER::RANDOM_SPAWNER;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[15]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
 
 					}
 					if (bSelect)
@@ -580,7 +582,8 @@ void Tile::Imgui_ModeChanger()
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[5])) m_eNextStage = TILE_STAGE::TILE_DOCHER1;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[6])) m_eNextStage = TILE_STAGE::TILE_DOCHER2;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[7])) m_eNextStage = TILE_STAGE::TILE_DOCHERBOSS;
-					else if (!strcmp(cSelect_NextStage, cTileNextStage[8])) m_eNextStage = TILE_STAGE::STAGE_END;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[8])) m_eNextStage = TILE_STAGE::TILE_DEFENSE;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[9])) m_eNextStage = TILE_STAGE::STAGE_END;
 				}
 				if (bSelect)
 					ImGui::SetItemDefaultFocus();
@@ -999,7 +1002,7 @@ void Tile::Check_TilePoint()
 				case TILEMODE_CHANGE::MODE_TILE:
 					if (m_eTileState == TILE_STATE::STATE_NORMAL && m_eSpawner != TILE_SPAWNER::SPAWN_END)
 					{
-						pTile = Spawner::Create(GRPDEV, m_eTile, m_eSpawner);
+						pTile = Spawner::Create(GRPDEV, m_eTile, m_eSpawner,{0,0,0});
 
 					}
 					else if (m_eTileState == STATE_UNDERTILE)

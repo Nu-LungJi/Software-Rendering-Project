@@ -18,7 +18,6 @@ private:
 private:
 	ParticleRain* Component_Buffer;
 	Transform* Component_Transform;
-	Texture* Component_Texture;
 
 	IDirect3DBaseTexture9* StaticTexture;
 

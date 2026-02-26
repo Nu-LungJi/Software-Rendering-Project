@@ -13,6 +13,7 @@ public:
 	virtual ~ShotGunEvilSoul();
 
 public:
+	virtual			HRESULT		Ready_GameObject(_vec3 vPos = {}, BOOL bMini = false);
 	virtual			HRESULT		Ready_GameObject();
 	virtual			INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
@@ -30,7 +31,7 @@ private:
 	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 public:
-	static			ShotGunEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static			ShotGunEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos = {}, BOOL bMini = false);
 	MONSTERINFO* Get_Info() { return &m_tInfo; }
 
 private:

@@ -7,11 +7,14 @@ HRESULT	MapScene::Ready_Scene() {
 	Scene::Ready_Scene();
 
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
+
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 	Ready_UserInterface_Layer(L"UI_Layer");
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-
+	pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
 
 	{
 	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
@@ -44,7 +47,6 @@ HRESULT	MapScene::Ready_Scene() {
 	_bool		     bAni = false;
 	_int      i = 0;
 	TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
-	//TileManager::GetInstance()->Render_TileList();
 	while (true)
 	{
 		ReadFile(hFile, &Info,			  sizeof(_vec3),		   &dwByte, NULL);
@@ -60,7 +62,7 @@ HRESULT	MapScene::Ready_Scene() {
 		ReadFile(hFile, &vNextPos,		  sizeof(_vec3),		   &dwByte, NULL);
 		ReadFile(hFile, &bAni,			  sizeof(_bool),	       &dwByte, NULL);
 		ReadFile(hFile, &eSpawn,		  sizeof(TILE_SPAWNER),    &dwByte, NULL);
-		ReadFile(hFile, &eNext,			  sizeof(TILE_SPAWNER), &dwByte, NULL);
+		ReadFile(hFile, &eNext,			  sizeof(TILE_STAGE), &dwByte, NULL);
 
 		if (0 == dwByte)
 			break;
@@ -69,7 +71,7 @@ HRESULT	MapScene::Ready_Scene() {
 		//GRPDEV->AddRef();
 		if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
 		{
-			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
+			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
 		}else
 			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 		
@@ -107,9 +109,7 @@ HRESULT	MapScene::Ready_Scene() {
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01,0.1f);
-	
-	pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
-	
+
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
@@ -121,16 +121,16 @@ INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
 	
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	
-	
-	if (!TileManager::GetInstance()->Get_Loading())
-	{
-		if (pLoading->Get_Finish())
-		{
-			TileManager::GetInstance()->Set_Stage();
-			TileManager::GetInstance()->Set_EndLoading(TRUE);
-			
-		}
-	}else 
+	//
+	//if (!TileManager::GetInstance()->Get_Loading())
+	//{
+	//	if (pLoading->Get_Finish())
+	//	{
+	//		TileManager::GetInstance()->Set_Stage();
+	//		TileManager::GetInstance()->Set_EndLoading(TRUE);
+	//		
+	//	}
+	//}else 
 		TileManager::GetInstance()->Stage_Update(_DT);
 	return Scene::Update_Scene(_DT);
 }
@@ -162,23 +162,27 @@ HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+	Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
+	Cheonlog* pCL = Cheonlog::Create(GRPDEV, {0,0,0});
 	
-	//Cheonlog* pCL = Cheonlog::Create(GRPDEV, {0,0,0});
-	//
-	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//pCL->Set_ObjectTag(L"CheonLog");
-	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+	pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	pCL->Set_ObjectTag(L"CheonLog");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 
-	//Rain* pObj = Rain::Create(GRPDEV);
-	//pObj->Set_ObjectTag(L"Rain");
-	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
-	
 	return S_OK;
 }
 HRESULT MapScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {
 	Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
 	Add_GameObjectToScene<ShopUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"ShopUI");
+	Add_GameObjectToScene<MiniGameCounter>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"DefenseUI");
 
+	//BossUi
+	BossUI* pBossUi = BossUI::Create(GRPDEV,BOSSUI_INFO::CHLG);
+	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	pBossUi->Set_ObjectTag(L"BossUI");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+
+	//Add_GameObjectToScene<BossUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"BossUI");
 	return S_OK;
 }
 MapScene* MapScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

@@ -8,19 +8,22 @@ HRESULT   StartScene::Ready_Scene() {
     Scene::Ready_Scene();
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+    pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
+
     //Load Tile
     {
-        HANDLE   hFile = CreateFile(L"../../Data/Cheonglock.dat", // ?뚯씪 ?대쫫???ы븿??寃쎈줈
-            GENERIC_READ,      // ?뚯씪 ?묎렐 紐⑤뱶(GENERIC_WRITE : ?곌린, GENERIC_READ : ?쎄린)
-            NULL,            // 怨듭쑀 諛⑹떇(?뚯씪???대젮 ?덈뒗 ?곹깭?먯꽌 ?ㅻⅨ ?꾨줈?몄뒪媛 ?ㅽ뵂 ?????덇??섎뒗 寃껋뿉 ????ㅼ젙, 吏?뺥븯吏 ?딆쓣 寃쎌슦 NULL)
-            NULL,            // 蹂댁븞 ?띿꽦(湲곕낯媛믪씤 寃쎌슦 NULL)
-            OPEN_EXISTING,      // ?뚯씪???놁쓣 寃쎌슦 ?뚯씪???앹꽦?섏뿬 ???OPEN_EXISTING : ?뚯씪???덉쓣 寃쎌슦?먮쭔 濡쒕뱶)
-            FILE_ATTRIBUTE_NORMAL,   // ?뚯씪 ?띿꽦(?꾨Т???띿꽦???녿뒗 ?쇰컲 ?뚯씪)
-            NULL);            // ?앹꽦???뚯씪???띿꽦?뉖Ⅴ ?쒓났???쒗뵆由??뚯씪
+        HANDLE   hFile = CreateFile(L"../../Data/Cheonglock.dat",
+            GENERIC_READ,    
+            NULL,          
+            NULL,           
+            OPEN_EXISTING,   
+            FILE_ATTRIBUTE_NORMAL,  
+            NULL);            
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
@@ -44,7 +47,7 @@ HRESULT   StartScene::Ready_Scene() {
         _bool           bAni = false;
         _int      i = 0;
         TILE_SPAWNER      eSpawn = TILE_SPAWNER::SPAWN_END;
-        //TileManager::GetInstance()->Render_TileList();
+
         while (true)
         {
             ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
@@ -60,24 +63,25 @@ HRESULT   StartScene::Ready_Scene() {
             ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
             ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
             ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
-            ReadFile(hFile, &eNext, sizeof(TILE_SPAWNER), &dwByte, NULL);
+            ReadFile(hFile, &eNext, sizeof(TILE_STAGE), &dwByte, NULL);
 
             if (0 == dwByte)
                 break;
 
             GameObject* GOBJ = nullptr;
-            //GRPDEV->AddRef();
+
             if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
             {
-                GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn);
+                GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
             }
             else
                 GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 
 
 
-            if (eNext == TILE_STAGE::TILE_STAGE2)
-                ++i;
+            if (eTileStage == TILE_STAGE1 && eSpawn == TILE_SPAWNER::MONSTER_SPAWN1)
+                _int i = 0;
+
             GOBJ->Set_ObjectTag(L"CXZTile");
             dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
@@ -104,10 +108,10 @@ HRESULT   StartScene::Ready_Scene() {
         MSG_BOX("로드 성공");
         CloseHandle(hFile);
     }
+
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-    pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
-
+    
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -155,7 +159,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-
+    Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
 
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
     //Add_GameObjectToScene<Fireball>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
@@ -168,8 +172,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     Add_GameObjectToScene<MainUI>         (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"MainUI"      );
 
     //Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
-    //Add_GameObjectToScene<Augment>         (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );
-
+    Add_GameObjectToScene<Augment>         (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
     //Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");

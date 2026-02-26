@@ -1,9 +1,7 @@
 #pragma once
 #include "GameObject.h";
 enum class LEAF_ATTACK;
-enum class CL_EFFECT { LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING,LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM,SPAWN_THUNDER ,SPAWN_BOOM_CIRCLE, SPAWN_L, SPAWN_R,
-};
-
+enum class CL_EFFECT;
 class CLEffect : public GameObject {
 private:
 	explicit CLEffect(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -18,12 +16,10 @@ public:
 
 public:
 	HRESULT						Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook, _bool bNext);
-	HRESULT						Make_TextureList(wstring _FileName);
 	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1},_bool bNext = false);
 	
 
 public:
-
 	_bool						AlphaStart(CL_EFFECT eid);
 	_bool						AlphaEnd(CL_EFFECT eid);
 	void						Move_Normal(const _float& _DT);
@@ -40,7 +36,6 @@ private:
 private:
 	CL_EFFECT						m_eEffect;
 	_bool							m_bDead;
-	vector<IDirect3DBaseTexture9*>	TextureList;
 
 	_int							m_TextureIndex;
 	_int							m_iCnt;
