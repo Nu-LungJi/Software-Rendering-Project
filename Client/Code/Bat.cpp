@@ -77,12 +77,10 @@ INT	Bat::Update_GameObject(const _float& _DT)
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-
 	switch (m_tInfo.eState[0])
 	{
 	default:
 		m_tInfo.vDirection.y = 0.f;
-
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
 			m_tInfo.Textureinfo._frameTick = 0.f;
@@ -102,7 +100,6 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 
 		break;
 	}
-
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
 	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {

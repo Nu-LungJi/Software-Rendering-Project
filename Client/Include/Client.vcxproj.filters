@@ -216,7 +216,7 @@
     </Filter>
     <Filter Include="03. GameObject\09. Particle">
       <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="03. GameObject\06. Effect\05.BlackOut">
       <UniqueIdentifier>{30ee23f7-31bb-4b55-ade1-56ef856070ec}</UniqueIdentifier>
     </Filter>
@@ -228,6 +228,9 @@
     </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
       <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\05. EvilFrog">
+      <UniqueIdentifier>{bd0680c2-0764-4ba1-8a4f-dd4b3285f757}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +478,9 @@
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\09. Hurdle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\EvilFrog.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -703,6 +709,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
       <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\EvilFrog.cpp">
+      <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
