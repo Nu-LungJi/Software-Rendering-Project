@@ -13,7 +13,8 @@ INT	Alert::Update_GameObject(const _float& _DT)
 {
 
 	// <플레이어 업데이트 시점>
-	GameObject::Update_GameObject(_DT);
+	//GameObject::Update_GameObject(_DT);
+	Component_Buffer->Update_Component(_DT);
 
 	m_tInfo.fTimer[0] += _DT;
 

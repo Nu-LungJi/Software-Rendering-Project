@@ -1,4 +1,5 @@
 #include"GameObject.h"
+#include"SceneManager.h"
 
 #define FRAMETICK 0.1f
 
@@ -23,7 +24,6 @@
 
 // 1.	씬 시작시 배치된 오브젝트의 경우 Create 도중 이미지를 가져올 수 없음	( RESOURCEMANAGER 가 LAYER 배치보다 후순위)
 // 2.	렌더링 리스트에 추가된 후 삭제되지 않도록 조건을 미리 걸어야함		( 오브젝트 삭제가 Update 이후, Late_Update 전에 이루어짐)
-// 3.	주석이 깨지는 현상 발견, 이번에는 괜찮기를..
 
 #pragma region Bat
 #define BATIMGX						289
@@ -65,7 +65,8 @@
 #define	BULLET_STANDARD_SPEED	5.f
 #pragma endregion
 
-#pragma region ScorpionEvilSoul
+#pragma region 
+
 #define SCORPIONEVILSOULIMGX					159
 #define SCORPIONEVILSOULIMGY					254
 #define SCORPIONEVILSOULIMG_ASPECTRATIO			((FLOAT)SCORPIONEVILSOULIMGY / (FLOAT)SCORPIONEVILSOULIMGX)
@@ -86,7 +87,7 @@
 
 #define SCORPIONEVILSOUL_BULLET_TYPE			ScorpionBullet			//	총알 종류
 #define SCORPIONEVILSOUL_BULLET_SPEEDMULT		1.f						//	총알 속도 배수
-#define SCORPIONEVILSOUL_BULLET_SCALEMULT		1.f						//	총알 속도 배수
+#define SCORPIONEVILSOUL_BULLET_SCALEMULT		2.f						//	총알 크기 배수
 
 #define SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f
 #pragma endregion
@@ -96,12 +97,34 @@
 #define SCORPIONBULLET_IMGY						120
 #define SCORPIONBULLET_IMG_ASPECTRATIO			((FLOAT)SCORPIONBULLET_IMGY / (FLOAT)SCORPIONBULLET_IMGX)
 
-#define SCORPIONBULLET_WIDTH					1.5f
+#define SCORPIONBULLET_WIDTH					2.f
 #define SCORPIONBULLET_HEIGHT					SCORPIONBULLET_WIDTH * SCORPIONBULLET_IMG_ASPECTRATIO
 
 #define SCORPIONBULLET_SPEED					3.f
 #define SCORPIONBULLET_CHAINBULLET_NUM			6
 #pragma endregion
+
+#pragma region EvilFrog
+#define EVILFROGIMGX									63
+#define EVILFROGIMGY									127
+#define EVILFROGIMG_ASPECTRATIO						((FLOAT)EVILFROGIMGY / (FLOAT)EVILFROGIMGX)
+
+#define EVILFROG_WIDTH									1.f
+#define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
+
+#define EVILFROG_SPEED									3.f
+#define EVILFROG_HP											50.f
+
+#define EVILFROG_TRACKINGDIS							20.f
+#define EVILFROG_TRACKINGMIN							10.f
+#define EVILFROG_TRACKING_TIME 					3.f
+#define EVILFROG_LOST_TIME							3.f
+
+#define EVILFROG_CASTING_TIME						2.f
+#define EVILFROG_CHANNELING_TIME						0.3f
+
+#define EVILFROG_Bullet_Type								EvilFrogJumpBullet
+#define BAT_HORIZONTALFLIP_BUFFER	0.1f				//	좌우반전 버퍼
 
 #pragma region BULLET_CHAIN
 #define BULLET_CHAIN_IMGX						120
@@ -117,7 +140,7 @@
 #pragma region ShotGunEvilSoul
 #define SHOTGUNEVILSOULIMGX						169
 #define SHOTGUNEVILSOULIMGY						284
-#define SHOTGUNEVILSOULIMG_ASPECTRATIO			((FLOAT)SHOTGUNEVILSOULIMGY / (FLOAT)SHOTGUNEVILSOULIMGX)
+#define SHOTGUNEVILSOULIMG_ASPECTRATIO			((FLOAT	)SHOTGUNEVILSOULIMGY / (FLOAT)SHOTGUNEVILSOULIMGX)
 
 #define SHOTGUNEVILSOUL_WIDTH					0.7f
 #define SHOTGUNEVILSOUL_HEIGHT					SHOTGUNEVILSOUL_WIDTH * SHOTGUNEVILSOULIMG_ASPECTRATIO
@@ -211,31 +234,20 @@ enum MONSTER_STATE
 	MONSTER_STATE_DEAD,
 
 	EVILSLIME_FISSION,
-
-	//BOSS_DOCHEOL_SUMMON,
-	//BOSS_DOCHEOL_HANDUPAPPEAR,
-	//BOSS_DOCHEOL_APPEAR,
-	//BOSS_DOCHEOL_IDLE,
-	//BOSS_DOCHEOL_TRACKING,
-	//BOSS_DOCHEOL_SLAM,
-	//BOSS_DOCHEOL_PUNCH,
-	//BOSS_DOCHEOL_METEOR,
+	MONSTER_STATE_MINIGAME_MOVE,
+	MONSTER_STATE_MINIGAME_IDLE,
 
 	MONSTER_STATE_END
 };
 
-enum MONSTER_STATISTICS {
-	MONSTER_STAT_HP,
-	MONSTER_STAT_ATK,
-	MONSTER_STAT_END
-};
 
 typedef struct tagTextureInfo
 {
 	tagTextureInfo() :_frame(0), _Endframe(0), _frameTick(0.f) { _vecTexture.reserve(32); }
 	~tagTextureInfo() { _vecTexture.clear(); }
 
-	vector<IDirect3DTexture9*>	_vecTexture;
+	vector<IDirect3DTexture9*>			_vecTexture;
+	const	vector<IDirect3DTexture9*>*	pTexture;
 	TCHAR						_Filename[256];
 	_uint						_frame;
 	_uint						_Endframe;
@@ -246,7 +258,7 @@ typedef struct tagTextureInfo
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){}
+		vDirection{-1.f,0.f,0.f}, fSpeed(0.f){}
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -256,6 +268,8 @@ typedef struct tagMonsterInfo {
 		fSpeed				= 0.f;
 		memset(fTimer, 0, sizeof(fTimer));
 	}
+
+	uint16_t					ID = 0x0000;
 
 	BOOL						bTrigger[4];
 	MONSTER_STATE				eState[2];
@@ -282,7 +296,7 @@ typedef struct tagRandomGenerator {
 	return Seed[1] + y;
 	}
 
-	static _float Get_float(_float _Dst, _float _Src, void* _Seed = nullptr)
+	static _float Get_float(_float _Dst, _float _Src, void* _Seed = nullptr)	// A 이상 B 이하 (숫자 순서 상관없음)
 	{
 		if (_Dst == _Src) return _Dst;
 
@@ -291,31 +305,32 @@ typedef struct tagRandomGenerator {
 			: _Src + ((Xorshift128p(_Seed) % 1001) * 0.001f) * (_Dst - _Src);
 	}
 
-	static int Get_int(int _Dst, int _Src, void* _Seed = nullptr)
+	static int Get_int(int _Dst, int _Src, void* _Seed = nullptr)				// A 이상 B 이하  (숫자 순서 상관없음)
 	{
 		if (_Dst == _Src) return _Dst;
 
 		return (_Dst < _Src) ?
-			_Dst + (int)Xorshift128p(_Seed) % (_Src - _Dst + 1)
-			: _Src + (int)Xorshift128p(_Seed) % (_Dst - _Src + 1);
+			_Dst + (int)(Xorshift128p(_Seed) % (_Src - _Dst + 1))
+			: _Src + (int)(Xorshift128p(_Seed) % (_Dst - _Src + 1));
 	}
 }RANDOM;
+
+//class SceneManager;
 
 class Monster
 {
 public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG, GameObject*& GameObj);
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
-	static	_vec3		Normalize(_vec3 vec);
 
 public:
-	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
+	static	HRESULT			Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo);
+	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures );
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
 	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
-
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
@@ -340,10 +355,17 @@ public:
 
 		Transform* pTransCom = static_cast<Transform*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		pTransCom->Set_Pos(_vPos);
-		*pTransCom->Get_Scale() *= _fScalemult;
 
-		pTransCom->Get_Position()->y = pTransCom->Get_Scale()->y * 0.5f;
-		//static_cast<Collider*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Scale();
+		_vec2	vScale = { pTransCom->Get_Scale()->x,pTransCom->Get_Scale()->y};
+
+		D3DXVec2Normalize(&vScale, &vScale);
+		vScale *= _fScalemult;
+
+		pTransCom->Set_Scale({ vScale.x, vScale.y, _fScalemult });
+		
+		Collider* pCollider = static_cast<Collider*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+		if (nullptr != pCollider)	pCollider->Set_Scale(vScale.x * 0.5f, vScale.y, vScale.x * 0.5f);
+
 		return MST;
 	}
 };
