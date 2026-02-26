@@ -218,7 +218,7 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
 
 		//Font->Set_Text(_Text);
-		Font->Set_Text(L"������ ���"); // ����׿�
+		Font->Set_Text(L"유물의 헌사"); // 디버그용
 		if (Timer01 < 1.f) {
 			Timer01 += _DT;
 

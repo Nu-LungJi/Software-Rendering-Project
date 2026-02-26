@@ -1,9 +1,10 @@
 #include "../Include/PCH.h"
+#include "ScorpionEvilSoul.h"
 
-ScorpoinEvilSoul::ScorpoinEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-ScorpoinEvilSoul::ScorpoinEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
-ScorpoinEvilSoul::~ScorpoinEvilSoul() {}
-HRESULT ScorpoinEvilSoul::Ready_GameObject() {
+ScorpionEvilSoul::ScorpionEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+ScorpionEvilSoul::ScorpionEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
+ScorpionEvilSoul::~ScorpionEvilSoul() {}
+HRESULT ScorpionEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
@@ -12,13 +13,13 @@ HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 	return S_OK;
 }
-HRESULT ScorpoinEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+HRESULT ScorpionEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
 	m_tInfo.bMiniGame = bMini;
 	Component_Collider->Set_Hp(SCORPIONEVILSOUL_HP);
-
+	vPos = { 0.f, 0.f, 0.f };
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
 
 
@@ -37,7 +38,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
-		ScorpoinEvilSoul::State_Tracking(_DT);
+		ScorpionEvilSoul::State_Tracking(_DT);
 		MYPOS->y = MYSCALE->y * 0.5f;
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -120,7 +121,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	return 0;
 }
 
-VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
+VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 	
@@ -186,10 +187,17 @@ VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 VOID ScorpionEvilSoul::Render_GameObject() {
 
 	if (m_tInfo.Textureinfo._frame > m_tInfo.Textureinfo._Endframe) return;
+		
+  
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
+	switch (m_tInfo.eState[0])
+	{
+	default:
 		if (m_tInfo.bMiniGame)// 창준 추가
 		{
-			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 			Component_Buffer->Render_Buffer();
 		}
 		else
@@ -197,7 +205,7 @@ VOID ScorpionEvilSoul::Render_GameObject() {
 			switch (m_tInfo.eState[0])
 			{
 			default:
-				GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+				GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 				Component_Buffer->Render_Buffer();
 				break;
 			case MONSTER_STATE_SUMMON:
@@ -206,15 +214,8 @@ VOID ScorpionEvilSoul::Render_GameObject() {
 				break;
 			}
 		}
-  
-	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-
-	switch (m_tInfo.eState[0])
-	{
-	default:
-		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
-		Component_Buffer->Render_Buffer();
+		//GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
+		//Component_Buffer->Render_Buffer();
 		break;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:
@@ -247,11 +248,14 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 
-ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
-	ScorpoinEvilSoul* MST = new ScorpoinEvilSoul(_GRPDEV);
+ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
+	ScorpionEvilSoul* MST = new ScorpionEvilSoul(_GRPDEV);
 	if (FAILED(MST->Ready_GameObject(vPos, bMini))) {
-		MSG_BOX("Cannot Create ScorpoinEvilSoul.");
+		MSG_BOX("Cannot Create ScorpionEvilSoul.");
+		Safe_Release(MST);
+		return nullptr;
     }
+	return MST;
  }
 ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	ScorpionEvilSoul* MST = new ScorpionEvilSoul(_GRPDEV);
