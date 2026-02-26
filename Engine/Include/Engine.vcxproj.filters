@@ -79,6 +79,9 @@
     <Filter Include="99. Component\08. Paticle">
       <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="13. MonsterManager">
+      <UniqueIdentifier>{64b6becc-edbf-4018-8f89-7d7e406bc151}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GraphicDevice.h">
@@ -174,6 +177,9 @@
     <ClInclude Include="..\Header\ParticleEffect.h">
       <Filter>99. Component\08. Paticle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\MonsterManager.h">
+      <Filter>13. MonsterManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDevice.cpp">
@@ -250,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\ParticleEffect.cpp">
       <Filter>99. Component\08. Paticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MonsterManager.cpp">
+      <Filter>13. MonsterManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

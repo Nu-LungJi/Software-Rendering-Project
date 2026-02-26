@@ -16,7 +16,6 @@ HRESULT	MapScene::Ready_Scene() {
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
 
-
 	{
 	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
 		GENERIC_READ,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
@@ -110,7 +109,7 @@ HRESULT	MapScene::Ready_Scene() {
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01,0.1f);
-	
+
 	return S_OK;
 }
 INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
@@ -122,16 +121,16 @@ INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
 	
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	
-	
-	if (!TileManager::GetInstance()->Get_Loading())
-	{
-		if (pLoading->Get_Finish())
-		{
-			TileManager::GetInstance()->Set_Stage();
-			TileManager::GetInstance()->Set_EndLoading(TRUE);
-			
-		}
-	}else 
+	//
+	//if (!TileManager::GetInstance()->Get_Loading())
+	//{
+	//	if (pLoading->Get_Finish())
+	//	{
+	//		TileManager::GetInstance()->Set_Stage();
+	//		TileManager::GetInstance()->Set_EndLoading(TRUE);
+	//		
+	//	}
+	//}else 
 		TileManager::GetInstance()->Stage_Update(_DT);
 	return Scene::Update_Scene(_DT);
 }

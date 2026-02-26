@@ -152,6 +152,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Header\Component.h" />
     <ClInclude Include="..\Header\EffectManager.h " />
     <ClInclude Include="..\Header\ParticleEffect.h" />
+    <ClInclude Include="..\Header\MonsterManager.h" />
     <ClInclude Include="..\Header\ParticleRain.h" />
     <ClInclude Include="..\Header\TileInfo.h" />
     <ClInclude Include="..\Header\Engine_Define.h" />
@@ -187,6 +188,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Code\Component.cpp" />
     <ClCompile Include="..\Code\EffectManager.cpp" />
     <ClCompile Include="..\Code\ParticleEffect.cpp" />
+    <ClCompile Include="..\Code\MonsterManager.cpp" />
     <ClCompile Include="..\Code\ParticleRain.cpp" />
     <ClCompile Include="..\Code\TileInfo.cpp" />
     <ClCompile Include="..\Code\KeyManager.cpp" />

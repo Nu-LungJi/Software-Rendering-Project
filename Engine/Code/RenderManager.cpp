@@ -48,6 +48,8 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_BACK_EFFECT);
+
 	RenderGroup[RENDER_ALPHA].sort([](GameObject* DEST, GameObject* SRC)->bool
 		{
 			return DEST->Get_AlphaZValue() > SRC->Get_AlphaZValue();
@@ -56,8 +58,9 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 		if(_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
 	}
+
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::MONSTER_EFFECT);
-	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_EFFECT);
+	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_FRONT_EFFECT);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::PLAYER_EFFECT);
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
