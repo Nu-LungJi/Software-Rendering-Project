@@ -142,7 +142,7 @@ VOID ShotGunEvilSoul::Render_GameObject() {
 
 	if (m_tInfo.bMiniGame)// â�� �߰�
 	{
-		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 
 		Component_Buffer->Render_Buffer();
 	}
@@ -151,7 +151,7 @@ VOID ShotGunEvilSoul::Render_GameObject() {
 		switch (m_tInfo.eState[0])
 		{
 		default:
-			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 			Component_Buffer->Render_Buffer();
 			break;
 		case MONSTER_STATE_SUMMON:
