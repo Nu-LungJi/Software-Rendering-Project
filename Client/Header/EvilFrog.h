@@ -29,7 +29,6 @@ private:
 public:
 	static			EvilFrog* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	MONSTERINFO* Get_Info() { return &m_tInfo; }
-	_vec3* Get_FissionDst() { return &m_vFissionDst; }
 
 private:
 	virtual VOID Free();
@@ -37,13 +36,12 @@ private:
 	MONINFO m_tInfo;
 	_vec3	m_vFissionDst;
 
+  VOID State_Summon(const _float& _DT);
 	VOID State_Idle(const _float& _DT);
 	VOID State_Tracking(const _float& _DT);
 	VOID State_Casting(const _float& _DT);
 	VOID State_Channeling(const _float& _DT);
 	VOID State_Dead();
-
-	VOID State_Fission(const _float& _DT);
 
 };
 

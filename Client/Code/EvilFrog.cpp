@@ -7,7 +7,7 @@ EvilFrog::~EvilFrog() {}
 HRESULT EvilFrog::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
+	m_tInfo.eState[0] = MONSTER_STATE_IDLE;
 
 	Component_Collider->Set_Hp(EVILFROG_HP);
 
@@ -32,6 +32,9 @@ INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
 	{
 	default:
 		break;
+	case MONSTER_STATE_SUMMON:
+		EvilFrog::State_Summon(_DT);
+		break;
 	case MONSTER_STATE_IDLE:
 		EvilFrog::State_Idle(_DT);
 		break;
@@ -48,6 +51,7 @@ INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
 		EvilFrog::State_Dead();
 		break;
 	}
+	
 	if (KEY_DOWN(DIK_1) && KEY_DOWN(DIK_2))
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
 
@@ -58,7 +62,7 @@ INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
 	}
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q))
+	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_T))
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
 	return 0;
@@ -74,7 +78,7 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 
 	switch (m_tInfo.eState[0])
 	{
-	default:
+	case MONSTER_STATE_IDLE:
 		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Stand", &m_tInfo)))
 		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
@@ -94,13 +98,22 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 	case MONSTER_STATE_TRACKING:
 		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Jump", &m_tInfo)))
 		{
-			m_tInfo.Change_State(MONSTER_STATE_TRACKING);
-			return;
+			m_tInfo.Change_State(MONSTER_STATE_DEAD);
 		}
+		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		{
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
+			m_tInfo.Textureinfo._frameTick = 0.f;
 
-		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
-		Monster::BillBoard(Component_Transform, GRPDEV);
+			if (fabsf(m_tInfo.vDirection.z) > 0.1f)
+				if (m_tInfo.vDirection.z > 0.f)
+					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
+		}
+		break;
+
 	}
+	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
+	Monster::BillBoard(Component_Transform, GRPDEV);
 }
 VOID EvilFrog::Render_GameObject() {
 	if (!ObjectDead)
@@ -132,6 +145,10 @@ HRESULT EvilFrog::Component_Initialize() {
 
 	return S_OK;
 }
+VOID EvilFrog::State_Summon(const _float& _DT) {
+
+}
+
 VOID EvilFrog::State_Idle(const _float& _DT) {
 	if (m_tInfo.pGameObj[0] == nullptr)
 		m_tInfo.pGameObj[0] = (Monster::Set_Target(L"Player"));
@@ -142,28 +159,62 @@ VOID EvilFrog::State_Idle(const _float& _DT) {
 	if (D3DXVec3Length(&vDir) < EVILFROG_TRACKINGDIS)
 		m_tInfo.Change_State(MONSTER_STATE_TRACKING);
 }
+
 VOID EvilFrog::State_Tracking(const _float& _DT) {
+
 	if(nullptr== m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
     m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
   m_tInfo.vDirection = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+
 	_float fDis = D3DXVec3Length(&m_tInfo.vDirection);
-  m_tInfo.fSpeed = (fDis > EVILFROG_TRACKINGMIN) * EVILFROG_SPEED;
+
+	m_tInfo.fSpeed = EVILFROG_SPEED;
+
+	if (fDis < EVILFROG_TRACKINGDIS)
+	{
+		m_tInfo.fTimer[0] += _DT;
+		m_tInfo.fTimer[1] = 0.f;
+	}
+	else
+		m_tInfo.fTimer[1] += _DT;
+
+	if (m_tInfo.fTimer[0] > EVILFROG_TRACKING_TIME)
+		m_tInfo.Change_State(MONSTER_STATE_CASTING);
+	else if (m_tInfo.fTimer[1] >= EVILFROG_LOST_TIME)
+		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
 }
 VOID EvilFrog::State_Casting(const _float& _DT) {
 
+	if(nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
+		m_tInfo.Change_State(MONSTER_STATE_IDLE);
+
+	m_tInfo.fTimer[0] += _DT;
+
+	if (!m_tInfo.bTrigger[1])
+	{
+		m_tInfo.bTrigger[1] = true;
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, EVILFROG_CASTING_TIME);
+		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
+		*dynamic_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	}
+	if(m_tInfo.fTimer[0]>= EVILFROG_CASTING_TIME)
+	{
+		m_tInfo.bTrigger[1] = false;
+     m_tInfo.Change_State(MONSTER_STATE_TRACKING);
+	}
+	
 }
 VOID EvilFrog::State_Channeling(const _float& _DT) {
 
 }
+
 VOID EvilFrog::State_Dead() {
-
+	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	ObjectDead = TRUE;
 }
-VOID EvilFrog::State_Fission(const _float& _DT){
-
-}
-
 BOOL EvilFrog::OnCollisionEnter(GameObject* _Other) {
 	return FALSE;
 }
@@ -178,7 +229,6 @@ BOOL EvilFrog::OnCollisionStay(GameObject* _Other) {
 BOOL EvilFrog::OnCollisionExit(GameObject* _Other) {
 	return FALSE;
 }
-
 EvilFrog* EvilFrog::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	EvilFrog* EF = new EvilFrog(_GRPDEV);
 	if (FAILED(EF->Ready_GameObject())) {
@@ -188,7 +238,6 @@ EvilFrog* EvilFrog::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	}
 	return EF;
 }
-
 VOID EvilFrog::Free() {
 	GameObject::Free();
 }
