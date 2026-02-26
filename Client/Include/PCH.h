@@ -40,6 +40,8 @@
 
 #pragma region Monster
 
+#include "MonsterManager.h"
+
 #include "Monster.h"
 #include "MonsterEffect.h"
 #include "Bat.h"

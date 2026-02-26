@@ -31,11 +31,7 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
-	if (FAILED(Monster::Set_TextureList(L"Fireball", &m_tInfo)))
-	{
-		ObjectDead = true;
-		return 0;
-	}
+
 
 	if(m_tInfo.bTrigger[0])
 	{
@@ -71,14 +67,17 @@ VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 	//m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
 
 }
 VOID Fireball::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+	GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -94,7 +93,10 @@ HRESULT Fireball::Component_Initialize() {
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 
-	return S_OK;
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet,
+										(uint8_t)BULLET_TYPE::Fireball, 0);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 
 

@@ -8,7 +8,7 @@ HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	return S_OK;
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
@@ -92,5 +92,6 @@ VOID		 GameManager::Free() {
 	ResourceManager	::DestroyInstance();
 	UIManager		::DestroyInstance();
 	EffectManager	::DestroyInstance();
+	MonsterManager	::DestroyInstance();
 	DEVCLASS		->DestroyInstance();
 }

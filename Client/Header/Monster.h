@@ -86,7 +86,7 @@
 
 #define SCORPIONEVILSOUL_BULLET_TYPE			ScorpionBullet			//	총알 종류
 #define SCORPIONEVILSOUL_BULLET_SPEEDMULT		1.f						//	총알 속도 배수
-#define SCORPIONEVILSOUL_BULLET_SCALEMULT		1.f						//	총알 속도 배수
+#define SCORPIONEVILSOUL_BULLET_SCALEMULT		2.f						//	총알 크기 배수
 
 #define SCORPIONEVILSOUL_HORIZONTALFLIP_BUFFER	0.1f
 #pragma endregion
@@ -96,7 +96,7 @@
 #define SCORPIONBULLET_IMGY						120
 #define SCORPIONBULLET_IMG_ASPECTRATIO			((FLOAT)SCORPIONBULLET_IMGY / (FLOAT)SCORPIONBULLET_IMGX)
 
-#define SCORPIONBULLET_WIDTH					1.5f
+#define SCORPIONBULLET_WIDTH					2.f
 #define SCORPIONBULLET_HEIGHT					SCORPIONBULLET_WIDTH * SCORPIONBULLET_IMG_ASPECTRATIO
 
 #define SCORPIONBULLET_SPEED					3.f
@@ -211,18 +211,8 @@ enum MONSTER_STATE
 	MONSTER_STATE_DEAD,
 
 	EVILSLIME_FISSION,
-
-	MONSTER_STATE_MINIGAME_IDLE,
 	MONSTER_STATE_MINIGAME_MOVE,
-
-	//BOSS_DOCHEOL_SUMMON,
-	//BOSS_DOCHEOL_HANDUPAPPEAR,
-	//BOSS_DOCHEOL_APPEAR,
-	//BOSS_DOCHEOL_IDLE,
-	//BOSS_DOCHEOL_TRACKING,
-	//BOSS_DOCHEOL_SLAM,
-	//BOSS_DOCHEOL_PUNCH,
-	//BOSS_DOCHEOL_METEOR,
+	MONSTER_STATE_MINIGAME_IDLE,
 
 	MONSTER_STATE_END
 };
@@ -233,7 +223,8 @@ typedef struct tagTextureInfo
 	tagTextureInfo() :_frame(0), _Endframe(0), _frameTick(0.f) { _vecTexture.reserve(32); }
 	~tagTextureInfo() { _vecTexture.clear(); }
 
-	vector<IDirect3DTexture9*>	_vecTexture;
+	vector<IDirect3DTexture9*>			_vecTexture;
+	const	vector<IDirect3DTexture9*>*	pTexture;
 	TCHAR						_Filename[256];
 	_uint						_frame;
 	_uint						_Endframe;
@@ -244,7 +235,7 @@ typedef struct tagTextureInfo
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){}
+		vDirection{-1.f,0.f,0.f}, fSpeed(0.f){}
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -254,6 +245,8 @@ typedef struct tagMonsterInfo {
 		fSpeed				= 0.f;
 		memset(fTimer, 0, sizeof(fTimer));
 	}
+
+	uint16_t					ID = 0x0000;
 
 	BOOL						bTrigger[4];
 	MONSTER_STATE				eState[2];
@@ -299,7 +292,6 @@ typedef struct tagRandomGenerator {
 	}
 }RANDOM;
 
-
 //class SceneManager;
 
 class Monster
@@ -309,13 +301,13 @@ public:
 	static	GameObject* Set_Target(CONST TCHAR* _TAG);
 
 public:
-	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures);
+	static	HRESULT			Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo);
+	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, TEXINFO* __Textures );
 	static	HRESULT			Set_TextureList(CONST TCHAR* __FileName, MONINFO* _MonsterInfo);
 	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
-
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
@@ -330,18 +322,6 @@ public:
 			Safe_Release(MST);
 			return nullptr;
 		}
-
-		//CameraObject* Camera = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
-
-		//_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
-		//_vec3 planeDir = { 0.f, 1.f, 0.f };
-
-		//_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
-		//_float _cameraAngle = angle / D3DX_PI * 180.f;
-
-		//static_cast<Transform*>(MST->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Rotation(ROT_X, 90.f - _cameraAngle);
-
-
 		return MST;
 	}
 

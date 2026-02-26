@@ -15,8 +15,8 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 
 	if (!m_bTrigger) {
 
-		_vec3 vPos = *m_pTransform->Get_Position();
-		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//_vec3 vPos = *m_pTransform->Get_Position();
+		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
 		CubeFunction::Grid(m_pTransform, m_bGrid);
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
@@ -35,24 +35,26 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	if (m_pCam == nullptr)	
 		m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
-	IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), 10.f);
+	//IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), m_pTransform->Get_Scale()->x);
+	IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), 0.f);
 
 	if (!IsIn_Cam) return;
 
 	if (!m_bTrigger) {
 
-		_vec3 vPos = *m_pTransform->Get_Position();
-		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		//_vec3 vPos = *m_pTransform->Get_Position();
+		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 
 		CubeFunction::Grid(m_pTransform, m_bGrid);
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 		m_bTrigger = true;
 	}
-	/*m_fTimer += _DT;
+	//m_fTimer += _DT;
 
-	_float fRadian = m_fTimer * D3DX_PI * 6.f;
-	AlphaZValue = Monster::BillBoard(m_pTransform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
-*/
+	//_float fRadian = m_fTimer * D3DX_PI * 6.f;
+	//AlphaZValue = Monster::BillBoard(m_pTransform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
+	//Monster::BillBoard(m_pTransform, GRPDEV, { 1.f,0.f,0.f }, 0);
+
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 

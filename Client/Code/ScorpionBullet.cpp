@@ -7,10 +7,7 @@ ScorpionBullet::~ScorpionBullet() {}
 HRESULT ScorpionBullet::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.fSpeed = SCORPIONBULLET_SPEED;
 
-	Component_Collider->Set_Hp(1.f);
-	Component_Collider->Set_Att(1.f);
 
 	return S_OK;
 }
@@ -38,7 +35,8 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
-		Monster::Set_TextureList(L"Spr_Bullet_ScorpionBullet_Death", &m_tInfo);
+		m_tInfo.ID = MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Death);
+		if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 
 		m_tInfo.fTimer[1] += _DT;
 		ObjectDead = m_tInfo.fTimer[1] >= 2.f;
@@ -60,10 +58,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 			}
 			m_tInfo.bTrigger[1] = true;
 		}
-	}
-	else
-	{
-		Monster::Set_TextureList(L"Spr_Bullet_ScorpionBullet", &m_tInfo);
 	}
 
 	m_tInfo.Textureinfo._frameTick += _DT;
@@ -87,7 +81,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 		return -1;
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
 	return 0;
 }
 VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
@@ -96,9 +90,13 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	_float fRadian = m_tInfo.fTimer[0] * D3DX_PI * 6.f;
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
 
+		_float fRadian = m_tInfo.fTimer[0] * D3DX_PI * 6.f;
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
+
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
 	//_matrix* pmatWorld = Component_Transform->Get_World();
 	//_matrix matView, matRot;
 	//_vec3* vAxis = (_vec3*)&matView._31;
@@ -126,7 +124,7 @@ VOID ScorpionBullet::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+	GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -142,8 +140,15 @@ HRESULT ScorpionBullet::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
 
-	return S_OK;
+	m_tInfo.fSpeed = SCORPIONBULLET_SPEED;
+
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet,
+		(uint8_t)BULLET_TYPE::ScorpionBullet, 0);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 
 BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)

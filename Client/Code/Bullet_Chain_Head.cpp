@@ -6,22 +6,18 @@ Bullet_Chain_Head::~Bullet_Chain_Head() {}
 
 HRESULT Bullet_Chain_Head::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
-	m_tInfo.fSpeed = BULLET_CHAIN_SPEED;
-	Component_Collider->Set_Hp(1.f);
-	Component_Collider->Set_Att(1.f);
-	fDis = 0.f;
 	return S_OK;
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
+	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+	//	ObjectDead = false;
+	//	return 0;
+	//}
+	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+	//	ObjectDead = false;
+	//	return 0;
+	//}
 	
 	Monster::Destory_Tile(this);
 
@@ -48,7 +44,6 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 
 	if (ObjectDead)
 		return -1;
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
 
@@ -90,14 +85,17 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	}
 	m_tInfo.vDirection.y = 0.f;
 
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
 
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-	
-	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+
+	GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 	Component_Buffer->Render_Buffer();
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -115,12 +113,14 @@ HRESULT Bullet_Chain_Head::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Scale(BULLET_CHAIN_WIDTH, 1.f, BULLET_CHAIN_HEIGHT);
 
-	if (FAILED(Monster::Set_TextureList(L"Spr_Bullet_ChainHead", &m_tInfo))) {
-		ObjectDead = true;
-		return 0;
-	}
+	m_tInfo.fSpeed = BULLET_CHAIN_SPEED;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
+	fDis = 0.f;
 
-	return S_OK;
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::ChainHead, 0);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 
 Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

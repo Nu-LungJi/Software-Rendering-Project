@@ -8,28 +8,21 @@ Bullet_Standard::~Bullet_Standard() {}
 HRESULT Bullet_Standard::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	Monster::Set_TextureList(L"Spr_Bullet_Standard", &m_tInfo);
-
-	m_tInfo.Change_State(MONSTER_STATE_SUMMON);
-	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
-	Component_Collider->Set_Hp(1.f);
-	Component_Collider->Set_Att(1.f);
-
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = MYSCALE->y * 0.5f;
-	}
+	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+	//	ObjectDead = false;
+	//	return 0;
+	//}
+	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+	//	ObjectDead = false;
+	//	return 0;
+	//}
+	//else
+	//{
+	//	MYPOS->y = MYSCALE->y * 0.5f;
+	//}
 	
 	Monster::Destory_Tile(this);	
 	//GameObject::Update_GameObject(_DT);
@@ -96,8 +89,10 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.Textureinfo._frameTick = 0.f;
 	}
 
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
-
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
 }
 VOID Bullet_Standard::Render_GameObject() {
 
@@ -107,7 +102,7 @@ VOID Bullet_Standard::Render_GameObject() {
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+	GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 
 	Component_Buffer->Render_Buffer();
 
@@ -125,9 +120,17 @@ HRESULT Bullet_Standard::Component_Initialize() {
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 
-	Component_Collider->Set_Scale(BULLET_STANDARD_WIDTH, 0.5f, BULLET_STANDARD_HEIGHT);
+	Component_Collider->Set_Scale(BULLET_STANDARD_WIDTH* 0.5f, BULLET_STANDARD_HEIGHT, BULLET_STANDARD_WIDTH * 0.5f);
 
-	return S_OK;
+	m_tInfo.Change_State(MONSTER_STATE_SUMMON);
+	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
+	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
+
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet,
+		(uint8_t)BULLET_TYPE::Standard, 0);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {

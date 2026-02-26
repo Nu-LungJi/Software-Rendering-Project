@@ -7,8 +7,6 @@ ShotGunEvilSoul::~ShotGunEvilSoul() {}
 HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
-	Component_Collider->Set_Hp(SHOTGUNEVILSOUL_HP);
 
 	return S_OK;
 }
@@ -77,20 +75,16 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_BlueEliteShotGunEvilSoul_Stand", &m_tInfo)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-			return;
-		}
 		m_tInfo.Textureinfo._frameTick += _DT;
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
-			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
 			m_tInfo.Textureinfo._frameTick = 0.f;
 
-			if (fabsf(m_tInfo.vDirection.z) > 0.1f)
-				if (m_tInfo.vDirection.z > 0.f)
-					m_tInfo.Textureinfo._frame += m_tInfo.Textureinfo._Endframe / 2;
+			_uint HalfFrame = (m_tInfo.Textureinfo._Endframe + 1) * 0.5f;
+			_uint BaseFrame = (m_tInfo.Textureinfo._frame + 1) % HalfFrame;
+			_uint Offset = (fabsf(m_tInfo.vDirection.z) > 0.1f) * (m_tInfo.vDirection.z > 0.f) * HalfFrame;
+
+			m_tInfo.Textureinfo._frame = BaseFrame + Offset;
 		}
 		if (FAILED(Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, SHOTGUNEVILSOUL_HORIZONTALFLIP_BUFFER)))
 		{
@@ -106,7 +100,11 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
+		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
 }
 VOID ShotGunEvilSoul::Render_GameObject() {
 
@@ -118,7 +116,7 @@ VOID ShotGunEvilSoul::Render_GameObject() {
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
 		break;
 	case MONSTER_STATE_APPEAR:
@@ -137,10 +135,18 @@ HRESULT ShotGunEvilSoul::Component_Initialize() {
 	Component_Transform->Set_Pos(10.f, 0.5f, 0.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 	Component_Transform->Set_Scale(SHOTGUNEVILSOUL_WIDTH, SHOTGUNEVILSOUL_HEIGHT, 1.f);
+	
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Hp(SHOTGUNEVILSOUL_HP);
 
-	return S_OK;
+	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+										(uint8_t)MONSTER_TYPE::ShotGunEvilSoul,
+										(uint8_t)MONSTER_ANIM::Stand);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	ShotGunEvilSoul* MST = new ShotGunEvilSoul(_GRPDEV);
@@ -250,7 +256,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 		{
 			_float fRandom = D3DXToRadian(RANDOM::Get_float((SHOTGUNEVILSOUL_SPREAD * -0.5f), (SHOTGUNEVILSOUL_SPREAD * 0.5f), this));
 
-			m_tInfo.pGameObj[i+1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, 1.f);
+			m_tInfo.pGameObj[i+1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, SHOTGUNEVILSOUL_BULLET_SCALEMULT);
 
 			_float fRadian = fBaseRadian + fRandom;
 			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i+1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));

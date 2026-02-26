@@ -25,7 +25,6 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
-
 	m_tInfo.fTimer[0] += _DT;
 
 	//Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
@@ -85,7 +84,6 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 		return -1;
 	}
 	
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return 0;
 }
@@ -93,8 +91,11 @@ VOID EvilSlimeGroundIce::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
-	//Monster::BillBoard_Standard(GRPDEV, Component_Transform);
-	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV,{1.f,0.f,0.f}, 0);
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 3.f)) {
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
+
 }
 VOID EvilSlimeGroundIce::Render_GameObject() {
 
@@ -106,7 +107,7 @@ VOID EvilSlimeGroundIce::Render_GameObject() {
 	default:
 		break;
 	case MONSTER_STATE_APPEAR:
-		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
 		break;
 	}
@@ -129,8 +130,10 @@ HRESULT EvilSlimeGroundIce::Component_Initialize() {
 	Component_Collider->Set_Hp(0.f);
 	Component_Collider->Set_Att(0.f);
 
-	return FAILED(Monster::Set_TextureList(L"Spr_Effect_BlueEvilSlimeGroudIceEffect", &m_tInfo));
-	
+	//return FAILED(Monster::Set_TextureList(L"Spr_Effect_BlueEvilSlimeGroudIceEffect", &m_tInfo));
+
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect, (uint8_t)BULLET_TYPE::GroundIce, 0);
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 BOOL EvilSlimeGroundIce::OnCollisionEnter(GameObject* _Other)
 {

@@ -12,6 +12,30 @@ GameObject* Monster::Set_Target(CONST TCHAR* _TAG)
 }
 
 
+HRESULT Monster::Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo)
+{
+	if (nullptr == _TexInfo)
+		return E_POINTER;
+
+	uint16_t SearchKey = _Key & 0xffc0;
+
+	const vector<IDirect3DTexture9*>* pNewTex = MonsterManager::GetInstance()->Find_Textures(SearchKey);
+	if (nullptr == pNewTex)				return E_POINTER;
+	if (pNewTex == _TexInfo->pTexture)	return S_OK;
+	
+	//_TexInfo->pTexture = MonsterManager::GetInstance()->Find_Textures(SearchKey);
+	//if (nullptr == _TexInfo->pTexture)				return E_POINTER;
+
+	_TexInfo->pTexture = pNewTex;
+	_TexInfo->_vecTexture.clear();
+
+	_TexInfo->_frame = 0;
+	_TexInfo->_frameTick = 0.f;
+	_TexInfo->_Endframe = _TexInfo->pTexture->size() -1 ;
+
+	return S_OK;
+}
+
 HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 {
 	if (nullptr == __Textures)
@@ -24,6 +48,9 @@ HRESULT Monster::Set_TextureList(const TCHAR* __FileName, TEXINFO* __Textures)
 	__Textures->_frameTick = 0.f;
 	__Textures->_Endframe = 0;
 	__Textures->_vecTexture.clear();
+
+	__Textures->pTexture = &__Textures->_vecTexture;
+
 	wcscpy_s(__Textures->_Filename, 256, __FileName);
 
 	while (true)
