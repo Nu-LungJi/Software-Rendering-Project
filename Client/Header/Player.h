@@ -4,7 +4,7 @@
 
 enum class skillState {
 	STATE_TIMESLOW,
-	STATE_SKILL2,
+	STATE_ATOMIC,
 	NONE
 };
 enum class pState
@@ -169,12 +169,17 @@ public:
 
 	bool	Get_Invincible() { return _isInvincible; }
 	void	Set_Invincible(bool value) { _isInvincible = value;  }
+
+	pState	Get_pState() { return _pState; }
 	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
 	void			CheonLog_Spawn();
 
 	TCHAR*	Get_FileName() { return FileName; }
+	int		Get_AtomicTotal() { return _atomicTotal; }
+	int		Get_AtomicRaady() { return _atomicReady; }
+	void	Set_AtomicRaady() { _atomicReady += 1; }
 
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
@@ -197,7 +202,7 @@ private:
 
 	void			SKILL_NONE(const _float& _DT);
 	void			SKILL_TIMESLOW(const _float& _DT);
-	void			SKILL2(const _float& _DT);
+	void			SKILL_ATOMIC(const _float& _DT);
 
 	void			SetGrahpic();
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
@@ -252,6 +257,10 @@ private:
 	bool			_isInvincible;		//	무적 상태
 	float			_invincibleTimer;	//	무적 타이머
 	float			_alphaDelayTimer;	//	깜박임 타이머
+	float			_arrowTimer;
+	int				_atomicCount;
+	int				_atomicTotal;
+	int				_atomicReady;
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)

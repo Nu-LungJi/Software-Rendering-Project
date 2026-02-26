@@ -48,7 +48,7 @@ HRESULT Player::Ready_GameObject() {
 	_token				= 2;
 	_atk				= 1;
 	_critical			= 0;
-	_chargingSpeed		= 1.f;
+	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
@@ -108,34 +108,25 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
+	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
+
 	if (KEY_DOWN(DIK_Y)) {
-		_Skill2 = true;
-		_Skill2_Death = true;
-		_vec3 Size = { 5.f, 5.f, 5.f };
-		_vec3 effectPos = *Component_Transform->Get_Position();
-		effectPos.y += 4.f;
-		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLACKHOLE_OPEN, &effectPos, 1.2f, Size, false);
+		_NPC_Pos = *Component_Transform->Get_Position();
+		_NPC_Pos.x -= 6.f;
+		_NPC_Pos.y += 16.f;
 
-		
-		_Sheep_Summon_Timer = 0.f;
-	}
+		GameObject* arrow = nullptr;
+		_vec2 dir = {2.f, 10.f};
+		arrow = Arrow::Create(GRPDEV, BowType::AtomicBow, 1, 0, &_NPC_Pos, dir);
 
-	if (_Skill2) {
-		_Sheep_Summon_Timer += _DT;
-		if (_Sheep_Summon_Timer > 1.2f) {
-			_vec3 Size = { 5.f, 5.f, 5.f };
-			_vec3 effectPos = *Component_Transform->Get_Position();
-			effectPos.y += 4.f;
-			PLAY_PLAYER_EFFECT(PLAYER_SKILL::BLACKHOLE_LOOP, &effectPos, 0.6f, Size, false);
-			Size = { 3.f, 3.f, 3.f };
-			PLAY_PLAYER_EFFECT(PLAYER_SKILL::CHAOS_PULSE, &effectPos, 0.6f, Size, false);
-			Size = { 1.f, 1.f, 1.f };
-			PLAY_PLAYER_EFFECT(PLAYER_SKILL::SKILL_2, &effectPos, 15.f, Size, false);
-			//Size = { 15.f, 15.f, 15.f };
-			//PLAY_PLAYER_EFFECT(PLAYER_SKILL::SKILL2_HAND, &effectPos, 1.0f, Size, false);
-			_Skill2 = false;
-			_Sheep_Summon_Timer = 0.f;
-		}
+		TCHAR arrowTag[128] = L"";
+		wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);
+
+		arrow->Set_ObjectTag(arrowTag);
+		arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+		arrow->Set_ObjectTag(L"PlayerArrow");
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
 	}
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
@@ -191,8 +182,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	case skillState::STATE_TIMESLOW :
 		SKILL_TIMESLOW(_DT);
 		break;
-	case skillState::STATE_SKILL2:
-		SKILL2(_DT);
+	case skillState::STATE_ATOMIC:
+		SKILL_ATOMIC(_DT);
 		break;
 	case skillState::NONE :
 		SKILL_NONE(_DT);
@@ -255,7 +246,7 @@ HRESULT Player::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.5f, 0.7f, 0.5f);				// 충돌체의 범위 조절
+	Component_Collider->Set_Scale(0.3f, 0.5f, 0.3f);				// 충돌체의 범위 조절
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
@@ -581,7 +572,7 @@ void Player::DASH_STATE(const _float& _DT)
 			_eState = eState::STATE_DASH_DOWN;
 			_see = pSee::SEE_DOWN;
 		}
-		_speed = _defaultSpeed + 10.f;
+		_speed = _defaultSpeed + 15.f;
 		_dashStart = false;
 	}
 
@@ -925,6 +916,32 @@ void Player::SKILL_NONE(const _float& _DT)
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
 	}
+
+	if (KEY_DOWN(DIK_R)) {
+		_vec3 Size = { 0.2f, 0.2f, 0.2f };
+		_NPC_Pos = *Component_Transform->Get_Position();
+		_NPC_Pos.y += 4.f;
+		_NPC_Pos.z -= 3.5f;
+		Size = { 1.5f, 1.5f, 1.5f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_ATOMIC, &_NPC_Pos, 1.f, Size, false);
+		Size = { 1.f, 1.f, 1.f };
+		_NPC_Pos.x += 1.f;
+		_NPC_Pos.z += 0.2f;
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_ATOMIC_CHARGED, &_NPC_Pos, 1.f, Size, false);
+
+		_skillState = skillState::STATE_ATOMIC;
+		_skillNPC_On = false;
+		_skillArea_On = false;
+		_arrowTimer = 0.f;
+		_skillTimer = 0.f;
+		_ReadyAtomicCount = 0;
+		_atomicCount = 0;
+		_atomicTotal = 0;
+		_atomicReady = 0;
+
+		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_UseSkill();
+	}
 }
 
 void Player::SKILL_TIMESLOW(const _float& _DT)
@@ -940,7 +957,7 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 
 	if (_skillTimer > 0.9f && !_skillNPC_On) {
 		_vec3 Size = { 1.5f, 1.5f, 1.5f };
-		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOF, &_NPC_Pos, 1.f, Size, false);
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::NPC_TIMESLOW_LOOP, &_NPC_Pos, 1.f, Size, false);
 
 		_skillNPC_On = true;
 	}
@@ -970,8 +987,45 @@ void Player::SKILL_TIMESLOW(const _float& _DT)
 	}
 }
 
-void Player::SKILL2(const _float& _DT)
+void Player::SKILL_ATOMIC(const _float& _DT)
 {
+	_skillTimer += _DT;
+	_arrowTimer += _DT;
+
+	if (_skillTimer > 0.5f && !_skillArea_On) {
+		_vec3 Size = { 5.f, 5.f, 5.f };
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_ATOMIC_AREA, &_NPC_Pos, 0.8f, Size, false);
+		_skillArea_On = true;
+	}
+
+	if (_skillTimer > 2.f) {
+		_skillState = skillState::NONE;
+	}
+
+	if (_arrowTimer > 0.05f && _atomicTotal <= 10 && _skillTimer > 0.5f) {
+		_atomicTotal += 1;
+		GameObject* arrow = nullptr;
+
+		std::random_device rd;
+		std::uniform_int_distribution<int> distribution(0, 180);
+		float angle;
+		if(_atomicCount % 2 == 0) angle = D3DXToRadian(distribution(rd) % 70 + 20);
+		else angle = D3DXToRadian(distribution(rd) % 70 + 90);
+		_vec2 dir = { cosf(angle), sinf(angle) };
+		_atomicCount += 1;
+		arrow = Arrow::Create(GRPDEV, BowType::AtomicBow, 1, 0, &_NPC_Pos, dir);
+
+		TCHAR arrowTag[128] = L"";
+		wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);
+
+		arrow->Set_ObjectTag(arrowTag);
+		arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+		arrow->Set_ObjectTag(L"PlayerArrow");
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
+
+		_arrowTimer = 0.f;
+	}
 }
 
 void Player::SetGrahpic()
