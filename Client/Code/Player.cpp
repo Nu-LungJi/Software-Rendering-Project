@@ -255,7 +255,7 @@ HRESULT Player::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);				// 충돌체의 범위 조절
+	Component_Collider->Set_Scale(0.5f, 0.7f, 0.5f);				// 충돌체의 범위 조절
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 

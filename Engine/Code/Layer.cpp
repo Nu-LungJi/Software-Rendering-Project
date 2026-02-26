@@ -110,7 +110,6 @@ Layer*		Layer::Create() {
 void		Layer::Free() {
 	for (auto& GOBJ : GameObjectList)
 		Safe_Release(GOBJ);
-	int a = 0;
 }
 
 _vec3* Layer::Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG)

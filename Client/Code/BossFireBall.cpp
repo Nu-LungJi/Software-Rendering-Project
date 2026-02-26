@@ -5,18 +5,16 @@ BossFireBall::BossFireBall(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV)	{}
 BossFireBall::BossFireBall(CONST GameObject& _RHS)		: GameObject(_RHS)		{}
 BossFireBall::~BossFireBall()													{}
 
-HRESULT	BossFireBall::Ready_GameObject() { 
-	Boss = dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
-	BossPosition = dynamic_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-
+HRESULT	BossFireBall::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 
-	if (Boss->Get_RageMode() == TRUE)	Animation_TexList = &Animation_RageTexList;
-	else								Animation_TexList = &Animation_NormalTexList;
-	
+	GameObject* BSS = SceneManager::GetInstance()->Get_GameObject(L"Docheol");
+	if (BSS != nullptr && dynamic_cast<FinalBoss*>(BSS)->Get_RageMode() == TRUE)		{ Animation_TexList = &Animation_RageTexList;	}
+	else																				{ Animation_TexList = &Animation_NormalTexList; }
+
 	Animation_Timer			= 0.f;
 	Animation_CurrentIndex	= 0;
 	Animation_PreviousIndex = 0;
@@ -37,19 +35,29 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	if (FireBall_Timer >= FireBall_Duration) {
 		ObjectDead = TRUE;
 		_vec3 Scale = { 2.f, 2.f, 2.f };
-		if (Boss->Get_RageMode() == TRUE)	{ PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f); }
-		else								{ PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);}
+		if (Boss != nullptr && Boss->Get_RageMode() == TRUE) {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		else if (Boss != nullptr && Boss->Get_RageMode() == FALSE) {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		else if (Boss == nullptr) {
+			Boss = dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+			if (Boss->Get_RageMode() == TRUE) {
+				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+			}
+			else {
+				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+			}
+		}
 	}
-	if (ObjectDead == TRUE) {
+	if (ObjectDead == TRUE) 
 		return -1;
-	}
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
-	FireBall_Linear_Movement(&Direction, FireBall_DirectionAngle, FireBall_Speed);
 	
+	FireBall_Linear_Movement(&Direction, FireBall_DirectionAngle, FireBall_Speed);
 	Animation_Timer += _DT;
-
 	Animation_PreviousIndex = Animation_CurrentIndex;
 	if (Animation_Timer > Animation_Interval) {
 		Animation_CurrentIndex = Animation_CurrentIndex + 1;
@@ -78,11 +86,20 @@ BOOL	BossFireBall::OnCollisionEnter(GameObject* _Other)	{
 	if (_Other->Get_ObjectTag() == L"Player" && dynamic_cast<Player*>(_Other)->Get_Invincible() == FALSE) {
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Player_LostHP();
 		_vec3 Scale = { 2.f, 2.f, 2.f };
-		if (Boss->Get_RageMode() == TRUE) {
-			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		if		(Boss != nullptr && Boss->Get_RageMode() == TRUE) {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
 		}
-		else {
-			PLAY_BOSS_EFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		else if (Boss != nullptr && Boss->Get_RageMode() == FALSE) {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+		}
+		else if (Boss == nullptr) {
+			Boss = dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+			if (Boss->Get_RageMode() == TRUE) {
+				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+			}
+			else {
+				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
+			}
 		}
 		ObjectDead = TRUE;
 	}
@@ -96,14 +113,13 @@ HRESULT	BossFireBall::Component_Initialize()	{
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-	_vec3 Generate_Pos = { BossPosition->Get_Position()->x, BossPosition->Get_Position()->y - 0.5f, BossPosition->Get_Position()->z - 5.f};
-	Component_Transform->Set_Pos(Generate_Pos);
-	Component_Transform->Set_Scale(5.f / 3.f, 1.5f / 3.f, 2.f / 3.f);
+	Component_Transform->Set_Pos(0.f, 0.f, 0.f);
+	Component_Transform->Set_Scale(5.f / 2.f, 1.5f / 2.f, 2.f / 2.f);
 	//Component_Transform->Set_Pos({ 28.814f, 0.5f, 34.78f }); // ±¤À± µð¹ö±ë¿ë
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+	Component_Collider->Set_Scale(0.3f, 0.3f, 0.3f);
 	Component_Collider->Set_Hp(1.f);
 
 	return S_OK; 
@@ -159,6 +175,7 @@ VOID	BossFireBall::FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLO
 	}
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 	Component_Transform->Set_Rotation(80.f, Angle, 0.f);
+	Component_Collider->Set_Offset({ 1.5f * cosf(D3DXToRadian(Angle)), 0.f,  - 1.5f * sinf(D3DXToRadian(Angle)) });
 }
 VOID			BossFireBall::Free() {
 	GameObject::Free();

@@ -38,6 +38,9 @@ public:
 	VOID	Set_FireBall_Pos(_vec3 _Pos)		{ Component_Transform->Set_Pos(_Pos);			}
 	_vec3	Get_FireBall_Pos()					{ return *Component_Transform->Get_Position();	}
 
+	VOID	Set_Boss(FinalBoss* _Boss)			{ Boss = _Boss; }
+	VOID	Set_BossPosition(Transform* _Transform) { BossPosition = _Transform; }
+
 	VOID	FireBall_Linear_Movement(_vec3* _Direction, FLOAT _Angle, FLOAT _Speed);
 private:
 	FinalBoss* Boss;
