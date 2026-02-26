@@ -17,19 +17,17 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 				++iter;
 				continue;
 			}
-			
 			int ObjectResult = (*iter)->Update_GameObject(_DT);
 			if (ObjectResult == -1) (*iter)->Set_ObjectDead(true);
-			++iter;
-			//if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
-			//	CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-			//	GameObject* OBJ = *iter;
-			//	iter = GameObjectList.erase(iter);
-			//	Safe_Release(OBJ);
-			//	continue;
-			//}
-			//else { ++iter; }
-			//if (_isTimeSlow) break;
+			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
+				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+				GameObject* OBJ = *iter;
+				iter = GameObjectList.erase(iter);
+				Safe_Release(OBJ);
+				continue;
+			}
+			else { ++iter; }
+			if (_isTimeSlow) break;
 		}
 	}
 	else {
@@ -44,9 +42,9 @@ INT			Layer::Update_Layer(const FLOAT& _DT) {
 			}
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {
 				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-				GameObject* OBJ = *iter;
+				Safe_Release(*iter);
 				iter = GameObjectList.erase(iter);
-				Safe_Release(OBJ);
+				
 				continue;
 			}
 			else { ++iter; }

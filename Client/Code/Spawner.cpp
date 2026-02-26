@@ -125,7 +125,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -135,7 +135,7 @@ void Spawner::Monster_Spawn2()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -145,7 +145,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -155,7 +155,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }

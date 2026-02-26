@@ -2,6 +2,8 @@
 #include "GameObject.h"
 
 static int			_evilCount = 1;
+static int			_iceArrowCount = -1;
+static int			_ReadyAtomicCount = 0;
 enum class ArrowType {
 	FairyArrow,
 	FairyCharging,
@@ -12,6 +14,7 @@ enum class ArrowType {
 	EvilHeadCharging,
 	Wind_Arrow,
 	WindCharging,
+	Atomic_Arrow,
 
 	End
 };
@@ -82,7 +85,15 @@ private:
 	float		_evilMoveTime;
 	float		_sumEvilSpeed;
 	float		_ThunderDelay;
+	float		_searchDelay;
 
 	float		_EvilTime;
+	float		_iceArrow_Timer;
+	int			_myArrowCount;
+
+	float		_atomicRange;
+	float		_AtomicAccel;
+	float		_arrowLength;
+	bool		_isReady;
 };
 

@@ -32,7 +32,7 @@ BOOL CollisionManager::AABB_Collision() {
 		if (SRC == nullptr) continue;
 		bool ret = false;
 		for (auto& DOBJ : SceneObjectList) {
-			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ)	continue;
+			if (SOBJ->Get_ObjectDead() || SOBJ == nullptr || SOBJ == DOBJ || DOBJ == nullptr || DOBJ->Get_ObjectDead())	continue;
 			Collider* DEST = dynamic_cast<Collider*>(DOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 			if (DEST == nullptr) continue;
 			if ((SRC->Get_MaxPoint().x >= DEST->Get_MinPoint().x) && (DEST->Get_MaxPoint().x >= SRC->Get_MinPoint().x) &&

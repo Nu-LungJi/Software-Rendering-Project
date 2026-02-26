@@ -68,7 +68,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		_vec3 targetEye = EyeVec;
 		_vec3 targetAt = AtVec;
 
-		_float moveAmount = (distance - offset) * 3;
+		_float moveAmount = (distance - offset) * 4;
 		if (distance > offset)
 		{
 			targetEye += dir * moveAmount;

@@ -6,6 +6,7 @@ PlayerEffect:: PlayerEffect(CONST GameObject& _RHS)		: GameObject(_RHS), Texture
 PlayerEffect::~PlayerEffect(){}
 
 HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, BOOL PosChase) {
+	SKILL_TYPE = _SKILLTYPE;
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
@@ -31,7 +32,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::ARROW_HITEFFECT) { Make_TextureList(L"Arrow_HitEffect"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_AURA) { Make_TextureList(L"Wind_Aura"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW) { Make_TextureList(L"NPC_TimeSlow"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) { Make_TextureList(L"NPC_TimeSlow_Loof"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOP) { Make_TextureList(L"NPC_TimeSlow_Loof"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::SHADOW) { Make_TextureList(L"Shadow"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::BLUE_SHADER) { Make_TextureList(L""); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_AREA) { Make_TextureList(L"NPC_Area"); }
@@ -41,34 +42,28 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_HITEFFECT) { Make_TextureList(L"Wind_HitEffect"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE) { Make_TextureList(L"Wind_Charge"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::WIND_CHARGING) { Make_TextureList(L"Wind_Charging"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE2) { Make_TextureList(L"Wind_Charging"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::WIND_PULSE2) { Make_TextureList(L"IRA_Pulse"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::GREEN_SHADER) { Make_TextureList(L"GreenShader"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_OPEN) { Make_TextureList(L"BlackHole_Open"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_LOOP) { Make_TextureList(L"BalckHole_Loop"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ANERGYPAR) { Make_TextureList(L"AnergyPar"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::PAREND) { Make_TextureList(L"ParEnd"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::CHAOS_PULSE) { Make_TextureList(L"Chaos_Pulse"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_DEATH) { Make_TextureList(L"Spr_Effect_ChaosPhase02Death_"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::SKILL2_HAND) { Make_TextureList(L"Skill2_Hand"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::IRA_HITEFFECT) { Make_TextureList(L"IRA_HitEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::IRA_CHARGING) { Make_TextureList(L"IRA_Charging"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::IRA_CHARGED) { Make_TextureList(L"IRA_Charged"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ATOMIC_BOW) { Make_TextureList(L"IRA_Charged"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC) { Make_TextureList(L"NPC_Atomic"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ATOMIC_READY) { Make_TextureList(L"Atomic_Ready"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT) { Make_TextureList(L"Atomic_Bomb_Effect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) { Make_TextureList(L"IRA_Charged"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED_END) { Make_TextureList(L"IRA_Charging"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_AREA) { Make_TextureList(L"NPC_Atomic_Area"); }
 
-	SKILL_TYPE = _SKILLTYPE;
 	if (_SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER) {
 		Make_TextureList(player->Get_FileName());
 	}
 
-	//if (!AngleChase)
-	//{
-	//	Component_Transform->Set_Pos(*_PlayerPOS);		// 기본 위치 : 플레이어 중심 
-	//	Repeatable = _Repeatable;
-	//
-	//	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
-	//
-	//	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
-	//	_vec3 planeDir = { 0.f, 1.f, 0.f };
-	//
-	//	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
-	//	angle = angle / D3DX_PI * 180.f;
-	//
-	//	Component_Transform->Rotation(ROT_X, 90.f - angle);
-	//}
 	{
 		if (PosChase) {
 			_playerPos = _PlayerPOS;
@@ -77,7 +72,10 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 			_effectPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
 			_playerPos = &_effectPos;
 		}
+
 		_effectSize = _Size;
+		if (_SKILLTYPE == PLAYER_SKILL::ANERGYPAR) _effectSize.y *= 2.f;
+
 		Repeatable = _Repeatable;
 		_angleChase = PosChase;
 		_effectTimer = 0.f;
@@ -106,32 +104,50 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 		D3DXMatrixInverse(&matBillboard, nullptr, &matBillboard);
 
 		float radian = D3DX_PI / 180.f;
+
+		_matrix matRotX;
+
 		_matrix matRotZ;
 		D3DXMatrixRotationZ(&matRotZ, _angle - D3DX_PI);
 
 		_matrix matRotY;
 		D3DXMatrixRotationY(&matRotY, D3DX_PI);
 
-		_matrix matWorld = matSize * matRotY * matBillboard;
+		_matrix matWorld;
+		matWorld = matSize * matRotY * matBillboard;
+
+		if (_SKILLTYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT) {
+			D3DXMatrixRotationX(&matRotX, D3DXToRadian(90.f));
+			matWorld = matSize * matRotY * matRotX;
+		}
+			
 
 		matWorld._41 = (*_playerPos).x;
 		matWorld._42 = (*_playerPos).y;
 		matWorld._43 = (*_playerPos).z;
 
 		Component_Transform->Set_World(&matWorld);
+
+		if (_SKILLTYPE == PLAYER_SKILL::PAREND || _SKILLTYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT
+			|| _SKILLTYPE == PLAYER_SKILL::WIND_SPIRIT)
+  			CollisionManager::GetInstance()->Add_ColliderObject(this);
 	}
 	
 	PlayTime = _PlayTime;
 
 	ObjectTAG = L"Player_Effect";
 
-	if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW || _SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
+	if (_SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW || _SKILLTYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOP || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
 		ObjectTAG = L"NPC_TIMESLOW";
 
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
 	_alphaRatio = 1.f;
-	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER || _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
+	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER
+		|| _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
 		_alphaRatio = 0.5f;
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC)
+		_alphaRatio = 0.f;
+
 	return S_OK;
 }
 
@@ -169,7 +185,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 			_effectSize = { _effectSize.x - _DT * 80, _effectSize.y - _DT * 80, _effectSize.z - _DT * 80 };
 		}
 	}
-	if (SKILL_TYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOF) {
+	if (SKILL_TYPE == PLAYER_SKILL::NPC_TIMESLOW_LOOP) {
 		if (_effectTimer > 2.2f) {
 			_alphaRatio -= _DT / 3.f;
 			_alphaRatio = max(_alphaRatio, 0.f);
@@ -183,6 +199,21 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	if (SKILL_TYPE == PLAYER_SKILL::SHADOW_PARTNER) {
 		_alphaRatio -= _DT * 0.3;
 		_alphaRatio = max(_alphaRatio, 0.f);
+	}
+	if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC) {
+		if (_effectTimer < 0.5f) {
+			_alphaRatio += _DT / 1.f;
+			_alphaRatio = min(_alphaRatio, 1.f);
+		}
+		else if (_effectTimer > 1.f) {
+			_alphaRatio -= _DT / 1.f;
+			_alphaRatio = max(_alphaRatio, 0.f);
+		}
+		else _alphaRatio = 1.f;
+	}
+	if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED_END) {
+			_alphaRatio -= _DT / 2.f;
+			_alphaRatio = max(_alphaRatio, 0.f);
 	}
 
 	switch (SKILL_TYPE)
@@ -205,17 +236,29 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	case PLAYER_SKILL::WIND_CHARGING:
 		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
 		break;
-	case PLAYER_SKILL::WIND_PULSE:
-		//if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
+	case PLAYER_SKILL::IRA_CHARGED:
+		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() == 0) ObjectDead = true;
 		break;
-	case PLAYER_SKILL::NPC_TIMESLOW_LOOF:
+	case PLAYER_SKILL::IRA_CHARGING:
+		if (!(KEY_HOLD(DIK_SPACE)) || player->GetBowCharging() != 0) ObjectDead = true;
+		break;
+	case PLAYER_SKILL::NPC_TIMESLOW_LOOP:
 		if (_effectTimer > (*player->Get_SlowTime()) - 1.f ) ObjectDead = true;
 		break;
 	case PLAYER_SKILL::NPC_AREA:
 		if (_effectTimer > (*player->Get_SlowTime()) - 0.5f) ObjectDead = true;
 		break;
+	case PLAYER_SKILL::NPC_ATOMIC:
+		if (_effectTimer > 1.5f) ObjectDead = true;
+		break;
+	case PLAYER_SKILL::NPC_ATOMIC_CHARGED:
+		if (_effectTimer > 1.3f) {
+			_vec3 Size = { 1.f, 1.f, 1.f };
+			PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_ATOMIC_CHARGED_END, Component_Transform->Get_Position(), 0.5f, Size, false);
+			ObjectDead = true;
+		}
+		break;
 	}
-
 	if (true)
 	{
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
@@ -256,36 +299,46 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		matWorld._42 = (*_playerPos).y;
 		matWorld._43 = (*_playerPos).z;
 
-		if (SKILL_TYPE == PLAYER_SKILL::SKILL_2) {
-			_offsetX += _DT * 3.f;
-
-			float wavePower = 1.f;
-			float waveSpeed = 5.f;
-
-			float wave = sinf(_effectTimer * waveSpeed) * wavePower;
-
-			matWorld._41 = (*_playerPos).x - _offsetX;
-			matWorld._42 = (*_playerPos).y + wave * 0.5;
-			matWorld._43 = (*_playerPos).z;
+		if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC || SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) {
+			if (_effectTimer < 0.5)			matWorld._43 -= 1.f * _effectTimer;
+			else							matWorld._43 -= 1.f * 0.5;
 		}
-
 		Component_Transform->Set_World(&matWorld);
+		Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
 	}
+
+	if (SKILL_TYPE == PLAYER_SKILL::PAREND ) {
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	}
+
 
 	return 0;
 }
 VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
+	GameObject::LateUpdate_GameObject(_DT);
+
 	if (ObjectDead)	return ;
 	if (FrameTick > PlayTime / ENDFRAME) {
 		if (TextureIndex++ >= ENDFRAME - 2) {	
 			if (Repeatable) { TextureIndex = 0;}
 			else {
-				TextureIndex = ENDFRAME - 2; 
+				TextureIndex = ENDFRAME - 2;
 				ObjectDead = TRUE;
+				CollisionManager::GetInstance()->Delete_ColliderObject(this);
 			}
 		}
 		FrameTick = 0.f;
 	}
+	if (ObjectDead == TRUE) {
+		if (SKILL_TYPE == PLAYER_SKILL::ATOMIC_READY) {
+			_vec3 Size = { 7.f, 7.f, 7.f };
+			PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ATOMIC_BOMB_EFFECT, Component_Transform->Get_Position(), 1.f, Size, false);
+			CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
+				Get_GameObject(L"Camera"));
+			Camera->Camera_Shaking(10.f, 0.5f);
+		}
+	}
+		
 }
 VOID PlayerEffect::Render_GameObject() {
 	if (ObjectDead)	return;
@@ -326,7 +379,33 @@ VOID PlayerEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
-	return TRUE;
+	wstring Tag = _Other->Get_ObjectTag();
+	int hp = Component_Collider->Get_Hp();
+	int atk = COLLIDER(_Other)->Get_Att();
+
+	if (Tag == L"Monster") {
+		atk = 1.f;
+		Component_Collider->Set_Hp(hp - atk);
+		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+		return TRUE;
+	}
+
+	else if (Tag == L"CheonLog") {
+		atk = 1.f;
+		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+		Component_Collider->Set_Hp(hp - atk);
+
+		return TRUE;
+	}
+	else if (_Other->Get_ObjectTag() == L"Docheol") {
+		atk = 1.f;
+		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		Component_Collider->Set_Hp(hp - atk);
+
+		return TRUE;
+	}
+
+	return FALSE;
 }
 BOOL PlayerEffect::OnCollisionStay(GameObject* _Other) {
 	return TRUE;
@@ -338,9 +417,17 @@ HRESULT	PlayerEffect::Component_Initialize() {
 	Component_Buffer	= ADD_COMPONENT_RECTTEX;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 
-	Component_Collider	= ADD_COMPONENT_COLLIDER;
-	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
-	Component_Collider->Set_Scale(0.1f, 0.1f, 0.1f);				// 충돌체의 범위 조절
+	if (SKILL_TYPE == PLAYER_SKILL::PAREND || SKILL_TYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT
+		|| SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) {
+		Component_Collider = ADD_COMPONENT_COLLIDER;
+		Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
+
+		if(SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) Component_Collider->Set_Scale(3.f, 3.f, 3.f);
+		else Component_Collider->Set_Scale(5.f, 5.f, 5.f);					// 충돌체의 범위 조절
+		
+		Component_Collider->Set_Att(50.f);
+	}
+
 
 	Component_Texture	= ADD_COMPONENT_TEXTURE;
 
