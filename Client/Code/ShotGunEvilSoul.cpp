@@ -3,15 +3,41 @@
 ShotGunEvilSoul::ShotGunEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
 ShotGunEvilSoul::ShotGunEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
 ShotGunEvilSoul::~ShotGunEvilSoul() {}
-
 HRESULT ShotGunEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 
 	return S_OK;
 }
+HRESULT ShotGunEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	Component_Collider->Set_Hp(SHOTGUNEVILSOUL_HP);
+
+	m_tInfo.bMiniGame = bMini;
+	if (m_tInfo.bMiniGame)
+	{// â�� �߰�
+		ObjectTAG = L"Monster";
+		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
+		Component_Transform->Set_Pos(vPos);
+	}
+	return S_OK;
+}
 INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		GameObject::Update_GameObject(_DT);
+		ShotGunEvilSoul::State_Tracking(_DT);
+		MYPOS->y = MYSCALE->y * 0.5f;
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+		return 1;
+	}
+	MYPOS->y = MYSCALE->y * 0.5f; // 지우기 애매해서 남겨둠
+  
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
 		return 0;
@@ -69,6 +95,7 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 
+	
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
@@ -113,16 +140,25 @@ VOID ShotGunEvilSoul::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	switch (m_tInfo.eState[0])
+	if (m_tInfo.bMiniGame)// â�� �߰�
 	{
-	default:
-		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
+		GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+
 		Component_Buffer->Render_Buffer();
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DEAD:
-		break;
+	}
+	else
+	{
+		switch (m_tInfo.eState[0])
+		{
+		default:
+			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+			break;
+		case MONSTER_STATE_SUMMON:
+		case MONSTER_STATE_APPEAR:
+		case MONSTER_STATE_DEAD:
+			break;
+		}
 	}
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -148,9 +184,9 @@ HRESULT ShotGunEvilSoul::Component_Initialize() {
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
-ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+ShotGunEvilSoul* ShotGunEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
 	ShotGunEvilSoul* MST = new ShotGunEvilSoul(_GRPDEV);
-	if (FAILED(MST->Ready_GameObject())) {
+	if (FAILED(MST->Ready_GameObject(vPos, bMini))) {
 		MSG_BOX("Cannot Create ShotGunEvilSoul.");
 		Safe_Release(MST);
 		return nullptr;
@@ -199,6 +235,13 @@ VOID ShotGunEvilSoul::State_Idle(const _float& _DT)
 
 VOID ShotGunEvilSoul::State_Tracking(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// â�� �߱�
+		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		m_tInfo.vDirection = vPos - *MYPOS;
+		m_tInfo.fSpeed = 3.f;
+		return;
+	}
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 

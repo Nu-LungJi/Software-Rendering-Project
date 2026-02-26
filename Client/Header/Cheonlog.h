@@ -1,9 +1,14 @@
 #pragma once
 #include "GameObject.h"
 
+#define CHEONLOG  dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog")) 
 
 enum  CL_CHECK { IDEL, SPAWN_AFTER, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHECK_END };
 enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP,CL_LUJUMP,CL_RUJUMP, CL_DEAD, CL_END};
+enum class LEAF_ATTACK { LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION, LEAF_END };
+enum class CL_EFFECT {
+	LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING, LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM, SPAWN_THUNDER, SPAWN_BOOM_CIRCLE, SPAWN_L, SPAWN_R,
+CL_EFFECTEND};
 
 class CLAttack;
 class Cheonlog : public GameObject
@@ -51,11 +56,17 @@ public:
 	void		Set_Effect(_bool bEffect)     { m_EndEffect = bEffect; }
 	void        Set_StartAttack(_bool bStart) { m_StartAttack = bStart; }
 
+
+	HRESULT	Make_TextureList(wstring _FileName, LEAF_ATTACK eid);
+	HRESULT	Make_EffectTextureList(wstring _FileName, CL_EFFECT eid);
+
 	CL_STATU		Get_Statu() { return m_eStatu; }
 	CL_CHECK		Get_Check() { return m_eCheck; }
 	void			Set_Statu(_vec3 vPos) { m_eStatu = CL_IDELR; m_eCheck = SPAWN_AFTER;
 											m_iSkillDelay = 0;  
 											Component_Transform->Set_Pos(vPos.x,3.5,vPos.z); }
+	vector<IDirect3DBaseTexture9*> Get_BulletTexture(LEAF_ATTACK eid) {return m_vecBullet[(int)eid]; }
+	vector<IDirect3DBaseTexture9*> Get_EffectTexture(CL_EFFECT eid) { return m_vecEffect[(int)eid]; }
 public:
 	void        Debug_ButtonStyle();
 	void        Debug_Button(const char pName[32], _vec3* vPivot, _float iLinePivot);
@@ -65,7 +76,10 @@ private:
 	Transform*  Component_Transform;
 	Collider*	Component_Collider;
 
-	IDirect3DBaseTexture9* m_pTexture;
+
+
+	vector<IDirect3DBaseTexture9*>  m_vecEffect[(int)CL_EFFECT::CL_EFFECTEND];
+	vector<IDirect3DBaseTexture9*>  m_vecBullet[(int)LEAF_ATTACK::LEAF_END];
 	vector<IDirect3DBaseTexture9*>  m_vecCheonlogTexture[CL_END];
 
 private:

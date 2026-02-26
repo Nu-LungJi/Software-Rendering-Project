@@ -9,6 +9,7 @@ public:
 	virtual ~ScorpionEvilSoul();
 
 public:
+	virtual			HRESULT		Ready_GameObject(_vec3 vPos = {}, BOOL bMini = false);
 	virtual			HRESULT		Ready_GameObject();
 	virtual			INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
@@ -26,7 +27,10 @@ private:
 	Collider*		Component_Collider;
 
 public:
+
+	static			ScorpoinEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos = {}, BOOL bMini = false);
 	static			ScorpionEvilSoul* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+
 	MONSTERINFO*		Get_Info() { return &m_tInfo; }
 
 private:

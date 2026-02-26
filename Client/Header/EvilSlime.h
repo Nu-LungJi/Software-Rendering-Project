@@ -13,6 +13,7 @@ public:
 	virtual ~EvilSlime();
 
 public:
+	virtual			HRESULT		Ready_GameObject(_vec3 vPos = {} , BOOL bMini = false);
 	virtual			HRESULT		Ready_GameObject();
 	virtual			INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
@@ -29,7 +30,7 @@ private:
 	Transform* Component_Transform;
 	Collider* Component_Collider;
 public:
-	static			EvilSlime* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static			EvilSlime* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos = {}, BOOL bMini = false);
 	MONSTERINFO*	Get_Info() { return &m_tInfo; }
 	_vec3*			Get_FissionDst() { return &m_vFissionDst; }
 

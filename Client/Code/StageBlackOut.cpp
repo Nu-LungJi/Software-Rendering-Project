@@ -108,6 +108,9 @@ StageBlackOut* StageBlackOut::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3* vPos) {
 	return Blackout;
 }
 VOID StageBlackOut::Free() {
+
+	Safe_Release(m_pDrawSprite);
+
 	for (auto& iter : m_pSprtieList)
 		Safe_Release(iter);
 

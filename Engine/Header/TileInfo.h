@@ -110,7 +110,7 @@ public:
     void                   Set_PotalOpen()               { m_bPortal = true; }
     void                   Set_TextureID(IDirect3DBaseTexture9* pTexture) { 
         
-        auto iter = pTexture;
+        auto& iter = pTexture;
         
         if (iter != nullptr)
         {

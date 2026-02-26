@@ -21,28 +21,20 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     switch (m_eLeaf)
     {
     case LEAF_ATTACK::LEAF_FIRST:
-        Make_TextureList(L"Spr_Bullet_LaulaStandardBullet_0");
         SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Leaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
-
         Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
-        Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_Black_0");
-
         m_iRandCnt = 5 + rand() % 2;
         break;
     case LEAF_ATTACK::LEAF_THIRD:
-        Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0");
-
         m_iRandCnt = 5 + rand() % 2;
         break;
     case LEAF_ATTACK::LEAF_EXPLOSION:
-        Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth");
         Component_Transform->Set_Scale(1.5f, 1.5f, 1.5f);
         m_fFrameSpeed = 0.08f;
         break;
-    case LEAF_ATTACK::LEAF_FOUR:
-        Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv2_0");        
+    case LEAF_ATTACK::LEAF_FOUR:   
         break;
     }
     CollisionManager::GetInstance()->Add_ColliderObject(this);
@@ -52,13 +44,16 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
 INT CLAttack::Update_GameObject(const _float& _DT)
 {
     if (Get_ObjectDead() == TRUE)
+    {
+        CollisionManager::GetInstance()->Delete_ColliderObject(this);
         return -1;
-
+    }
+        
     GameObject::Update_GameObject(_DT);
-    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
     Move_Frame(_DT);
     Move_Leaf(_DT);
 
+    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
     return S_OK;
 }
 BOOL CLAttack::OnCollisionEnter(GameObject* _Other)
@@ -75,13 +70,12 @@ BOOL CLAttack::OnCollisionEnter(GameObject* _Other)
     {
         return false;
     }
-
     return TRUE;
 }
 BOOL CLAttack::OnCollisionStay(GameObject* _Other)
 {
     wstring Tag = _Other->Get_ObjectTag();
-   if(Tag == L"Player" && m_eLeaf == LEAF_ATTACK::LEAF_EXPLOSION && m_TextureIndex == TextureList.size() - 3)
+   if(Tag == L"Player" && m_eLeaf == LEAF_ATTACK::LEAF_EXPLOSION && m_TextureIndex == CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 3)
     {
         MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
         mainUI->Player_LostHP();
@@ -104,7 +98,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 9 || dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog"))->Get_Statu()==CL_DEAD)
+    if (m_iDeadCnt >= 6 || CHEONLOG->Get_Statu()==CL_DEAD)
         Set_ObjectDead(TRUE);
 
 }
@@ -115,7 +109,7 @@ void CLAttack::Render_GameObject()
 
     GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-    GRPDEV->SetTexture(0, TextureList[m_TextureIndex]);
+    GRPDEV->SetTexture(0, CHEONLOG->Get_BulletTexture(m_eLeaf)[m_TextureIndex]);
 
     Component_Buffer->Render_Buffer();
 
@@ -143,7 +137,7 @@ void CLAttack::Move_Frame(const _float& _DT)
         ++m_TextureIndex;
         m_FrameTick = 0.f;
     }
-    if (m_TextureIndex > TextureList.size() - 1)
+    if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
     {
         if (m_eLeaf != LEAF_ATTACK::LEAF_EXPLOSION)
             m_TextureIndex = 0;
@@ -270,7 +264,6 @@ void CLAttack::Leaf_Third(const _float& _DT)
         Leaf_Bill(_DT);
     }
 }
-
 void CLAttack::Leaf_Four(const _float& _DT)
 {
     m_fAttackTick += _DT;
@@ -302,7 +295,6 @@ void CLAttack::Leaf_Four(const _float& _DT)
     Component_Transform->Set_World(&matWorld);
     Component_Transform->Set_Pos({ matWorld._41 , 0.1f, matWorld._43 });
 }
-
 void CLAttack::Leaf_Explosion(const _float& _DT)
 {
     Component_Collider->Set_Scale(2.f, 2.f, 2.f);
@@ -314,7 +306,7 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
     if (m_TextureIndex == 25)
         Component_Transform->Set_Scale(5.f, 5.f, 5.f);
 
-    if (m_TextureIndex > TextureList.size() - 1)
+    if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
     {
         Set_ObjectDead(TRUE);
 
@@ -335,7 +327,6 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
     Component_Transform->Set_World(&matWorld);
     Component_Transform->Set_Pos({ matWorld._41 , 1.f , matWorld._43 });
 }
-
 void CLAttack::Leaf_Bill(const _float& _DT)
 {
     _float fAngle;
@@ -375,21 +366,5 @@ CLAttack* CLAttack::Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 
 
 void CLAttack::Free()
 {
-    for (auto& iter : TextureList)
-        Safe_Release(iter);
-
     GameObject::Free();
-}
-
-HRESULT CLAttack::Make_TextureList(wstring _FileName) {
-    INT FRAME = 0;
-
-    while (++FRAME) {
-        wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
-        IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-        if (TEX == nullptr) break;
-        else { TEX->AddRef();  TextureList.push_back(TEX); }
-    }
-
-    return S_OK;
 }

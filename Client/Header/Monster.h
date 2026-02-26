@@ -257,8 +257,9 @@ typedef struct tagTextureInfo
 
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
-		bTrigger{}, eState{}, fTimer{}, pGameObj{},
-		vDirection{-1.f,0.f,0.f}, fSpeed(0.f){}
+		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false),
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){}
+
 	~tagMonsterInfo() {}
 
 	VOID	Change_State(MONSTER_STATE _eState) 
@@ -267,11 +268,13 @@ typedef struct tagMonsterInfo {
 		eState[0]			= _eState;
 		fSpeed				= 0.f;
 		memset(fTimer, 0, sizeof(fTimer));
+
 	}
+
+	BOOL						bTrigger[5];
 
 	uint16_t					ID = 0x0000;
 
-	BOOL						bTrigger[4];
 	MONSTER_STATE				eState[2];
 	_float						fTimer[4];
 	GameObject*					pGameObj[10];
@@ -280,7 +283,7 @@ typedef struct tagMonsterInfo {
 	_float						fSpeed;
 
 	TEXINFO						Textureinfo;
-
+	BOOL						bMiniGame;
 }MONSTERINFO, MONINFO, MONBULLETINFO;
 
 typedef struct tagRandomGenerator {

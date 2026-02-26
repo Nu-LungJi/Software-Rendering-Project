@@ -20,7 +20,7 @@ public:
 	BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 private:
-	VOID			Free();
+	virtual VOID			Free();
 	HRESULT			Component_Initialize();
 
 private:

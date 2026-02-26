@@ -77,4 +77,6 @@ VOID UIManager::Free() {
         Safe_Delete(FO.second);
     Safe_Release(DXSprite);
     ItemList.clear();
+
+    Safe_Release(DXSprite);
 }

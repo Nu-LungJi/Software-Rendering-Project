@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
-enum class LEAF_ATTACK{LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION};
+//enum class LEAF_ATTACK{LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION};
+
 
 class CLAttack : public GameObject
 {
@@ -16,8 +17,8 @@ public:
 	virtual			void		Render_GameObject();
 	BOOL						OnCollisionStay(GameObject* _Other);
 	BOOL						OnCollisionEnter(GameObject* _Other);
+
 private:
-	HRESULT					 Make_TextureList(wstring _FileName);
 	HRESULT				     Component_Initialize();
 
 public:
@@ -57,8 +58,6 @@ private:
 	Buffer*							Component_Buffer;
 	Transform*						Component_Transform;
 	Collider*						Component_Collider;
-
-	vector<IDirect3DBaseTexture9*>	TextureList;
 
 public:
 	static CLAttack* Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin = false);

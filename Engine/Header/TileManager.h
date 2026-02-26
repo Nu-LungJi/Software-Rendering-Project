@@ -52,9 +52,7 @@ public:
     HRESULT                 Stage_Update(const _float& fTimeDelta);
     void                    Stage_LateUpdate(const _float& fTimeDelta);
     void                    Stage_Render();
- 
-    
-   
+
     HRESULT                 Update_TileList(const _float& fTimeDetla);
     void                    LateUpdate_Tile(const _float& fTimeDelta);
     void                    Render_TileList();
@@ -80,6 +78,7 @@ public:
     void                    Change_Stage(TILE_STAGE eStage) { m_eCurrent = eStage; m_bStageChange = true; }
     void                    Reset_TileList();
     _int                    Get_StageCnt() { return m_StageCntArray[m_eCurrent]; }
+    vector<GameObject*>& Get_Defense()     { return m_vecDefenseMonster; }
 private:
     _bool                   m_bStageChange;
     _bool                   m_bCheck;
@@ -89,8 +88,9 @@ private:
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;
     int                     m_StageCntArray[TILE_STAGE::STAGE_END];
-    vector<GameObject*>     m_vecTileBuffer[TILE_STAGE::STAGE_END][TILEMODE_CHANGE::MODE_END];
 
+    vector<GameObject*>     m_vecTileBuffer[TILE_STAGE::STAGE_END][TILEMODE_CHANGE::MODE_END];
+    vector<GameObject*>     m_vecDefenseMonster;
 private:
     virtual void            Free();
 };

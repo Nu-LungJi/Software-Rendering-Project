@@ -20,7 +20,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
-    Component_Collider->Set_Att(arrowAtk);
+    Component_Collider->Set_Att(50);
     _hp = 1;
     Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;

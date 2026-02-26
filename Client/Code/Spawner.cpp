@@ -1,24 +1,58 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bTrigger(false), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fDefense(0.f),m_bTrigger(false), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
-HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn) {
+HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos) {
 
 	if (FAILED(Component_Initialize(eid, eSpawn))) return E_FAIL;
 
-	if (eSpawn == TILE_SPAWNER::CL_SPAWN)
+	switch (eSpawn)
 	{
+	  case TILE_SPAWNER::CL_SPAWN:
 		m_bSpawn = true;
-	}
+		break;
+	  case TILE_SPAWNER::RANDOM_SPAWNER:
+		  
+		  for (int i = 0; i < 2; ++i)
+		  {
+			  if (TileManager::GetInstance()->Get_Defense().size() > 600)
+				  break;
+			  _int iRand = rand() % 4;
+			  GameObject* pObj=nullptr;
+			  switch (iRand)
+			  {
+			  case 0:
 
+				  pObj = Bat::Create(GRPDEV, vPos, true);
+				  break;
+			  case 1:
+				  pObj = ScorpoinEvilSoul::Create(GRPDEV, vPos, true);
+				  break;
+			  case 2:
+				  pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				  break;
+			  case 3:
+				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
+				  break;
+			  }
+			  if(pObj != nullptr)
+			  TileManager::GetInstance()->Get_Defense().push_back(pObj);
+			 
+		  }
+		  
+		break;
+	}
+	
+	
 	return S_OK;
 }
 INT	Spawner::Update_GameObject(const _float& _DT) {
 
 	GameObject::Update_GameObject(_DT);
-
+	
+	
 	Frame_Move(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
 
@@ -29,7 +63,12 @@ VOID Spawner::LateUpdate_GameObject(const _float& _DT) {
 
 	_vec3		vPos;
 	m_pTransform->Get_Info(INFO_POS, &vPos);
-
+	for (size_t i = 0; i < m_vecMonsterDefense.size(); ++i)
+	{
+		m_vecMonsterDefense[i]->LateUpdate_GameObject(_DT);
+	}
+	
+	
 	AlphaYSorting(&vPos);
 
 	GameObject::LateUpdate_GameObject(_DT);
@@ -81,16 +120,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		Monster_Spawn();
+	//	Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		Monster_Spawn2();
+		//Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		Monster_Spawn3();
+		//Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		Monster_Spawn4();
+		//Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 	
@@ -110,10 +149,13 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::ITEM_SPAWN6:
 		break;
 	case TILE_SPAWNER::CL_SPAWN:
- 		CL_Spawn();
+ 		//CL_Spawn();
 		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
 		Boss();
+		break;
+	case TILE_SPAWNER::RANDOM_SPAWNER:
+		Defense_Spawn(_DT);
 		break;
 	}
 
@@ -125,7 +167,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -135,7 +177,7 @@ void Spawner::Monster_Spawn2()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ScorpoinEvilSoul>(GRPDEV, vPos, 1.5f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -145,7 +187,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -155,7 +197,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -185,6 +227,49 @@ void Spawner::CL_Spawn()
 }
 
 
+
+void Spawner::Defense_Spawn(const _float& _DT)
+{
+	m_fDefense += _DT;
+
+	if (m_fDefense > 3)
+	{
+		m_fDefense = 0;
+		if (m_vecMonsterDefense.size() < 4)
+		{
+			if (TileManager::GetInstance()->Get_Defense().size() == 0)
+				return;
+
+			m_vecMonsterDefense.push_back(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
+			CollisionManager::GetInstance()->Add_ColliderObject(TileManager::GetInstance()->Get_Defense()[TileManager::GetInstance()->Get_Defense().size() - 1]);
+			TileManager::GetInstance()->Get_Defense().pop_back();
+		}
+	}
+
+	for (auto iter = m_vecMonsterDefense.begin(); iter != m_vecMonsterDefense.end();)
+	{
+
+		(*iter)->Update_GameObject(_DT);
+		_int iResult = dynamic_cast<Collider*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
+		if (iResult <= 0)
+		{
+			dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*m_pTransform->Get_Position());
+			dynamic_cast<Collider*>(((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER)))->Set_Hp(50);
+			//dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Set_Count();
+			CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
+			TileManager::GetInstance()->Get_Defense().push_back(*iter);
+			iter = m_vecMonsterDefense.erase(iter);
+			continue;
+
+		}
+
+		if (iter != m_vecMonsterDefense.end())
+			++iter;
+	}
+
+
+	
+}
 
 Transform* Spawner::Crash_Player()
 {
@@ -244,11 +329,11 @@ HRESULT Spawner::Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn) {
 	return S_OK;
 }
 
-Spawner* Spawner::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_SPAWNER eSpawn) {
+Spawner* Spawner::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos) {
 
 	Spawner* pSpawner = new Spawner(_GRPDEV);
 
-	if (FAILED(pSpawner->Ready_GameObject(eid, eSpawn))) {
+	if (FAILED(pSpawner->Ready_GameObject(eid, eSpawn, vPos))) {
 		MSG_BOX("Cannot Create Spawner.");
 		Safe_Release(pSpawner);
 		return nullptr;
@@ -258,6 +343,10 @@ Spawner* Spawner::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_SPAWNER 
 }
 VOID Spawner::Free() {
 
+	for (auto& iter : m_vecMonsterDefense)
+		Safe_Release(iter);
+
+	m_vecMonsterDefense.clear();
 
 	GameObject::Free();
 }

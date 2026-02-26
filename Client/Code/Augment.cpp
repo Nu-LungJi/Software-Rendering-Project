@@ -216,7 +216,10 @@ Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 VOID  Augment::Free() {
 	for (auto& PI : Perk_Info)
+	{
+		Safe_Release(PI->TEXTURE);
 		Safe_Delete(PI);
+	}
 
   isActive = FALSE;
 

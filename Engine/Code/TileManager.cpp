@@ -4,7 +4,7 @@
 #include "tchar.h"
 
 IMPLEMENT_SINGLETON(TileManager)
-TileManager::TileManager() : m_EndLoading(true), m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false) {}
+TileManager::TileManager() : m_EndLoading(true), m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false) { m_vecDefenseMonster.reserve(600); }
 TileManager::~TileManager()
 {
     Free();
@@ -151,6 +151,7 @@ void TileManager::Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir)
                 {
                     Safe_Release((*iter));
                     iter = m_vecTileBuffer[i][j].erase(iter);
+                    continue;
                 }
 
                 if (iter != m_vecTileBuffer[i][j].end())
@@ -187,6 +188,7 @@ void TileManager::Delete_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir)
                 {
                     Safe_Release((*iter));
                     iter = m_vecTileBuffer[i][j].erase(iter);
+                    continue;
                 }
 
                 if (iter != m_vecTileBuffer[i][j].end())
@@ -452,4 +454,8 @@ void TileManager::Free()
         }
     }
 
+    for (auto& iter : m_vecDefenseMonster)
+        Safe_Release(iter);
+
+    m_vecDefenseMonster.clear();
 }

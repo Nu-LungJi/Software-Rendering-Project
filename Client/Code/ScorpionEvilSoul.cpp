@@ -1,17 +1,52 @@
 #include "../Include/PCH.h"
 
-ScorpionEvilSoul::ScorpionEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
-ScorpionEvilSoul::ScorpionEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
-ScorpionEvilSoul::~ScorpionEvilSoul() {}
-
-HRESULT ScorpionEvilSoul::Ready_GameObject() {
+ScorpoinEvilSoul::ScorpoinEvilSoul(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+ScorpoinEvilSoul::ScorpoinEvilSoul(const GameObject& _RHS) : GameObject(_RHS) {}
+ScorpoinEvilSoul::~ScorpoinEvilSoul() {}
+HRESULT ScorpoinEvilSoul::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
+	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
+	Component_Collider->Set_Hp(SCORPIONEVILSOUL_HP);
 
+	m_tInfo.vDirection = { -1.f,0.f,0.f };
+	return S_OK;
+}
+HRESULT ScorpoinEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+
+	m_tInfo.eState[0] = MONSTER_STATE_APPEAR;
+	m_tInfo.bMiniGame = bMini;
+	Component_Collider->Set_Hp(SCORPIONEVILSOUL_HP);
+
+	m_tInfo.vDirection = { -1.f,0.f,0.f };
+
+
+	if (m_tInfo.bMiniGame)
+	{// â�� �߰�
+		ObjectTAG = L"Monster";
+
+		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
+		Component_Transform->Set_Pos(vPos);
+	}
 	return S_OK;
 }
 INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 {
+
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		GameObject::Update_GameObject(_DT);
+		ScorpoinEvilSoul::State_Tracking(_DT);
+		MYPOS->y = MYSCALE->y * 0.5f;
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+		return 1;
+	}
+
+	MYPOS->y = MYSCALE->y * 0.5f; // 병합하다가 지우기 애매해서 놔둡니다. 오류나면 지워주세요
+  
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
 		return 0;
@@ -84,8 +119,9 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	}
 	return 0;
 }
-VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
-	
+
+VOID ScorpoinEvilSoul::LateUpdate_GameObject(const _float& _DT) {
+
 	GameObject::LateUpdate_GameObject(_DT);
 	
 	m_tInfo.vDirection.y = 0.f;
@@ -151,6 +187,26 @@ VOID ScorpionEvilSoul::Render_GameObject() {
 
 	if (m_tInfo.Textureinfo._frame > m_tInfo.Textureinfo._Endframe) return;
 
+		if (m_tInfo.bMiniGame)// 창준 추가
+		{
+			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+		}
+		else
+		{
+			switch (m_tInfo.eState[0])
+			{
+			default:
+				GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+				Component_Buffer->Render_Buffer();
+				break;
+			case MONSTER_STATE_SUMMON:
+			case MONSTER_STATE_APPEAR:
+			case MONSTER_STATE_DEAD:
+				break;
+			}
+		}
+  
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -190,10 +246,18 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
+
+ScorpoinEvilSoul* ScorpoinEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
+	ScorpoinEvilSoul* MST = new ScorpoinEvilSoul(_GRPDEV);
+	if (FAILED(MST->Ready_GameObject(vPos, bMini))) {
+		MSG_BOX("Cannot Create ScorpoinEvilSoul.");
+    }
+ }
 ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	ScorpionEvilSoul* MST = new ScorpionEvilSoul(_GRPDEV);
 	if (FAILED(MST->Ready_GameObject())) {
 		MSG_BOX("Cannot Create ScorpionEvilSoul.");
+
 		Safe_Release(MST);
 		return nullptr;
 	}
@@ -286,6 +350,13 @@ VOID ScorpionEvilSoul::State_Idle(const _float& _DT)
 
 VOID ScorpionEvilSoul::State_Tracking(const _float& _DT)
 {
+	if (m_tInfo.bMiniGame)
+	{// â�� �߱�
+		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		m_tInfo.vDirection = vPos - *MYPOS;
+		m_tInfo.fSpeed = 3.f;
+		return;
+	}
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
