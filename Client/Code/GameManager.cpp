@@ -10,6 +10,7 @@ HRESULT GameManager::Ready_GameManager() {
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
+	DamageFontManager::GetInstance()->Ready_DamageFontManager();
 
 	return S_OK;
 }
@@ -96,5 +97,6 @@ VOID		 GameManager::Free() {
 	UIManager		::DestroyInstance();
 	EffectManager	::DestroyInstance();
 	MonsterManager	::DestroyInstance();
+	DamageFontManager::DestroyInstance();
 	DEVCLASS		->DestroyInstance();
 }

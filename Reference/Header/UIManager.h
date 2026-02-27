@@ -14,13 +14,14 @@ struct ENGINE_DLL FontObject {
 	wstring		FontType;
 	BOOL		Visible;
 	D3DCOLOR	TextColor;
-	ID3DXFont* DXFont;
+	ID3DXFont*	DXFont;
+	BOOL		Active;
 
 	DWORD		FORMAT;
 
 	FontObject(_vec2 _Position, wstring _Text, _int _TextScale, _int _TextWeight, wstring _FontTag, wstring _FontType, D3DCOLOR _Color, BOOL _Visible, DWORD _FORMAT)
 		: Position(_Position), Text(_Text), TextScale(_TextScale), TextWeight(_TextWeight), FontTag(_FontTag),
-		FontType(_FontType), Visible(_Visible), TextColor(_Color), DXFont(nullptr), FORMAT(_FORMAT) {
+		FontType(_FontType), Visible(_Visible), TextColor(_Color), DXFont(nullptr), FORMAT(_FORMAT), Active(TRUE){
 	}
 
 	VOID	Set_Text(wstring _TXT) { Text = _TXT; }
@@ -34,6 +35,9 @@ struct ENGINE_DLL FontObject {
 
 	VOID	Set_Visible(BOOL _Vis) { Visible = _Vis; }
 	BOOL	Set_Visible() { return Visible; }
+
+	VOID	Set_Active(BOOL isActive) { Active = isActive; }
+	BOOL	Get_Active() { return Active; }
 };
 
 class ENGINE_DLL UIManager : public Base {
@@ -54,7 +58,11 @@ public:
 
 	FontObject* Find_FontObject(wstring _Text);
 
+	VOID		Delete_FontObject(FontObject* obj);
+
 	VOID		Render_FontObjects();
+
+	VOID		Update_DamageFont(LPDIRECT3DDEVICE9 _GRPDEV, FontObject* FO);
 
 public:
 	BOOL		Get_Active()				{ return isActive;		}

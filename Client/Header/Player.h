@@ -165,6 +165,8 @@ public:
 	float*	Get_SlowTime() { return &_slowTime; }
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
 
+	int		Get_CurArrowCount() { return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; }
+
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	bool	Get_Invincible() { return _isInvincible; }

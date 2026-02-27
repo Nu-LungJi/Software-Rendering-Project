@@ -211,6 +211,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         default:
             break;
         }
+        CollisionManager::GetInstance()->Delete_ColliderObject(this);
 
         return -1;
     }
@@ -604,21 +605,20 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         atk = 1.f;
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
+
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
+
         return TRUE;
     }
 
     else if (Tag == L"CheonLog") {
         atk = 1.f;
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        Component_Collider->Set_Hp(hp - atk);
+        //COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 1.f);
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+       DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
-        return TRUE;
-    }
-    else if (Tag == L"CheonLog") {
-        atk = 1.f;
-        Component_Collider->Set_Hp(hp - atk);
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
@@ -626,6 +626,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
         return TRUE;
     }

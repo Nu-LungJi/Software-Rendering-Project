@@ -572,6 +572,8 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	arrow->Set_ObjectTag(L"PlayerArrow");
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
+
+	_Stat.curArrow -= 1;
 }
 
 Bow* Bow::Create(LPDIRECT3DDEVICE9 _GRPDEV)

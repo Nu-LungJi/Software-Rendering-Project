@@ -110,25 +110,6 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
-	if (KEY_DOWN(DIK_Y)) {
-		_NPC_Pos = *Component_Transform->Get_Position();
-		_NPC_Pos.x -= 6.f;
-		_NPC_Pos.y += 16.f;
-
-		GameObject* arrow = nullptr;
-		_vec2 dir = {2.f, 10.f};
-		arrow = Arrow::Create(GRPDEV, BowType::AtomicBow, 1, 0, &_NPC_Pos, dir);
-
-		TCHAR arrowTag[128] = L"";
-		wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);
-
-		arrow->Set_ObjectTag(arrowTag);
-		arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
-		arrow->Set_ObjectTag(L"PlayerArrow");
-
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
-	}
-
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
@@ -211,6 +192,16 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		break;
 	}
 
+	if (KEY_DOWN(DIK_Y)) {
+		GameObject* DamageFont = nullptr;
+
+		DamageFont = DamageFont::Create(GRPDEV, 20, Component_Transform->Get_Position());
+		DamageFont->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+		DamageFont->Set_ObjectTag(L"DamageFont");
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(DamageFont);
+
+	}
 
 	return S_OK;
 }
