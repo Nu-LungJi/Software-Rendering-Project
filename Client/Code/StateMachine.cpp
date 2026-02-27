@@ -524,17 +524,7 @@ VOID Rage_ChargeState::FSM_StateEnter(GameObject* _Owner)		{
 	PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_FLAME_EFFECT, L"Charge Flame", &FlamePos, FlameScale, 0.5f);
 }
 VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner)		{
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
-		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
-		float Circlepow = 7.f;
-		_vec3 CircleScale = { 1.f * Circlepow, 0.6f * Circlepow, 0.6f * Circlepow };
-		_vec3 CirclePos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
-					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.f,
-					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
-		};
-		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT, L"Charge Elec", &CirclePos, CircleScale, 0.8f);
-
-	}
+	
 
 }
 VOID Rage_ChargeState::FSM_StateExit(GameObject* _Owner)		{}
@@ -548,9 +538,33 @@ VOID Rage_SupporterState::FSM_StateEnter(GameObject* _Owner)	{
 						(*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
 	};
 	PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::FSWING_CIRCLE_EFFET, L"FSwing Circle Effect", &CirclePos, CircleScale, 0.4f);
+	dynamic_cast<FinalBoss*>(_Owner)->Set_EnableSupporterFlame(TRUE);
 }
 VOID Rage_SupporterState::FSM_StateUpdate(GameObject* _Owner)	{
-	
+	// Circle Blue Electric
+	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && static_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float Circlepow = 7.f;
+		_vec3 CircleScale = { 1.f * Circlepow, 0.6f * Circlepow, 0.6f * Circlepow };
+		_vec3 CirclePos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.f,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
+		};
+		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT, L"Charge Elec", &CirclePos, CircleScale, 0.8f);
+	}
+	// Pink Electric
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float Elecpow = 6.f;
+		_vec3 ElecScale = { 1.f * Elecpow, 1.f * Elecpow, 1.f * Elecpow };
+		_vec3 ElecPos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 4.5f
+		};
+		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FSWING_ELECTRIC_EFFECT, L"FSwing Electric Effect", &ElecPos, ElecScale, 0.5f);
+		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"FSwing Electric Effect")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
+			->Set_Rotation(85.f, 0.f, 0.f);
+	}
 }
 VOID Rage_SupporterState::FSM_StateExit(GameObject* _Owner)		{}
 
@@ -558,6 +572,5 @@ VOID Rage_ExplosionRushState::FSM_StateEnter(GameObject* _Owner)	{
 	dynamic_cast<FinalBoss*>(_Owner)->Set_EnableExplosionRush(TRUE);
 }
 VOID Rage_ExplosionRushState::FSM_StateUpdate(GameObject* _Owner)	{
-
 }
 VOID Rage_ExplosionRushState::FSM_StateExit(GameObject* _Owner)		{}

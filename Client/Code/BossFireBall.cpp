@@ -28,6 +28,8 @@ HRESULT	BossFireBall::Ready_GameObject() {
 	FireBall_Duration = 2.f;
 	FireBall_Timer = 0.f;
 
+	ObjectTAG = L"BossFB";
+
 	return S_OK;
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 

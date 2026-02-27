@@ -28,11 +28,11 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 				  //pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
+				// pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
-				  //pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				 // pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 3:
 				  //pObj = EvilSlime::Create(GRPDEV, vPos, true);
@@ -150,7 +150,7 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::ITEM_SPAWN6:
 		break;
 	case TILE_SPAWNER::CL_SPAWN:
- 		//CL_Spawn();
+	    CL_Spawn();
 		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
 		Boss();
@@ -198,7 +198,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }

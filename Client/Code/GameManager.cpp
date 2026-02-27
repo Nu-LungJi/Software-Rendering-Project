@@ -8,7 +8,7 @@ HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	//sourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 
 	return S_OK;

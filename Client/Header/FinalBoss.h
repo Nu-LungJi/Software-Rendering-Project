@@ -19,6 +19,7 @@
 #define		ANIMATION_RAGE_RSWING_FRAMECOUNT	11
 #define		ANIMATION_RAGE_SLAM_FRAMECOUNT		11
 #define		ANIMATION_RAGE_CHARGE_FRAMECOUNT	8
+#define		ANIMATION_RAGE_RUSH_FRAMECOUNT		6
 
 class FinalBoss : public GameObject {
 private:
@@ -73,6 +74,9 @@ public:
 	INT		Get_EnableExplosionRush()					{ return Enable_ExplosionRush; }
 	VOID	Set_EnableExplosionRush(INT _EXP)			{ Enable_ExplosionRush = _EXP; }
 
+	INT		Get_EnableSupporterFlame()					{ return Enable_SupporterFlame; }
+	VOID	Set_EnableSupporterFlame(INT _EXP)			{ Enable_SupporterFlame = _EXP; }
+
 	BOOL	Get_RageMode()								{ return Rage_Mode; }
 	VOID	Set_RageMode(BOOL _EXP)						{ Rage_Mode = _EXP; }
 
@@ -84,6 +88,11 @@ public:
 	VOID	Skill_RageUpFireBall(CONST FLOAT& _DT);
 	VOID	Skill_SupporterFlame(CONST FLOAT& _DT);
 	VOID	Skill_ExplosionRush(CONST FLOAT& _DT);
+
+	INT		Get_EnableBBTrap()			{ return Enable_BBTrap; }
+	VOID	Set_EnableBBTrap(INT _EXP)	{ Enable_BBTrap = _EXP; }
+
+	VOID	BoobieTrap(CONST FLOAT& _DT);
 
 	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
@@ -104,8 +113,8 @@ public:
 	enum class RUSH				{ RUSH_POOL, RUSH_FIREBALL1, RUSH_FIREBALL2, RUSH_FIREBALL3, RUSH_FIREBALL4, RUSH_EXPLOSION1, RUSH_EXPLOSION2, RUSH_EXPLOSION3, RUSH_EXPLOSION4, 
 									RUSH_FLAME1, RUSH_FLAME2, RUSH_FLAME3, RUSH_FLAME4, RUSH_END };
 
-	enum class SUPPORTER		{ SUP_POOLING, SUP1_SPAWN, SUP2_SPAWN, SUP3_SPAWN, SUP4_SPAWN, SUP5_SPAWN, SUP6_SPAWN, SUP7_SPAWN, SUP_SPAWN_END, 
-									SUP_MOVE, SUP_FIRST_FIREBALL, SUP_SECOND_FIREBALL, SUP_DISAPPEAR, SUP_END};
+	enum class SUPPORTER		{ SUP_POOLING, SUP1_SPAWN, SUP2_SPAWN, SUP3_SPAWN, SUP4_SPAWN, SUP5_SPAWN, SUP6_SPAWN, SUP7_SPAWN, SUP_SPAWN_END,
+									SUP_SPAWNFADEIN1, SUP_SPAWNFADEIN2, SUP_SPAWNFADEIN3, SUP_MOVE, SUP_FIRST_FIREBALL, SUP_SECOND_FIREBALL, SUP_DISAPPEAR, SUP_END};
 
 	enum class FIREBALL			{ ANGLE_GENERATE, FIRST_FIREBALL, SECOND_FIREBALL, THIRD_FIREBALL, FOURTH_FIREBALL, FIFTH_FIREBALL, FIREBALL_POOL, END_FIREBALL };
 
@@ -178,11 +187,11 @@ private:
 	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_FSwing_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Normal_Slam_TexList;
 
-
 	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Stand_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_RSwing_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Slam_TexList;
 	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Charge_TexList;
+	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Rush_TexList;
 
 private:
 	Buffer*			Component_Buffer;
@@ -191,4 +200,8 @@ private:
 	Collider*		Component_Collider;
 
 	StateMachine*	FSM;
+
+private:
+	BOOL Enable_BBTrap;
+	BOOL BBTrap[25];
 };

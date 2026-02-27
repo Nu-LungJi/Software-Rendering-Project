@@ -39,9 +39,9 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Monster::Add_Monster_to_Scene(Player::Create(GRPDEV), L"Player", GAMEOBJECT_TYPE::OBJECT_PLAYER);
-	//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{0.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV,{3.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,{0.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{0.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV,{3.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,{0.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV,{3.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV), L"Cube", GAMEOBJECT_TYPE::OBJECT_END);
 	//Monster::Add_Monster_to_Scene(Hurdle::Create(GRPDEV, { 20.f,0.f,0.f }, { 0.f,0.f,0.f }), L"Hurdle");

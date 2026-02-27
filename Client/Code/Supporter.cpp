@@ -15,7 +15,7 @@ HRESULT	Supporter::Ready_GameObject(){
 	Animation_Timer = 0.f;
 	Animation_CurrentIndex = 0;
 	Animation_PreviousIndex = 0;
-	Animation_Interval = 0.14f;
+	Animation_Interval = 0.28f;
 	Animation_TexList = &Animation_AppearTexList;
 	Animation_FrameCount = ANIMATION_SUPPORTER_APPEAR;//ANIMATION_SUPPORTER_IDLE;
 
@@ -152,8 +152,8 @@ Supporter* Supporter::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 VOID Supporter::Scale_Increment(CONST FLOAT& _DT) {
 	if (Enable_ScaleInc) {
 		Scale_Stack += _DT;
-		if (Scale_Stack <= 0.25f) {
-			Component_Transform->Set_Scale(8.f * Scale_Stack, 8.f * Scale_Stack, 8.f * Scale_Stack);
+		if (Scale_Stack <= 1.f) {
+			Component_Transform->Set_Scale(2.f * Scale_Stack, 2.f * Scale_Stack, 2.f * Scale_Stack);
 		}
 		else {
 			Enable_ScaleInc = FALSE;
