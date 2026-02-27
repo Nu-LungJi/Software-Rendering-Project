@@ -78,7 +78,6 @@ FLOAT Monster::BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 v
 	_vec3 vPos = *TransCom->Get_Position();
 	_vec3 vScale = *TransCom->Get_Scale();
 
-	// 여기서 누수남..? 왜?
 	_vec3 vCampos = *dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->
 					Get_EyeVec();
 
@@ -139,10 +138,10 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 	//CONST TCHAR* pName = wcschr(Classname, L' ');
 	//pName = (pName != nullptr) ? pName + 1 : Classname;
 
-	TCHAR Classname[256];
-	swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
-	CONST TCHAR* pName = wcschr(Classname, L' ');
-	pName = (pName != nullptr) ? pName + 1 : Classname;
+	//TCHAR Classname[256];
+	//swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
+	//CONST TCHAR* pName = wcschr(Classname, L' ');
+	//pName = (pName != nullptr) ? pName + 1 : Classname;
 
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);
@@ -253,4 +252,22 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 			}
 		}
 	}
+}
+
+HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
+{
+	_vec3 vPos		= *Transcom->Get_Position();
+	_vec3 vScale	= *Transcom->Get_Scale();
+	_vec3 vLook		= { 0.f,0.f,1.f };
+	_vec3 vUp		= { 0.f,1.f,0.f };
+	_vec3 vRight	= { 1.f,0.f,0.f };
+
+	_matrix* pWorldMat = D3DXMatrixIdentity(Transcom->Get_World());
+
+	pWorldMat->_11 = vRight.x * vScale.x;  pWorldMat->_12 = vRight.y * vScale.x;  pWorldMat->_13 = vRight.z * vScale.x;  pWorldMat->_14 = 0.f;
+	pWorldMat->_21 = vUp.x    * vScale.y;  pWorldMat->_22 = vUp.y    * vScale.y;  pWorldMat->_23 = vUp.z    * vScale.y;  pWorldMat->_24 = 0.f;
+	pWorldMat->_31 = vLook.x  * vScale.z;  pWorldMat->_32 = vLook.y  * vScale.z;  pWorldMat->_33 = vLook.z  * vScale.z;  pWorldMat->_34 = 0.f;
+	pWorldMat->_41 = vPos.x;               pWorldMat->_42 = vPos.y;               pWorldMat->_43 = vPos.z;               pWorldMat->_44 = 1.f;
+
+	return S_OK;
 }

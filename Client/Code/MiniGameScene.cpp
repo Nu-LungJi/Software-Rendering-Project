@@ -8,8 +8,8 @@ HRESULT	MiniGameScene::Ready_Scene() {
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Effect");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/CubeFloorTile");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../Resource/Monster");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
 	MonsterManager::GetInstance();
 	if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
 	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
@@ -52,7 +52,7 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 		{
 			GameObject* pTile = CubeFloorTile::Create(GRPDEV);
 			POS(pTile)->x = 2.f * x * SCALE(pTile)->x;
-			POS(pTile)->y = -(2.f * SCALE(pTile)->y);
+			POS(pTile)->y = -(2.f * SCALE(pTile)->y) - 1.f;
 			POS(pTile)->z = 2.f * z * SCALE(pTile)->z;
 			pTile->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_TERRAIN);
 			pTile->Set_ObjectTag(L"Cube");
@@ -60,7 +60,7 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 			CollisionManager::GetInstance()->Add_ColliderObject(pTile);
 		}
 
-		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, { 10.f,1.f,z * 2.f }, 1.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 10.f,1.f,z * 2.f }, 1.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	}
 	return S_OK;
 }

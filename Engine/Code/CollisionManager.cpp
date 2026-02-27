@@ -51,16 +51,7 @@ BOOL CollisionManager::AABB_Collision() {
 				if (SOBJ->Search_CollisionObject(DOBJ) == TRUE && DOBJ->Search_CollisionObject(SOBJ) == TRUE) {
 					SOBJ->Delete_CollisionObject(DOBJ);
 					DOBJ->Delete_CollisionObject(SOBJ);
-					//			DOBJ->OnCollisionExit(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
-
-					//if (iterS != SRC->Get_ObjList().end()) {
-					//	SOBJ->OnCollisionExit(DOBJ); SRC->Get_ObjList().erase(iterS);
-					//}
-
-					//if (iterD != DEST->Get_ObjList().end()) {
-					//	DOBJ->OnCollisionExit(SOBJ); DEST->Get_ObjList().erase(iterD);
-					//}
 				}
 			}
 		}

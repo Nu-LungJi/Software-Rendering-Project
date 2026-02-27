@@ -28,14 +28,18 @@ typedef struct FilenameInfo {
     TCHAR szState[64];
     TCHAR szExtension[16];
 
-    explicit FilenameInfo(const std::wstring& _Filename)
-        : usResult(0xffff), Type(0x00), name(0x00), State(0x00), FrameNum(0), iCount(0)//, extension(0x00),
-    {
+    void Reset() {
         memset(szType, 0, sizeof(szType));
         memset(szName, 0, sizeof(szName));
         memset(szState, 0, sizeof(szState));
         memset(szExtension, 0, sizeof(szExtension));
-        
+    }
+
+    explicit FilenameInfo(const std::wstring& _Filename)
+        : usResult(0xffff), Type(0x00), name(0x00), State(0x00), FrameNum(0), iCount(0)//, extension(0x00),
+    {
+        Reset();
+
         Fullname = _Filename;
         iCount = swscanf_s(_Filename.c_str(), L"%*[^_]_%[^_]_%[^_]_%[^_]_%hhu%s",
             szType,         (unsigned)_countof(szType),
@@ -43,6 +47,16 @@ typedef struct FilenameInfo {
             szState,        (unsigned)_countof(szState),
             &FrameNum,
             szExtension,    (unsigned)_countof(szExtension));
+
+        if (iCount < 4) {
+            Reset();
+
+            iCount = swscanf_s(_Filename.c_str(), L"%*[^_]_%[^_]_%[^_]_%hhu%s",
+                szType, (unsigned)_countof(szType),
+                szName, (unsigned)_countof(szName),
+                &FrameNum,
+                szExtension, (unsigned)_countof(szExtension));
+        }
     }
 }FILENAMEINFO;
 

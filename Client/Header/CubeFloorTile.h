@@ -54,6 +54,7 @@ private:
     bool            m_bTrigger = false;
     bool            IsIn_Cam = true;
     _float          m_fTimer = 0.f;
+    IDirect3DTexture9* m_pTexture;
 };
 
 class CubeFunction
@@ -96,4 +97,6 @@ public:
         else
             return E_NOTIMPL;
     }
+
+
 };

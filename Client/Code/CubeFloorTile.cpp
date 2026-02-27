@@ -1,7 +1,7 @@
 #include "CubeFloorTile.h"
 #include "../Include/PCH.h"
 
-CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr){}
+CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTexture(nullptr) {}
 CubeFloorTile::CubeFloorTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CubeFloorTile::~CubeFloorTile() {}
 
@@ -25,9 +25,12 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 
 	if (!IsIn_Cam) return 0;
 
-	GameObject::Update_GameObject(_DT);
-	//m_pBuffer->Update_Component(_DT);
-	//m_pCollider->Update_Component(_DT);
+	//GameObject::Update_GameObject(_DT);
+
+	Monster::Staic_Obj(GRPDEV, m_pTransform);
+
+	m_pBuffer->Update_Component(_DT);
+	m_pCollider->Update_Component(_DT);
 
 	return 0;
 }
@@ -35,26 +38,17 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	if (m_pCam == nullptr)	
 		m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
-	//IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), m_pTransform->Get_Scale()->x);
+
 	IsIn_Cam = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), 0.f);
 
 	if (!IsIn_Cam) return;
 
 	if (!m_bTrigger) {
 
-		//_vec3 vPos = *m_pTransform->Get_Position();
-		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-
 		CubeFunction::Grid(m_pTransform, m_bGrid);
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 		m_bTrigger = true;
 	}
-	//m_fTimer += _DT;
-
-	//_float fRadian = m_fTimer * D3DX_PI * 6.f;
-	//AlphaZValue = Monster::BillBoard(m_pTransform, GRPDEV, { cosf(fRadian),0.f,sinf(fRadian) }, false);
-	//Monster::BillBoard(m_pTransform, GRPDEV, { 1.f,0.f,0.f }, 0);
-
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -68,7 +62,7 @@ VOID CubeFloorTile::Render_GameObject()
 
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 
-	GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"CubeFloor.dds"));
+	GRPDEV->SetTexture(0, m_pTexture);
 
 	m_pBuffer->Render_Buffer();
 
@@ -86,6 +80,10 @@ HRESULT CubeFloorTile::Component_Initialize() {
 	m_pCollider->Set_CenterPos(m_pTransform);
 
 	m_bTrigger = false;
+
+	m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"CubeFloor.dds");
+
+	if (m_pTexture == nullptr) return E_FAIL;
 
 	return S_OK;
 }

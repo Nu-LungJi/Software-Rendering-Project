@@ -26,8 +26,18 @@ VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
 	CenterPos = *ColliderPos->Get_Position();
 	//CenterPos += Offset;
 
-	MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
-	MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
+	//MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
+	//MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
+
+	_vec3	vSize = Scale;
+
+	vSize.x = fabsf(vSize.x);
+	vSize.y = fabsf(vSize.y);
+	vSize.z = fabsf(vSize.z);
+
+	MinPoint = { CenterPos.x - vSize.x + Offset.x, CenterPos.y - vSize.y + Offset.y, CenterPos.z - vSize.z + Offset.z };
+	MaxPoint = { CenterPos.x + vSize.x + Offset.x, CenterPos.y + vSize.y + Offset.y, CenterPos.z + vSize.z + Offset.z };
+
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;

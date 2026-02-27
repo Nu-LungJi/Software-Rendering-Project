@@ -86,7 +86,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
@@ -95,6 +94,7 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 
 	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
+	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -134,7 +134,7 @@ VOID Bat::Render_GameObject() {
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	if (m_tInfo.bMiniGame)// â�� �߰�
+	if (m_tInfo.bMiniGame)
 	{
 		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();

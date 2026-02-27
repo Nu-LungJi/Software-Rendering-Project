@@ -334,6 +334,8 @@ public:
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
+	static	HRESULT			Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom);
+
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
@@ -352,7 +354,7 @@ public:
 	}
 
 	template<typename T>
-	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)	// ¹èÀ² 3Àº ÁÖ°í »ý°¢ÇÒ°Í
+	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)
 	{
 		GameObject* MST = Create<T>(_GRPDEV);
 
@@ -362,7 +364,7 @@ public:
 		_vec2	vScale = { pTransCom->Get_Scale()->x,pTransCom->Get_Scale()->y};
 
 		D3DXVec2Normalize(&vScale, &vScale);
-		vScale *= _fScalemult;
+		vScale *= _fScalemult * 2.f;
 
 		pTransCom->Set_Scale({ vScale.x, vScale.y, _fScalemult });
 		
