@@ -9,7 +9,7 @@ HRESULT	MapScene::Ready_Scene() {
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../Resource/Monster");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 	Ready_UserInterface_Layer(L"UI_Layer");
@@ -62,13 +62,16 @@ HRESULT	MapScene::Ready_Scene() {
 		ReadFile(hFile, &vNextPos,		  sizeof(_vec3),		   &dwByte, NULL);
 		ReadFile(hFile, &bAni,			  sizeof(_bool),	       &dwByte, NULL);
 		ReadFile(hFile, &eSpawn,		  sizeof(TILE_SPAWNER),    &dwByte, NULL);
-		ReadFile(hFile, &eNext,			  sizeof(TILE_STAGE), &dwByte, NULL);
+		ReadFile(hFile, &eNext,			  sizeof(TILE_STAGE),	   &dwByte, NULL);
 
 		if (0 == dwByte)
 			break;
 		
 		GameObject* GOBJ = nullptr;
-		//GRPDEV->AddRef();
+		
+		//if (eSpawn == TILE_SPAWNER::NPC1)
+		//	++i;
+
 		if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
 		{
 			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
@@ -77,8 +80,7 @@ HRESULT	MapScene::Ready_Scene() {
 		
 		
 
-		if (eNext == TILE_STAGE::TILE_STAGE2)
-			++i;
+		
 		GOBJ->Set_ObjectTag(L"CXZTile");
 		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
@@ -121,16 +123,16 @@ INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
 	
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	
-	//
-	//if (!TileManager::GetInstance()->Get_Loading())
-	//{
-	//	if (pLoading->Get_Finish())
-	//	{
-	//		TileManager::GetInstance()->Set_Stage();
-	//		TileManager::GetInstance()->Set_EndLoading(TRUE);
-	//		
-	//	}
-	//}else 
+	
+	if (!TileManager::GetInstance()->Get_Loading())
+	{
+		if (pLoading->Get_Finish())
+		{
+			TileManager::GetInstance()->Set_Stage();
+			TileManager::GetInstance()->Set_EndLoading(TRUE);
+			
+		}
+	}else 
 		TileManager::GetInstance()->Stage_Update(_DT);
 	return Scene::Update_Scene(_DT);
 }
@@ -158,31 +160,22 @@ HRESULT MapScene::Ready_GameLogic_Layer(CONST TCHAR* _LTAG) {
 	
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
-	//Add_GameObjectToScene<Cheonlog>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"CheonLog");
 
 	Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
-	Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
-	Cheonlog* pCL = Cheonlog::Create(GRPDEV, {0,0,0});
-	
-	pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	pCL->Set_ObjectTag(L"CheonLog");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+	//Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
+	//Cheonlog* pCL = Cheonlog::Create(GRPDEV, {0,0,0});
+	//
+	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//pCL->Set_ObjectTag(L"CheonLog");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 
 	return S_OK;
 }
 HRESULT MapScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {
 	Add_GameObjectToScene<MainUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainUI");
 	Add_GameObjectToScene<ShopUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"ShopUI");
-	Add_GameObjectToScene<MiniGameCounter>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"DefenseUI");
-
-	//BossUi
-	BossUI* pBossUi = BossUI::Create(GRPDEV,BOSSUI_INFO::CHLG);
-	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	pBossUi->Set_ObjectTag(L"BossUI");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
-
-	//Add_GameObjectToScene<BossUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"BossUI");
+	
 	return S_OK;
 }
 MapScene* MapScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

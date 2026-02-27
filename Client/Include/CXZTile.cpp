@@ -246,7 +246,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Tile_Gasi_Destory();
         break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
-        Tile_Gasi_Destory(_DT);
+     //   Tile_Gasi_Destory(_DT);
         break;
     case TILE_STATE::STATE_BOOM:
        // Tile_Boom(_DT);
@@ -605,16 +605,6 @@ HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
         break;
     }
 
-    //switch (eState)
-    //{
-    //case TILE_STATE::STATE_ANIMATION:
-    //   m_CubeBuffer = ADD_COMPONENT_CUBE;
-    //   break;
-    //case TILE_STATE::STATE_DESTORY:
-    //   m_CubeBuffer = ADD_COMPONENT_CUBE;
-    //   break;
-    //}
-
     return S_OK;
 }
 CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState) {
@@ -630,7 +620,5 @@ CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eS
     return pCXZTile;
 }
 VOID CXZTile::Free() {
-
-
     GameObject::Free();
 }

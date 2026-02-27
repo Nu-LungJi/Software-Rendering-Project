@@ -31,7 +31,7 @@ public:
     Transform*              Crash_Player();
     Transform*              Crash_Arrow();
 private:
-    HRESULT			Component_Initialize(TILE_SIDE eid, TILE_STATE eState);
+    HRESULT			        Component_Initialize(TILE_SIDE eid, TILE_STATE eState);
     
     TileInfo*               m_pTileInfo;
     Transform*              m_pTransform;
@@ -49,6 +49,7 @@ private:
     _bool                   m_bEffect;
     _bool                   m_bStopFrame;
     _bool                   m_bDestroy;
+    _bool                   m_bMiniGame;
     DWORD                   m_Alpha;
 
 public:

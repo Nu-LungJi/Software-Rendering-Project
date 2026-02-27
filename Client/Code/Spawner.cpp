@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_fDefense(0.f),m_bTrigger(false), m_bSpawn(false),m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
@@ -15,9 +15,9 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 		break;
 	  case TILE_SPAWNER::RANDOM_SPAWNER:
 		  
-		  for (int i = 0; i < 2; ++i)
+		  for (int i = 0; i < 3; ++i)
 		  {
-			  if (TileManager::GetInstance()->Get_Defense().size() > 600)
+			  if (TileManager::GetInstance()->Get_Defense().size() > 2000)
 				  break;
 			  _int iRand = rand() % 4;
 			  GameObject* pObj=nullptr;
@@ -68,6 +68,27 @@ VOID Spawner::LateUpdate_GameObject(const _float& _DT) {
 		m_vecMonsterDefense[i]->LateUpdate_GameObject(_DT);
 	}
 	
+	if (m_pTileInfo->Get_Spawner() == TILE_SPAWNER::RANDOM_SPAWNER)
+	{
+		MiniGameCounter* pObj = dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"));
+		if (pObj == nullptr)
+			return;
+		_int i = pObj->Get_Stage();
+
+		switch (i)
+		{
+		case 1:
+			m_SpawnCnt = 2;
+			m_SpawnDelay = 1;
+
+			break;
+		case 2:
+			m_SpawnCnt = 3;
+			m_SpawnDelay = 0.2;
+
+			break;
+		}
+	}
 	
 	AlphaYSorting(&vPos);
 
@@ -114,22 +135,32 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	switch (m_pTileInfo->Get_Spawner())
 	{
 	case TILE_SPAWNER::NPC1:
+		if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_STAGE4)
+		{
+			if (!m_bSpawn)
+			{
+				ShopKeeper* pObj = ShopKeeper::Create(GRPDEV, *m_pTransform->Get_Position());
+				pObj->Set_ObjectTag(L"ShopNPC");
+				SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+				m_bSpawn = true;
+			}
+		}
 		break;
 
 	case TILE_SPAWNER::NPC2:
 		break;
 	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		Monster_Spawn();
+		//Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		Monster_Spawn2();
+		//Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		Monster_Spawn3();
+		//Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		Monster_Spawn4();
+		//Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 	
@@ -156,6 +187,15 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_SPAWNER::RANDOM_SPAWNER:
 		Defense_Spawn(_DT);
+		break;
+	case TILE_SPAWNER::UI_SPAWNER:
+		if (!m_bSpawn)
+		{
+			MiniGameCounter* pObj = MiniGameCounter::Create(GRPDEV);
+			pObj->Set_ObjectTag(L"DefenseUI");
+			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE)->Add_GameObject(pObj);
+			m_bSpawn = true;
+		}
 		break;
 	}
 
@@ -225,17 +265,39 @@ void Spawner::CL_Spawn()
 		m_bSpawn = true;
 	}
 }
-
-
-
 void Spawner::Defense_Spawn(const _float& _DT)
 {
 	m_fDefense += _DT;
 
-	if (m_fDefense > 3)
+	if (dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI")) != nullptr)
+	{
+		if (dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Get_End())
+		{
+			for (auto& iter : m_vecMonsterDefense)
+			{
+				CollisionManager::GetInstance()->Delete_ColliderObject(iter);
+				Safe_Release(iter);
+			}
+				
+			m_vecMonsterDefense.clear();
+
+			for (auto& iterer : TileManager::GetInstance()->Get_Defense())
+			{
+
+				CollisionManager::GetInstance()->Delete_ColliderObject(iterer);
+
+				Safe_Release(iterer);
+			}
+
+
+			return;
+		}
+	}
+	
+	if (m_fDefense > m_SpawnDelay)
 	{
 		m_fDefense = 0;
-		if (m_vecMonsterDefense.size() < 4)
+		if (m_vecMonsterDefense.size() < m_SpawnCnt)
 		{
 			if (TileManager::GetInstance()->Get_Defense().size() == 0)
 				return;
@@ -255,7 +317,7 @@ void Spawner::Defense_Spawn(const _float& _DT)
 		{
 			dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*m_pTransform->Get_Position());
 			dynamic_cast<Collider*>(((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER)))->Set_Hp(50);
-			//dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Set_Count();
+			dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Set_Count();
 			CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
 			TileManager::GetInstance()->Get_Defense().push_back(*iter);
 			iter = m_vecMonsterDefense.erase(iter);

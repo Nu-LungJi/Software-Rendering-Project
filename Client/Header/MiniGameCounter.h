@@ -23,25 +23,31 @@ public:
 
     void        Set_Count() { --m_StageCnt[m_iCnt]; }
     _int        Get_Stage() { return m_iCnt;}
+    _bool        Get_End() { return m_bEnd; }
 private:
     HRESULT			Component_Initialize();
+    HRESULT         Make_TextureList(wstring _FileName);
 
     TileInfo* m_pTileInfo;
     Transform* m_pTransform;
     Buffer* m_pBuffer;
+
     void                        Imgui_Setting();
     void                        Imgui();
     void                        Imgui_ButtonStyle();
 private:
-
+    
 
     _float                  m_fFrame;
     _float                  m_fTime;
     _float                  m_fDefense;
     _bool                   m_bStopFrame;
-
+    _bool                   m_bEnd;
+    _bool                   m_bDead;
     _int                    m_iCnt;
     _int                    m_StageCnt[3];
+
+    SpriteObject*           m_pSprite;
 public:
     static         MiniGameCounter* Create(LPDIRECT3DDEVICE9 pGraphicDev);
 

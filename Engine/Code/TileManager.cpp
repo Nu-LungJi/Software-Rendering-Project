@@ -210,7 +210,7 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
     }
 
 
-    if (m_StageCntArray[m_eStage] == 0)
+    if (m_eStage != TILE_STAGE::TILE_STAGE4 && m_StageCntArray[m_eStage] == 0)
         Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
 

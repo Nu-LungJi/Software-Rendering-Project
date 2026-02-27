@@ -101,7 +101,11 @@ HRESULT	ShopUI::Text_Initialize() {
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    if (!isActive)
+    {
+        for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
+        for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
+    }
 	return S_OK;
 }
 
@@ -320,11 +324,7 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 			ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
 			ItemInfo_Text[7]->Text = _pItem->ItemDesc[7];
 	}
-	if (!isActive)
-	{
-		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
-		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
-	}
+	
 }
 
 VOID	ShopUI::Free() {

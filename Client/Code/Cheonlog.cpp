@@ -37,9 +37,14 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	Make_EffectTextureList(L"Cheonlog_Spawn_L0", CL_EFFECT::SPAWN_L);
 	Make_EffectTextureList(L"Cheonlog_Spawn0", CL_EFFECT::SPAWN_R);
 
+	Set_ObjectTag(L"CheonLog");
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
+	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::CHLG,this);
+	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	pBossUi->Set_ObjectTag(L"BossUI");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
 	return S_OK;
 }
@@ -71,7 +76,12 @@ HRESULT Cheonlog::Make_EffectTextureList(wstring _FileName, CL_EFFECT eid)
 }
 INT   Cheonlog::Update_GameObject(const _float& _DT)
 {
-	if (Component_Collider->Get_Hp() <= 0)
+	if (m_eStatu == CL_DEAD && m_iFrameCnt >= m_vecCheonlogTexture[m_eStatu].size() - 1)
+	{
+		dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+		Set_ObjectDead(TRUE);
+	}
+		if (Component_Collider->Get_Hp() <= 0)
 	{
 		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		m_bStartPattern = false;

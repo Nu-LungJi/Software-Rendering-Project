@@ -44,7 +44,7 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
 INT CLAttack::Update_GameObject(const _float& _DT)
 {
     if (Get_ObjectDead() == TRUE)
-    {
+    {  
         CollisionManager::GetInstance()->Delete_ColliderObject(this);
         return -1;
     }

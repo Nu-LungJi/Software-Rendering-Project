@@ -13,7 +13,7 @@ public:
 	virtual ~ShopKeeper();
 
 public:
-	virtual			HRESULT		Ready_GameObject();
+	virtual			HRESULT		Ready_GameObject(_vec3 vPos);
 
 	virtual			INT			Update_GameObject(const _float& _DT);
 	virtual			VOID		LateUpdate_GameObject(const _float& _DT);
@@ -24,8 +24,9 @@ public:
 	virtual			BOOL		OnCollisionExit(GameObject* _Other);
 
 	VOID			TalkWithShopKeeper(FLOAT _DT);
+	HRESULT			Make_TextureList(wstring _FileName);
 public:
-	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos);
 
 private:
 	HRESULT			Component_Initialize();

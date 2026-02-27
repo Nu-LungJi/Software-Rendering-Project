@@ -338,7 +338,7 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTileStage[]      = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" ,"END" };
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
-	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_RANDOM","SPAWN_END"};
+	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_RANDOM","SPAWN_UI","SPAWN_END"};
 	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "END" };
 
 	static const char* cSelect_Tile      = nullptr;
@@ -504,7 +504,8 @@ void Tile::Imgui_ModeChanger()
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[12]))  m_eSpawner = TILE_SPAWNER::BOSS_SPAWN;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[13]))  m_eSpawner = TILE_SPAWNER::CL_SPAWN;
 						else if (!strcmp(cSelect_Spawner, cTileSpawner[14]))  m_eSpawner = TILE_SPAWNER::RANDOM_SPAWNER;
-						else if (!strcmp(cSelect_Spawner, cTileSpawner[15]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[15]))  m_eSpawner = TILE_SPAWNER::UI_SPAWNER;
+						else if (!strcmp(cSelect_Spawner, cTileSpawner[16]))  m_eSpawner = TILE_SPAWNER::SPAWN_END;
 
 					}
 					if (bSelect)
@@ -773,6 +774,7 @@ void Tile::Set_AnimationCount(_int* icnt)
 		!_tcscmp(m_pTileName, L"Spr_InfectionThorns_DestructionEffect_00.dds")) *icnt = 1;
 
 	else if (!_tcscmp(m_pTileName, L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.dds")) *icnt = 8;
+	else if (!_tcscmp(m_pTileName, L"SupplyBigCat%d.dds")) *icnt = 10;
 }
 HRESULT Tile::Load_Image(const _tchar* pName, TILE_STATE eid)
 {
@@ -1024,7 +1026,6 @@ void Tile::Check_TilePoint()
 				}
 				if (pTile != nullptr)
 				{
-					//GRPDEV->AddRef();
 					switch (m_eMode)
 					{
 
@@ -1045,7 +1046,6 @@ void Tile::Check_TilePoint()
 						else if (m_eTileState == STATE_UNDERTILE)
 						{
 							//dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileBackGround(m_pTileName, 0, m_eTile, m_eTileState, m_eMode, (_int)vMouseCheck.z * VTXCNTX + (_int)vMouseCheck.x, m_vNextPos, m_bOnlyAnimation);
-
 						}
 						else
 						{
