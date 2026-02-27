@@ -197,7 +197,7 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 	Component_Transform->Move_Pos(&Direction, 0.5f, _DT);
 }
 VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
-	if (Rage_Movement) {
+	if		(Rage_Movement) {
 		Effect_Timer += _DT;
 		if (Direction.x != 0.f || Direction.z != 0.f)
 			D3DXVec3Normalize(&Direction, &Direction);
@@ -220,22 +220,28 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 		}
 	}
 	else if (Spiral_FireBall) {
-		if (Effect_Timer <= 0.f) {
-			for (INT IDX = 0; IDX < 3; ++IDX) {
-				wstring FBallTAG = L"Sup FireBall" + to_wstring(IDX);
-				BFBVec.push_back(BossFireBall::Create(GRPDEV));
-				BFBVec[IDX]->Set_ObjectTag(FBallTAG.c_str());
-				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, BFBVec[IDX]);
-				dynamic_cast<BossFireBall*>(BFBVec[IDX])->Set_FireBall_Angle(120 * IDX);
-				dynamic_cast<BossFireBall*>(BFBVec[IDX])->Set_FireBall_Speed(0.125f);
-				dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*Component_Transform->Get_Position());
-				dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(5.f / 3.f, 1.5f / 3.f, 2.f / 3.f);
+		Effect_Timer += _DT;
+		if (Effect_Timer <= 2.0f) {
+			if (BFBVec.size() == 0) {
+				for (INT IDX = 0; IDX < 3; ++IDX) {
+					wstring FBallTAG = L"Sup FireBall" + to_wstring(IDX);
+					BFBVec.push_back(BossFireBall::Create(GRPDEV));
+					BFBVec[IDX]->Set_ObjectTag(FBallTAG.c_str());
+					SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, BFBVec[IDX]);
+					dynamic_cast<BossFireBall*>(BFBVec[IDX])->Set_FireBall_Angle(120 * IDX);
+					dynamic_cast<BossFireBall*>(BFBVec[IDX])->Set_FireBall_Speed(0.125f);
+					dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*Component_Transform->Get_Position());
+					dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(5.f / 3.f, 1.5f / 3.f, 2.f / 3.f);
+				}
+			}
+			else {
+				for (auto& BFB : BFBVec) {
+					BossFireBall* Origin = dynamic_cast<BossFireBall*>(BFB);
+					Origin->Set_FireBall_Angle(Origin->Get_FireBall_Angle() + 2.7f);
+				}
 			}
 		}
-		
-		Effect_Timer += _DT;
-		
-		if (Effect_Timer >= 2.f) {
+		if (Effect_Timer >= 2.0f) {
 			_vec3 Scale = { 1.5f, 1.5f, 1.5f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Boss Sup Effect", Component_Transform->Get_Position(), Scale * 2, 0.5f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"Temporarily Sup Appear", Component_Transform->Get_Position(), Scale, 0.2f);
@@ -263,11 +269,6 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 			Spiral_FireBall = FALSE;
 			ObjectDead = TRUE;
 			Effect_Timer = 0.f;
-		}
-		else {
-			for (auto& BFB : BFBVec) {
-				dynamic_cast<BossFireBall*>(BFB)->Set_FireBall_Angle(dynamic_cast<BossFireBall*>(BFB)->Get_FireBall_Angle() + 2.7f);
-			}
 		}
 	}
 }

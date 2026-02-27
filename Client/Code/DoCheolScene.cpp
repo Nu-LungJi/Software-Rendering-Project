@@ -18,7 +18,7 @@ HRESULT   DoCheolScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect/Staging");
+
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Weapon/FairyBow");
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
@@ -114,7 +114,7 @@ HRESULT   DoCheolScene::Ready_Scene() {
 		TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 
 	}
-	MSG_BOX("로드 성공");
+	//MSG_BOX("로드 성공");
 	CloseHandle(hFile);
 
 

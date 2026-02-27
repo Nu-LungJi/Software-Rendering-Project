@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Buffer.h"
-//#include "GameObject.h"
+#include "GameObject.h"
 
 
 BEGIN(Engine)

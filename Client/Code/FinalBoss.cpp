@@ -52,9 +52,11 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	Numbering = 0;
 	Enable_RageUpFireBall = FALSE;
 	RageUp_Timer = 0.f;
+	Rush_Timer = 0.f;
 
 	Enable_BossDisappearStaging = FALSE;
 	Enable_SupporterFlame = FALSE;
+	Enable_ExplosionRush = FALSE;
 
 	memset(MeteorTransform, 0, sizeof(MeteorTransform));
 	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
@@ -62,6 +64,7 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	memset(METEOR_TRIGGER, TRUE, sizeof(METEOR_TRIGGER));
 	memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 	memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
+	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 
 	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
 	_vec3 planeDir = { 0.f, 1.f, 0.f };
@@ -94,6 +97,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	Skill_RSwingFireBall(_DT);
 	Skill_RageUpFireBall(_DT);
 	Skill_SupporterFlame(_DT);
+	Skill_ExplosionRush(_DT);
 
 	Animation_Appear_Staging(_DT);
 	Animation_Disappear_Staging(_DT);
@@ -110,7 +114,8 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 
 	if (Action_Timer > 3.f) {
 		srand(time(NULL));
-		Action_Selector = rand() % 4 + 1;
+		if		(Rage_Mode == FALSE)	{ Action_Selector = 3; }// rand() % 4 + 1; }
+		else if (Rage_Mode == TRUE)		{ Action_Selector = 5; }// rand() % 5 + 1; }
 		Action_Timer = 0.f;
 	}
 
@@ -247,10 +252,19 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 				Action_Mode = TRUE;
 				Action_Selector = 0;
 			}
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 5) {
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Stand_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+
+			FSM->FSM_StateChange(Rage_ExplosionRushState::GetInstance()->Instance());
+			Action_Mode = TRUE;
+			Action_Selector = 0;
+		}
 		if ((Animation_TexList == &Animation_Rage_RSwing_TexList && Animation_CurrentIndex == ANIMATION_RAGE_RSWING_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Rage_Slam_TexList && Animation_CurrentIndex == ANIMATION_RAGE_SLAM_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_RageUp_TexList && Animation_CurrentIndex == ANIMATION_RAGEUP_FRAMECOUNT - 1)
-			|| (Animation_TexList == &Animation_Rage_Charge_TexList && Animation_CurrentIndex == ANIMATION_RAGE_CHARGE_FRAMECOUNT - 1)
+			//|| (Animation_TexList == &Animation_Rage_Charge_TexList && Animation_CurrentIndex == ANIMATION_RAGE_CHARGE_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Rage_Stand_TexList && Animation_CurrentIndex == ANIMATION_RAGE_STAND_FRAMECOUNT - 1
 				&& FSM->FSM_GetCurrentState() != Rage_ChargeState::GetInstance()->Instance())) {
 				Animation_CurrentIndex = 0;
@@ -277,11 +291,15 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT)	{
 	}
 	if (KEY_DOWN(DIK_O)) {
 		Rage_Mode = true;
+		Animation_CurrentIndex = 0;
+
+		Animation_TexList = &Animation_Rage_Stand_TexList;
+		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
 		Component_Collider->Set_Hp(500);
 	}
-	if (KEY_DOWN(DIK_P)) {
-		Enable_SupporterFlame = TRUE;
-	}
+	
+	if (KEY_DOWN(DIK_P)) Enable_SupporterFlame = TRUE;
+	
 }
 VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -1111,7 +1129,7 @@ VOID FinalBoss::Skill_RSwingFireBall (CONST FLOAT& _DT) {
 
 			FIREBALL_TRIGGER[(INT)FIREBALL::FIFTH_FIREBALL] = FALSE;
 		}
-		else if (RSwing_Timer > 0.85f && FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL]) {
+		else if (RSwing_Timer > 0.85f && FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL]) {
 			GeneratePos = { GeneratePos.x, GeneratePos.y + 0.3f, GeneratePos.z };
 
 			wstring temp = L"SIXTH_FIREBALL" + to_wstring(Numbering++);
@@ -1144,7 +1162,7 @@ VOID FinalBoss::Skill_RSwingFireBall (CONST FLOAT& _DT) {
 			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Angle(PlayerToAxisXDegree - 25);
 			dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(temp.c_str()))->Set_FireBall_Pos(GeneratePos);
 
-			FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL] = FALSE;
+			FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL] = FALSE;
 
 			RSwing_Timer = 0.f;
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
@@ -1159,7 +1177,7 @@ VOID FinalBoss::Skill_RageUpFireBall (CONST FLOAT& _DT) {
 	
 		FLOAT SectorAngle = 20.f;
 
-		if		(RageUp_Timer > 0.05f && FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL]) {
+		if		(RageUp_Timer > 0.05f && FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL]) {
 			for (INT IDX = 0; IDX < 60; ++IDX) {
 				GameObject* Pull = BossFireBall::Create(GRPDEV);
 				dynamic_cast<BossFireBall*>(Pull)->Set_Boss(this);
@@ -1170,7 +1188,7 @@ VOID FinalBoss::Skill_RageUpFireBall (CONST FLOAT& _DT) {
 				Pull->Set_ObjectTag(TEXT("RageUp_FireBall%d", IDX));
 				FireBallObjectPool.push_back(Pull);
 			}
-			FIREBALL_TRIGGER[(INT)FIREBALL::SIXTH_FIREBALL] = FALSE;
+			FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL] = FALSE;
 		}
 		else if	(RageUp_Timer > 0.25f && FIREBALL_TRIGGER[(INT)FIREBALL::FIRST_FIREBALL]) {
 			for (INT IDX = 0; IDX < 15; ++IDX) {
@@ -1250,7 +1268,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP2_SPAWN] = FALSE;
 		}
 		// ¿ì »ó´Ü
-		else if (Supporter_Timer > 1.25f	&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP3_SPAWN]) {
+		else if (Supporter_Timer > 1.25f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP3_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP2_STAY", &Sup2_pos, EmblemScale, 1.f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[1]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[1])->Set_ScaleInc(TRUE);
@@ -1258,11 +1276,11 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			Sup2_pos.y -= 0.1f;
 			dynamic_cast<Transform*>(SupporterObjectPool[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Sup2_pos);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"SUP3_SPAWN", &Sup3_pos, EmblemScale, 1.f);
-		
+
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP3_SPAWN] = FALSE;
 		}
 		// ÁÂ ÇÏ´Ü
-		else if (Supporter_Timer > 1.5f		&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP4_SPAWN]) {
+		else if (Supporter_Timer > 1.5f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP4_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP3_STAY", &Sup3_pos, EmblemScale, 1.f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[2]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[2])->Set_ScaleInc(TRUE);
@@ -1270,11 +1288,11 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			Sup3_pos.y -= 0.1f;
 			dynamic_cast<Transform*>(SupporterObjectPool[2]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Sup3_pos);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"SUP4_SPAWN", &Sup4_pos, EmblemScale, 1.f);
-		
+
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP4_SPAWN] = FALSE;
 		}
 		// ¿ì ÇÏ´Ü
-		else if (Supporter_Timer > 1.75f	&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP5_SPAWN]) {
+		else if (Supporter_Timer > 1.75f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP5_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP4_STAY", &Sup4_pos, EmblemScale, 1.f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[3]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[3])->Set_ScaleInc(TRUE);
@@ -1282,11 +1300,11 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			Sup4_pos.y -= 0.1f;
 			dynamic_cast<Transform*>(SupporterObjectPool[3]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Sup4_pos);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"SUP5_SPAWN", &Sup5_pos, EmblemScale, 1.f);
-		
+
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP5_SPAWN] = FALSE;
 		}
 		// Áß¾Ó ¿ìÃø
-		else if (Supporter_Timer > 2.0f		&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP6_SPAWN]) {
+		else if (Supporter_Timer > 2.0f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP6_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP5_STAY", &Sup5_pos, EmblemScale, 1.f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[4]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[4])->Set_ScaleInc(TRUE);
@@ -1294,11 +1312,11 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			Sup5_pos.y -= 0.1f;
 			dynamic_cast<Transform*>(SupporterObjectPool[4]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Sup5_pos);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"SUP6_SPAWN", &Sup6_pos, EmblemScale, 1.f);
-		
+
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP6_SPAWN] = FALSE;
 		}
 		// Áß¾Ó ÁÂÃø
-		else if (Supporter_Timer > 2.25f	&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP7_SPAWN]) {
+		else if (Supporter_Timer > 2.25f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP7_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP6_STAY", &Sup6_pos, EmblemScale, 1.f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[5]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[5])->Set_ScaleInc(TRUE);
@@ -1309,21 +1327,21 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP7_SPAWN] = FALSE;
 		}
-		else if (Supporter_Timer > 2.5f		&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_SPAWN_END]) {
+		else if (Supporter_Timer > 2.5f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_SPAWN_END]) {
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, SupporterObjectPool[6]);
 			dynamic_cast<Supporter*>(SupporterObjectPool[6])->Set_ScaleInc(TRUE);
-			dynamic_cast<Supporter*>(SupporterObjectPool[6])->Set_DirectionVec({-1.f, 0.f, 0.f});
+			dynamic_cast<Supporter*>(SupporterObjectPool[6])->Set_DirectionVec({ -1.f, 0.f, 0.f });
 			Sup7_pos.y -= 0.1f;
 			dynamic_cast<Transform*>(SupporterObjectPool[6]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Sup7_pos);
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP7_STAY", &Sup7_pos, EmblemScale, 1.f);
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_SPAWN_END] = FALSE;
 		}
-		
-		else if (Supporter_Timer > 3.f		&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_MOVE]) {
+
+		else if (Supporter_Timer > 3.f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_MOVE]) {
 			for (INT IDX = 0; IDX < SupporterObjectPool.size(); ++IDX) {
 				dynamic_cast<Supporter*>(SupporterObjectPool[IDX])->Set_RageMove(TRUE);
-				wstring SUPTAG = L"SUP" + to_wstring(IDX+1) + L"_STAY";
+				wstring SUPTAG = L"SUP" + to_wstring(IDX + 1) + L"_STAY";
 				EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, SUPTAG.c_str())->Set_ObjectDead(TRUE);
 				SUPTAG = L"SUP" + to_wstring(IDX + 1) + L"_Disappear";
 				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_DISAPPEAR_EFFECT, SUPTAG,
@@ -1339,10 +1357,85 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 					->Set_Pos(*dynamic_cast<Transform*>(SupporterObjectPool[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 			}
 		}
-		else if (Supporter_Timer > 10.f		&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_DISAPPEAR]) {
+		else if (Supporter_Timer > 10.f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_DISAPPEAR]) {
 			memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
 			Supporter_Timer = 0.f;
 			Enable_SupporterFlame = FALSE;
+		}
+	}
+}
+VOID FinalBoss::Skill_ExplosionRush(CONST FLOAT& _DT) {
+	if (Enable_ExplosionRush) {
+		Rush_Timer += _DT;
+		if		(ERUSH_TRIGGER[(INT)RUSH::RUSH_POOL]) {
+			FireBallObjectPool.clear();
+			for (INT IDX = 0; IDX < 60; ++IDX) {
+				GameObject* Pull = BossFireBall::Create(GRPDEV);
+				dynamic_cast<BossFireBall*>(Pull)->Set_Boss(this);
+				dynamic_cast<BossFireBall*>(Pull)->Set_BossPosition(Component_Transform);
+				dynamic_cast<BossFireBall*>(Pull)->Set_FireBall_Angle((24 * IDX) % 360 + 15 * (IDX / 15));
+				dynamic_cast<Transform*>(Pull->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(
+					{ Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 0.5f, Component_Transform->Get_Position()->z - 5.f }
+				);
+				Pull->Set_ObjectTag(TEXT("ERush_FireBall%d", IDX));
+				FireBallObjectPool.push_back(Pull);
+			}
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_POOL] = FALSE;
+		}
+		else if (Rush_Timer > 0.25f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL1]) {
+			for (INT IDX = 0; IDX < 15; ++IDX) 
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, FireBallObjectPool[IDX]);
+			
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL1] = FALSE;
+		}
+		else if (Rush_Timer > 0.85f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL2]) {
+			for (INT IDX = 15; IDX < 30; ++IDX)
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, FireBallObjectPool[IDX]);
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL2] = FALSE;
+		}
+		else if (Rush_Timer > 1.45f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL3]) {
+			for (INT IDX = 30; IDX < 45; ++IDX)
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, FireBallObjectPool[IDX]);
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL3] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL4]) {
+			for (INT IDX = 30; IDX < 60; ++IDX)
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, FireBallObjectPool[IDX]);
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL4] = FALSE;
+		}
+
+		if		(Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION1]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION1] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION2]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION2] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION3]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION3] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION4]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION4] = FALSE;
+		}
+
+		if		(Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME2]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME2] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME3]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME3] = FALSE;
+		}
+		else if (Rush_Timer > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME4]) {
+
+			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME4] = FALSE;
 		}
 	}
 }
@@ -1358,7 +1451,9 @@ FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 VOID		FinalBoss::Free() {
 	Safe_Release(FSM);
-	for (auto& i : SupporterObjectPool) 
+	for (auto& i : SupporterObjectPool)
+		Safe_Release(i);
+	for (auto& i : FireBallObjectPool)
 		Safe_Release(i);
 	
 	GameObject::Free();

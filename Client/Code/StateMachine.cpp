@@ -15,6 +15,7 @@ IMPLEMENT_SINGLETON(Rage_RSwingState)
 IMPLEMENT_SINGLETON(Rage_NormalSlamState)
 IMPLEMENT_SINGLETON(Rage_ChargeState)
 IMPLEMENT_SINGLETON(Rage_SupporterState)
+IMPLEMENT_SINGLETON(Rage_ExplosionRushState)
 
 StateMachine:: StateMachine(LPDIRECT3DDEVICE9 _GRPDEV)	:	GameObject(_GRPDEV)	{}
 StateMachine:: StateMachine(CONST GameObject& _RHS)		:	GameObject(_RHS)	{}
@@ -532,7 +533,9 @@ VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner)		{
 					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
 		};
 		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT, L"Charge Elec", &CirclePos, CircleScale, 0.8f);
+
 	}
+
 }
 VOID Rage_ChargeState::FSM_StateExit(GameObject* _Owner)		{}
 
@@ -550,3 +553,11 @@ VOID Rage_SupporterState::FSM_StateUpdate(GameObject* _Owner)	{
 	
 }
 VOID Rage_SupporterState::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_ExplosionRushState::FSM_StateEnter(GameObject* _Owner)	{
+	dynamic_cast<FinalBoss*>(_Owner)->Set_EnableExplosionRush(TRUE);
+}
+VOID Rage_ExplosionRushState::FSM_StateUpdate(GameObject* _Owner)	{
+
+}
+VOID Rage_ExplosionRushState::FSM_StateExit(GameObject* _Owner)		{}
