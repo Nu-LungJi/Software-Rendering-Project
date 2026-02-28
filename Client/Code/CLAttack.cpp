@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bBgm(false), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
+CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bPoolCheck(false),m_bPool(false),m_bBgm(false), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
 CLAttack::CLAttack(const GameObject& _RHS) : GameObject(_RHS) {}
 CLAttack::~CLAttack() {}
 
@@ -37,16 +37,33 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     case LEAF_ATTACK::LEAF_FOUR:   
         break;
     }
-    CollisionManager::GetInstance()->Add_ColliderObject(this);
     return S_OK;
 }
 
 INT CLAttack::Update_GameObject(const _float& _DT)
-{
-    if (Get_ObjectDead() == TRUE)
+{    
+    if (m_bPoolCheck)
     {
-        CollisionManager::GetInstance()->Delete_ColliderObject(this);
-        return -1;
+        switch (m_eLeaf)
+        {
+        case LEAF_ATTACK::LEAF_SECOND:
+            m_iRandCnt = 5 + rand() % 2;
+            break;
+        case LEAF_ATTACK::LEAF_THIRD:
+            m_iRandCnt = 5 + rand() % 2;
+            break;
+        case LEAF_ATTACK::LEAF_EXPLOSION:
+            Component_Transform->Set_Scale(1.5f, 1.5f, 1.5f);
+            m_fFrameSpeed = 0.08f;
+            break;
+        }
+        m_bSpin = false;
+        m_iDeadCnt = 0;
+        m_fAttackTick = 0;
+        m_iAttackIndex = 0;
+        m_bPool = true;
+        m_bPoolCheck = false;
+        return 1;
     }
         
     GameObject::Update_GameObject(_DT);
@@ -64,7 +81,7 @@ BOOL CLAttack::OnCollisionEnter(GameObject* _Other)
         _float hp(0);
         MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
         mainUI->Player_LostHP();
-        Set_ObjectDead(TRUE);
+        m_bPoolCheck = true;
     }
     else
     {
@@ -98,8 +115,10 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 6 || CHEONLOG->Get_Statu()==CL_DEAD)
-        Set_ObjectDead(TRUE);
+    if (m_iDeadCnt >= 9 || CHEONLOG->Get_Statu() == CL_DEAD)
+    {
+        m_bPoolCheck = true;
+    }
 
 }
 
@@ -208,7 +227,7 @@ void CLAttack::Leaf_Second(const _float& _DT)
             m_vLook = vCLPos - vPos;
             D3DXVec3Normalize(&m_vLook, &m_vLook);
 
-              }
+        }
 
         Leaf_Bill(_DT);
     }
@@ -240,13 +259,13 @@ void CLAttack::Leaf_Third(const _float& _DT)
         if (m_iAttackIndex == m_iRandCnt)
         {
             _vec3 vPos, vCLPos;
-            Component_Transform->Get_Info(INFO_POS, &vPos);
+            vPos = *Component_Transform->Get_Position();
             dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS, &vCLPos);
             vCLPos += { 0.9f, 1.f, 3.1f };
             m_vLook = vCLPos - vPos;
             D3DXVec3Normalize(&m_vLook, &m_vLook);
 
-                 }
+        }
 
         Leaf_Bill(_DT);
     }
@@ -275,10 +294,10 @@ void CLAttack::Leaf_Four(const _float& _DT)
     {
         Component_Transform->Get_Info(INFO_POS, &vPos);
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_SPIN_DEATH, m_CLPos, TRUE, { 0.4,0.4,0.4 },{45,0,0},0.1f,m_vLook));
-        Set_ObjectDead(TRUE);
+        m_bPoolCheck = true;
     }
     
-    if (Get_ObjectDead() == TRUE)
+    if (m_bPoolCheck == TRUE)
         return;
 
     matWorld = *Component_Transform->Get_World();
@@ -308,8 +327,8 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
 
     if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
     {
-        Set_ObjectDead(TRUE);
-
+        m_TextureIndex = 0;
+        m_bPoolCheck = true;
     }
 
     _float fAngle;

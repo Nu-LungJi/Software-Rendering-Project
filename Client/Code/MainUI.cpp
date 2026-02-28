@@ -140,7 +140,7 @@ VOID MainUI::Player_UseSkill() {
 		REPLAY_UI_EFFECT(UIKey_HP);
 
 		UIKey_HP = L"Token" + to_wstring(PlayerToken);
-		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+		//Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 	}
 }
 VOID MainUI::PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis) {

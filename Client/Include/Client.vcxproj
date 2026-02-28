@@ -245,6 +245,9 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
+    <ClInclude Include="..\Header\Frog_Bullet.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h" />
     <ClInclude Include="..\Header\MainUI.h" />
     <ClInclude Include="..\Header\BossFireBall.h" />
@@ -331,12 +334,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Header\Shadow.h" />
     <ClInclude Include="..\Header\StageBlackOut.h" />
     <ClInclude Include="..\Header\Stall.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\ShopKeeper.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\ShopUI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -483,6 +487,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\Frog_Bullet.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp" />
     <ClCompile Include="..\Code\MainUI.cpp" />
     <ClCompile Include="..\Code\BossFireBall.cpp" />
@@ -571,12 +578,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\Shadow.cpp" />
     <ClCompile Include="..\Code\StageBlackOut.cpp" />
     <ClCompile Include="..\Code\Stall.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\ShopKeeper.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\ShopUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

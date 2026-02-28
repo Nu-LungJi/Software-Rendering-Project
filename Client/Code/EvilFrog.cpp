@@ -95,11 +95,7 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 		break;
-	case MONSTER_STATE_TRACKING:
-		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Jump", &m_tInfo)))
-		{
-			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-		}
+	case MONSTER_STATE_TRACKING:	
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
@@ -110,7 +106,6 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 		break;
-
 	}
 	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 	Monster::BillBoard(Component_Transform, GRPDEV);
@@ -180,7 +175,7 @@ VOID EvilFrog::State_Tracking(const _float& _DT) {
 		m_tInfo.fTimer[1] += _DT;
 
 	if (m_tInfo.fTimer[0] > EVILFROG_TRACKING_TIME)
-		m_tInfo.Change_State(MONSTER_STATE_CASTING);
+		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 	else if (m_tInfo.fTimer[1] >= EVILFROG_LOST_TIME)
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
@@ -191,21 +186,6 @@ VOID EvilFrog::State_Casting(const _float& _DT) {
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
 	m_tInfo.fTimer[0] += _DT;
-
-	if (!m_tInfo.bTrigger[1])
-	{
-		m_tInfo.bTrigger[1] = true;
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, EVILFROG_CASTING_TIME);
-		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
-		*dynamic_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
-	}
-	if(m_tInfo.fTimer[0]>= EVILFROG_CASTING_TIME)
-	{
-		m_tInfo.bTrigger[1] = false;
-     m_tInfo.Change_State(MONSTER_STATE_TRACKING);
-	}
-	
 }
 VOID EvilFrog::State_Channeling(const _float& _DT) {
 

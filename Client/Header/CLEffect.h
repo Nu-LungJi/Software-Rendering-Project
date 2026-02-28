@@ -18,16 +18,20 @@ public:
 	HRESULT						Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale, _vec3 vRot, FLOAT fFrame, _vec3 vLook, _bool bNext);
 	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1},_bool bNext = false);
 	
+	virtual BOOL				OnCollisionStay(GameObject* _Other);
 
 public:
 	_bool						AlphaStart(CL_EFFECT eid);
 	_bool						AlphaEnd(CL_EFFECT eid);
+	void						Move_Potal(const _float& _DT);
 	void						Move_Normal(const _float& _DT);
 	void						Move_Frame(const _float& _DT);
 	void						Move_Pos();
 	void						Effect_Bill();
 	void						Effect_Dead_After(LEAF_ATTACK eid, _vec3 vLook, _bool bSpin = false);
 	void						Pos_Check(_float x ,_float y, _float z);
+	HRESULT						Make_EffectTextureList(wstring _FileName);
+
 private:
 	HRESULT						Component_Initialize(CL_EFFECT eEffect);
 	virtual	void				Free();
@@ -40,6 +44,7 @@ private:
 	_int							m_TextureIndex;
 	_int							m_iCnt;
 	_int							m_iBulletCnt;
+	_int						    m_iPotalCnt;
 
 	_float							m_fRotY;
 	_float							m_FrameTick;
@@ -53,8 +58,9 @@ private:
 	Buffer*							Component_Buffer;
 	Transform*						Component_Transform;
 	Texture*						Component_Texture;
+	Collider*						Component_Colider;
 
-	
+	vector<IDirect3DBaseTexture9*> m_vecTextureList;
 	_vec3							m_vPos;
 	_vec3							m_vScale;
 	_vec3						    m_vLook;

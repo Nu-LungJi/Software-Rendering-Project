@@ -22,7 +22,8 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	Monster::Destory_Tile(this);
 
 	m_tInfo.fTimer[0] += _DT;
-	if (m_tInfo.fTimer[0] >= 2.f)
+	//Kill Timer
+	if (m_tInfo.fTimer[0] >= 10.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
 	}
@@ -85,7 +86,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	}
 	m_tInfo.vDirection.y = 0.f;
 
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x) == (uint8_t)FRUSTUMPLANE::End) {
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
@@ -118,7 +119,7 @@ HRESULT Bullet_Chain_Head::Component_Initialize() {
 	Component_Collider->Set_Att(1.f);
 	fDis = 0.f;
 
-	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::ChainHead, 0);
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Head);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }

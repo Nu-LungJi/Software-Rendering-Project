@@ -3,6 +3,9 @@
 
 #define MINIGAMESCENE static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())
 
+#define MINIGAMETILEX	16
+#define MINIGAMETILEY	1
+#define MINIGAMETILEZ	10
 
 class MiniGameScene : public Scene {
 protected:
@@ -25,6 +28,7 @@ public:
 
 private:
 	virtual void Free();
+
 
 //public:
 //Texture*						Set_Texture(const TCHAR* _Filename, bool &_IsNew) {

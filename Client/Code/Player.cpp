@@ -108,7 +108,7 @@ HRESULT Player::Ready_GameObject() {
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
 
-	return S_OK;
+	return MiniGameInit();
 }
 
 INT	Player::Update_GameObject(const _float& _DT) {
@@ -218,6 +218,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
+	if (m_eCurrScene == SCENE_TYPE::Minigame) 
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 	CheonLog_Spawn();
 
 	if (_isStop) return;
@@ -876,6 +878,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
 	if (MOUSE_RBUTTON && _dashstock > 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
@@ -905,7 +908,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
 		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
-
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06,0.5f);
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
 		_skillArea_On = false;
@@ -1366,23 +1369,23 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
-	wstring Tag = _Other->Get_ObjectTag();
-	MainUI* mainUI;
-	if (Tag == L"MonsterBullet")
-	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+	//if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
+	//wstring Tag = _Other->Get_ObjectTag();
+	//MainUI* mainUI;
+	//if (Tag == L"MonsterBullet")
+	//{
+	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	//	mainUI->Player_LostHP();
 
-		return TRUE;
-	}
-	else if(Tag == L"Monster")
-	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+	//	return TRUE;
+	//}
+	//else if(Tag == L"Monster")
+	//{
+	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	//	mainUI->Player_LostHP();
 
-		return TRUE;
-	}
+	//	return TRUE;
+	//}
 
 	return FALSE;
 }
@@ -1393,6 +1396,19 @@ BOOL Player::OnCollisionStay(GameObject* _Other)
 BOOL Player::OnCollisionExit(GameObject* _Other)
 {
 	return 0;
+}
+HRESULT Player::MiniGameInit()
+{
+	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		m_eCurrScene = SCENE_TYPE::SCENE_END;
+		return S_OK;
+	}
+
+	m_eCurrScene = SCENE_TYPE::Minigame;
+
+	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
+
+	return S_OK;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 

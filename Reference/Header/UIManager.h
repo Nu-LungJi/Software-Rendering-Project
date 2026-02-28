@@ -58,7 +58,7 @@ public:
 
 	FontObject* Find_FontObject(wstring _Text);
 
-	VOID		Delete_FontObject(FontObject* obj);
+	VOID      Delete_FontObject(FontObject* obj);
 
 	VOID		Render_FontObjects();
 

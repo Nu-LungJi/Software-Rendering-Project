@@ -51,6 +51,7 @@
 //#include "Docheol.h"
 
 #include "EvilFrog.h"
+#include "Frog_Bullet.h"
 
 #include "Alert.h"
 
@@ -77,6 +78,7 @@
 #include "CubeFloorTile.h"
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
+#include "Shadow.h"
 
 #pragma endregion
 

@@ -3,7 +3,7 @@
 Collider::Collider()							:						ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
 Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE), fAtt(0.f) ,fHp(0.f) {}
 Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.ColliderPos), Curr_ColState(FALSE), Prev_ColState(FALSE),	
-	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj), fAtt(_RHS.fAtt) ,fHp(_RHS.fHp)											{}
+matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj), fAtt(_RHS.fAtt), fHp(_RHS.fHp), pLine(_RHS.pLine) {if (pLine != nullptr) pLine->AddRef();}
 Collider::~Collider()																																{}
 
 
@@ -26,8 +26,18 @@ VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
 	CenterPos = *ColliderPos->Get_Position();
 	//CenterPos += Offset;
 
-	MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
-	MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
+	//MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
+	//MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
+
+	_vec3	vSize = Scale;
+
+	vSize.x = fabsf(vSize.x);
+	vSize.y = fabsf(vSize.y);
+	vSize.z = fabsf(vSize.z);
+
+	MinPoint = { CenterPos.x - vSize.x + Offset.x, CenterPos.y - vSize.y + Offset.y, CenterPos.z - vSize.z + Offset.z };
+	MaxPoint = { CenterPos.x + vSize.x + Offset.x, CenterPos.y + vSize.y + Offset.y, CenterPos.z + vSize.z + Offset.z };
+
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;
@@ -71,5 +81,7 @@ Component* Collider::Clone() {
 	return new Collider(*this);
 }
 VOID		Collider::Free() {
+	if(pLine != nullptr)
+		Safe_Release(pLine);
 	Component::Free();
 }

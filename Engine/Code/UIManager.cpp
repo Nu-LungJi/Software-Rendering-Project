@@ -54,8 +54,8 @@ FontObject* UIManager::Find_FontObject(wstring _Text) {
 }
 VOID UIManager::Delete_FontObject(FontObject* obj)
 {
-    auto iter = std::find_if(FontList.begin(), FontList.end(),[obj](auto& Font){
-            return Font.second == obj;
+    auto iter = std::find_if(FontList.begin(), FontList.end(), [obj](auto& Font) {
+        return Font.second == obj;
         });
 
     if (iter == FontList.end())
@@ -87,8 +87,13 @@ VOID UIManager::Render_FontObjects() {
 }
 
 VOID UIManager::Free() {
-    for (auto& Item : ItemList) 
+    for (auto& Item : ItemList)
+    {
+        Safe_Release(Item.second->TEXTURE);
         Safe_Delete(Item.second);
+
+    }
+        
     for (auto& FO : FontList) {
         Safe_Release(FO.second->DXFont);
         Safe_Delete(FO.second);
@@ -96,4 +101,6 @@ VOID UIManager::Free() {
         
     Safe_Release(DXSprite);
     ItemList.clear();
+    FontList.clear();
+
 }
