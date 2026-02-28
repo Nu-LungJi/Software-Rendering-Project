@@ -14,8 +14,8 @@ public:
 	virtual	VOID		Render_GameObject();
 
 	virtual BOOL		OnCollisionEnter(GameObject* _Other);
-	virtual BOOL		OnCollisionStay(GameObject* _Other);
-	virtual BOOL		OnCollisionExit(GameObject* _Other);
+	virtual BOOL		OnCollisionStay (GameObject* _Other);
+	virtual BOOL		OnCollisionExit (GameObject* _Other);
 
 public:
 	HRESULT				Ready_Effect(BOSS_EFFECT _SKILLTYPE, _vec3* _BossPOS, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _Size, wstring _TAG, _vec3 _Rot);

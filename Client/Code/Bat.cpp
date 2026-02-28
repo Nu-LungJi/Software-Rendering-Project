@@ -21,7 +21,7 @@ HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 	Component_Collider->Set_Att(1.f);
 
 	if (m_tInfo.bMiniGame)
-	{// â�� �߰�
+	{// ??? ???
 		ObjectTAG = L"Monster";
 		Component_Transform->Set_Pos(vPos);
 	}
@@ -31,7 +31,7 @@ HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 INT	Bat::Update_GameObject(const _float& _DT)
 {
 	if (m_tInfo.bMiniGame)
-	{// â�� �߰�
+	{// ??? ???
 		GameObject::Update_GameObject(_DT);
 		Bat::State_Tracking(_DT);
 		MYPOS->y = MYSCALE->y * 0.5f;
@@ -297,7 +297,7 @@ VOID Bat::State_Idle()
 VOID Bat::State_Tracking(const _float& _DT)
 {
 	if (m_tInfo.bMiniGame)
-	{// â�� �߱�
+	{// ??? ???
 		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 		m_tInfo.vDirection = vPos - *MYPOS;
 		m_tInfo.fSpeed = 3.f;

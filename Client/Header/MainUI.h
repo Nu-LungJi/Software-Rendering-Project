@@ -34,12 +34,15 @@ public:		// Trigger Function
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
 
-	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Speech_Bubble = TRUE; }
+	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubble = TRUE; }
 
-	VOID			Activate_BossFilter(BOOL _Filter);
+	VOID			Set_FadeOption(INT _OPT) { Enable_MainUIFade = _OPT; }
 
-	VOID			All_UI_FadeOUT();
-	VOID			All_UI_FadeIN();
+	VOID			Set_EnableSpeechBubble(BOOL _ESB) {}
+
+
+private:
+	VOID			MainUI_FadeAction(CONST FLOAT& _DT);
 
 public:
 	HRESULT Component_Initialize();
@@ -57,7 +60,7 @@ private:
 	SpriteObject*		Component_Sprite;
 	vector<SpriteINFO>*	TextureList;
 
-	BOOL	Speech_Bubble;
+	BOOL	Enable_SpeechBubble;
 	wstring Speech_Text;
 
 	BOOL	ItemInfo;
@@ -73,11 +76,13 @@ private:
 
 	FLOAT	MainUIOpacity;
 
-	GUIVar				GuiVar;				// GUI¿ë º¯¼ö
-	wstring				ArrowCountText;		// È­»ì Ä«¿îÆ®
-	FontObject*			FO_ArrowCount;		// È­»ì Ä«¿îÆ®
-	int					Cur_BowIMGIDX;		// ÇöÀç È° ÀÌ¹ÌÁö ÀÎµ¦½º
-	vector<SpriteINFO*> BowIMG_List;		// È° ½ºÇÁ¶óÀÌÆ® ¸ğÀ½
+	INT		Enable_MainUIFade;
+  
+	GUIVar				GuiVar;				// GUIìš© ë³€ìˆ˜
+	wstring				ArrowCountText;		// í™”ì‚´ ì¹´ìš´íŠ¸
+	FontObject*			FO_ArrowCount;		// í™”ì‚´ ì¹´ìš´íŠ¸
+	int					Cur_BowIMGIDX;		// í˜„ì¬ í™œ ì´ë¯¸ì§€ ì¸ë±ìŠ¤
+	vector<SpriteINFO*> BowIMG_List;		// í™œ ìŠ¤í”„ë¼ì´íŠ¸ ëª¨ìŒ
 	
 
 private:

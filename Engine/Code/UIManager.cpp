@@ -42,7 +42,6 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     }
 
     FontList.insert({ FO->FontTag.c_str(), FO });
-
     FO->Set_Active(TRUE);
 
     return FO;
