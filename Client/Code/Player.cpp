@@ -14,7 +14,7 @@ HRESULT Player::Ready_GameObject() {
 
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
-	memset(_inventory, 0, sizeof(GameObject*) * 8);
+	memset(_inventory, 0, sizeof(GameObject*) * 10);
 	_pState				= pState::STATE_IDLE;
 	_eState				= eState::STATE_STANDING;
 	_see				= pSee::SEE_DOWN;
@@ -55,6 +55,7 @@ HRESULT Player::Ready_GameObject() {
 	_slowTime			= 4.f;
 	_hit_inv_Time		= 2.f;
 	_dash_inv_Time		= 2.f;
+	_MaxArrow			= 1.f;
 	//연출용
 	CameraMove = false;
 
@@ -96,6 +97,12 @@ HRESULT Player::Ready_GameObject() {
 		_weaponSlot[3] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"));
 		_weaponSlot[3]->Set_Bow_Type(BowType::WindBow);
 		_weaponSlot[3]->Set_Bow_Equip(false);
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"IceBow2");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow2"))->Set_PlayerPos(Component_Transform->Get_Position());
+		_inventory[0] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow2"));
+		dynamic_cast<Bow*>(_inventory[0])->Set_Bow_Type(BowType::IceBow);
+		dynamic_cast<Bow*>(_inventory[0])->Set_Bow_Equip(false);
 	}
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
@@ -106,28 +113,10 @@ HRESULT Player::Ready_GameObject() {
 
 INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+	if (_isStop) return S_OK;
 
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
-
-	if (KEY_DOWN(DIK_Y)) {
-		_NPC_Pos = *Component_Transform->Get_Position();
-		_NPC_Pos.x -= 6.f;
-		_NPC_Pos.y += 16.f;
-
-		GameObject* arrow = nullptr;
-		_vec2 dir = {2.f, 10.f};
-		arrow = Arrow::Create(GRPDEV, BowType::AtomicBow, 1, 0, &_NPC_Pos, dir);
-
-		TCHAR arrowTag[128] = L"";
-		wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);
-
-		arrow->Set_ObjectTag(arrowTag);
-		arrow->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
-		arrow->Set_ObjectTag(L"PlayerArrow");
-
-		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
-	}
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
@@ -211,6 +200,18 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		break;
 	}
 
+	if (KEY_DOWN(DIK_Y)) {
+		GameObject* DamageFont = nullptr;
+
+		DamageFont = DamageFont::Create(GRPDEV, 20, Component_Transform->Get_Position());
+		DamageFont->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+		DamageFont->Set_ObjectTag(L"DamageFont");
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(DamageFont);
+
+	}
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return S_OK;
 }
@@ -290,7 +291,7 @@ void Player::Reset()
 	_range				= 1.f;
 	_arrowSize			= 1.f;
 	_arrowSpeed			= 1.f;
-	_maxArrow			= 1.f;
+	_MaxArrow			= 1.f;
 	_hit_inv_Time		= 2.f;
 	_dash_inv_Time		= 2.f;
 
@@ -1634,6 +1635,80 @@ _float Player::Get_MouseDistance()
 	_float mouseDistance = D3DXVec3Length(&dis);
 	
 	return mouseDistance;
+}
+
+VOID Player::Chage_Item(int src, int dst)
+{
+	GameObject* obj = nullptr;
+	if (src < 4) {
+		if (_weaponSlot[src] == nullptr) return;
+		if (dst < 4) {
+			if (_weaponSlot[dst] == nullptr) {
+				_weaponSlot[dst] = _weaponSlot[src];
+				_weaponSlot[src] = nullptr;
+			}
+			else {
+				obj = _weaponSlot[dst];
+				_weaponSlot[dst] = _weaponSlot[src];
+				_weaponSlot[src] = static_cast<Bow*>(obj);
+			}
+		}
+		else if(dst >= 4 && dst < 8){
+			return;
+		}
+		else {
+			if (_inventory[dst - 8] == nullptr) {
+				_inventory[dst - 8] = _weaponSlot[src];
+				if (src == _equipNum) {
+					_weaponSlot[src]->Set_Bow_Equip(false);
+					_equipNum = 0;
+					_weaponSlot[0]->Set_Bow_Equip(true);
+				}
+				_weaponSlot[src] = nullptr;
+			}
+			else {
+				if (src == _equipNum) {
+					_weaponSlot[src]->Set_Bow_Equip(false);
+					static_cast<Bow*>(_inventory[dst - 8])->Set_Bow_Equip(true);
+				}
+				obj = _inventory[dst - 8];
+				_inventory[dst - 8] = _weaponSlot[src];
+				_weaponSlot[src] = static_cast<Bow*>(obj);
+			}
+		}
+	}
+	else if (src >= 4 && src < 8) {
+		if (_artifactSlot[src - 4] == nullptr) return;
+		return;
+	}
+	else {
+		if (_inventory[src - 8] == nullptr) return;
+		if (dst < 4) {
+			if (_weaponSlot[dst] == nullptr) {
+				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
+				_inventory[src - 8] = nullptr;
+			}
+			else {
+				if (dst == _equipNum) {
+					_weaponSlot[dst]->Set_Bow_Equip(false);
+					static_cast<Bow*>(_inventory[src - 8])->Set_Bow_Equip(true);
+				}
+				obj = _weaponSlot[dst];
+				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
+				_inventory[src - 8] = obj;
+			}
+		}
+		else if (src >= 4 && src < 8) {
+			return;
+		}
+		else {
+			obj = _inventory[dst - 8];
+			_inventory[dst - 8] =_inventory[src - 8];
+			_inventory[src - 8] = obj;
+		}
+	}
+
+	return VOID();
 }
 VOID	Player::Free() {
 	GameObject::Free();

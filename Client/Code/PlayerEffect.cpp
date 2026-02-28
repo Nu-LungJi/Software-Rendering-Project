@@ -387,6 +387,10 @@ BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 		atk = 1.f;
 		Component_Collider->Set_Hp(hp - atk);
 		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
 		return TRUE;
 	}
 
@@ -394,13 +398,20 @@ BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 		atk = 1.f;
 		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
 		Component_Collider->Set_Hp(hp - atk);
-
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
 		return TRUE;
 	}
 	else if (_Other->Get_ObjectTag() == L"Docheol") {
 		atk = 1.f;
 		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		Component_Collider->Set_Hp(hp - atk);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
 
 		return TRUE;
 	}

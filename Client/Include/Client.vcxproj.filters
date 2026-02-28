@@ -244,6 +244,12 @@
     <Filter Include="03. GameObject\07. ProJectile\06. Frog_Bullet">
       <UniqueIdentifier>{95fae50b-956d-4a79-a86f-bfed3b244d9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="07. Font">
+      <UniqueIdentifier>{788fe5ad-1fe2-427d-9297-1a8705adc142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Font\Manager">
+      <UniqueIdentifier>{0d508af8-e4b7-4c38-8f5a-86e3456e62bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -502,6 +508,12 @@
     <ClInclude Include="..\Header\Frog_Bullet.h">
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\DamageFont.h">
+      <Filter>07. Font</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageFontManager.h">
+      <Filter>07. Font\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -742,6 +754,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Frog_Bullet.cpp">
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DamageFont.cpp">
+      <Filter>07. Font</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageFontManager.cpp">
+      <Filter>07. Font\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

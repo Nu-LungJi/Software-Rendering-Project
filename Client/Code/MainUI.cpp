@@ -15,6 +15,7 @@ HRESULT	MainUI::Ready_GameObject() {
 	
 	Speech_Bubble = FALSE;
 	Speech_Text = L"";
+	ArrowCountText = L"";
 	Timer01 = 0.f; Timer02 = 0.f; Timer03 = 0.f;
 	
 	MainUIOpacity = 0.f;
@@ -22,6 +23,9 @@ HRESULT	MainUI::Ready_GameObject() {
 	Current_KeyCount		= 0;
 	Current_CoinCount		= 0;
 	Current_CrystalCount	= 0;
+	Cur_BowIMGIDX			= 0;
+
+	GuiVar.GUIInit(1166.f, 580.f, 100, 100);
 
 	return S_OK;
 }
@@ -40,6 +44,21 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
+
+	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
+	FO_ArrowCount->Set_Text(ArrowCountText);
+
+	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();
+	if (Cur_BowIMGIDX != cur_Equip_BowIDX) {
+		BowIMG_List[Cur_BowIMGIDX]->Set_Visible(false);
+		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(true);
+		Cur_BowIMGIDX = cur_Equip_BowIDX;
+	}
+	
+	// GUI
+	//BowIMG_List[Cur_BowIMGIDX]->Set_Pos(GuiVar.POSX, GuiVar.POSY);
+	//BowIMG_List[Cur_BowIMGIDX]->Set_Scale(GuiVar.WIDTHX, GuiVar.WIDTHY);
+	//Imgui();
 
 	return 0;
 }
@@ -64,6 +83,9 @@ VOID MainUI::Player_LostHP() {
 
 		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
+		Camera->Camera_Shaking(30, 5.f);
 	}
 }
 VOID MainUI::Player_ReFillHP(INT _HP) {
@@ -303,8 +325,6 @@ HRESULT MainUI::Sprite_Initialize() {
 	////////////////////////////////////////////// FILTER ///////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Filter_RageUp.png",				L"BossFilter", 0.f, 0.f, 1280, 720, FALSE, 50);
 	////////////////////////////////////////////// BACKBAR //////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png",		L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_ArrowCount.png", L"WeaponBG_ArrowCount", 1167.f, 681.f, 108, 30, TRUE, 150);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"HP_BG", 13.f, -60.f, 183, 180, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"TEARDROP_BG", 13.f, -15.f, 130, 180, TRUE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"KEY_BG", 13.f, 42.f, 100, 150, TRUE, 255);
@@ -351,6 +371,19 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png",			L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png",			L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// WEAPON /////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png", L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_ArrowCount.png", L"WeaponBG_ArrowCount", 1167.f, 681.f, 108, 30, TRUE, 150);
+	SpriteINFO* EquipArrowImg = nullptr;
+	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/FairyBow_UI.png", L"FairyBow_IMG", 1173.f, 586.f, 90, 90, TRUE, 150);
+	BowIMG_List.push_back(EquipArrowImg);
+	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IceBow_UI.png", L"IceBow_IMG", 1174.f, 589.f, 85, 85, FALSE, 150);
+	BowIMG_List.push_back(EquipArrowImg);
+	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/EvilHeadBow_UI.png", L"EvilHeadBow_IMG", 1175.f, 589.f, 90, 90, FALSE, 150);
+	BowIMG_List.push_back(EquipArrowImg);
+	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IRABow_UI.png", L"IRABow_IMG", 1173.f, 588.f, 95, 95, FALSE, 150);
+	BowIMG_List.push_back(EquipArrowImg);
+
 	return S_OK;
 }
 HRESULT MainUI::Effect_Initialize() {
@@ -382,7 +415,7 @@ HRESULT MainUI::Text_Initialize() {
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08�����Ѱ�ü L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"��", { 1220.f, 687.f }, 16, L"ArrowCountText",	L"08�����Ѱ�ü L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText", L"Bastard", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08�����Ѱ�ü L", D3DCOLOR_ARGB(200, 255, 255, 255));
@@ -405,6 +438,112 @@ MainUI* MainUI::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 		return nullptr;
 	}
 	return MUI;
+}
+void MainUI::Imgui_Setting()
+{
+	static _float fsScale(1);
+	static _float sMin(-100), sMax(2000), sMin1(-100), sMax1(2000);
+	static _float fPivot1(1);
+
+	_float fMin(0.0f), fMax(100), UMin(0), UMax(0), fMovePosMin(-100), fMovePosMax(129), fMoveScaleMin(-100), fMoveScaleMax(129), fMoveRotMin(-360), fMoveRotMax(360), vMouseMin(0), vMouseMax(0), fHeightMin(0.f), fHeightMax(10.f), fPosMin(0.f), fPosMax(200.f);
+
+
+	///////////위치
+	_vec2 vPos = { GuiVar.POSX, GuiVar.POSY};
+	ImGui::Text("UI_POS");
+	ImGui::SameLine(200.f, 0.f);
+	ImGui::SliderFloat2("##1", vPos, sMin, sMax);
+
+	Imgui_ButtonStyle();				// 버튼 시작
+	if (ImGui::Button("UI_POSX+"))		// 이름 달라야댐 누를 버튼
+	{
+		vPos.x += fPivot1;				// 수치입력
+	}
+	ImGui::SameLine(150, 0.f);			// 같은라인 버튼
+	ImGui::PopStyleColor(3);			// 버튼 끝
+
+	Imgui_ButtonStyle();
+	if (ImGui::Button("UI_POSX-"))
+	{
+		vPos.x -= fPivot1;
+	}
+	ImGui::PopStyleColor(3);
+
+	Imgui_ButtonStyle(); 
+	if (ImGui::Button("UI_POSY+")) 
+	{
+		vPos.y += fPivot1;			
+	}
+	ImGui::SameLine(150, 0.f);			
+	ImGui::PopStyleColor(3);	
+
+	Imgui_ButtonStyle();
+	if (ImGui::Button("UI_POSY-"))
+	{
+		vPos.y -= fPivot1;
+	}
+	ImGui::PopStyleColor(3);
+	GuiVar.POSX = vPos.x;
+	GuiVar.POSY = vPos.y;
+
+
+	///////////스케일
+	_vec2 vScale = { GuiVar.WIDTHX, GuiVar.WIDTHY };
+	ImGui::Text("UI_SCALE");
+	ImGui::SameLine(200.f, 0.f);
+	ImGui::SliderFloat2("##2", vScale, sMin1, sMax1);
+
+	Imgui_ButtonStyle(); 
+	if (ImGui::Button("UI_SCALEX+"))
+	{
+		vScale.x += fPivot1;				
+	}
+	ImGui::SameLine(150, 0.f);			
+	ImGui::PopStyleColor(3);			
+	Imgui_ButtonStyle();
+	if (ImGui::Button("UI_SCALEX-"))
+	{
+		vScale.x -= fPivot1;
+	}
+	ImGui::PopStyleColor(3);
+
+	GuiVar.WIDTHX = vScale.x;
+	GuiVar.WIDTHY = vScale.x;
+
+}
+void MainUI::Imgui()
+{
+	ImGui::SetNextWindowSize({ 600,300 });
+
+	ImGui::Begin("Editor", NULL, ImGuiWindowFlags_MenuBar);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Save"))
+				cout << ("Save clicked\n");
+			ImGui::Separator(); //구분줄
+			if (ImGui::MenuItem("Open"))
+				cout << ("Open clicked\n");
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+	Imgui_Setting();
+
+	ImGui::End();
+
+	ImGui::Begin("Mode Changer", NULL, ImGuiWindowFlags_MenuBar);
+
+	ImGui::SetNextWindowSize({ 800,300 });
+
+	ImGui::End();
+}
+void MainUI::Imgui_ButtonStyle()
+{
+	ImGui::PushStyleColor(ImGuiCol_Button, D3DXCOLOR(0.0f, 0.f, 0.f, 1.f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.8f, 0.7f, 0.7f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.5f, 0.7f, 0.7f));
 }
 VOID	MainUI::Free() {
 	GameObject::Free();

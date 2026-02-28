@@ -12,6 +12,7 @@ HRESULT UIManager::Ready_UIManager(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return S_OK;
 }
 INT UIManager::Update_UIManager(const FLOAT& _DT) {
+
 	return 0;
 }
 VOID UIManager::LateUpdate_UIManager(const FLOAT& _DT) {
@@ -42,6 +43,8 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
 
     FontList.insert({ FO->FontTag.c_str(), FO });
 
+    FO->Set_Active(TRUE);
+
     return FO;
 }
 FontObject* UIManager::Find_FontObject(wstring _Text) {
@@ -71,6 +74,7 @@ VOID UIManager::Render_FontObjects() {
     DXSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
     for (auto& TXT : FontList) {
+        if (!TXT.second->Get_Active()) continue;
         if (TXT.second->Visible == TRUE) {
             FLOAT XPos = TXT.second->Position.x;
             FLOAT YPos = TXT.second->Position.y;
@@ -87,10 +91,10 @@ VOID UIManager::Free() {
     {
         Safe_Release(Item.second->TEXTURE);
         Safe_Delete(Item.second);
+
     }
         
-    for (auto& FO : FontList)
-    {
+    for (auto& FO : FontList) {
         Safe_Release(FO.second->DXFont);
         Safe_Delete(FO.second);
     }
@@ -98,6 +102,5 @@ VOID UIManager::Free() {
     Safe_Release(DXSprite);
     ItemList.clear();
     FontList.clear();
-
 
 }

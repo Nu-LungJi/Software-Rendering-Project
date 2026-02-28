@@ -82,6 +82,9 @@
     <Filter Include="13. MonsterManager">
       <UniqueIdentifier>{64b6becc-edbf-4018-8f89-7d7e406bc151}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. Component\07. DamageFont">
+      <UniqueIdentifier>{5e787ad3-f69d-433e-9725-bda30ca08bf7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GraphicDevice.h">

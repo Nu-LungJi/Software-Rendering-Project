@@ -115,6 +115,7 @@
 #include "ShopKeeper.h"
 #include "ShopUI.h"
 #include "StageBlackOut.h"
+#include "DamageFont.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
@@ -140,6 +141,7 @@
 #include "TimeManager.h"
 #include "GameManager.h"
 #include "TileManager.h"
+#include "DamageFontManager.h"
 
 //////////////////////////////////////////// Global Variable
 

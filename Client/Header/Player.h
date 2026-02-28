@@ -111,6 +111,7 @@ public:
 	BowType			Get_Weapon_Type()	{ return _weaponSlot[_equipNum]->Get_Bow_Type(); }	// 현재 장착한 활 타입
 	BowStat*		Get_CurBow_Stat()	{ return _weaponSlot[_equipNum]->Get_Bow_Stat(); }	// 현재 장착한 활 스텟
 
+	BOOL	Get_PlayerStop() { return _isStop; }
 	void			Set_PlayerStop(bool isStop) {
 		_isStop = isStop; 
 		if (_isStop)
@@ -159,11 +160,16 @@ public:
 	float*	Get_ArrowSpeed() { return &_arrowSpeed; }
 	void	Set_ArrowSpeed(int arrowSpeed) { _arrowSpeed = arrowSpeed; }
 
-	float*	Get_MaxArrow() { return &_maxArrow; }
-	void	Set_MaxArrow(int maxArrow) { _maxArrow = maxArrow; }
+	int		Get_MaxArrow() { return (int)_weaponSlot[_equipNum]->Get_Bow_Stat()->maxArrow; }
+	void	Set_MaxArrow(int maxArrow) { _weaponSlot[_equipNum]->Get_Bow_Stat()->maxArrow = maxArrow; }
+
+	float	Get_AddMaxArrow() { return _MaxArrow; }
 
 	float*	Get_SlowTime() { return &_slowTime; }
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
+
+	int		Get_CurArrowCount() { return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
+	int		Get_Bow_ImgIDX() { return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
@@ -183,6 +189,9 @@ public:
 
 	_vec3			Get_MouseDir();
 	_float			Get_MouseDistance();
+
+	/// 인벤용
+	VOID		Chage_Item(int src, int dst);
 private:
 	virtual VOID Free();
 
@@ -208,9 +217,12 @@ private:
 	void			Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse = false);
 	void			Set_Effect(const _float& _DT);
 	void			Calc_Near();
-
-	
 private:
+	Bow*			_weaponSlot[4];
+	GameObject*		_artifactSlot[4];
+	GameObject*		_inventory[10];
+	int				_equipNum;
+
 	bool			Debug;
 	bool			CameraMove;
 	float			_cameraAngle;
@@ -274,15 +286,10 @@ private:
 	float			_range;			// 사거리 ex) 1.5면 1.5배 증가
 	float			_arrowSize;		// 화살 크기 ex) 1.5면 1.5배 증가
 	float			_arrowSpeed;	// 화살 스피드 ex) 1.5면 1.5배 증가
-	float			_maxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
+	float			_MaxArrow;		// 화살 개수 증가 ex) 1.3이면 30퍼 증가
 	float			_slowTime;		// 시간 제어 스킬 지속시간 일단 4초 초기화
 	float			_hit_inv_Time;	// 피격시 무적 유지시간;
 	float			_dash_inv_Time;	// 대시시 무적 유지시간;
-
-	Bow*			_weaponSlot[4];
-	GameObject*		_artifactSlot[4];
-	GameObject*		_inventory[8];
-	int				_equipNum;
 
 	TCHAR FileName[128] = L"";
 	//temp

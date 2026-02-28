@@ -55,7 +55,10 @@ private:
 	ItemINFO**		EquipObject;
 	ItemINFO*		JunkObject;
 
+	_int			srcIdx;
+
 private:
 	virtual	VOID		Free();
+
 };
 
