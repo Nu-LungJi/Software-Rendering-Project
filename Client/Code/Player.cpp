@@ -875,6 +875,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
 	if (MOUSE_RBUTTON && _dashstock > 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;

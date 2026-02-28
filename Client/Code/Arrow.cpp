@@ -166,6 +166,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 2.5f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
+
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 2.5f, 2.5f, 2.5f };

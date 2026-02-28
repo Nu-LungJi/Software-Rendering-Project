@@ -105,15 +105,15 @@
 #pragma endregion
 
 #pragma region EvilFrog
-#define EVILFROGIMGX									63
-#define EVILFROGIMGY									127
+#define EVILFROGIMGX									126
+#define EVILFROGIMGY									254
 #define EVILFROGIMG_ASPECTRATIO						((FLOAT)EVILFROGIMGY / (FLOAT)EVILFROGIMGX)
 
 #define EVILFROG_WIDTH									1.f
 #define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
 
-#define EVILFROG_SPEED									10.f
-#define EVILFROG_HP											50.f
+#define EVILFROG_SPEED									8.f
+#define EVILFROG_HP											20.f
 
 #define EVILFROG_TRACKINGDIS							20.f
 #define EVILFROG_TRACKINGMIN							10.f
