@@ -33,26 +33,25 @@ HRESULT Bow::Ready_GameObject()
 
 INT Bow::Update_GameObject(const _float& _DT)
 {
-	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	ObjectTAG = L"Bow";
-	_playerAtk = player->Get_Atk();
-	_playerCritical = player->Get_Critical();
-	_playerChargingSpeed = player->Get_ChargingSpeed();
-
-	_Stat.maxArrow *= (*player->Get_MaxArrow());
-	_chargingTime = 2.f;
-	_chargingTime *= *_playerChargingSpeed;
-
 	if (_isDestroied) return -1;
 
 	if (_lateReady) {
 		Late_Ready();
 		_lateReady = false;
 	}
-		
 
 	if (_isEquip) {
 		GameObject::Update_GameObject(_DT);
+
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		ObjectTAG = L"Bow";
+		_playerAtk = player->Get_Atk();
+		_playerCritical = player->Get_Critical();
+		_playerChargingSpeed = player->Get_ChargingSpeed();
+
+		_Stat.maxArrow *= (player->Get_AddMaxArrow());
+		_chargingTime = 2.f;
+		_chargingTime *= *_playerChargingSpeed;
 
 		float alphaSpeed = 3.f;
 
@@ -276,6 +275,8 @@ void Bow::CreateArrow(const _float& _DT)
 		}
 	
 		if (_attackTimer > _attackDelay) {
+			_Stat.curArrow -= 1;
+
 			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 			_vec3 MouseDir = player->Get_MouseDir();
 	
@@ -448,6 +449,7 @@ void Bow::CreateChargingArrow(const _float& _DT)
 	_vec3 leftPos = _arrowPos;
 
 	MakeArrow(_arrowPos, dir2D, true);
+	_Stat.curArrow -= 1;
 }
 
 void Bow::CreateChargingEffect(const _float& _DT)
@@ -504,15 +506,19 @@ void Bow::CreateChargingEffect(const _float& _DT)
 
 void Bow::Late_Ready()
 {
+	TCHAR txt[128] = L"";
+
+	wstring name = L"";
 	switch (_type) {
 	case BowType::FairyBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 23;
-		_Stat.maxArrow = 987654321;
-		_Stat.curArrow = 987654321;
+		_Stat.maxArrow = 10000;
+		_Stat.curArrow = 10000;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 0;
 		break;
 	case BowType::IceBow:
 		_Stat.bowLv = 1;
@@ -522,6 +528,7 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 1;
 		break;
 	case BowType::EvilHeadBow:
 		_Stat.bowLv = 1;
@@ -531,6 +538,7 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 150;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 2;
 		break;
 	case BowType::WindBow:
 		_Stat.bowLv = 1;
@@ -540,12 +548,9 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 3;
 		break;
 	}
-	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	
-	// 최대 화살 수
-	_Stat.maxArrow *= (*player->Get_MaxArrow());
 }
 
 void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
@@ -572,8 +577,6 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	arrow->Set_ObjectTag(L"PlayerArrow");
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(arrow);
-
-	_Stat.curArrow -= 1;
 }
 
 Bow* Bow::Create(LPDIRECT3DDEVICE9 _GRPDEV)

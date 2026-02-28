@@ -29,6 +29,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 
 	if (KEY_DOWN(DIK_B)) {
 		UIManager::GetInstance()->Get_Active() ? UIManager::GetInstance()->Set_Active(FALSE) : UIManager::GetInstance()->Set_Active(TRUE);
+		PlayerObject->Get_PlayerStop() ? PlayerObject->Set_PlayerStop(FALSE) : PlayerObject->Set_PlayerStop(TRUE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			FocusOn_SavedItem = TRUE;
@@ -265,8 +266,6 @@ HRESULT PlayerInven::Item_Initialize() {
 	it01->ItemPrice = 68;
 	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
-	Append_Item(it01);
-
 	ItemINFO* it02 = new ItemINFO;
 	it02->ItemDesc = {
 		L"풍수의 활",
@@ -285,8 +284,6 @@ HRESULT PlayerInven::Item_Initialize() {
 	};
 	it02->ItemPrice = 68;
 	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
-	Append_Item(it02);
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
@@ -307,8 +304,6 @@ HRESULT PlayerInven::Item_Initialize() {
 	it03->ItemPrice = 68;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
-	Append_Item(it03);
-
 	ItemINFO* it04 = new ItemINFO;
 	it04->ItemDesc = {
 		L"얼음 정령의 활",
@@ -328,8 +323,6 @@ HRESULT PlayerInven::Item_Initialize() {
 	it04->ItemPrice = 68;
 	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
-	Append_Item(it04);
-
 	ItemINFO* it05 = new ItemINFO;
 	it05->ItemDesc = { L"얼음 정령의 활",
 		L"무기/희귀",
@@ -348,6 +341,10 @@ HRESULT PlayerInven::Item_Initialize() {
 	it05->ItemPrice = 68;
 	it05->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
+	Append_Item(it03);
+	Append_Item(it04);
+	Append_Item(it02);
+	Append_Item(it01);
 	Append_Item(it05);
 
 	return S_OK;
@@ -490,6 +487,7 @@ HRESULT PlayerInven::Equip_Item() {
 		if (KEY_DOWN(DIK_E)) {
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
+				PlayerObject->Chage_Item(srcIdx, SavedItemIndex + 7);
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
@@ -503,6 +501,7 @@ HRESULT PlayerInven::Equip_Item() {
 					&& (EquipedItemIndex >= 1 && EquipedItemIndex <= 4)) return E_FAIL;
 
 				swap(Equip_ItemList[EquipedItemIndex - 1], *EquipObject);
+				PlayerObject->Chage_Item(srcIdx, EquipedItemIndex - 1);
 
 				EquipObject = nullptr;
 				EquipMode = FALSE;
@@ -517,6 +516,7 @@ HRESULT PlayerInven::Equip_Item() {
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
 			EquipMode = TRUE;
 			EquipObject = &Saved_ItemList[SavedItemIndex - 1];
+			srcIdx = SavedItemIndex +7;
 		}
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
 			JunkObject = Saved_ItemList[SavedItemIndex - 1];
@@ -527,6 +527,7 @@ HRESULT PlayerInven::Equip_Item() {
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
 			EquipMode = TRUE;
 			EquipObject = &Equip_ItemList[EquipedItemIndex - 1];
+			srcIdx = EquipedItemIndex - 1;
 		}
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
 			JunkObject = Equip_ItemList[EquipedItemIndex - 1];

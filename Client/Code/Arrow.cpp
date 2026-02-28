@@ -206,7 +206,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             }
             Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
                 Get_GameObject(L"Camera"));
-            Camera->Camera_Shaking(10.f, 0.3f);
+            Camera->Camera_Shaking(30.f, 1.f);
             break;
         default:
             break;
