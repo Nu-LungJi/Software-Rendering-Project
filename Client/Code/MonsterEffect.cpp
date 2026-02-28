@@ -30,6 +30,7 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 _vPos, _flo
 	case MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY:	Make_TextureList(L"Spr_Bullet_Standard_BirthRayUp");	*MYSCALE *= 2.f;	break;
 	case MONSTER_EFFECT::BULLET_STANDARD_CHARGE:	Make_TextureList(L"Spr_Bullet_Standard_Charge");		*MYSCALE *= 2.f;	break;
 	case MONSTER_EFFECT::BULLET_STANDARD_DEATH:		Make_TextureList(L"Spr_Bullet_Standard_Death");			*MYSCALE *= 2.f;	break;
+  case MONSTER_EFFECT::BULLET_RETURN:					  Make_TextureList(L"Spr_Bullet_FrogBullet");		*MYSCALE *= 2.f;	break;		
 
 	case MONSTER_EFFECT::SKILL_END:				default:		return E_FAIL;
 	}

@@ -17,21 +17,20 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
     GameObject::Update_GameObject(_DT);
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-    //if (KEY_DOWN(DIK_T) && KEY_DOWN(DIK_LCONTROL))
-    //{
-    //    isActive = !isActive;
-        if (!isActive)
-        {
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_Title")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_ATKType")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_ATK")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_Add")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_DESC")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_ExDESC")->Visible = FALSE;
-            UIManager::GetInstance()->Find_FontObject(L"ITEM_PRICE")->Visible = FALSE;
-        }
-  //  }
+    Show_Item();
+
+    if (!isActive)
+    {
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Title")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATKType")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATK")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Add")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_DESC")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ExDESC")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_PRICE")->Visible = FALSE;
+    }
+
     if (isActive) {
         Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
 
@@ -47,8 +46,10 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
             Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
         }
     }
+    else {
+      Display_ShopItemInfo(nullptr);
+    }
     
-     Show_Item();
     
     return 0;
 }
@@ -106,27 +107,6 @@ HRESULT	ShopUI::Text_Initialize() {
 }
 
 HRESULT ShopUI::Item_Initialize() {
-    //	m_pShopItem = new ItemINFO;
-    //
-    //	m_pShopItem->ItemDesc = {
-    //		
-    //			L"인내의 활",
-    //			L"무기/희귀",
-    //	
-    //			L"",
-    //			L"",
-    //			L"",
-    //	
-    //			L"차징시간이 길수록 데미지가 증가합니다.",
-    //	
-    //			L"때를 기다려라... \n단 한 순간에 적의 숨통을 끊을 수 있도록..",
-    //	
-    //			L"",
-    //			L"DIC_InfoFrame"
-    //	};
-    //	m_pShopItem->ItemPrice = 68;
-    //	m_pShopItem->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;	
-        //Display_ShopItemInfo(m_pShopItem);
     ItemINFO* pItem1 = new ItemINFO;
     pItem1->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
                                             L"사도의 가호를 하나 충전합니다.",

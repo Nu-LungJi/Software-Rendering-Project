@@ -97,9 +97,8 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 		break;
 	case MONSTER_STATE_TRACKING:
 		if (FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Jump", &m_tInfo)))
-		{
 			m_tInfo.Change_State(MONSTER_STATE_DEAD);
-		}
+		
 		if (m_tInfo.Textureinfo._frameTick >= FRAMETICK)
 		{
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
@@ -110,7 +109,19 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
 		}
 		break;
+	case MONSTER_STATE_CASTING:
+		if(FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Attack",&m_tInfo)))
+      m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
+		if(m_tInfo.Textureinfo._frameTick >= FRAMETICK)
+		{
+			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe / 2;
+			m_tInfo.Textureinfo._frameTick = 0.f;
+			if (fabsf(m_tInfo.vDirection.z) > 0.1f)
+				if (m_tInfo.vDirection.z > 0.f)
+					m_tInfo.Textureinfo._frame += (m_tInfo.Textureinfo._frame < m_tInfo.Textureinfo._Endframe * 0.5f) * m_tInfo.Textureinfo._Endframe / 2;
+    }
+		break;
 	}
 	Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 	Monster::BillBoard(Component_Transform, GRPDEV);
@@ -195,7 +206,7 @@ VOID EvilFrog::State_Casting(const _float& _DT) {
 	if (!m_tInfo.bTrigger[1])
 	{
 		m_tInfo.bTrigger[1] = true;
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, EVILFROG_CASTING_TIME);
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_RETURN, *MYPOS, FALSE, EVILFROG_CASTING_TIME);
 		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
 		*dynamic_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
