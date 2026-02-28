@@ -166,7 +166,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 2.5f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
-
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 2.5f, 2.5f, 2.5f };
@@ -181,10 +181,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
             break;
         case ArrowType::EvilHeadCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_67_Lightning_Fire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::Wind_Arrow:
             Size = { 1.5f, 1.5f, 1.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
+            // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::WindCharging:
             Size = { 7.f, 7.f, 7.f };
@@ -408,6 +411,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
                 _effectDelay = 0.f;
             }
             break;
@@ -430,6 +434,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 effectPos.y += 2.f;
                 effectPos.z += 5.f;
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 0.8f, Size, false);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Hit_Lightning_Strike.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
                 _ThunderDelay = 0.f;
                 
                 if (_target != nullptr) {
@@ -447,6 +452,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     if (_arrowLength > _atomicRange * 0.5 && _speed == 0.f && !_isReady) {
         _vec3 Size = { 4.f, 4.f, 4.f };
         PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ATOMIC_READY, Component_Transform->Get_Position() , 0.5f, Size, false);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
         ObjectDead = true;
     }
         
