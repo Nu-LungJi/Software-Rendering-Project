@@ -7,7 +7,7 @@ enum  CL_CHECK { IDEL, SPAWN_AFTER, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHEC
 enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP,CL_LUJUMP,CL_RUJUMP, CL_DEAD, CL_END};
 enum class LEAF_ATTACK { LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION, LEAF_END };
 enum class CL_EFFECT {
-	LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING, LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM, SPAWN_THUNDER, SPAWN_BOOM_CIRCLE, SPAWN_L, SPAWN_R,
+	LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING, LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM, SPAWN_THUNDER, SPAWN_BOOM_CIRCLE, SPAWN_L, SPAWN_R,SPAWN_POTAL,
 CL_EFFECTEND};
 
 class CLAttack;
@@ -44,11 +44,11 @@ private:
 
 	void		Create_Crystal();
 	_bool		Create_Leaf(const _float& _DT);
-	CLAttack*	Create_Leaf_Second(_vec3 vPos);
 	void		Create_Leaf_Third(_vec3 vPos);
 	void	    Create_Leaf_Third_S(_vec3 vPos);
 	void		Create_Leaf_Four(_vec3 vPos, _float fRot);
 
+	void		Create_Pool(LEAF_ATTACK eid ,_vec3 vPos, _vec3 vL);
 	void		CL_Jump(const _float& _DT, _int iMaxCnt);
 	void		CL_JumpCenter(const _float& _DT, _int iMaxCnt);
 
@@ -67,9 +67,11 @@ public:
 											Component_Transform->Set_Pos(vPos.x,3.5,vPos.z); }
 	vector<IDirect3DBaseTexture9*> Get_BulletTexture(LEAF_ATTACK eid) {return m_vecBullet[(int)eid]; }
 	vector<IDirect3DBaseTexture9*> Get_EffectTexture(CL_EFFECT eid) { return m_vecEffect[(int)eid]; }
+	
+	vector<GameObject*>& Get_PollMainBullet(LEAF_ATTACK eid) { return m_vecPoolBullet[(int)eid]; }
+	vector<GameObject*>& Get_OriginBullet(LEAF_ATTACK eid) { return m_vecOrignBullet[(int)eid]; }
+
 public:
-	void        Debug_ButtonStyle();
-	void        Debug_Button(const char pName[32], _vec3* vPivot, _float iLinePivot);
 			
 private:
 	Buffer*		Component_Buffer;
@@ -81,6 +83,9 @@ private:
 	vector<IDirect3DBaseTexture9*>  m_vecEffect[(int)CL_EFFECT::CL_EFFECTEND];
 	vector<IDirect3DBaseTexture9*>  m_vecBullet[(int)LEAF_ATTACK::LEAF_END];
 	vector<IDirect3DBaseTexture9*>  m_vecCheonlogTexture[CL_END];
+
+	vector<GameObject*>				m_vecOrignBullet[(int)LEAF_ATTACK::LEAF_END];
+	vector<GameObject*>				m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_END];
 
 private:
 	GameObject*		m_pTarget;

@@ -11,7 +11,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
 	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.3f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.3f, 1.35f * 1.3f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
-	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
+	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 100.f;
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 

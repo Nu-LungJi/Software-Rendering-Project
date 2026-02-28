@@ -15,9 +15,17 @@ public:
 	virtual			INT			Update_GameObject(const _float& _DT);
 	virtual			void		LateUpdate_GameObject(const _float& _DT);
 	virtual			void		Render_GameObject();
+					
 	BOOL						OnCollisionStay(GameObject* _Other);
 	BOOL						OnCollisionEnter(GameObject* _Other);
-
+	void						Set_bPool() { m_bPool = false; }
+	BOOL						Get_bPool() { return m_bPool; }
+	void						Set_Look(_vec3 Look, _vec3 vPos,_bool bSpin = false) {
+		m_vLook = Look;
+		m_CLPos = vPos;
+		m_bSpin = bSpin;
+		Component_Transform->Set_Pos(vPos);
+	}
 private:
 	HRESULT				     Component_Initialize();
 
@@ -49,6 +57,8 @@ private:
 	_vec3							m_vRight;
 	_vec3							m_vPlayerPos;
 
+	_bool							m_bPool;
+	_bool							m_bPoolCheck;
 	_bool					        m_bCheck;
 	_bool							m_bSpin;
 	_bool							m_bBgm;

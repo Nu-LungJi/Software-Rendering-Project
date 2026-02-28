@@ -70,7 +70,15 @@ HRESULT	FinalBoss::Ready_GameObject()						{
 	_float _cameraAngle = angle / D3DX_PI * 180.f;
 
 	Component_Transform->Rotation(ROT_X, 80.f);//90.f - _cameraAngle);
+	//도철 UI
+	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
+	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	pBossUi->Set_ObjectTag(L"BossUI");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
+	//보스 죽을때 이거 넣으면 UI 사라짐
+	//dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+		
 	return S_OK;
 }
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {

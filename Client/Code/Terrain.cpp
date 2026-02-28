@@ -7,6 +7,7 @@ Terrain::~Terrain() {}
 
 HRESULT Terrain::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+	bOnOff = false;
 	return S_OK;
 }
 INT	Terrain::Update_GameObject(const _float& _DT) {
@@ -17,14 +18,24 @@ INT	Terrain::Update_GameObject(const _float& _DT) {
 	AlphaYSorting(&vPos);
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
-	return 0;
+
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_Z) & 0x8000)
+		bOnOff = true;
+	
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_X) & 0x8000)
+		bOnOff = false;
+
+		return 0;
 }
 VOID Terrain::LateUpdate_GameObject(const _float& _DT) {
 	//GameObject::LateUpdate_GameObject(_DT);
 
 }
 VOID Terrain::Render_GameObject() {
-
+	if (bOnOff)
+		return;
 	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
