@@ -106,15 +106,15 @@
 #pragma endregion
 
 #pragma region EvilFrog
-#define EVILFROGIMGX									63
-#define EVILFROGIMGY									127
+#define EVILFROGIMGX									126
+#define EVILFROGIMGY									254
 #define EVILFROGIMG_ASPECTRATIO						((FLOAT)EVILFROGIMGY / (FLOAT)EVILFROGIMGX)
 
 #define EVILFROG_WIDTH									1.f
 #define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
 
-#define EVILFROG_SPEED									3.f
-#define EVILFROG_HP											50.f
+#define EVILFROG_SPEED									8.f
+#define EVILFROG_HP											20.f
 
 #define EVILFROG_TRACKINGDIS							20.f
 #define EVILFROG_TRACKINGMIN							10.f
@@ -124,8 +124,20 @@
 #define EVILFROG_CASTING_TIME						2.f
 #define EVILFROG_CHANNELING_TIME						0.3f
 
-#define EVILFROG_Bullet_Type								EvilFrogJumpBullet
+#pragma region EvilFrogBullet
+#define EVILFROG_Bullet_TYPE								Frog_Bullet
+#define EVILFROG_BULLET_SCALEMULT						1.f
+#define EVILFROG_BULLET_SPEEDMULT						1.f
+//#define EVILFROG_BULLET_NUM									8
+
+#define EVILFROG_BULLET_WIDTH								0.5f
+#define EVILFROG_BULLET_HEIGHT							EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
+
+#define EVILFROG_BULLET_SPEED                3.f	
+
+
 #define BAT_HORIZONTALFLIP_BUFFER	0.1f				//	좌우반전 버퍼
+#pragma endregion
 
 #pragma region BULLET_CHAIN
 #define BULLET_CHAIN_IMGX						120

@@ -25,11 +25,13 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 	{
 		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Rect);
 
+
 		if(FAILED( Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 	}
 	else
 	{
 		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Line);
+
 
 		if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 	}

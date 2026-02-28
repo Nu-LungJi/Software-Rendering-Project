@@ -2,8 +2,8 @@
 
 IMPLEMENT_SINGLETON(MonsterManager)
 
-MonsterManager::MonsterManager(){}
-MonsterManager::~MonsterManager(){}
+MonsterManager::MonsterManager() {}
+MonsterManager::~MonsterManager() {}
 
 void MonsterManager::Load_Textures_from_Folder(IDirect3DDevice9* _GRPDEV, const wstring& _Filepath)
 {
@@ -20,7 +20,7 @@ void MonsterManager::Load_Textures_from_Folder(IDirect3DDevice9* _GRPDEV, const 
 			FILENAMEINFO tInfo = Make_ID_from_Filename(FileData.name);
 			if (tInfo.usResult == 0xffff)	continue;
 
-			wstring			strFullPath	= _Filepath + L"\\" + FileData.name;
+			wstring			strFullPath = _Filepath + L"\\" + FileData.name;
 			LPDIRECT3DTEXTURE9 pTexture = nullptr;
 
 			if (SUCCEEDED(D3DXCreateTextureFromFileEx(_GRPDEV, strFullPath.c_str(),
@@ -28,16 +28,16 @@ void MonsterManager::Load_Textures_from_Folder(IDirect3DDevice9* _GRPDEV, const 
 				D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &pTexture)))
 			{
 				vector<LPDIRECT3DTEXTURE9>& vecTex = mapProtoType[tInfo.usResult];
-				
+
 				uint8_t Index = tInfo.FrameNum - 1;
-				if (vecTex.size() <= Index )
+				if (vecTex.size() <= Index)
 					vecTex.resize(Index + 1, nullptr);
 
 				vecTex[Index] = pTexture;
 			}
 		}
 	} while (_wfindnext64(handle, &FileData) == 0);
-	
+
 	_findclose(handle);
 }
 
@@ -97,7 +97,7 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 	else if (!wcscmp(tInfo.szType, L"Tile"))			{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
 	}
 	else return tInfo;
-	
+
 	//if      (!wcscmp(tInfo.szName, L"BlueEvilBat"))					tInfo.name = (uint8_t)MONSTER_TYPE::Bat;
 	//else if (!wcscmp(tInfo.szName, L"BlueScorpionEvilSoul"))		tInfo.name = (uint8_t)MONSTER_TYPE::ScorpionEvilSoul;
 	//else if (!wcscmp(tInfo.szName, L"BlueEvilSlime"))				tInfo.name = (uint8_t)MONSTER_TYPE::EvilSlime;
@@ -117,7 +117,6 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 	//else if (!wcscmp(tInfo.szState, L"Attack"))                    tInfo.State = (uint8_t)MONSTER_ANIM::Attack;
 	//else if (!wcscmp(tInfo.szState, L"Death"))                     tInfo.State = (uint8_t)MONSTER_ANIM::Death;
 
-
 	tInfo.usResult =  ((uint16_t)tInfo.Type     << 14) |
 					 ((uint16_t)tInfo.name      << 10) |
 					 ((uint16_t)tInfo.State     <<  6);
@@ -127,22 +126,22 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 
 uint16_t MonsterManager::Make_Key(uint8_t eType, uint8_t eName, uint8_t eState)
 {
-	uint16_t Key	= 0x00;
-	
-	uint8_t Type	= eType;
+	uint16_t Key = 0x00;
+
+	uint8_t Type = eType;
 	if (Type > 4) return 0xff;
-	
-	uint8_t Name	= eName;
+
+	uint8_t Name = eName;
 	if (Name > 16) return 0xff;
-	
-	uint8_t State	= eState;
+
+	uint8_t State = eState;
 	if (State > 16) return 0xff;
 
-	Key =	((uint16_t)Type << 14) |
-			((uint16_t)Name << 10) |
-			((uint16_t)State << 6);
+	Key = ((uint16_t)Type << 14) |
+		((uint16_t)Name << 10) |
+		((uint16_t)State << 6);
 
-	return Key +1;
+	return Key + 1;
 }
 
 uint16_t MonsterManager::Update_Key(uint16_t Key, uint8_t eState)
@@ -156,7 +155,7 @@ const vector<IDirect3DTexture9*>* MonsterManager::Find_Textures(uint16_t _Key)
 	uint16_t Key = _Key & 0xFFC0;
 	auto it = mapProtoType.find(Key);
 
-	if(it == mapProtoType.end())
+	if (it == mapProtoType.end())
 		return nullptr;
 
 	return &(it->second);
@@ -164,7 +163,7 @@ const vector<IDirect3DTexture9*>* MonsterManager::Find_Textures(uint16_t _Key)
 
 void MonsterManager::Free()
 {
-	for (auto& pair : mapProtoType)	{
+	for (auto& pair : mapProtoType) {
 		for (auto& tex : pair.second) {
 			tex->Release();
 			tex = nullptr;
@@ -203,46 +202,46 @@ HRESULT MonsterManager::Ready_Origin_Buffer(Buffer* _pBuffer)
 
 HRESULT MonsterManager::Ready_Origin_Buffer()
 {   
-	// --- 1. Á¤Á¡ µ¥ÀÌÅÍ(24°³) Á¤ÀÇ ---
-    // ±¸Á¶Ã¼ ¼ø¼­: vPosition, vNormal, dwColor, vTexUV(_vec3)
+	// --- 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(24ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ---
+    // ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½: vPosition, vNormal, dwColor, vTexUV(_vec3)
 
-    // ¾Õ¸é (Z-)
+    // ï¿½Õ¸ï¿½ (Z-)
 	m_vOriginVtx[0] = { { -1.f,  1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[1] = { {  1.f,  1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[2] = { {  1.f, -1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[3] = { { -1.f, -1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// µÞ¸é (Z+)
+	// ï¿½Þ¸ï¿½ (Z+)
 	m_vOriginVtx[4] = { {  1.f,  1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[5] = { { -1.f,  1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[6] = { { -1.f, -1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[7] = { {  1.f, -1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// À­¸é (Y+)
+	// ï¿½ï¿½ï¿½ï¿½ (Y+)
 	m_vOriginVtx[8] = { { -1.f,  1.f,  1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[9] = { {  1.f,  1.f,  1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[10] = { {  1.f,  1.f, -1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[11] = { { -1.f,  1.f, -1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// ¾Æ·§¸é (Y-)
+	// ï¿½Æ·ï¿½ï¿½ï¿½ (Y-)
 	m_vOriginVtx[12] = { { -1.f, -1.f, -1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[13] = { {  1.f, -1.f, -1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[14] = { {  1.f, -1.f,  1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[15] = { { -1.f, -1.f,  1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// ¿ÞÂÊ¸é (X-)
+	// ï¿½ï¿½ï¿½Ê¸ï¿½ (X-)
 	m_vOriginVtx[16] = { { -1.f,  1.f,  1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[17] = { { -1.f,  1.f, -1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[18] = { { -1.f, -1.f, -1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[19] = { { -1.f, -1.f,  1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// ¿À¸¥ÂÊ¸é (X+)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ê¸ï¿½ (X+)
 	m_vOriginVtx[20] = { {  1.f,  1.f, -1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
 	m_vOriginVtx[21] = { {  1.f,  1.f,  1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
 	m_vOriginVtx[22] = { {  1.f, -1.f,  1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
 	m_vOriginVtx[23] = { {  1.f, -1.f, -1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
 
-	// --- 2. ÀÎµ¦½º µ¥ÀÌÅÍ(12°³) »ý¼º ---
+	// --- 2. ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(12ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ---
 	for (_uint i = 0; i < 6; ++i)
 	{
 		_uint uiVtxIdx = i * 4;

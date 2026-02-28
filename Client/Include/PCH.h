@@ -51,6 +51,7 @@
 //#include "Docheol.h"
 
 #include "EvilFrog.h"
+#include "Frog_Bullet.h"
 
 #include "Alert.h"
 
