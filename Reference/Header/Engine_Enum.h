@@ -9,7 +9,7 @@ namespace Engine
 
 	enum class CHANNELID		{ SOUND_BGM01, SOUND_BGM02, SOUND_BGM03, SOUND_EFFECT01, SOUND_EFFECT02, SOUND_EFFECT03, SOUND_EFFECT04, SOUND_EFFECT05, SOUND_EFFECT06, SOUND_EFFECT07, SOUND_EFFECT08, SOUND_END };
 
-	enum class SCENE_TYPE		{ SCENE_LOGO, SCENE_STAGE, SCENE_END };
+	enum class SCENE_TYPE		{ SCENE_LOGO, SCENE_STAGE, Minigame, SCENE_END };
 
 	enum class COMPONENT_TYPE {
 		COMPONENT_TRIANGLE, COMPONENT_RECTANGLE, COMPONENT_RECTTEX, COMPONENT_TERRAIN, COMPONENT_TILE, COMPONENT_CUBE,
@@ -39,7 +39,7 @@ namespace Engine
 	enum	   TILE_STAGE		{TILE_STAGE1, TILE_STAGE2, TILE_STAGE3, TILE_STAGE4, TILE_FIRSTBOSS,TILE_DOCHER1,TILE_DOCHER2,TILE_DOCHERBOSS, TILE_DEFENSE, STAGE_END};
 	enum	   TILEMODE_CHANGE  { MODE_TILE, MODE_CUBE, MODE_OBJECT, MODE_END };
 
-	enum class MONSTER_SEP		: uint8_t { Monster = 1, Bullet, Effect };
+	enum class MONSTER_SEP		: uint8_t { Tile = 0, Monster = 1, Bullet, Effect };
 	enum class MONSTER_TYPE		: uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
 	enum class MONSTER_ANIM		: uint8_t { Stand = 0, Appear, Disappear, Attack, Death,  Random, End };
 	enum class BULLET_TYPE		: uint8_t { Standard = 0, ScorpionBullet, Chain, Fireball, GroundIce, Random,End};

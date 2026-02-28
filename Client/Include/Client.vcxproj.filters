@@ -238,6 +238,9 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\05. EvilFrog">
       <UniqueIdentifier>{bd0680c2-0764-4ba1-8a4f-dd4b3285f757}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\06. Effect\02. MonsterEffect\02. Shadow">
+      <UniqueIdentifier>{6ccd0e64-a4d8-46dc-be83-950e7608e18b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -493,6 +496,9 @@
     <ClInclude Include="..\Header\EvilFrog.h">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Shadow.h">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -730,6 +736,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\EvilFrog.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Shadow.cpp">
+      <Filter>03. GameObject\06. Effect\02. MonsterEffect\02. Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -101,7 +101,7 @@ HRESULT Player::Ready_GameObject() {
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
 
-	return S_OK;
+	return MiniGameInit();
 }
 
 INT	Player::Update_GameObject(const _float& _DT) {
@@ -217,6 +217,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
+	if (m_eCurrScene == SCENE_TYPE::Minigame) 
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 	CheonLog_Spawn();
 
 	if (_isStop) return;
@@ -1392,6 +1394,19 @@ BOOL Player::OnCollisionStay(GameObject* _Other)
 BOOL Player::OnCollisionExit(GameObject* _Other)
 {
 	return 0;
+}
+HRESULT Player::MiniGameInit()
+{
+	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		m_eCurrScene = SCENE_TYPE::SCENE_END;
+		return S_OK;
+	}
+
+	m_eCurrScene = SCENE_TYPE::Minigame;
+
+	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
+
+	return S_OK;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 

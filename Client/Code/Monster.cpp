@@ -256,18 +256,14 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 
 HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
 {
-	_vec3 vPos		= *Transcom->Get_Position();
-	_vec3 vScale	= *Transcom->Get_Scale();
-	_vec3 vLook		= { 0.f,0.f,1.f };
-	_vec3 vUp		= { 0.f,1.f,0.f };
-	_vec3 vRight	= { 1.f,0.f,0.f };
+	_vec3 vPos			= *Transcom->Get_Position();
+	_vec3 vScale		= *Transcom->Get_Scale();
+	_matrix* pWorldMat	= Transcom->Get_World();
 
-	_matrix* pWorldMat = D3DXMatrixIdentity(Transcom->Get_World());
-
-	pWorldMat->_11 = vRight.x * vScale.x;  pWorldMat->_12 = vRight.y * vScale.x;  pWorldMat->_13 = vRight.z * vScale.x;  pWorldMat->_14 = 0.f;
-	pWorldMat->_21 = vUp.x    * vScale.y;  pWorldMat->_22 = vUp.y    * vScale.y;  pWorldMat->_23 = vUp.z    * vScale.y;  pWorldMat->_24 = 0.f;
-	pWorldMat->_31 = vLook.x  * vScale.z;  pWorldMat->_32 = vLook.y  * vScale.z;  pWorldMat->_33 = vLook.z  * vScale.z;  pWorldMat->_34 = 0.f;
-	pWorldMat->_41 = vPos.x;               pWorldMat->_42 = vPos.y;               pWorldMat->_43 = vPos.z;               pWorldMat->_44 = 1.f;
+	pWorldMat->_11 = vScale.x;  pWorldMat->_12 = 0.f;       pWorldMat->_13 = 0.f;       pWorldMat->_14 = 0.f;
+	pWorldMat->_21 = 0.f;       pWorldMat->_22 = vScale.y;  pWorldMat->_23 = 0.f;       pWorldMat->_24 = 0.f;
+	pWorldMat->_31 = 0.f;       pWorldMat->_32 = 0.f;       pWorldMat->_33 = vScale.z;  pWorldMat->_34 = 0.f;
+	pWorldMat->_41 = vPos.x;    pWorldMat->_42 = vPos.y;    pWorldMat->_43 = vPos.z;    pWorldMat->_44 = 1.f;
 
 	return S_OK;
 }

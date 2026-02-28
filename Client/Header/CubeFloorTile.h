@@ -20,35 +20,37 @@ public:
     virtual			VOID		Render_GameObject();
 
     //이건.. 지형이 가지고 있는 타일의 인덱스 정보를 담기위함 해당 인덱스가 가진 위치위에 이 타일이 놓여있다는걸 확인하기 위해서
-    //int             Get_TileNumber()                    { return m_iTileNumber; }
-    //void            Set_TileNumber(_int iTileNumber)    { m_iTileNumber = iTileNumber; }
+    int             Get_TileNumber()                    { return m_iTileNumber; }
+    void            Set_TileNumber(_int iTileNumber) {
+        m_iTileNumber = iTileNumber;
+        if (m_pTransform != nullptr) m_pTransform->Get_Position()->y += 0.0001f * iTileNumber;
+    }
     //void            Set_TileState(TILE_STATE eid)       { m_eTileState = eid; }
+    Transform* Get_TransCom() { return m_pTransform; }
+    Buffer* Get_Buffer() { return m_pBuffer; }
 
 private:
     HRESULT			Component_Initialize();
-    //TILE_STATE      m_eTileState;
-    //TILE_SIDE       m_eTileSide;
 
-    const  _tchar*      m_pTileName;
+    int m_iTileNumber = 0;
 
     Buffer*             m_pBuffer;
+    Buffer*             m_pOriginBuffer;
     Transform*          m_pTransform;
     Collider*           m_pCollider;
 
-    //Texture*            m_pTexture;
-    //int                 m_iTileNumber;
 public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid = true);
-    //static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid = TILE_SIDE::TILE_END, TILE_STATE eState = TILE_STATE::STATE_NORMAL, FLOAT& X1, FLOAT& X2, FLOAT& Y1, FLOAT& Y2);
 
+    BOOL			OnCollisionEnter(GameObject* _Other)	override;
     bool           m_bGrid;
 
 private:
     virtual  void            Free();
 
-
+    bool    Pooling();
 private:
     CameraObject*   m_pCam = nullptr;
     bool            m_bTrigger = false;

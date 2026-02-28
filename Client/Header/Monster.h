@@ -364,7 +364,7 @@ public:
 		_vec2	vScale = { pTransCom->Get_Scale()->x,pTransCom->Get_Scale()->y};
 
 		D3DXVec2Normalize(&vScale, &vScale);
-		vScale *= _fScalemult * 2.f;
+		vScale *= _fScalemult;
 
 		pTransCom->Set_Scale({ vScale.x, vScale.y, _fScalemult });
 		

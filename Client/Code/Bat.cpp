@@ -6,10 +6,17 @@ Bat::~Bat() {}
 HRESULT Bat::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	if (dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		m_tInfo.eState[0] = MONSTER_STATE_MINIGAME_MOVE;
+		
+	}
+	else	
+		m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+
 	Component_Collider->Set_Hp(BAT_HP);
 	Component_Collider->Set_Att(1.f);
 
+	ObjectTAG = L"Monster";
 	return S_OK;
 }
 HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
@@ -40,7 +47,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	ObjectTAG = L"Monster";
 		
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
@@ -78,6 +84,9 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		break;
 	case MONSTER_STATE_DEAD:
 		Bat::State_Dead();
+		break;
+	case MONSTER_STATE_MINIGAME_MOVE:
+		MonsterManager::Make_Key()
 		break;
 	default:
 		break;

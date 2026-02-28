@@ -86,7 +86,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	}
 	m_tInfo.vDirection.y = 0.f;
 
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x) == (uint8_t)FRUSTUMPLANE::End) {
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}

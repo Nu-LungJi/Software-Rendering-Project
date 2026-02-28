@@ -94,6 +94,9 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 		else if (!wcscmp(tInfo.szName, L"MonsterSummons03"))			tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_SUMMONS03;
 		else if (!wcscmp(tInfo.szName, L"baseDeathEffect"))				tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_DEATH;
 	}
+	else if (!wcscmp(tInfo.szType, L"Tile"))			{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
+	}
+	else return tInfo;
 	
 	//if      (!wcscmp(tInfo.szName, L"BlueEvilBat"))					tInfo.name = (uint8_t)MONSTER_TYPE::Bat;
 	//else if (!wcscmp(tInfo.szName, L"BlueScorpionEvilSoul"))		tInfo.name = (uint8_t)MONSTER_TYPE::ScorpionEvilSoul;
@@ -170,3 +173,196 @@ void MonsterManager::Free()
 	}
 	mapProtoType.clear();
 }
+
+
+HRESULT MonsterManager::Ready_Origin_Buffer(Buffer* _pBuffer)
+{
+	if (_pBuffer == nullptr) return E_POINTER;
+
+	LPDIRECT3DVERTEXBUFFER9 pVB			= _pBuffer->Get_VB();
+	VTXTRUECUBE*			pSourceVtx	= nullptr;
+
+	if (FAILED(pVB->Lock(0, 0, (void**)&pSourceVtx, D3DLOCK_READONLY)))
+		return E_FAIL;
+
+	memcpy(m_vOriginVtx, pSourceVtx, sizeof(VTXTRUECUBE) * 24);
+	pVB->Unlock();
+
+
+	LPDIRECT3DINDEXBUFFER9 pIB = _pBuffer->Get_IB();
+	INDEX32* pSourceIdx = nullptr;
+
+	if (FAILED(pIB->Lock(0, 0, (void**)&pSourceIdx, D3DLOCK_READONLY)))
+		return E_FAIL;
+
+	memcpy(m_vOriginIdx, pSourceIdx, sizeof(INDEX32) * 12);
+	pIB->Unlock();
+
+	return S_OK;
+}
+
+HRESULT MonsterManager::Ready_Origin_Buffer()
+{   
+	// --- 1. 정점 데이터(24개) 정의 ---
+    // 구조체 순서: vPosition, vNormal, dwColor, vTexUV(_vec3)
+
+    // 앞면 (Z-)
+	m_vOriginVtx[0] = { { -1.f,  1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[1] = { {  1.f,  1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[2] = { {  1.f, -1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[3] = { { -1.f, -1.f, -1.f }, { 0.f,  0.f, -1.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// 뒷면 (Z+)
+	m_vOriginVtx[4] = { {  1.f,  1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[5] = { { -1.f,  1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[6] = { { -1.f, -1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[7] = { {  1.f, -1.f,  1.f }, { 0.f,  0.f,  1.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// 윗면 (Y+)
+	m_vOriginVtx[8] = { { -1.f,  1.f,  1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[9] = { {  1.f,  1.f,  1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[10] = { {  1.f,  1.f, -1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[11] = { { -1.f,  1.f, -1.f }, { 0.f,  1.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// 아랫면 (Y-)
+	m_vOriginVtx[12] = { { -1.f, -1.f, -1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[13] = { {  1.f, -1.f, -1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[14] = { {  1.f, -1.f,  1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[15] = { { -1.f, -1.f,  1.f }, { 0.f, -1.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// 왼쪽면 (X-)
+	m_vOriginVtx[16] = { { -1.f,  1.f,  1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[17] = { { -1.f,  1.f, -1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[18] = { { -1.f, -1.f, -1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[19] = { { -1.f, -1.f,  1.f }, { -1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// 오른쪽면 (X+)
+	m_vOriginVtx[20] = { {  1.f,  1.f, -1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 0.f, 0.f } };
+	m_vOriginVtx[21] = { {  1.f,  1.f,  1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 0.f, 0.f } };
+	m_vOriginVtx[22] = { {  1.f, -1.f,  1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 1.f, 1.f, 0.f } };
+	m_vOriginVtx[23] = { {  1.f, -1.f, -1.f }, {  1.f, 0.f,  0.f }, 0xffffffff, { 0.f, 1.f, 0.f } };
+
+	// --- 2. 인덱스 데이터(12개) 생성 ---
+	for (_uint i = 0; i < 6; ++i)
+	{
+		_uint uiVtxIdx = i * 4;
+		_uint uiTriIdx = i * 2;
+
+		m_vOriginIdx[uiTriIdx]._0 = uiVtxIdx;
+		m_vOriginIdx[uiTriIdx]._1 = uiVtxIdx + 1;
+		m_vOriginIdx[uiTriIdx]._2 = uiVtxIdx + 2;
+
+		m_vOriginIdx[uiTriIdx + 1]._0 = uiVtxIdx;
+		m_vOriginIdx[uiTriIdx + 1]._1 = uiVtxIdx + 2;
+		m_vOriginIdx[uiTriIdx + 1]._2 = uiVtxIdx + 3;
+	}
+
+	return S_OK;
+}
+
+HRESULT MonsterManager::Ready_Static_Batch(LPDIRECT3DDEVICE9 _GRPDEV)
+{
+	m_uiMaxTile = m_vecTiles.size();
+	if (m_uiMaxTile == 0) return E_FAIL;
+
+	if (m_pTileVB != nullptr) {
+		m_pTileVB->Release();	m_pTileVB = nullptr;
+	}
+	if (m_pTileIB != nullptr) {
+		m_pTileIB->Release(); m_pTileIB = nullptr;
+	}
+
+	_uint iMaxVtxCnt = m_uiMaxTile * 24;
+	_uint iMaxTriCnt = m_uiMaxTile * 12;
+
+	if (FAILED(_GRPDEV->CreateVertexBuffer(sizeof(VTXTRUECUBE) * iMaxVtxCnt,
+		D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, FVF_TRUECUBE, D3DPOOL_DEFAULT, &m_pTileVB, NULL)))
+		return E_FAIL;
+
+	if (FAILED(_GRPDEV->CreateIndexBuffer(sizeof(INDEX32) * iMaxTriCnt,
+		0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &m_pTileIB, NULL)))
+		return E_FAIL;
+
+    VTXTRUECUBE*	pStaticVtx = nullptr;
+    INDEX32*		pStaticIdx = nullptr;
+
+	m_pTileVB->Lock(0, 0, (void**)&pStaticVtx, 0);
+	m_pTileIB->Lock(0, 0, (void**)&pStaticIdx, 0);
+
+	for (_uint i = 0; i < m_uiMaxTile; ++i)	{
+		Transform* pTransCom = static_cast<Transform*>(m_vecTiles[i]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+		_vec3 vPos = *pTransCom->Get_Position();
+		_vec3 vScale = *pTransCom->Get_Scale();
+		_uint uiVtxOff = i * 24;
+		_uint uiIdxOff = i * 12;
+
+		for (_uint j = 0; j < 24; ++j)		{
+			pStaticVtx[uiVtxOff + j] = m_vOriginVtx[j];
+
+			pStaticVtx[uiVtxOff + j].vPosition.x *= vScale.x;
+			pStaticVtx[uiVtxOff + j].vPosition.y *= vScale.y;
+			pStaticVtx[uiVtxOff + j].vPosition.z *= vScale.z;
+
+			pStaticVtx[uiVtxOff + j].vPosition += vPos;
+		}
+
+		for (_uint j = 0; j < 12; ++j)		{
+			pStaticIdx[uiIdxOff + j]._0 = m_vOriginIdx[j]._0 + uiVtxOff;
+			pStaticIdx[uiIdxOff + j]._1 = m_vOriginIdx[j]._1 + uiVtxOff;
+			pStaticIdx[uiIdxOff + j]._2 = m_vOriginIdx[j]._2 + uiVtxOff;
+		}
+	}
+	m_pTileVB->Unlock();
+	m_pTileIB->Unlock();
+
+	return S_OK;
+}	
+
+void MonsterManager::Render_Static_Batch(LPDIRECT3DDEVICE9 GRPDEV, LPDIRECT3DTEXTURE9 Texture)
+{
+	if (m_pTileVB == nullptr)return;
+
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	_matrix	matWorld;
+	D3DXMatrixIdentity(&matWorld);
+	GRPDEV->SetTransform(D3DTS_WORLD, &matWorld);
+
+	GRPDEV->SetTexture(0, Texture);
+
+	GRPDEV->SetStreamSource(0, m_pTileVB, 0, sizeof(VTXTRUECUBE));
+	GRPDEV->SetIndices(m_pTileIB);
+	GRPDEV->SetFVF(FVF_TRUECUBE);
+	GRPDEV->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24 * m_uiMaxTile, 0, 12 * m_uiMaxTile);
+
+	GRPDEV->SetRenderState(D3DRS_CULLMODE,D3DCULL_NONE);
+}
+
+void MonsterManager::Update_Tile(_uint _Num, Transform* TransCom)
+{
+	if (m_pTileVB == nullptr)	return;
+
+	_uint iVtxSize		= sizeof(VTXTRUECUBE);
+	_uint iStartByte	= _Num * 24 * iVtxSize;
+	_uint iLockSize		= 24 * iVtxSize;
+
+	VTXTRUECUBE* pDestVtx = nullptr;
+
+	if (FAILED(m_pTileVB->Lock(iStartByte, iLockSize, (void**)&pDestVtx, D3DLOCK_NOOVERWRITE)))
+		return;
+
+	for (int i = 0; i < 24; ++i)
+	{
+		_vec3 vScale = *TransCom->Get_Scale();
+		pDestVtx[i] = m_vOriginVtx[i];
+
+		pDestVtx[i].vPosition.x *= vScale.x;
+		pDestVtx[i].vPosition.y *= vScale.y;
+		pDestVtx[i].vPosition.z *= vScale.z;
+
+		pDestVtx[i].vPosition += *TransCom->Get_Position();
+	}
+
+	m_pTileVB->Unlock();
+}
+

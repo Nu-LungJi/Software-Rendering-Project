@@ -77,6 +77,7 @@
 #include "CubeFloorTile.h"
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
+#include "Shadow.h"
 
 #pragma endregion
 

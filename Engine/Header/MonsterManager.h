@@ -78,8 +78,35 @@ public:
 private:
 	void Free() override;
 
+
     private:
     map<uint16_t, vector<IDirect3DTexture9*>>	    mapProtoType;
+
+
+public:
+    HRESULT                     Ready_Origin_Buffer(Buffer* _pBuffer);
+    HRESULT                     Ready_Origin_Buffer();
+    vector<GameObject*>*        Get_Tiles() { return &m_vecTiles; }
+    LPDIRECT3DVERTEXBUFFER9*    TILEVB() { return &m_pTileVB; }
+    LPDIRECT3DINDEXBUFFER9*     TILEIB() { return &m_pTileIB; }
+    
+    void    Set_Maxtile(_uint _Num)     { m_uiMaxTile = _Num; }
+    HRESULT Ready_Static_Batch(LPDIRECT3DDEVICE9 _GRPDEV);
+    void    Render_Static_Batch(LPDIRECT3DDEVICE9 GRPDEV, LPDIRECT3DTEXTURE9 Texture);
+
+    void    Update_Tile(_uint _Num, Transform* TransCom);
+
+private:
+    IDirect3DTexture9*      m_pTileTex;
+
+    _uint                   m_uiMaxTile = 0;
+    LPDIRECT3DVERTEXBUFFER9 m_pTileVB = nullptr;
+    LPDIRECT3DINDEXBUFFER9  m_pTileIB = nullptr;
+
+    vector<GameObject*>     m_vecTiles;
+
+    VTXTRUECUBE          m_vOriginVtx[24];
+    INDEX32              m_vOriginIdx[12];
 };
 
 END
