@@ -9,6 +9,7 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	m_iCnt = 0;
+	m_iKeyCnt = 0;
 	m_StageCnt[0] = 5;
 	m_StageCnt[1] = 10;
 	m_StageCnt[2] = 20;
@@ -18,7 +19,7 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"남은 마리 수 : ", { 766.537f, 10.f }, 30, L"MONSTER_NUMBER", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 878.10f, 10.f }, 30, L"MONSTER_NAME", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
-	Make_TextureList(L"CLEAR_");
+	Make_TextureList(L"../../Resource/Clear/CLEAR_");
 	return S_OK;
 }
 HRESULT MiniGameCounter::Make_TextureList(wstring _FileName)
@@ -28,11 +29,14 @@ HRESULT MiniGameCounter::Make_TextureList(wstring _FileName)
 	while (++FRAME) {
 		wstring FileName = _FileName + to_wstring(FRAME) + L".png";
 		wstring KeyName = _FileName + to_wstring(FRAME);
-		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-		m_pSprite->Import_Sprite(FileName.c_str(), KeyName.c_str(), WINCX / 2, WINCY / 2, 800, 60, TRUE, 255);
+		
+		m_pSprite->Import_Sprite(FileName.c_str(), KeyName.c_str(), WINCX / 6, WINCY /6, 800, 150, TRUE, 255);
+		m_vecKeyList.push_back(KeyName);
+		if (FRAME == 20)
+			return S_OK;
 	}
 
-	return S_OK;
+
 	return S_OK;
 }
 INT	MiniGameCounter::Update_GameObject(const _float& _DT) {
@@ -51,6 +55,7 @@ INT	MiniGameCounter::Update_GameObject(const _float& _DT) {
 
 	UIManager::GetInstance()->Find_FontObject(L"STAGE_COUNT")->Set_Text(to_wstring(m_iCnt));
 	UIManager::GetInstance()->Find_FontObject(L"MONSTER_NAME")->Set_Text(to_wstring(m_StageCnt[m_iCnt]));
+	RenderManager::GetInstance()->Add_RenderGroup(RENDERID::RENDER_UI, this);
 
 	return 0;
 
@@ -63,6 +68,12 @@ VOID MiniGameCounter::LateUpdate_GameObject(const _float& _DT) {
 	{
 		m_bEnd = true;
 		m_fTime += _DT;
+		m_fFrame += _DT;
+		if (m_fFrame > 0.1f)
+			++m_iKeyCnt;
+		if (m_iKeyCnt > m_vecKeyList.size() - 1)
+			m_iKeyCnt = m_vecKeyList.size() - 1;
+
 		if (m_fTime > 6.f)
 		{
 			UIManager::GetInstance()->Delete_FontObject(UIManager::GetInstance()->Find_FontObject(L"STAGE_NAME"));
@@ -81,10 +92,17 @@ VOID MiniGameCounter::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID MiniGameCounter::Render_GameObject()
 {
-	if (m_bEnd)
-	{
 
-	}
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
+	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
+	Sprite->Draw(m_pSprite->Get_Texture(m_vecKeyList[m_iKeyCnt])->TEXTURE, NULL, NULL, &m_pSprite->Get_Texture(m_vecKeyList[m_iKeyCnt])->POS, D3DCOLOR_ARGB(255, 255, 255, 255));
+	Sprite->End();
+	GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
+	
+
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
 }
 
 
@@ -116,8 +134,6 @@ void MiniGameCounter::Imgui()
 
 	ImGui::End();
 }
-
-
 void MiniGameCounter::Imgui_Setting()
 {
 	static _float fsScale(1);
@@ -228,8 +244,6 @@ void MiniGameCounter::Imgui_Setting()
 		
 	
 }
-
-
 void MiniGameCounter::Imgui_ButtonStyle()
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, D3DXCOLOR(0.0f, 0.f, 0.f, 1.f));
@@ -241,6 +255,7 @@ void MiniGameCounter::Imgui_ButtonStyle()
 HRESULT MiniGameCounter::Component_Initialize() {
 
 	m_pSprite = ADD_COMPONENT_SPRITE;
+	D3DXCreateSprite(GRPDEV, &Sprite);
 	return S_OK;
 }
 
@@ -258,6 +273,6 @@ MiniGameCounter* MiniGameCounter::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 VOID MiniGameCounter::Free() {
 
-
+	Safe_Release(Sprite);
 	GameObject::Free();
 }

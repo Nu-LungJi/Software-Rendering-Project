@@ -40,7 +40,6 @@ HRESULT	BossUI::Ready_GameObject(BOSSUI_INFO eid, GameObject* pObj) {
 INT		BossUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 
-	
 	if (m_bDead)
 	{
 		switch (m_eInfo)
@@ -82,9 +81,8 @@ VOID	BossUI::Render_GameObject() {
 
 	matWorld = matScale * matTrans;
 	Sprite->SetTransform(&matWorld);
-	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-	
+	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	Sprite->Draw(SpriteInfo[1]->TEXTURE, NULL, NULL, NULL, D3DCOLOR_ARGB(255, 255, 255, 255));
 	Sprite->End();
 	D3DXMatrixIdentity(&matWorld);
@@ -121,115 +119,10 @@ BossUI* BossUI::Create(LPDIRECT3DDEVICE9 _GRPDEV, BOSSUI_INFO eid, GameObject* p
 }
 VOID	BossUI::Free() {
 	Safe_Release(Sprite);
-	for (_int i = 0; i < 3; ++i)
+	for (_int i = 0; i < 2; ++i)
 	{
 		Safe_Release(SpriteInfo[i]->TEXTURE);
 		Safe_Delete(SpriteInfo[i]);
 	}
 	GameObject::Free();
-}
-
-VOID BossUI::Imgui_Setting()
-{
-	static _float fsScale(1);
-	static _float sMin(-1000), sMax(2000), sMin1(-1000), sMax1(2000), sMin2(-1000), sMax2(2000), sMin3(-3000), sMax3(3000);
-	static _float fPivot1(1);
-	static _int fScale(30);
-	_float fMin(0.0f), fMax(100), UMin(0), UMax(0), fMovePosMin(-100), fMovePosMax(129), fMoveScaleMin(-100), fMoveScaleMax(129), fMoveRotMin(-360), fMoveRotMax(360), vMouseMin(0), vMouseMax(0), fHeightMin(0.f), fHeightMax(10.f), fPosMin(0.f), fPosMax(200.f);
-
-
-
-	_vec2 vPos = UIManager::GetInstance()->Find_FontObject(L"CheonLog")->Get_Pos();
-
-	ImGui::Text("CheonLog");
-	ImGui::SameLine(200.f, 0.f);
-	ImGui::SliderFloat2("##99", vPos, sMin, sMax);
-	
-	Imgui_ButtonStyle();
-	if (ImGui::Button("CheonLog+"))
-		vPos.x += fPivot1;
-	ImGui::PopStyleColor(3);
-
-	ImGui::SameLine(150, 0.f);
-	Imgui_ButtonStyle();
-	if (ImGui::Button("CheonLog-"))
-		vPos.x -= fPivot1;
-	ImGui::PopStyleColor(3);
-
-	Imgui_ButtonStyle();
-	if (ImGui::Button("CheonLogF+"))
-		vPos.y += fPivot1;
-	ImGui::PopStyleColor(3);
-
-	ImGui::SameLine(150, 0.f);
-	Imgui_ButtonStyle();
-	if (ImGui::Button("CheonLogF-"))
-		vPos.y -= fPivot1;
-	ImGui::PopStyleColor(3);
-	UIManager::GetInstance()->Find_FontObject(L"CheonLog")->Set_Pos(vPos.x, vPos.y);
-
-
-	_vec2 vPos1 = UIManager::GetInstance()->Find_FontObject(L"style")->Get_Pos();
-	ImGui::Text("style");
-	ImGui::SameLine(200.f, 0.f);
-	ImGui::SliderFloat2("##98", vPos1, sMin1, sMax1);
-	Imgui_ButtonStyle();
-	if (ImGui::Button("style+"))
-		vPos1.x += fPivot1;
-	ImGui::SameLine(150, 0.f);
-
-	ImGui::PopStyleColor(3);
-	Imgui_ButtonStyle();
-	if (ImGui::Button("style-"))
-		vPos1.x -= fPivot1;
-	ImGui::PopStyleColor(3);
-
-	Imgui_ButtonStyle();
-	if (ImGui::Button("styleF+"))
-		vPos1.y += fPivot1;
-	ImGui::SameLine(150, 0.f);
-
-	ImGui::PopStyleColor(3);
-	Imgui_ButtonStyle();
-	if (ImGui::Button("styleF-"))
-		vPos1.y -= fPivot1;
-	ImGui::PopStyleColor(3);
-
-	UIManager::GetInstance()->Find_FontObject(L"style")->Set_Pos(vPos1.x, vPos1.y);
-
-}
-VOID BossUI::Imgui()
-{
-	ImGui::SetNextWindowSize({ 800,600 });
-
-	ImGui::Begin("Editor", NULL, ImGuiWindowFlags_MenuBar);
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Save"))
-				cout << ("Save clicked\n");
-			ImGui::Separator(); //±¸ºÐÁÙ
-			if (ImGui::MenuItem("Open"))
-				cout << ("Open clicked\n");
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
-	Imgui_Setting();
-
-	ImGui::End();
-
-	ImGui::Begin("Mode Changer", NULL, ImGuiWindowFlags_MenuBar);
-
-	ImGui::SetNextWindowSize({ 800,300 });
-
-	ImGui::End();
-}
-VOID BossUI::Imgui_ButtonStyle()
-{
-	ImGui::PushStyleColor(ImGuiCol_Button, D3DXCOLOR(0.0f, 0.f, 0.f, 1.f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.8f, 0.7f, 0.7f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.5f, 0.7f, 0.7f));
-
 }

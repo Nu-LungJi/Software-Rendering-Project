@@ -2,7 +2,14 @@
 
 SpriteObject:: SpriteObject()							:					  Sprite(nullptr){}
 SpriteObject:: SpriteObject(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV), Sprite(nullptr){}
-SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_RHS.Sprite), TextureList(_RHS.TextureList) { Sprite->AddRef(); }
+SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_RHS.Sprite) {
+	Sprite->AddRef();
+	_int i = _RHS.TextureList.size();
+	TextureList.reserve(i);
+	TextureList = _RHS.TextureList;
+	for (size_t i = 0; i < TextureList.size(); ++i)
+		TextureList[i].TEXTURE->AddRef();
+}
 SpriteObject::~SpriteObject()																									{}
 
 HRESULT SpriteObject::Ready_Sprite() {

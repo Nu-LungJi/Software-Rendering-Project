@@ -117,7 +117,7 @@ void Tile::Mode_Change()
 }
 void Tile::Imgui()
 {
-	ImGui::SetNextWindowSize({ 800,600 });
+	ImGui::SetNextWindowSize({ 800,600 }, ImGuiCond_FirstUseEver);
 
 	ImGui::Begin("Editor",NULL,ImGuiWindowFlags_MenuBar);
 		if (ImGui::BeginMenuBar())
@@ -1007,10 +1007,6 @@ void Tile::Check_TilePoint()
 						pTile = Spawner::Create(GRPDEV, m_eTile, m_eSpawner,{0,0,0});
 
 					}
-					else if (m_eTileState == STATE_UNDERTILE)
-					{
-						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState);
-					}
 					else if (m_eTileState != STATE_END)
 					{
 						pTile = CXZTile::Create(GRPDEV, m_eTile, m_eTileState);
@@ -1042,10 +1038,6 @@ void Tile::Check_TilePoint()
 							_int i(0);
 							Set_AnimationCount(&i);
 							dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(m_pTileName, i, m_eTile, m_eTileState, m_eMode, (_int)vMouseCheck.z * VTXCNTX + (_int)vMouseCheck.x, m_vNextPos, m_bOnlyAnimation);
-						}
-						else if (m_eTileState == STATE_UNDERTILE)
-						{
-							//dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileBackGround(m_pTileName, 0, m_eTile, m_eTileState, m_eMode, (_int)vMouseCheck.z * VTXCNTX + (_int)vMouseCheck.x, m_vNextPos, m_bOnlyAnimation);
 						}
 						else
 						{

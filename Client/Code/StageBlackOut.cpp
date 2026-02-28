@@ -5,19 +5,21 @@ StageBlackOut::StageBlackOut(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV){}
 StageBlackOut::StageBlackOut(CONST GameObject& _RHS) : GameObject(_RHS){}
 StageBlackOut::~StageBlackOut() {}
 
-HRESULT StageBlackOut::Ready_Effect(_vec3* vPos) {
+HRESULT StageBlackOut::Ready_Effect(_vec3* vPos, _bool bDocheol) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 	D3DXCreateSprite(GRPDEV, &m_pDrawSprite);
 
-	Make_TextureList(L"../../Tile/Frame/frame_black_L_to_R", WINCX, WINCY, 255, 46);
-
+	
+		Make_TextureList(L"../../Tile/Frame/frame_black_L_to_R", WINCX, WINCY, 255, 46,SCENE_EFFECT::SCENE_STAGE);
+		Make_TextureList(L"../../Tile/Frame/Spr_Effect_ChaosSwordBlackHole_Start_",WINCX,WINCY,255,46,SCENE_EFFECT::SCENE_BOSS);
 	m_fFrame = 0;
 	m_iFrameCnt = 0;
+	m_bDocheol = bDocheol;
 	m_bStop = false;
 	m_bRestart = true;
 	return S_OK;
 }
-HRESULT StageBlackOut::Make_TextureList(wstring _FileName, UINT _WIDTH, UINT _HEIGHT, INT _OPACITY, INT iCnt)
+HRESULT StageBlackOut::Make_TextureList(wstring _FileName, UINT _WIDTH, UINT _HEIGHT, INT _OPACITY, INT iCnt, SCENE_EFFECT eid)
 {
 	INT FRAME = 0;
 
@@ -31,7 +33,7 @@ HRESULT StageBlackOut::Make_TextureList(wstring _FileName, UINT _WIDTH, UINT _HE
 			1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &TEX);
 
 		if (TEX == nullptr) break;
-		 m_pSprtieList.push_back(TEX);
+		 m_pSprtieList[(int)eid].push_back(TEX);
 	}
 
 	return S_OK;
@@ -45,33 +47,69 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 
 		GameObject::Update_GameObject(_DT);
 
-		m_fFrame += _DT;
-		if (m_bStop && TileManager::GetInstance()->Get_Loading())
+		if (m_bDocheol)
 		{
-			++m_iFrameCnt;
 
-			dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
-			m_bStop = false;
-		}
+			m_fFrame += _DT;
+			if (m_bStop && TileManager::GetInstance()->Get_Loading())
+			{
+				++m_iFrameCnt;
 
-		if (m_iFrameCnt == 20)
-			TileManager::GetInstance()->Set_EndLoading(false);
-		if (m_iFrameCnt == 20 && !TileManager::GetInstance()->Get_Loading())
-		{
-			m_bStop = true;
-			return 1;
-		}
+				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
+				m_bStop = false;
+			}
 
-		if (m_fFrame > 0.008)
-		{
-			m_fFrame = 0;
-			++m_iFrameCnt;
+			if (m_iFrameCnt == 6)
+				TileManager::GetInstance()->Set_EndLoading(false);
+			if (m_iFrameCnt == 6 && !TileManager::GetInstance()->Get_Loading())
+			{
+				m_bStop = true;
+				return 1;
+			}
+
+			if (m_fFrame > 0.9f)
+			{
+				m_fFrame = 0;
+				++m_iFrameCnt;
+			}
+			if (m_iFrameCnt > m_pSprtieList[(int)m_eSceneID].size() - 1)
+			{
+				m_bRestart = true;
+				m_bStop = false;
+				m_iFrameCnt = 0;
+			}
 		}
-		if (m_iFrameCnt > m_pSprtieList.size() - 1)
+		else
 		{
-			m_bRestart = true;
-			m_bStop = false;
-			m_iFrameCnt = 0;
+
+			m_fFrame += _DT;
+			if (m_bStop && TileManager::GetInstance()->Get_Loading())
+			{
+				++m_iFrameCnt;
+
+				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
+				m_bStop = false;
+			}
+
+			if (m_iFrameCnt == 20)
+				TileManager::GetInstance()->Set_EndLoading(false);
+			if (m_iFrameCnt == 20 && !TileManager::GetInstance()->Get_Loading())
+			{
+				m_bStop = true;
+				return 1;
+			}
+
+			if (m_fFrame > 0.008)
+			{
+				m_fFrame = 0;
+				++m_iFrameCnt;
+			}
+			if (m_iFrameCnt > m_pSprtieList[(int)m_eSceneID].size() - 1)
+			{
+				m_bRestart = true;
+				m_bStop = false;
+				m_iFrameCnt = 0;
+			}
 		}
 	}
 	return 0;
@@ -84,12 +122,15 @@ VOID StageBlackOut::Render_GameObject() {
 	if (!m_bRestart)
 	{
 		GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		m_pDrawSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-		m_pDrawSprite->Draw(m_pSprtieList[m_iFrameCnt], NULL, NULL, 0, D3DCOLOR_ARGB(255, 255, 255, 255));
+		m_pDrawSprite->Draw(m_pSprtieList[(int)m_eSceneID][m_iFrameCnt], NULL, NULL, 0, D3DCOLOR_ARGB(255, 255, 255, 255));
 
 		m_pDrawSprite->End();
 		GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
+
+		GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	}
 	
 }
@@ -98,9 +139,9 @@ HRESULT	StageBlackOut::Component_Initialize() {
 
 	return S_OK;
 }
-StageBlackOut* StageBlackOut::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3* vPos) {
+StageBlackOut* StageBlackOut::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3* vPos, _bool bDocheol) {
 	StageBlackOut* Blackout = new StageBlackOut(_GRPDEV);
-	if (FAILED(Blackout->Ready_Effect(vPos))) {
+	if (FAILED(Blackout->Ready_Effect(vPos, bDocheol))) {
 		MSG_BOX("Cannot Create Effect.");
 		Safe_Release(Blackout);
 		return nullptr;
@@ -111,10 +152,14 @@ VOID StageBlackOut::Free() {
 
 	Safe_Release(m_pDrawSprite);
 
-	for (auto& iter : m_pSprtieList)
-		Safe_Release(iter);
-
-	m_pSprtieList.clear();
-
+	for (_int i = 0; i < (int)SCENE_EFFECT::SCENE_END; ++i)
+	{
+		for (auto& iter : m_pSprtieList[i])
+			Safe_Release(iter);
+	
+		m_pSprtieList[i].clear();
+	}
+	
+	
 	GameObject::Free();
 }

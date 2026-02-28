@@ -22,9 +22,6 @@ public:
 	}
 	VOID				Check_HpBar();
 	VOID				Set_Dead() { m_bDead = true; }
-	VOID                Imgui_Setting();
-	VOID                Imgui();
-	VOID                Imgui_ButtonStyle();
 public:
 	HRESULT				Component_Initialize();
 	static	BossUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV, BOSSUI_INFO eid, GameObject* pObj);

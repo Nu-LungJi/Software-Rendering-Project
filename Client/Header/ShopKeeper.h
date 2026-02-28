@@ -47,7 +47,7 @@ private:
 	_float  Timer_Shop;
 	_int Shop_AnimIDX;
 
-
+	BOOL	bQuest;
 	BOOL	Interaction_Possible;
 
 private:

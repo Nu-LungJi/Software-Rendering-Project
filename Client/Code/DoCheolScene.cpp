@@ -88,10 +88,11 @@ HRESULT   DoCheolScene::Ready_Scene() {
 		else
 			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 
+		
 
-
-		if (eNext == TILE_STAGE::TILE_STAGE2)
+		if (eTileState == TILE_STATE::STATE_UNDERTILE)
 			++i;
+
 		GOBJ->Set_ObjectTag(L"CXZTile");
 		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
@@ -156,9 +157,8 @@ HRESULT DoCheolScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 
-    //Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-    //Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
-    //이거 안해두됨 트리거에 주석 쳐놓고 왜안돼지 하고 있었네;;
+    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+    Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
     return S_OK;
 }
 HRESULT DoCheolScene::Ready_UserInterface_Layer() {

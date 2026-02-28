@@ -9,6 +9,7 @@ HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 
 	return S_OK;
@@ -53,9 +54,9 @@ HRESULT GameManager::Ready_DefaultSetting() {
 	return S_OK;
 }
 HRESULT GameManager::Ready_SceneSetting() {
-	//Scene* EnterScene = StartScene::Create(GRPDEV);
+	Scene* EnterScene = StartScene::Create(GRPDEV);
 	//Scene* EnterScene = DebugScene::Create(GRPDEV);
-	Scene* EnterScene   = MapScene::Create(GRPDEV);
+	//Scene* EnterScene   = MapScene::Create(GRPDEV);
 	//Scene* EnterScene = DoCheolScene::Create(GRPDEV);
 	//Scene* EnterScene = MiniGameScene::Create(GRPDEV);
 

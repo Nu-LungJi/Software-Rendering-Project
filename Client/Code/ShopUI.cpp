@@ -48,6 +48,11 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         }
     }
     
+    if (!isActive)
+    {
+        for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
+        for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
+    }
      Show_Item();
     
     return 0;

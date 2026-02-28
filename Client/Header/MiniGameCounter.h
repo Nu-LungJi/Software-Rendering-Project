@@ -46,8 +46,11 @@ private:
     _bool                   m_bDead;
     _int                    m_iCnt;
     _int                    m_StageCnt[3];
+    _int                    m_iKeyCnt;
 
+    ID3DXSprite*            Sprite;
     SpriteObject*           m_pSprite;
+    vector<wstring>         m_vecKeyList;
 public:
     static         MiniGameCounter* Create(LPDIRECT3DDEVICE9 pGraphicDev);
 

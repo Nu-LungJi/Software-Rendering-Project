@@ -1,7 +1,7 @@
 #include"../Include/PCH.h"
 #include "ShopKeeper.h"
 
-ShopKeeper::ShopKeeper(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+ShopKeeper::ShopKeeper(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) , bQuest(false){}
 ShopKeeper::ShopKeeper(const GameObject& _RHS) : GameObject(_RHS) {}
 ShopKeeper::~ShopKeeper() {}
 
@@ -12,17 +12,26 @@ HRESULT ShopKeeper::Ready_GameObject(_vec3 vPos) {
 
 	Component_Transform->Set_Pos(vPos.x,0.6f,vPos.z);
 	Interaction_Possible = FALSE;
-
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	return S_OK;
 }
 INT	ShopKeeper::Update_GameObject(const _float& _DT) {
-  if (ObjectDead)
+	if (ObjectDead)
+	{
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return -1;
-
+	}
+		
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	TalkWithShopKeeper(_DT);
+
+	if (bQuest)
+	{
+		TileManager::GetInstance()->Set_Trigger(TileManager::GetInstance()->Get_CurrentStage(), TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
+		bQuest = false;
+	}
 	//dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"NPC_Shop"))->Set_SpeechPos(Component_Transform->Get_Position());
 
 	return 0;
@@ -56,7 +65,7 @@ HRESULT ShopKeeper::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(0.5f, 1.f, 0.5f);
+	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
 
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 	Component_Collider = ADD_COMPONENT_COLLIDER;
@@ -88,6 +97,8 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
+		//퀘스트 수락할 경우 왼쪽 미니게임 포탈 열림
+		bQuest = true;
 		//PlayerUI->PopUp_Interaction_Notice(L"대화하기", TRUE);
 		//Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
