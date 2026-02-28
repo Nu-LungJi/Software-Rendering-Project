@@ -40,7 +40,8 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = MYSCALE->y * 0.5f;
+	m_tInfo.fTimer[0] += _DT;
+
 
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
@@ -119,7 +120,6 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		return -1;
 	}
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return 0;
 }

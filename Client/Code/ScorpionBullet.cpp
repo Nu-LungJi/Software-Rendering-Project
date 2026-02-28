@@ -28,6 +28,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	m_tInfo.fTimer[0] += _DT;
 
+	//Kill Timer
 	if (m_tInfo.fTimer[0] > 10.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
