@@ -8,8 +8,8 @@ HRESULT	MiniGameScene::Ready_Scene() {
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Effect");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/CubeFloorTile");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../Resource/Monster");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
 	MonsterManager::GetInstance();
 	if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
 	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
@@ -32,36 +32,52 @@ VOID MiniGameScene::Render_Scene() {}
 HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 
 	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+	LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(Monster::Create<Shadow>(GRPDEV));
 
+	MonsterManager::GetInstance()->Ready_Origin_Buffer();
+	for (_float z = 0; z < MINIGAMETILEZ; ++z)
+	{
+		for (_float x = 0; x < MINIGAMETILEX; ++x)
+		{
+			CubeFloorTile* pTile = CubeFloorTile::Create(GRPDEV);
+			_vec3 vScale = { 2.f,1.f,2.f };
+			POS(pTile)->x = 2.f * x * vScale.x;
+			POS(pTile)->y = -(2.f * vScale.y);
+			POS(pTile)->z = 2.f * z * vScale.z;
+
+			pTile->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_TERRAIN);
+			pTile->Set_ObjectTag(L"Cube");
+			pTile->Set_TileNumber(x + z * MINIGAMETILEX);
+
+			pTile->Get_TransCom()->Set_Scale(vScale.x, vScale.y, vScale.z);
+			Monster::Staic_Obj(GRPDEV, pTile->Get_TransCom());
+
+			MonsterManager::GetInstance()->Get_Tiles()->push_back(pTile);
+			LayerList[(long)LAYER_TYPE::LAYER_STATIC_OBJECT]->Add_GameObject(pTile);
+		}
+	}
+	if (FAILED(MonsterManager::GetInstance()->Ready_Static_Batch(GRPDEV)))	
+		return E_FAIL;
 
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
-	Monster::Add_Monster_to_Scene(Player::Create(GRPDEV), L"Player", GAMEOBJECT_TYPE::OBJECT_PLAYER);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{0.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV,{3.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,{0.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
+	Monster::Set_Camera(static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera")));
+	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
+	Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
+	
+	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 1.f,1.f,10.f }, { 20.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+	//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{15.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//m_pCamera->Set_Target(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Monster"));
+
+	//Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV,{3.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,{0.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV,{3.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV), L"Cube", GAMEOBJECT_TYPE::OBJECT_END);
 	//Monster::Add_Monster_to_Scene(Hurdle::Create(GRPDEV, { 20.f,0.f,0.f }, { 0.f,0.f,0.f }), L"Hurdle");
 
-	for (_float z = 0; z < 10.f; ++z)
-	{
-		for (_float x = 0; x < 10.f; ++x)
-		{
-			GameObject* pTile = CubeFloorTile::Create(GRPDEV);
-			POS(pTile)->x = 2.f * x * SCALE(pTile)->x;
-			POS(pTile)->y = -(2.f * SCALE(pTile)->y);
-			POS(pTile)->z = 2.f * z * SCALE(pTile)->z;
-			pTile->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_TERRAIN);
-			pTile->Set_ObjectTag(L"Cube");
-			LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pTile);
-			CollisionManager::GetInstance()->Add_ColliderObject(pTile);
-		}
-
-		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, { 10.f,1.f,z * 2.f }, 1.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	}
 	return S_OK;
 }
 

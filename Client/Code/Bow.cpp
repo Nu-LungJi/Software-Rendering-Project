@@ -33,26 +33,25 @@ HRESULT Bow::Ready_GameObject()
 
 INT Bow::Update_GameObject(const _float& _DT)
 {
-	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	ObjectTAG = L"Bow";
-	_playerAtk = player->Get_Atk();
-	_playerCritical = player->Get_Critical();
-	_playerChargingSpeed = player->Get_ChargingSpeed();
-
-	_Stat.maxArrow *= (*player->Get_MaxArrow());
-	_chargingTime = 2.f;
-	_chargingTime *= *_playerChargingSpeed;
-
 	if (_isDestroied) return -1;
 
 	if (_lateReady) {
 		Late_Ready();
 		_lateReady = false;
 	}
-		
 
 	if (_isEquip) {
 		GameObject::Update_GameObject(_DT);
+
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		ObjectTAG = L"Bow";
+		_playerAtk = player->Get_Atk();
+		_playerCritical = player->Get_Critical();
+		_playerChargingSpeed = player->Get_ChargingSpeed();
+
+		_Stat.maxArrow *= (player->Get_AddMaxArrow());
+		_chargingTime = 2.f;
+		_chargingTime *= *_playerChargingSpeed;
 
 		float alphaSpeed = 3.f;
 
@@ -276,6 +275,8 @@ void Bow::CreateArrow(const _float& _DT)
 		}
 	
 		if (_attackTimer > _attackDelay) {
+			_Stat.curArrow -= 1;
+
 			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 			_vec3 MouseDir = player->Get_MouseDir();
 	
@@ -391,28 +392,37 @@ void Bow::CreateEffect(const _float& _DT)
 			{
 			case BowType::FairyBow :
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_PULSE, &_pulsepos, 0.2f, Size, true);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.1f);
 				break;
 			case BowType::IceBow:
 				Size = { 1.5f, 1.5f, 1.5f };
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f, Size, true);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_30_Ice_Fire_.mp3", CHANNELID::SOUND_EFFECT03, 0.1f);
 				break;
 			case BowType::EvilHeadBow:
 				Size = { 2.f, 2.2f, 2.f };
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVILHEAD_PULSE, &_pulsepos, 0.5f, Size, true);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_51_1_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.1f);
 				break;
 			case BowType::WindBow:
 				if (_ChargingTime > _chargingTime) {
 					Size = { 2.f, 2.f, 2.f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE2, &_pulsepos, 0.3f, Size, true);
+					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
+
 				}
 				else if (_attackDelay > 0.3f) {
 					Size = { 1.5f, 1.5f, 1.5f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
+					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
+
 				}
 				else {
 					Size = { 1.f, 1.f, 1.f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE2, &_pulsepos, 0.3f, Size, true);
+					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
 				}
+
 
 				break;
 			}
@@ -448,6 +458,7 @@ void Bow::CreateChargingArrow(const _float& _DT)
 	_vec3 leftPos = _arrowPos;
 
 	MakeArrow(_arrowPos, dir2D, true);
+	_Stat.curArrow -= 1;
 }
 
 void Bow::CreateChargingEffect(const _float& _DT)
@@ -484,15 +495,19 @@ void Bow::CreateChargingEffect(const _float& _DT)
 			switch (_type)
 			{
 			case BowType::FairyBow:
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::IceBow:
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_7_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::EvilHeadBow:
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_51_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::WindBow:
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_ChargeComplete_Wind.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				Size = { 1.2f, 1.2f, 1.2f };
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::IRA_CHARGED, &_pulsepos, 0.6f, Size, true);
 				break;
@@ -504,15 +519,19 @@ void Bow::CreateChargingEffect(const _float& _DT)
 
 void Bow::Late_Ready()
 {
+	TCHAR txt[128] = L"";
+
+	wstring name = L"";
 	switch (_type) {
 	case BowType::FairyBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 23;
-		_Stat.maxArrow = 987654321;
-		_Stat.curArrow = 987654321;
+		_Stat.maxArrow = 10000;
+		_Stat.curArrow = 10000;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 0;
 		break;
 	case BowType::IceBow:
 		_Stat.bowLv = 1;
@@ -522,6 +541,7 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 1;
 		break;
 	case BowType::EvilHeadBow:
 		_Stat.bowLv = 1;
@@ -531,6 +551,7 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 150;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 2;
 		break;
 	case BowType::WindBow:
 		_Stat.bowLv = 1;
@@ -540,12 +561,9 @@ void Bow::Late_Ready()
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
+		_imgIDX = 3;
 		break;
 	}
-	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-	
-	// 최대 화살 수
-	_Stat.maxArrow *= (*player->Get_MaxArrow());
 }
 
 void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)

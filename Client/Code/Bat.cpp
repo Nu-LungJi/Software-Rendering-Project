@@ -6,10 +6,10 @@ Bat::~Bat() {}
 HRESULT Bat::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
 	Component_Collider->Set_Hp(BAT_HP);
 	Component_Collider->Set_Att(1.f);
 
+	ObjectTAG = L"Monster";
 	return S_OK;
 }
 HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
@@ -40,8 +40,9 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	ObjectTAG = L"Monster";
-		
+	if (SUCCEEDED(Monster::Minigame_Update(_DT, &m_tInfo, MYPOS)))	
+		return 0;
+
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 
@@ -79,6 +80,9 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	case MONSTER_STATE_DEAD:
 		Bat::State_Dead();
 		break;
+	case MONSTER_STATE_MINIGAME_MOVE:
+		
+		break;
 	default:
 		break;
 	}
@@ -86,15 +90,13 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	return 0;
 }
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	m_tInfo.vDirection.y = 0.f;
 
-	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
-
+	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
+	m_tInfo.Textureinfo._frameTick += _DT;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -119,9 +121,10 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 
 		break;
 	}
-	Component_Transform->Move_Pos(D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection), m_tInfo.fSpeed, _DT);
 
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
+	if (Monster::Minigame_LateUpdate(_DT, &m_tInfo) ||
+		(static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))
+			->IsIn_Frustum(*MYPOS, 10.f))) {
 		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -134,7 +137,7 @@ VOID Bat::Render_GameObject() {
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	if (m_tInfo.bMiniGame)// ??? ???
+	if (m_tInfo.bMiniGame)
 	{
 		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
@@ -189,15 +192,38 @@ BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		if (Tag == L"PlayerArrow") {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+			break;
+		}
 	}
 
 	return FALSE;
 }
 BOOL Bat::OnCollisionStay(GameObject* _Other)
 {
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player") {
+			Player* pPlayer = static_cast<Player*>(_Other);
+			_vec3* vPlayer = POS(pPlayer);
+			_vec3 vDir = *vPlayer - *MYPOS;
+			//_float fDis = D3DXVec3Length(&vDir);
+			//D3DXVec3Normalize(&vDir, &vDir);
+			vPlayer->x += vDir.x;
+			vPlayer->z += vDir.y;
+			return true;
+		}
+		break;
+}
 	return FALSE;
 }
 BOOL Bat::OnCollisionExit(GameObject* _Other)
@@ -206,6 +232,7 @@ BOOL Bat::OnCollisionExit(GameObject* _Other)
 }
 VOID Bat::Free() {
 
+	Monster::Release_Hurdle(&m_tInfo);
 	GameObject::Free();
 }
 

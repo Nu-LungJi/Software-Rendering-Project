@@ -1,7 +1,7 @@
 #include "CXZTile.h"
 #include "../Include/PCH.h"
 
-CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEffect(false), m_bDestroy(false), m_fAlpha(0.f), m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
+CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_iCheck(0),m_bEffect(false), m_bDestroy(false), m_fAlpha(0.f), m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
 CXZTile::CXZTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CXZTile::~CXZTile() {}
 
@@ -26,6 +26,11 @@ HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
         break;
     }
     m_fHeightSpeed = 0.01f;
+
+    if (eState == TILE_STATE::STATE_UNDERTILE)
+    {
+        Make_BackGroundTextureList(L"SMT_Stage05_Background_Blue");
+    }
     return S_OK;
 }
 INT   CXZTile::Update_GameObject(const _float& _DT) {
@@ -147,9 +152,9 @@ VOID CXZTile::Render_GameObject()
         else return;
         break;
     case TILE_STATE::STATE_UNDERTILE:
-    {
-    }
-    break;
+        //GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+        GRPDEV->SetTexture(0, m_vecTextureList[m_iCheck]);
+        break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
         if (!m_pTileInfo->Get_PotalOpen())
         {
@@ -246,7 +251,22 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Tile_Gasi_Destory();
         break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
-        Tile_Gasi_Destory(_DT);
+       Tile_Gasi_Destory(_DT);
+        break;
+    case TILE_STATE::STATE_UNDERTILE:
+        if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+            KeyManager::GetInstance()->Get_KeyState(DIK_N) & 0x8001)
+            ++m_iCheck;
+
+        if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+            KeyManager::GetInstance()->Get_KeyState(DIK_M) & 0x8001)
+            --m_iCheck;
+
+        if (m_iCheck > m_vecTextureList.size() -1)
+            m_iCheck = m_vecTextureList.size() -1;
+        if (m_iCheck < 0)
+            m_iCheck = 0;
+
         break;
     case TILE_STATE::STATE_BOOM:
         Tile_Boom(_DT);
@@ -396,7 +416,7 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
     {
         // 애니메이션 터트린후 프레임 ++
         // 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
+        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
         m_bStopFrame = true;
         m_pTileInfo->Set_OnlyAnimation(false);
     }
@@ -584,6 +604,19 @@ Transform* CXZTile::Crash_Arrow()
     }
     return nullptr;
 }
+HRESULT CXZTile::Make_BackGroundTextureList(wstring _FileName)
+{
+    INT FRAME = 0;
+
+    while (++FRAME) {
+        wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
+        IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
+        if (TEX == nullptr) break;
+        else { m_vecTextureList.push_back(TEX); }
+    }
+
+    return S_OK;
+}
 HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
 
     m_pTransform = ADD_COMPONENT_TRANSFORM;
@@ -605,16 +638,6 @@ HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
         break;
     }
 
-    //switch (eState)
-    //{
-    //case TILE_STATE::STATE_ANIMATION:
-    //   m_CubeBuffer = ADD_COMPONENT_CUBE;
-    //   break;
-    //case TILE_STATE::STATE_DESTORY:
-    //   m_CubeBuffer = ADD_COMPONENT_CUBE;
-    //   break;
-    //}
-
     return S_OK;
 }
 CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState) {
@@ -630,7 +653,5 @@ CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eS
     return pCXZTile;
 }
 VOID CXZTile::Free() {
-
-
     GameObject::Free();
 }

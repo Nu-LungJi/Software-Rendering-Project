@@ -22,9 +22,9 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	ObjectTAG = L"Docheol";
 
 	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE]		= FALSE;	
-	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;		// ¥Ÿ∏• «‡µø ∞£º∑ πÊ¡ˆ
-	BossMode[(LONG)BOSSMODE::MODE_RAGE]				= FALSE;	// ∆¯¡÷»≠ ¥‹∞Ë
-	BossMode[(LONG)BOSSMODE::MODE_DEATH]			= FALSE;	// ªÁ∏¡ ¥‹∞Ë
+	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;		// Îã§Î•∏ ÌñâÎèô Í∞ÑÏÑ≠ Î∞©ÏßÄ
+	BossMode[(LONG)BOSSMODE::MODE_RAGE]				= FALSE;	// Ìè≠Ï£ºÌôî Îã®Í≥Ñ
+	BossMode[(LONG)BOSSMODE::MODE_DEATH]			= FALSE;	// ÏÇ¨Îßù Îã®Í≥Ñ
 
 	Animation_Timer		 = 0.f;
 	Animation_Interval	 = 0.07f;
@@ -61,7 +61,21 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap, TRUE, sizeof(BBTrap));
 
-	Component_Transform->Rotation(ROT_X, 80.f);
+	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
+	_vec3 planeDir = { 0.f, 1.f, 0.f };
+
+	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
+	_float _cameraAngle = angle / D3DX_PI * 180.f;
+
+	Component_Transform->Rotation(ROT_X, 80.f);//90.f - _cameraAngle);
+	//ÎèÑÏ≤† UI
+	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
+	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	pBossUi->Set_ObjectTag(L"BossUI");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+
+	//Î≥¥Ïä§ Ï£ΩÏùÑÎïå Ïù¥Í±∞ ÎÑ£ÏúºÎ©¥ UI ÏÇ¨ÎùºÏßê
+	//dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
 
 	return S_OK;
 }
@@ -109,7 +123,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.f) {
 		srand(time(NULL));
 		if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) { Action_Selector = rand() % 4 + 1; }
-		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) { Action_Selector = 1;}// rand() % 4 + 1; } //rand() % 5 + 1; } ∫∏Ω∫ ∆–≈œ √ﬂ∞° Ω√ ¿˚øÎ
+		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) { Action_Selector = 1;}// rand() % 4 + 1; } //rand() % 5 + 1; } Î≥¥Ïä§ Ìå®ÌÑ¥ Ï∂îÍ∞Ä Ïãú Ï†ÅÏö©
 	
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 	}
@@ -1056,12 +1070,12 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			}
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_POOLING] = FALSE;
 		}
-		// ¡ﬂæ”
+		// Ï§ëÏïô
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 0.75f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP1_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_APPEAR_EFFECT, L"SUP1_SPAWN", &Sup1_Pos, EmblemScale, 1.f);
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP1_SPAWN] = FALSE;
 		}
-		// ¡¬ ªÛ¥‹
+		// Ï¢å ÏÉÅÎã®
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 1.0f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP2_SPAWN]) {
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[0]);
 			dynamic_cast<Supporter*>(ObjectPool_Supporter[0])->Set_ScaleInc(TRUE);
@@ -1072,7 +1086,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP2_SPAWN] = FALSE;
 		}
-		// øÏ ªÛ¥‹
+		// Ïö∞ ÏÉÅÎã®
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 1.25f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP3_SPAWN]) {
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[1]);
 			dynamic_cast<Supporter*>(ObjectPool_Supporter[1])->Set_ScaleInc(TRUE);
@@ -1083,7 +1097,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP3_SPAWN] = FALSE;
 		}
-		// ¡¬ «œ¥‹
+		// Ï¢å ÌïòÎã®
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 1.5f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP4_SPAWN]) {
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[2]);
 			dynamic_cast<Supporter*>(ObjectPool_Supporter[2])->Set_ScaleInc(TRUE);
@@ -1094,7 +1108,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP4_SPAWN] = FALSE;
 		}
-		// øÏ «œ¥‹
+		// Ïö∞ ÌïòÎã®
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 1.75f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP5_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP1_STAY", &Sup1_Pos, EmblemScale, 1.75f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[3]);
@@ -1106,7 +1120,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP5_SPAWN] = FALSE;
 		}
-		// ¡ﬂæ” øÏ√¯
+		// Ï§ëÏïô Ïö∞Ï∏°
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 2.0f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP6_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP2_STAY", &Sup2_pos, EmblemScale, 1.5f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[4]);
@@ -1122,7 +1136,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Rage_Stand_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
 		}
-		// ¡ﬂæ” ¡¬√¯
+		// Ï§ëÏïô Ï¢åÏ∏°
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 2.25f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP7_SPAWN]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP3_STAY", &Sup3_pos, EmblemScale, 1.25f);
 			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_Supporter[5]);

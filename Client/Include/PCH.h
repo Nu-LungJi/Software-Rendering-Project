@@ -51,6 +51,7 @@
 //#include "Docheol.h"
 
 #include "EvilFrog.h"
+#include "Frog_Bullet.h"
 
 #include "Alert.h"
 
@@ -77,6 +78,7 @@
 #include "CubeFloorTile.h"
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
+#include "Shadow.h"
 
 #pragma endregion
 
@@ -113,6 +115,7 @@
 #include "ShopKeeper.h"
 #include "ShopUI.h"
 #include "StageBlackOut.h"
+#include "DamageFont.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
@@ -138,6 +141,7 @@
 #include "TimeManager.h"
 #include "GameManager.h"
 #include "TileManager.h"
+#include "DamageFontManager.h"
 
 //////////////////////////////////////////// Global Variable
 

@@ -48,6 +48,8 @@ struct ENGINE_DLL ItemINFO {
 	_int					ItemPrice;
 	_int					ItemType;
 
+
+
 	VOID	Set_ItemClass(wstring _Class) { ItemDesc[(LONG)CLASS] = _Class; }
 	wstring Get_ItemClass() { return ItemDesc[(LONG)CLASS]; }
 

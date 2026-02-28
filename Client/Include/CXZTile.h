@@ -30,9 +30,12 @@ public:
     void                    Set_Destory()   { m_bDestroy = true; }
     Transform*              Crash_Player();
     Transform*              Crash_Arrow();
+    HRESULT                 Make_BackGroundTextureList(wstring _FileName);
+
 private:
-    HRESULT			Component_Initialize(TILE_SIDE eid, TILE_STATE eState);
+    HRESULT			        Component_Initialize(TILE_SIDE eid, TILE_STATE eState);
     
+    vector<IDirect3DBaseTexture9*> m_vecTextureList;
     TileInfo*               m_pTileInfo;
     Transform*              m_pTransform;
     Buffer*                 m_pBuffer;
@@ -46,9 +49,13 @@ private:
     _float                  m_fFrame;
     _float                  m_fTime;
 
+
+    _int                    m_iCheck;
+
     _bool                   m_bEffect;
     _bool                   m_bStopFrame;
     _bool                   m_bDestroy;
+    _bool                   m_bMiniGame;
     DWORD                   m_Alpha;
 
 public:

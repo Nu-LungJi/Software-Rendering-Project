@@ -63,12 +63,14 @@ public:
 	void		Set_Bow_Equip(bool isequip)		{ _isEquip = isequip; }
 	BowStat*	Get_Bow_Stat()					{ return &_Stat; }
 	_int		Get_Charging()					{ return _Charging; }
+	_int		Get_IMG_IDX()					{ return _imgIDX; }
 private:
 	virtual VOID Free();
 private:
 	_vec3*		_bowPos;
 	_float		_cameraAngle;
 	_vec3		_cameraDir;
+	int			_imgIDX;
 private:
 	BowType		_type;
 	BowStat		_Stat;

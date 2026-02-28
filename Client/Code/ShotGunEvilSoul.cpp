@@ -36,7 +36,6 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 
 		return 1;
 	}
-	MYPOS->y = MYSCALE->y * 0.5f; // 지우기 애매해서 남겨둠
   
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
@@ -87,7 +86,6 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return 0;
 }
@@ -305,7 +303,6 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i+1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
 
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-
 		}
 	}
 

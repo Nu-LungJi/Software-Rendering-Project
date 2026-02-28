@@ -41,10 +41,13 @@ private:
     _float                  m_fFrame;
     _float                  m_fTime;
     _float                  m_fDefense;
+    _float                  m_SpawnDelay;
     _bool                   m_bStopFrame;
     _bool                   m_bSpawn;
     _bool                   m_bTrigger;
 
+
+    _int                    m_SpawnCnt;
     _int                    m_iCnt;
     _int                    m_StageCnt[3];
 public:

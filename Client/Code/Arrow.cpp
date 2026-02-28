@@ -20,7 +20,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
-    Component_Collider->Set_Att(50);
+    Component_Collider->Set_Att(100);
     _hp = 1;
     Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;
@@ -166,6 +166,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 2.5f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 2.5f, 2.5f, 2.5f };
@@ -180,10 +181,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
             break;
         case ArrowType::EvilHeadCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_67_Lightning_Fire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::Wind_Arrow:
             Size = { 1.5f, 1.5f, 1.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
+            // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 늦게 ㅇ나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::WindCharging:
             Size = { 7.f, 7.f, 7.f };
@@ -206,11 +210,12 @@ INT Arrow::Update_GameObject(const _float& _DT)
             }
             Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
                 Get_GameObject(L"Camera"));
-            Camera->Camera_Shaking(10.f, 0.3f);
+            Camera->Camera_Shaking(30.f, 1.f);
             break;
         default:
             break;
         }
+        CollisionManager::GetInstance()->Delete_ColliderObject(this);
 
         return -1;
     }
@@ -407,6 +412,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.35f);
                 _effectDelay = 0.f;
             }
             break;
@@ -429,6 +435,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 effectPos.y += 2.f;
                 effectPos.z += 5.f;
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 0.8f, Size, false);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Hit_Lightning_Strike.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
                 _ThunderDelay = 0.f;
                 
                 if (_target != nullptr) {
@@ -446,6 +453,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     if (_arrowLength > _atomicRange * 0.5 && _speed == 0.f && !_isReady) {
         _vec3 Size = { 4.f, 4.f, 4.f };
         PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ATOMIC_READY, Component_Transform->Get_Position() , 0.5f, Size, false);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
         ObjectDead = true;
     }
         
@@ -604,21 +612,20 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         atk = 1.f;
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
+
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
+
         return TRUE;
     }
 
     else if (Tag == L"CheonLog") {
         atk = 1.f;
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        Component_Collider->Set_Hp(hp - atk);
+        //COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 1.f);
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+       DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
-        return TRUE;
-    }
-    else if (Tag == L"CheonLog") {
-        atk = 1.f;
-        Component_Collider->Set_Hp(hp - atk);
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
@@ -626,6 +633,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
         return TRUE;
     }

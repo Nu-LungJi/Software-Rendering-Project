@@ -4,7 +4,7 @@
 #include "tchar.h"
 
 IMPLEMENT_SINGLETON(TileManager)
-TileManager::TileManager() : m_EndLoading(true), m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false) { m_vecDefenseMonster.reserve(600); }
+TileManager::TileManager() : m_EndLoading(true), m_eMode(TILEMODE_CHANGE::MODE_END), m_eCurrent(TILE_STAGE::TILE_STAGE1), m_eStage(TILE_STAGE::TILE_STAGE1), m_bCheck(false), m_bStageChange(false) { m_vecDefenseMonster.reserve(300); }
 TileManager::~TileManager()
 {
     Free();
@@ -210,7 +210,7 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
     }
 
 
-    if (m_StageCntArray[m_eStage] == 0)
+    if (m_eStage != TILE_STAGE::TILE_STAGE4 && m_StageCntArray[m_eStage] == 0)
         Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
 
@@ -328,7 +328,7 @@ void TileManager::Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STA
 
 void TileManager::Save_Tile(HWND g_hWnd)
 {
-    HANDLE   hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
+    HANDLE   hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
         GENERIC_WRITE,      // 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
         NULL,            // 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
         NULL,            // 보안 속성(기본값인 경우 NULL)

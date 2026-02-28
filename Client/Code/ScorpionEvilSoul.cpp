@@ -84,6 +84,10 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		ScorpionEvilSoul::State_Appear(_DT);
 		break;
 	case MONSTER_STATE_DISAPPEAR:
+		if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
+		{
+			ObjectDead = true;
+		}
 		break;
 	case MONSTER_STATE_IDLE:
 		ScorpionEvilSoul::State_Idle(_DT);
@@ -111,7 +115,6 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		TileManager::GetInstance()->Set_StageArray();
 		return -1;
 	}
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 
 	if (KEY_DOWN(DIK_P))
@@ -168,10 +171,7 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 			m_tInfo.Textureinfo._frameTick = 0.f;
 			++m_tInfo.Textureinfo._frame;
 
-			if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
-			{
-				ObjectDead = true;
-			}
+
 		}
 		break;
 	case MONSTER_STATE_SUMMON:

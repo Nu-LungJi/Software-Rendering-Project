@@ -2,7 +2,9 @@
 #include "GameObject.h"
 #include "Player.h"
 
-enum class FRUSTUMPLANE : uint8_t { Far = 0, Left, Right, bottom, Top, Near, End };
+enum class FRUSTUMPLANE : uint8_t { Left, Right, bottom, Top, Far, Near, End };
+
+class Player;
 
 class CameraObject : public GameObject {
 private:
@@ -95,4 +97,13 @@ public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	virtual VOID Free();
+
+public:
+	void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
+private:
+	SCENE_TYPE	m_eCurrScene;
+	_float		m_fOffset[(uint8_t)FRUSTUMPLANE::End];
+
+	Player*		m_pTarget;
+	HRESULT		MiniGame(const _float& _DT);
 };

@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 #include "Camera.h"
 
-CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), StopMove(true), FrustumPlane{} {}
+CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), StopMove(true), FrustumPlane{}, m_eCurrScene(SCENE_TYPE::SCENE_END) {}
 CameraObject::CameraObject(const GameObject& _RHS)		: GameObject(_RHS)		{}
 CameraObject::~CameraObject() {}
 
@@ -11,7 +11,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
 	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.3f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.3f, 1.35f * 1.3f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
-	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
+	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 100.f;
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
@@ -53,13 +53,31 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-
+if (m_eCurrScene == SCENE_TYPE::Minigame)
+	{
+		MiniGame(_DT);
+		return 0;
+	}
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
 	if (FocusOn_Boss == FALSE) {
-		PlayerObject = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+    _vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+    _vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+    EyeVec = (*playerPos) + eyeCalc;
+    AtVec = (*playerPos) + atCalc;
+
+    if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+    	EyeVec.z -= 1.5f;
+    	EyeVec.y += 1.5f;
+    	
+    	AtVec.z -= 1.5f;
+    	AtVec.y += 1.5f;
+    }
+  }
+	if (!Camera_Move)
+	{
 
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
@@ -406,4 +424,43 @@ CameraObject* CameraObject::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 VOID CameraObject::Free() {
 	GameObject::Free();
+}
+
+HRESULT CameraObject::MiniGame(const _float& _DT)
+{
+	D3DXMatrixPerspectiveFovLH(&ProjMatrix, D3DX_PI / 3, (_float)(WINCX / WINCY), 0.1, 1000.f);
+	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
+	if (m_pTarget) {
+		_vec3 vPos = *POS(m_pTarget);
+		_vec3 vEyeOffset = { 0.f, 8.66f, -5.f };
+		_vec3 vAtOffset = { 0.f,0.f,0.f };
+
+		_vec3 vTargetEye = vPos + vEyeOffset;
+		_vec3 vTargetAt = vPos + vAtOffset;
+
+		_float fDis = m_pTarget->Get_MouseDistance();
+		_float fOffset = 2.f;
+
+		if (fDis > fOffset)
+		{
+			_vec3 vMouseDir = m_pTarget->Get_MouseDir();
+			_float fMouseAmount = (fDis - fOffset) * 4.f;
+			vTargetEye += vMouseDir * fMouseAmount;
+			vTargetAt += vMouseDir * fMouseAmount;
+		}
+
+		_float	fStiff = 40.f;
+		_float	fDamping = 12.649f;
+
+		_vec3 vEyeToTarget = vTargetEye - EyeVec;
+		_vec3 vEyeAccel = (vEyeToTarget * fStiff) - (m_vVelocity * fDamping);
+		m_vVelocity += vEyeAccel * _DT;
+		EyeVec += m_vVelocity * _DT;
+
+		AtVec = EyeVec + (vTargetAt - vTargetEye);
+
+		D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
+		GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
+	}
+	return S_OK;
 }

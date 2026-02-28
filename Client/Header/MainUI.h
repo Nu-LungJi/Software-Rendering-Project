@@ -1,5 +1,15 @@
 #pragma once
 #include "GameObject.h"
+#include "UIManager.h"
+
+struct GUIVar {
+	float POSX;
+	float POSY;
+	float WIDTHX;
+	float WIDTHY;
+
+	void	GUIInit(float posx, float posy, float widthx, float widthy) { POSX = posx; POSY = posy; WIDTHX = widthx; WIDTHY = widthy; }
+};
 
 class MainUI : public GameObject {
 private:
@@ -43,6 +53,10 @@ public:
 	static	MainUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
 private:
+	void                        Imgui_Setting();
+	void                        Imgui();
+	void                        Imgui_ButtonStyle();
+private:
 	SpriteObject*		Component_Sprite;
 	vector<SpriteINFO>*	TextureList;
 
@@ -63,6 +77,13 @@ private:
 	FLOAT	MainUIOpacity;
 
 	INT		Enable_MainUIFade;
+  
+	GUIVar				GuiVar;				// GUI용 변수
+	wstring				ArrowCountText;		// 화살 카운트
+	FontObject*			FO_ArrowCount;		// 화살 카운트
+	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
+	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
+	
 
 private:
 	virtual	VOID		Free();
