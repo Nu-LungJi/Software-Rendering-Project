@@ -8,7 +8,6 @@ HRESULT   StartScene::Ready_Scene() {
     Scene::Ready_Scene();
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
     MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../Resource/Monster");
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;

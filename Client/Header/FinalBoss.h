@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "StateMachine.h"
+#include "../Include/ENUM.h"
 
 #define		ANIMATION_NONANIM_FRAMECOUNT		3
 
@@ -34,16 +35,10 @@ public:
 	virtual VOID		Render_GameObject();
 
 	virtual BOOL		OnCollisionEnter(GameObject* _Other);
-	virtual BOOL		OnCollisionStay(GameObject* _Other);
-	virtual BOOL		OnCollisionExit(GameObject* _Other);
+	virtual BOOL		OnCollisionStay (GameObject* _Other);
+	virtual BOOL		OnCollisionExit (GameObject* _Other);
 
 public:
-	HRESULT	Component_Initialize();
-	HRESULT Texture_Initialize();
-
-	VOID	Animation_Appear_Staging(CONST FLOAT& _DT);
-	VOID	Animation_Disappear_Staging(CONST FLOAT& _DT);
-
 	INT		Get_Animation_CurrentIndex()				{ return Animation_CurrentIndex;  }
 	VOID	Set_Animation_CurrentIndex(INT _IDX)		{ Animation_CurrentIndex = _IDX;  }
 
@@ -77,10 +72,16 @@ public:
 	INT		Get_EnableSupporterFlame()					{ return Enable_SupporterFlame; }
 	VOID	Set_EnableSupporterFlame(INT _EXP)			{ Enable_SupporterFlame = _EXP; }
 
-	BOOL	Get_RageMode()								{ return Rage_Mode; }
-	VOID	Set_RageMode(BOOL _EXP)						{ Rage_Mode = _EXP; }
+	BOOL	Get_ModeState(BOSSMODE _BMODE)				{ return BossMode[(INT)_BMODE];	  }
+	VOID	Set_ModeState(BOSSMODE _BMODE, BOOL _VALUE) { BossMode[(INT)_BMODE] = _VALUE; }
 
-	VOID	Set_StartPos(_vec3 _StartPos);
+	INT		Get_EnableBBTrap()			{ return Enable_BBTrap; }
+	VOID	Set_EnableBBTrap(INT _EXP)	{ Enable_BBTrap = _EXP; }
+
+	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+private:
+	HRESULT	Component_Initialize();
+	HRESULT Texture_Initialize();
 
 	VOID	Skill_GroundExplosion(CONST FLOAT& _DT);
 	VOID	Skill_MeteorExplosion(CONST FLOAT& _DT);
@@ -89,19 +90,16 @@ public:
 	VOID	Skill_SupporterFlame(CONST FLOAT& _DT);
 	VOID	Skill_ExplosionRush(CONST FLOAT& _DT);
 
-	INT		Get_EnableBBTrap()			{ return Enable_BBTrap; }
-	VOID	Set_EnableBBTrap(INT _EXP)	{ Enable_BBTrap = _EXP; }
+	VOID	Animation_Appear_Staging(CONST FLOAT& _DT);
+	VOID	Animation_Disappear_Staging(CONST FLOAT& _DT);
 
 	VOID	BoobieTrap(CONST FLOAT& _DT);
 
-	static	FinalBoss* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-
-private:
 	virtual	VOID	Free();
 
 public:
 	enum class APPEAR_STAGING	{ SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, EMBLEM_APPEAR, EMBLEM_DESTROY, ANIMATION,
-								  WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE };
+								  WATER_POPUP, SMALL_FLAMEL, SMALL_FLAMER, SMALL_FLAMEC, ROCK_CAMERA_SHAKE, BIG_FLAME, BIG_CIRCLE_FLAME, SPIRAL_FLAME, CAMERA_SHAKE };
 
 	enum class DEATH_STAGING	{ SPOOL_APPEAR, SPOOL_FLOW1, SPOOL_FLOW2, SPOOL_FLOW3, SPOOL_FLOW4, SPOOL_FLOW5, SPOOL_FLOW6, 
 								  WATER_POPUP1, WATER_POPUP2, WATER_POPUP3, WATER_POPUP4, BIG_FLAME, BIG_CIRCLE_FLAME, ELECTRIC, ENDING };
@@ -118,26 +116,17 @@ public:
 
 	enum class FIREBALL			{ ANGLE_GENERATE, FIRST_FIREBALL, SECOND_FIREBALL, THIRD_FIREBALL, FOURTH_FIREBALL, FIFTH_FIREBALL, FIREBALL_POOL, END_FIREBALL };
 
+	enum class BOSSTIMER		{ TIMER_STAGING, TIMER_ACTION, TIMER_EXP, TIMER_MEXP, TIMER_RSWING, TIMER_RAGEUP, TIMER_SUPPORT, TIMER_DEATH, TIMER_RUSH, TIMER_END };
 private:
 	Player*			PlayerObject;
+	Transform*		PlayerTransform;
 	_vec3			PlayerPos;
 
 	CameraObject*	Camera;
+	
+	BOOL			BossMode[(INT)BOSSMODE::MODE_END] ;
 
-	BOOL			Invalidate_Mode;
-	BOOL			Rage_Mode;
-	BOOL			Action_Mode;
-	BOOL			Death_Mode;
-
-	FLOAT			Staging_Timer;
-	FLOAT			Action_Timer;
-	FLOAT			Explosion_Timer;
-	FLOAT			MeteorExplosion_Timer;
-	FLOAT			RSwing_Timer;
-	FLOAT			RageUp_Timer;
-	FLOAT			Supporter_Timer;
-	FLOAT			Death_Timer;
-	FLOAT			Rush_Timer;
+	FLOAT			BossTimer[(INT)BOSSTIMER::TIMER_END];
 
 	BOOL			STAGING_TRIGGER[20];
 	BOOL			EXPLOSION_TRIGGER[5];
@@ -147,8 +136,6 @@ private:
 	BOOL			ERUSH_TRIGGER[(INT)RUSH::RUSH_END];
 
 	INT				Action_Selector;
-
-	BOOL			DoubleSlam;
 
 	INT				Enable_BossAppearStaging;
 	INT				Enable_BossDisappearStaging;
@@ -162,12 +149,12 @@ private:
 
 	Transform*		MeteorTransform[4];
 	FLOAT			RanPosX[4], RanPosZ[4];
-	vector<GameObject*>	FireBallObjectPool;
-	vector<GameObject*>	SupporterObjectPool;
+	vector<GameObject*>	ObjectPool_RageUp;
+	vector<GameObject*>	ObjectPool_Supporter;
+	vector<GameObject*>	ObjectPool_RSwing;
 
 	FLOAT			PlayerToAxisXDegree;
 	_vec3			GeneratePos;
-	INT				Numbering;
 
 	vector<LPDIRECT3DTEXTURE9>*	Animation_TexList;
 	FLOAT						Animation_Timer;

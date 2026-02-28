@@ -24,12 +24,15 @@ public:		// Trigger Function
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
 
-	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Speech_Bubble = TRUE; }
+	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubble = TRUE; }
 
-	VOID			Activate_BossFilter(BOOL _Filter);
+	VOID			Set_FadeOption(INT _OPT) { Enable_MainUIFade = _OPT; }
 
-	VOID			All_UI_FadeOUT();
-	VOID			All_UI_FadeIN();
+	VOID			Set_EnableSpeechBubble(BOOL _ESB) {}
+
+
+private:
+	VOID			MainUI_FadeAction(CONST FLOAT& _DT);
 
 public:
 	HRESULT Component_Initialize();
@@ -43,7 +46,7 @@ private:
 	SpriteObject*		Component_Sprite;
 	vector<SpriteINFO>*	TextureList;
 
-	BOOL	Speech_Bubble;
+	BOOL	Enable_SpeechBubble;
 	wstring Speech_Text;
 
 	BOOL	ItemInfo;
@@ -58,6 +61,8 @@ private:
 	FLOAT	Timer01, Timer02, Timer03;
 
 	FLOAT	MainUIOpacity;
+
+	INT		Enable_MainUIFade;
 
 private:
 	virtual	VOID		Free();

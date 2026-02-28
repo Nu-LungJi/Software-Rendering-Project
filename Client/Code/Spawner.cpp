@@ -301,7 +301,8 @@ void Spawner::Boss()
 		CollisionManager::GetInstance()->Add_ColliderObject(Docheol);
 
 		vPos = *m_pTransform->Get_Position();
-		dynamic_cast<FinalBoss*>(Docheol)->Set_StartPos(vPos);
+		Transform* DCTransform = dynamic_cast<Transform*>(Docheol->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
+		DCTransform->Set_Pos(DCTransform->Get_Position()->x + vPos.x, DCTransform->Get_Position()->y + vPos.y, DCTransform->Get_Position()->z + vPos.z);
 		m_bSpawn = true;
 	}
 }

@@ -98,7 +98,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
-		//PlayerUI->PopUp_Interaction_Notice(L"ëŒ€í™”í•˜ê¸°", TRUE);
+		PlayerUI->PopUp_Interaction_Notice(L"´ëÈ­ÇÏ±â", TRUE);
 		//Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}
@@ -112,7 +112,7 @@ BOOL ShopKeeper::OnCollisionStay(GameObject* _Other) {
 }
 BOOL ShopKeeper::OnCollisionExit(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
-		//PlayerUI->PopUp_Interaction_Notice(L"", FALSE);
+		PlayerUI->PopUp_Interaction_Notice(L"", FALSE);
 		Speech_BubbleUI->Set_Active(FALSE);
 		return TRUE;
 	}

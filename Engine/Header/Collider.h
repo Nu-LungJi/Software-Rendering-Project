@@ -33,6 +33,7 @@ public:
 	VOID		Set_Offset(_vec3 _Offset) { Offset = _Offset;}
 
 	VOID		Set_Scale(FLOAT _XRANGE, FLOAT _YRANGE, FLOAT _ZRANGE) { Scale = { _XRANGE,  _YRANGE,  _ZRANGE }; }
+	_vec3		Get_Scale() { return Scale; }
 
 	VOID		Set_MinPoint(FLOAT _X, FLOAT _Y, FLOAT _Z) { MinPoint = { _X , _Y , _Z }; }
 	VOID		Set_MaxPoint(FLOAT _X, FLOAT _Y, FLOAT _Z) { MaxPoint = { _X , _Y , _Z }; }

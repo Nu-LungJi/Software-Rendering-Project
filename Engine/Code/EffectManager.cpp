@@ -23,6 +23,7 @@ INT EffectManager::Update_EffectManager(CONST FLOAT& _DT) {
 	}
 	if(nullptr != Scene_Effect)	Scene_Effect->Update_GameObject(_DT);
 	return 0;
+	
 }
 VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
 

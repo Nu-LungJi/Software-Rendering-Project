@@ -112,7 +112,6 @@ HRESULT	Supporter::Component_Initialize()	{
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
-	Component_Transform->Set_Pos(0.f, 0.f, 0.f);
 	Component_Transform->Set_Scale(3.f, 3.f, 3.f);
 	Component_Transform->Set_Pos({ 64.115f, 1.5f, 104.83 });
 
@@ -173,12 +172,12 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 
 		for (INT IDX = 0; IDX < 6; IDX++) {
 			wstring FBTag = ObjectTAG + L"_FireBall" + to_wstring(FBNumbering++);
-			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_BOSS_FIREBALL, FBTag.c_str());
-			BossFireBall* FB = dynamic_cast<BossFireBall*>(SceneManager::GetInstance()->Get_GameObject(FBTag.c_str()));
-			FB->Set_FireBall_Pos(*Component_Transform->Get_Position());
+			GameObject* BFB = BossFireBall::Create(GRPDEV);
+			SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, BFB);
+			BossFireBall* FB = dynamic_cast<BossFireBall*>(BFB);
 			FB->Set_FireBall_Pos(*Component_Transform->Get_Position());
 			FB->Set_FireBall_Speed(0.15f);
-			FB->Set_FireBall_Duration(30.f);
+			FB->Set_FireBall_Duration(10.f);
 
 			if		(IDX == 0)	FB->Set_FireBall_Angle(CurrentAngle);
 			else if (IDX == 1)	FB->Set_FireBall_Angle(CurrentAngle - 60);
