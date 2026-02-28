@@ -517,9 +517,6 @@
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\09. Hurdle</Filter>
     </ClInclude>
-    <ClInclude Include="TempHurdle.h">
-      <Filter>03. GameObject\09. Hurdle</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">

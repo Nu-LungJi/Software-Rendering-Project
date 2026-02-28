@@ -77,7 +77,7 @@
 #pragma region MiniGame
 #include "CubeFloorTile.h"
 #include "MiniGameCounter.h"
-#include "TempHurdle.h"
+#include "Hurdle.h"
 #include "Shadow.h"
 
 #pragma endregion

@@ -23,7 +23,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	FocusOn_Boss = FALSE;
 	Focusing_Timer = 0.f;
 	OriginCameraPos = { 0.f, 0.f, 0.f };
-	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+	
 
 	Camera_Show = TRUE;
 	Camera_Move = TRUE;
@@ -61,6 +61,7 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
 	if (FocusOn_Boss == FALSE) {
+		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
     _vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
     _vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
@@ -78,7 +79,8 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
   }
 	if (!Camera_Move)
 	{
-
+		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 

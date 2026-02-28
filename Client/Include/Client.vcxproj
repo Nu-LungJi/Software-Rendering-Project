@@ -395,7 +395,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="DEFINE.h" />
     <ClInclude Include="ENUM.h" />
-    <ClInclude Include="TempHurdle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Alert.cpp">

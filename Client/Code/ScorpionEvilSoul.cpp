@@ -355,7 +355,7 @@ VOID ScorpionEvilSoul::State_Idle(const _float& _DT)
 VOID ScorpionEvilSoul::State_Tracking(const _float& _DT)
 {
 	if (m_tInfo.bMiniGame)
-	{// â�� �߱�
+	{
 		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 		m_tInfo.vDirection = vPos - *MYPOS;
 		m_tInfo.fSpeed = 3.f;
