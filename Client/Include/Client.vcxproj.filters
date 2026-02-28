@@ -238,6 +238,9 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\05. EvilFrog">
       <UniqueIdentifier>{bd0680c2-0764-4ba1-8a4f-dd4b3285f757}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\06. Frog_Bullet">
+      <UniqueIdentifier>{95fae50b-956d-4a79-a86f-bfed3b244d9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -493,6 +496,9 @@
     <ClInclude Include="..\Header\EvilFrog.h">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Frog_Bullet.h">
+      <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -730,6 +736,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\EvilFrog.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Frog_Bullet.cpp">
+      <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

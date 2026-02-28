@@ -118,7 +118,7 @@ HRESULT Bullet_Chain_Head::Component_Initialize() {
 	Component_Collider->Set_Att(1.f);
 	fDis = 0.f;
 
-	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::ChainHead, 0);
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, 0);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }

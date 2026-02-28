@@ -875,6 +875,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
 	if (MOUSE_RBUTTON && _dashstock > 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
 		_pState = pState::STATE_DASH;
 		_dashStart = true;
 		_frame = 1;
@@ -904,7 +905,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
 		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
-
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06,0.5f);
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
 		_skillArea_On = false;

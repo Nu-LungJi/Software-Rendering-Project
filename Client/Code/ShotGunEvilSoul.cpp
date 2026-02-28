@@ -287,47 +287,47 @@ VOID ShotGunEvilSoul::State_Casting(const _float& _DT)
 
 VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 {
-	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
-		m_tInfo.Change_State(MONSTER_STATE_IDLE);
-
-	if (m_tInfo.fTimer[0] == 0.f)
-	{
-		_vec3	vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
-		_float	fBaseRadian = atan2f(vDir.z, vDir.x);
-
-		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
-		{
-			_float fRandom = D3DXToRadian(RANDOM::Get_float((SHOTGUNEVILSOUL_SPREAD * -0.5f), (SHOTGUNEVILSOUL_SPREAD * 0.5f), this));
-
-			m_tInfo.pGameObj[i+1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, SHOTGUNEVILSOUL_BULLET_SCALEMULT);
-
-			_float fRadian = fBaseRadian + fRandom;
-			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i+1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
-
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-
-		}
-	}
-
-	m_tInfo.fTimer[0] += _DT;
-
-	if (m_tInfo.fTimer[0] >= SHOTGUNEVILSOUL_CHANNELING_TIME)
-	{
-		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
-		{
-			static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1])->Get_Info()->bTrigger[0] = true;
-			m_tInfo.pGameObj[i + 1] = nullptr;
-		}
-		m_tInfo.Change_State(MONSTER_STATE_IDLE);
-	}
-	else
-	{
-		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
-		{
-			SHOTGUNEVILSOUL_BULLET_TYPE* pBullet = static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1]);
-			pBullet->Get_Info()->fSpeed = pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
-		}
-	}
+	//if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
+	//	m_tInfo.Change_State(MONSTER_STATE_IDLE);
+	//
+	//if (m_tInfo.fTimer[0] == 0.f)
+	//{
+	//	_vec3	vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	//	_float	fBaseRadian = atan2f(vDir.z, vDir.x);
+	//
+	//	for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
+	//	{
+	//		_float fRandom = D3DXToRadian(RANDOM::Get_float((SHOTGUNEVILSOUL_SPREAD * -0.5f), (SHOTGUNEVILSOUL_SPREAD * 0.5f), this));
+	//
+	//		m_tInfo.pGameObj[i+1] = Monster::Create<SHOTGUNEVILSOUL_BULLET_TYPE>(GRPDEV, *MYPOS, SHOTGUNEVILSOUL_BULLET_SCALEMULT);
+	//
+	//		_float fRadian = fBaseRadian + fRandom;
+	//		static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i+1])->Set_Dir(cosf(fRadian), 0.f, sinf(fRadian));
+	//
+	//		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+	//
+	//	}
+	//}
+	//
+	//m_tInfo.fTimer[0] += _DT;
+	//
+	//if (m_tInfo.fTimer[0] >= SHOTGUNEVILSOUL_CHANNELING_TIME)
+	//{
+	//	for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
+	//	{
+	//		static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1])->Get_Info()->bTrigger[0] = true;
+	//		m_tInfo.pGameObj[i + 1] = nullptr;
+	//	}
+	//	m_tInfo.Change_State(MONSTER_STATE_IDLE);
+	//}
+	//else
+	//{
+	//	for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
+	//	{
+	//		SHOTGUNEVILSOUL_BULLET_TYPE* pBullet = static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1]);
+	//		pBullet->Get_Info()->fSpeed = pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
+	//	}
+	//}
 }
 VOID ShotGunEvilSoul::State_Dead()
 {
