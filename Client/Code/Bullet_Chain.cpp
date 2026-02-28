@@ -23,18 +23,23 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 
 	if (m_tInfo.bTrigger[0])
 	{
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, 0);
+		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Rect);
+
 
 		if(FAILED( Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 	}
 	else
 	{
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, 0);
+		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Line);
+
 
 		if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 	}
 
 	m_tInfo.fTimer[0] += _DT;
+
+
+	//Kill Timer
 	if (m_tInfo.fTimer[0] >= 2.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
@@ -105,7 +110,7 @@ HRESULT Bullet_Chain::Component_Initialize() {
 	Component_Collider->Set_Hp(1.f);
 	Component_Collider->Set_Att(1.f);
 
-	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, 0);
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Chain, (uint8_t)BULLET_CHAIN_TYPE::Head);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }

@@ -1,5 +1,6 @@
 #include"GameObject.h"
 #include"SceneManager.h"
+#include"MonsterManager.h"
 
 #define FRAMETICK 0.1f
 
@@ -270,7 +271,7 @@ typedef struct tagTextureInfo
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
 		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false),
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){}
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){} 
 
 	~tagMonsterInfo() {}
 
@@ -296,6 +297,8 @@ typedef struct tagMonsterInfo {
 
 	TEXINFO						Textureinfo;
 	BOOL						bMiniGame;
+
+	tagHurdleInfo*				_pHurdle;
 }MONSTERINFO, MONINFO, MONBULLETINFO;
 
 typedef struct tagRandomGenerator {
@@ -346,9 +349,26 @@ public:
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
 	static	VOID			Destory_Tile(GameObject* pObj);
+	
+public:
+	static	HRESULT			Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos);
+	static	BOOL			Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo);
+	static	HRESULT			Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom);
+
+public:
+	static	void		    Set_Camera(CameraObject* pCam)	{ m_pCam = pCam; }
+	static	CameraObject*	Get_Camera()					{ return m_pCam; }
+	static	void            Set_Player(Player* pPlayer)		{ m_pPlayer = pPlayer; }
+	static	Player*			Get_Player()					{ return m_pPlayer; }
+
+private:
+	static	CameraObject*	m_pCam;
+	static	Player*			m_pPlayer;
 
 public:
 	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
+	static void Release_Hurdle(MONSTERINFO* _Info);
+
 
 	template<typename T>
 	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV)
@@ -364,7 +384,7 @@ public:
 	}
 
 	template<typename T>
-	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)	// ¹èÀ² 3Àº ÁÖ°í »ý°¢ÇÒ°Í
+	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)
 	{
 		GameObject* MST = Create<T>(_GRPDEV);
 
@@ -382,5 +402,46 @@ public:
 		if (nullptr != pCollider)	pCollider->Set_Scale(vScale.x * 0.5f, vScale.y, vScale.x * 0.5f);
 
 		return MST;
+	}
+
+	template<typename T>
+	static GameObject* Create(LPDIRECT3DDEVICE9 GRPDEV, _vec3 _vSrc, _vec3 _vDst, _float _fSpeed, _float _fScalemult = 1.f)
+	{
+		vector<tagHurdleInfo*>* pContainer = MonsterManager::GetInstance()->Get_Hurdles();
+		tagHurdleInfo* pHurdle = nullptr;
+
+		for (auto& it : *pContainer) {
+			if (it->vSrc == _vSrc && 
+				it->vDst == _vDst && 
+				it->fSpeed == _fSpeed 
+				&& it->fScale == _fScalemult) 
+			{
+				pHurdle = it;
+				break;
+			}
+		}
+
+		if (nullptr == pHurdle) {
+			pHurdle = DBG_NEWW tagHurdleInfo(_vSrc, _vDst, _fSpeed, _fScalemult);
+			pContainer->push_back(pHurdle);
+		}
+
+		if ((roundf(pHurdle->fDis / pHurdle->fScale) - pHurdle->fDis) > pHurdle->RefCount)
+			return nullptr;
+
+		GameObject* pObj = Monster::Create<T>(GRPDEV, (pHurdle->vDir * (float)pHurdle->RefCount) + pHurdle->vSrc, _fScalemult);
+		if (nullptr == pObj) return nullptr;
+
+		pHurdle->RefCount++;
+
+		T* pCastObj = static_cast<T*>(pObj);
+		MONSTERINFO* pInfo = pCastObj->Get_Info();
+		if (pInfo) {
+			pInfo->Change_State(MONSTER_STATE_MINIGAME_IDLE);
+			pInfo->_pHurdle = pHurdle;
+			pInfo->vDirection = pHurdle->vDir;
+		}
+
+		return pObj;
 	}
 };

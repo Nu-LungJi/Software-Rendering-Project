@@ -32,6 +32,10 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 	Component_Collider->Update_Component(_DT);
 
 
+	//	 Kill Timer
+	m_tInfo.fTimer[0] += _DT;
+	ObjectDead = m_tInfo.fTimer[0] >= SHOTGUNEVILSOUL_CHANNELING_TIME;
+
 
 	if(m_tInfo.bTrigger[0])
 	{
@@ -44,7 +48,6 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 
 		m_tInfo.bTrigger[0] = false;
 		ObjectDead = true;
-		return 0;
 	}
 	
 	MYPOS->y = MYSCALE->y * 0.5f;

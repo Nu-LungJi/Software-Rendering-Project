@@ -30,17 +30,19 @@ private:
 	virtual	VOID		Free();
 private:
 	INT				ENDFRAME;
-	vector<IDirect3DBaseTexture9*>	TextureList;
+	vector<IDirect3DBaseTexture9*>			TextureList;
+	const vector<IDirect3DTexture9*>*		pTextureList;
 
 	INT				TextureIndex;
 	FLOAT			FrameTick;
 	FLOAT			PlayTime;
+	FLOAT			m_fTimer[2];
 	BOOL			Repeatable;
 
 	Buffer*		Component_Buffer;
 	Transform*	Component_Transform;
-	Texture*	Component_Texture;
-	Collider*	Component_Collider;
+	//Texture*	Component_Texture;
+	//Collider*	Component_Collider;
 
 public:
 	bool			Get_Notify() { return Notify; }

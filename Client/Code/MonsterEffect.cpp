@@ -1,15 +1,14 @@
 #include "../Include/PCH.h"
 #include "MonsterEffect.h"
 
-MonsterEffect::MonsterEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),	TextureIndex(0), FrameTick(0.f)		{}
-MonsterEffect::MonsterEffect(CONST GameObject& _RHS)	: GameObject(_RHS),		TextureIndex(0), FrameTick(0.f)		{}
+MonsterEffect::MonsterEffect(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), TextureIndex(0), FrameTick(0.f), pTextureList(nullptr), m_fTimer{} {}
+MonsterEffect::MonsterEffect(CONST GameObject& _RHS)	: GameObject(_RHS),		TextureIndex(0), FrameTick(0.f), pTextureList(nullptr), m_fTimer{} {}
 MonsterEffect::~MonsterEffect()																						{}
 
 HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 _vPos, _float _fScalemult, BOOL _Repeatable, FLOAT _PlayTime, _vec3 _vDir) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	Notify = 0;
-
 
 	*Component_Transform->Get_Position() = _vPos;
 	*Component_Transform->Get_Scale() *= _fScalemult;
@@ -19,22 +18,55 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 _vPos, _flo
 	PlayTime = _PlayTime;
 	m_vDir = _vDir;
 
+	uint16_t Key = 0;
+
 	switch (_SKILLTYPE)
 	{
-	case MONSTER_EFFECT::MONSTER_SUMMONS01:			Make_TextureList(L"Spr_Effect_MonsterSummons01");		break;
-	case MONSTER_EFFECT::MONSTER_SUMMONS02:			Make_TextureList(L"Spr_Effect_MonsterSummons02");		break;
-	case MONSTER_EFFECT::MONSTER_SUMMONS03:			Make_TextureList(L"Spr_Effect_MonsterSummons03");		break;
-	case MONSTER_EFFECT::MONSTER_DEATH:				Make_TextureList(L"Spr_Effect_baseDeathEffect_B");		break;
-
-	case MONSTER_EFFECT::BULLET_STANDARD_BIRTH:		Make_TextureList(L"Spr_Bullet_Standard_Birth");			*MYSCALE *= 2.f;	break;
-	case MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY:	Make_TextureList(L"Spr_Bullet_Standard_BirthRayUp");	*MYSCALE *= 2.f;	break;
-	case MONSTER_EFFECT::BULLET_STANDARD_CHARGE:	Make_TextureList(L"Spr_Bullet_Standard_Charge");		*MYSCALE *= 2.f;	break;
-	case MONSTER_EFFECT::BULLET_STANDARD_DEATH:		Make_TextureList(L"Spr_Bullet_Standard_Death");			*MYSCALE *= 2.f;	break;
-
-	case MONSTER_EFFECT::SKILL_END:				default:		return E_FAIL;
+	case Engine::MONSTER_EFFECT::SKILL_END:
+	default:	return E_ABORT;
+	case Engine::MONSTER_EFFECT::MONSTER_SUMMONS01:
+	case Engine::MONSTER_EFFECT::MONSTER_SUMMONS02:
+	case Engine::MONSTER_EFFECT::MONSTER_SUMMONS03:
+	case Engine::MONSTER_EFFECT::MONSTER_DEATH:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect, (uint8_t)_SKILLTYPE, 0);
+		break;
+	case Engine::MONSTER_EFFECT::BULLET_STANDARD_BIRTH:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Standard, (uint8_t)MONSTER_EFFECT::BULLET_STANDARD_BIRTH);
+		break;
+	case Engine::MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Standard, (uint8_t)MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY);
+		break;
+	case Engine::MONSTER_EFFECT::BULLET_STANDARD_CHARGE:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Standard, (uint8_t)MONSTER_EFFECT::BULLET_STANDARD_CHARGE);
+		break;
+	case Engine::MONSTER_EFFECT::BULLET_STANDARD_DEATH:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet, (uint8_t)BULLET_TYPE::Standard, (uint8_t)MONSTER_EFFECT::BULLET_STANDARD_DEATH);
+		break;
+	case Engine::MONSTER_EFFECT::ALERT:
+		Key = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect, (uint8_t)MONSTER_EFFECT::ALERT, (uint8_t)ALERT_TYPE::Circle);
+		break;
 	}
+	uint16_t SearchKey = Key & 0xffc0;
 
-	return S_OK;
+	pTextureList = MonsterManager::GetInstance()->Find_Textures(SearchKey);
+	ENDFRAME = pTextureList->size();
+	if (pTextureList != nullptr)	return S_OK;
+
+	//switch (_SKILLTYPE)
+	//{
+	//case MONSTER_EFFECT::MONSTER_SUMMONS01:			Make_TextureList(L"Spr_Effect_MonsterSummons01");		break;
+	//case MONSTER_EFFECT::MONSTER_SUMMONS02:			Make_TextureList(L"Spr_Effect_MonsterSummons02");		break;
+	//case MONSTER_EFFECT::MONSTER_SUMMONS03:			Make_TextureList(L"Spr_Effect_MonsterSummons03");		break;
+	//case MONSTER_EFFECT::MONSTER_DEATH:				Make_TextureList(L"Spr_Effect_baseDeathEffect_B");		break;
+	//case MONSTER_EFFECT::BULLET_STANDARD_BIRTH:		Make_TextureList(L"Spr_Bullet_Standard_Birth");			*MYSCALE *= 2.f;	break;
+	//case MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY:	Make_TextureList(L"Spr_Bullet_Standard_BirthRayUp");	*MYSCALE *= 2.f;	break;
+	//case MONSTER_EFFECT::BULLET_STANDARD_CHARGE:	Make_TextureList(L"Spr_Bullet_Standard_Charge");		*MYSCALE *= 2.f;	break;
+	//case MONSTER_EFFECT::BULLET_STANDARD_DEATH:		Make_TextureList(L"Spr_Bullet_Standard_Death");			*MYSCALE *= 2.f;	break;
+	//case MONSTER_EFFECT::SKILL_END:				default:		return E_FAIL;
+	//}
+	//return S_OK;
+
+	return E_FAIL;
 }
 
 HRESULT MonsterEffect::Make_TextureList(CONST TCHAR* _Filename)
@@ -77,43 +109,46 @@ HRESULT MonsterEffect::Make_TextureList(CONST TCHAR* _Filename)
 
 INT  MonsterEffect::Update_GameObject(CONST FLOAT& _DT) {
 
-	if (ObjectDead)
-		return -1;
 	GameObject::Update_GameObject(_DT);
 
-	FrameTick += _DT;
+	//FrameTick += _DT;
+	m_fTimer[0] += _DT;
+	m_fTimer[1] += _DT;
+
+	if (Repeatable) {
+		if (m_fTimer[0] > FRAMETICK)
+		{
+			m_fTimer[0] = 0.f;
+			++TextureIndex %= ENDFRAME;
+		}
+		ObjectDead = m_fTimer[1] >= PlayTime;
+	}
+	else
+	{
+		if (ENDFRAME > 1)
+		{
+			if (m_fTimer[0] > FRAMETICK / (_float)ENDFRAME)
+			{
+				m_fTimer[0] = 0.f;
+				ObjectDead = ++TextureIndex >= ENDFRAME;
+			}
+		}
+		else
+		{
+			ObjectDead = m_fTimer[1] >= PlayTime;
+		}
+	}
+
+	if (ObjectDead)
+		return -1;
 
 	return 0;
 }
 VOID MonsterEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead)	return;
-	if (TextureList.size() == 1)
-	{
-		ObjectDead = FRAMETICK >= PlayTime;
-	}
-	else if (FrameTick > PlayTime / ENDFRAME) {
-		if (TextureIndex++ >= ENDFRAME - 2) {
-			if (Repeatable) { TextureIndex = 0; }
-			else {
-				TextureIndex = ENDFRAME - 2;
-				ObjectDead = TRUE;
-			}
-		}
-		FrameTick = 0.f;
-	}
 
-	if (TextureIndex > ENDFRAME / 2)
-		Notify = true;
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_vDir);
 
-	switch (m_eEffect)
-	{
-	default:
-	case MONSTER_EFFECT::MONSTER_SUMMONS02:
-	case MONSTER_EFFECT::MONSTER_SUMMONS03:
-	case MONSTER_EFFECT::MONSTER_SUMMONS01:
-		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_vDir);
-		break;
-	}
 }
 VOID MonsterEffect::Render_GameObject() {
 	if (ObjectDead)	return;
@@ -121,7 +156,8 @@ VOID MonsterEffect::Render_GameObject() {
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	GRPDEV->SetTexture(0, TextureList[TextureIndex]);
+	//GRPDEV->SetTexture(0, TextureList[TextureIndex]);
+	GRPDEV->SetTexture(0, (*pTextureList)[TextureIndex]);
 
 	Component_Buffer->Render_Buffer();
 

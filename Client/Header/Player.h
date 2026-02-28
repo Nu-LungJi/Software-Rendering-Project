@@ -291,4 +291,12 @@ private:
 		BOOL			OnCollisionEnter(GameObject* _Other)override;
 		BOOL			OnCollisionStay(GameObject* _Other) override;
 		BOOL			OnCollisionExit(GameObject* _Other)		override;
+
+	public:
+
+
+
+	private:
+		HRESULT			MiniGameInit();
+		SCENE_TYPE		m_eCurrScene;
 };
