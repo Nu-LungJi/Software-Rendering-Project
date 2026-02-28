@@ -186,7 +186,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::Wind_Arrow:
             Size = { 1.5f, 1.5f, 1.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
-            // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
+            // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 늦게 ㅇ나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
             SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::WindCharging:
@@ -411,7 +411,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.35f);
                 _effectDelay = 0.f;
             }
             break;
