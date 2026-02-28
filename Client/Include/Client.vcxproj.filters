@@ -514,6 +514,12 @@
     <ClInclude Include="DamageFontManager.h">
       <Filter>07. Font\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Hurdle.h">
+      <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClInclude>
+    <ClInclude Include="TempHurdle.h">
+      <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -760,6 +766,9 @@
     </ClCompile>
     <ClCompile Include="DamageFontManager.cpp">
       <Filter>07. Font\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Hurdle.cpp">
+      <Filter>03. GameObject\09. Hurdle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

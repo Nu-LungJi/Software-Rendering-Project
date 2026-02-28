@@ -60,6 +60,7 @@ public:
 
 	VOID      Delete_FontObject(FontObject* obj);
 
+
 	VOID		Render_FontObjects();
 
 	VOID		Update_DamageFont(LPDIRECT3DDEVICE9 _GRPDEV, FontObject* FO);

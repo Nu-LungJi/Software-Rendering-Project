@@ -41,19 +41,19 @@ namespace Engine
 	enum	   TILE_STAGE		{TILE_STAGE1, TILE_STAGE2, TILE_STAGE3, TILE_STAGE4, TILE_FIRSTBOSS,TILE_DOCHER1,TILE_DOCHER2,TILE_DOCHERBOSS, TILE_DEFENSE, STAGE_END};
 	enum	   TILEMODE_CHANGE  { MODE_TILE, MODE_CUBE, MODE_OBJECT, MODE_END };
 
-	enum class MONSTER_SEP : uint8_t { Monster = 1, Bullet, Effect };
-	enum class MONSTER_TYPE : uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
-	enum class MONSTER_ANIM : uint8_t { Stand = 0, Appear, Disappear, Attack, Death, Random, End };
-	enum class BULLET_TYPE : uint8_t { Standard = 0, ScorpionBullet, Chain, Fireball, GroundIce, Random, End };
-	enum class BULLET_CHAIN_TYPE : uint8_t { Head = 0, Rect, Line, End };
-	enum class ALERT_TYPE : uint8_t { Circle = 0, Rect, Line, End };
-	enum class MONSTER_EFFECT : uint8_t {
-		MONSTER_SUMMONS01 = 0, MONSTER_SUMMONS02, MONSTER_SUMMONS03, MONSTER_DEATH,
-		BULLET_STANDARD_BIRTH, BULLET_STANDARD_BIRTHRAY, BULLET_STANDARD_CHARGE, BULLET_STANDARD_DEATH,
-		ALERT,
-		SKILL_END
-	};
-
+	//enum class MONSTER_SEP : uint8_t { Monster = 1, Bullet, Effect };
+	//enum class MONSTER_TYPE : uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
+	//enum class MONSTER_ANIM : uint8_t { Stand = 0, Appear, Disappear, Attack, Death, Random, End };
+	//enum class BULLET_TYPE : uint8_t { Standard = 0, ScorpionBullet, Chain, Fireball, GroundIce, Random, End };
+	//enum class BULLET_CHAIN_TYPE : uint8_t { Head = 0, Rect, Line, End };
+	//enum class ALERT_TYPE : uint8_t { Circle = 0, Rect, Line, End };
+	//enum class MONSTER_EFFECT : uint8_t {
+	//	MONSTER_SUMMONS01 = 0, MONSTER_SUMMONS02, MONSTER_SUMMONS03, MONSTER_DEATH,
+	//	BULLET_STANDARD_BIRTH, BULLET_STANDARD_BIRTHRAY, BULLET_STANDARD_CHARGE, BULLET_STANDARD_DEATH,
+	//	ALERT,
+	//	SKILL_END
+	//};
+	// 밑에거랑 겹쳐서 주석
 	enum class MONSTER_SEP		: uint8_t { Tile = 0, Monster = 1, Bullet, Effect };
 	enum class MONSTER_TYPE		: uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
 	enum class MONSTER_ANIM		: uint8_t { Stand = 0, Appear, Disappear, Attack, Death,  Random, End };

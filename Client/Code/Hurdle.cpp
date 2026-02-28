@@ -1,4 +1,5 @@
 #include "../Include/PCH.h"
+#include "TempHurdle.h"
 
 Hurdle::Hurdle(LPDIRECT3DDEVICE9 _GRPDEV): GameObject(_GRPDEV) {}
 Hurdle::Hurdle(const GameObject& _RHS):GameObject(_RHS){}
