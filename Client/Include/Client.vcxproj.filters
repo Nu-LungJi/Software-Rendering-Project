@@ -490,9 +490,6 @@
     <ClInclude Include="..\Header\MiniGameCounter.h">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\Hurdle.h">
-      <Filter>03. GameObject\09. Hurdle</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\EvilFrog.h">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>
     </ClInclude>
@@ -730,9 +727,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\MiniGameCounter.cpp">
       <Filter>03. GameObject\05. Tile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Hurdle.cpp">
-      <Filter>03. GameObject\09. Hurdle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\EvilFrog.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\05. EvilFrog</Filter>

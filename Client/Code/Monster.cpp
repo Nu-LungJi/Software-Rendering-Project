@@ -1,5 +1,8 @@
 #include "../Include/PCH.h"
 
+CameraObject*	Monster::m_pCam		= nullptr;
+Player*			Monster::m_pPlayer	= nullptr;
+
 GameObject* Monster::Set_Target(const TCHAR* _TAG, GameObject*& GameObj)
 {
 	GameObj = SceneManager::GetInstance()->Get_GameObject(_TAG);
@@ -150,6 +153,22 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 	if (pMonster->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
 		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }
+void Monster::Release_Hurdle(MONSTERINFO* _Info) {
+	if (_Info->_pHurdle != nullptr) {
+		_Info->_pHurdle->RefCount--;
+
+		if (_Info->_pHurdle->RefCount == 0) {
+			vector<tagHurdleInfo*>* pContainer = MonsterManager::GetInstance()->Get_Hurdles();
+			for (auto it = pContainer->begin(); it != pContainer->end(); ++it) {
+				if (*it == _Info->_pHurdle) {
+					delete* it;
+					pContainer->erase(it);
+					break;
+				}
+			}
+		}
+	}
+}
 //
 //VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
 //{
@@ -254,6 +273,54 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 	}
 }
 
+HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)
+{
+	if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		CameraObject* pCamera = Monster::Get_Camera();
+		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
+		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
+
+		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+	}
+	else if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+		CameraObject* pCamera = Monster::Get_Camera();
+		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
+		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
+
+		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+		_vec3 vCalc = pHurdle->vDst - *vPos;
+		_float fCalc = D3DXVec3Dot(&vCalc, vPos);
+		if (fCalc < 0.f)
+			*vPos = pHurdle->vSrc;
+	}
+	return S_OK;
+}
+
+BOOL Monster::Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo)
+{
+	if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
+		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
+		if (pHurdle == nullptr)	
+			return FALSE;
+		if (_pInfo->_pHurdle->VisibleCount > 0) {
+			_pInfo->Change_State(MONSTER_STATE_MINIGAME_MOVE);
+			_pInfo->vDirection = pHurdle->vDir;
+			_pInfo->fSpeed = pHurdle->fSpeed;
+		}
+		return FALSE;
+	}
+	else if (_pInfo->eState[1] == MONSTER_STATE_MINIGAME_MOVE) {
+		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
+		if (pHurdle == nullptr)
+			return FALSE;
+		if (pHurdle->VisibleCount == 0) {
+			_pInfo->Change_State(MONSTER_STATE_MINIGAME_MOVE);
+			_pInfo->fSpeed = 0.f;
+		}
+		return TRUE;
+	}
+}
+
 HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
 {
 	_vec3 vPos			= *Transcom->Get_Position();
@@ -267,3 +334,64 @@ HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
 
 	return S_OK;
 }
+
+//
+//template<typename T>
+//inline GameObject* Monster::Create(LPDIRECT3DDEVICE9 GRPDEV, _vec3 _vSrc, _vec3 _vDst, _float _fSpeed, _float _fScalemult)
+//{
+//	tagHurdleInfo* pHurdle = DBG_NEWW tagHurdleInfo(_vSrc, _vDst, _fSpeed, _fScalemult);
+//	vector<tagHurdleInfo*>& pContainer = MonsterManager::GetInstance()->Get_Hurdles();
+//
+//	bool	bDup = false;
+//
+//	for (auto it : pContainer) {
+//		if (*it == *pHurdle) {
+//			bDup = true;
+//			delete pHurdle;
+//			pHurdle = it;
+//			break;
+//		}
+//	}
+//
+//	if (!bDup)
+//		pContainer.push_back(pHurdle);
+//
+//	if ((roundf(pHurdle->fDis / pHurdle->fScale) - pHurdle->fDis) < pHurdle->RefCount)
+//		return nullptr;
+//
+//	GameObject* pObj = Monster::Create<T>(GRPDEV, (pHurdle.vDir * pHurdle->RefCount) + pHurdle->vSrc, _fScalemult);
+//
+//	pHurdle->RefCount++;
+//
+//	MONSTERINFO* pInfo = dynamic_cast<Bat*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<ScorpionEvilSoul*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<ShotGunEvilSoul*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<EvilSlime*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<Bullet_Standard*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<Fireball*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<ScorpionBullet*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<Bullet_Chain_Head*>(pObj)->Get_Info();
+//	if (pInfo == nullptr)
+//		pInfo = dynamic_cast<EvilSlimeGroundIce*>(pObj)->Get_Info();
+//	if (pInfo == nullptr) {
+//		pObj->Free();
+//		pObj = nullptr;
+//		delete pInfo;
+//		pInfo = nullptr;
+//
+//		return nullptr;
+//	}
+//
+//	pInfo->Change_State(MONSTER_STATE_MINIGAME_IDLE);
+//	pInfo->_pHurdle = pHurdle;
+//	pInfo->vDirection = pHurdle->vDir;
+//
+//	return pObj;
+//}

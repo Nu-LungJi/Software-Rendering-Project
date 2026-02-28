@@ -29,14 +29,6 @@ public:
 private:
 	virtual void Free();
 
-public:
-	const	Player*			Get_Player() { return m_pPlayer; }
-	const	CameraObject*	Get_Camera() { return m_pCamera; }
-
-private:
-	Player*			m_pPlayer;
-	CameraObject*	m_pCamera;
-
 
 //public:
 //Texture*						Set_Texture(const TCHAR* _Filename, bool &_IsNew) {

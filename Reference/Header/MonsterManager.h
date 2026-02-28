@@ -42,11 +42,11 @@ typedef struct FilenameInfo {
 
         Fullname = _Filename;
         iCount = swscanf_s(_Filename.c_str(), L"%*[^_]_%[^_]_%[^_]_%[^_]_%hhu%s",
-            szType,         (unsigned)_countof(szType),
-            szName,         (unsigned)_countof(szName),
-            szState,        (unsigned)_countof(szState),
+            szType, (unsigned)_countof(szType),
+            szName, (unsigned)_countof(szName),
+            szState, (unsigned)_countof(szState),
             &FrameNum,
-            szExtension,    (unsigned)_countof(szExtension));
+            szExtension, (unsigned)_countof(szExtension));
 
         if (iCount < 4) {
             Reset();
@@ -60,15 +60,47 @@ typedef struct FilenameInfo {
     }
 }FILENAMEINFO;
 
+typedef struct tagHurdleInfo {
+    _vec3   vSrc;
+    _vec3   vDst;
+    _vec3   vPos;
+    _vec3   vDir;
+    _float  fDis;
+    _float  fSpeed;
+    _float  fScale;
+    uint8_t VisibleCount;
+    uint8_t RefCount;
+
+    explicit    tagHurdleInfo(_vec3 _vSrc, _vec3 _vDst, _float _fSpeed, _float _fScale) : VisibleCount(0), RefCount(0)
+    {
+        vSrc = _vSrc;
+        vDst = _vDst;
+        vPos = (vSrc + vDst) * 0.5f;
+        vDir = _vDst - vSrc;
+        fDis = D3DXVec3Length(&vDir);
+        D3DXVec3Normalize(&vDir, &vDir);
+        fSpeed = _fSpeed;
+        fScale = _fScale;
+    }
+
+    bool operator==(const tagHurdleInfo& other) const {
+        return (vSrc == other.vSrc &&
+            vDst == other.vDst &&
+            fSpeed == other.fSpeed &&
+            fScale == other.fScale);
+    }
+};
+
+
 class ENGINE_DLL MonsterManager : public Base
 {
-	DECLARE_SINGLETON(MonsterManager);
+    DECLARE_SINGLETON(MonsterManager);
 public:
-	explicit MonsterManager();
-	virtual ~MonsterManager();
+    explicit MonsterManager();
+    virtual ~MonsterManager();
 
 public:
-	void		    Load_Textures_from_Folder(IDirect3DDevice9* _GRPDEV, const wstring& _Filepath);
+    void		    Load_Textures_from_Folder(IDirect3DDevice9* _GRPDEV, const wstring& _Filepath);
     FILENAMEINFO	Make_ID_from_Filename(const wstring& _Filename);
 
     static  uint16_t    Make_Key(uint8_t eType, uint8_t eName, uint8_t eState);
@@ -76,28 +108,32 @@ public:
     const   vector<IDirect3DTexture9*>* Find_Textures(uint16_t uiID);
 
 private:
-	void Free() override;
+    void Free() override;
 
-
-    private:
+private:
     map<uint16_t, vector<IDirect3DTexture9*>>	    mapProtoType;
+
+public:
+    vector<tagHurdleInfo*>* Get_Hurdles() { return &vecHurdles; }
+private:
+    vector<tagHurdleInfo*>  vecHurdles;
 
 
 public:
     HRESULT                     Ready_Origin_Buffer(Buffer* _pBuffer);
     HRESULT                     Ready_Origin_Buffer();
-    vector<GameObject*>*        Get_Tiles() { return &m_vecTiles; }
-    LPDIRECT3DVERTEXBUFFER9*    TILEVB() { return &m_pTileVB; }
-    LPDIRECT3DINDEXBUFFER9*     TILEIB() { return &m_pTileIB; }
-    
-    void    Set_Maxtile(_uint _Num)     { m_uiMaxTile = _Num; }
+    vector<GameObject*>* Get_Tiles() { return &m_vecTiles; }
+    LPDIRECT3DVERTEXBUFFER9* TILEVB() { return &m_pTileVB; }
+    LPDIRECT3DINDEXBUFFER9* TILEIB() { return &m_pTileIB; }
+
+    void    Set_Maxtile(_uint _Num) { m_uiMaxTile = _Num; }
     HRESULT Ready_Static_Batch(LPDIRECT3DDEVICE9 _GRPDEV);
     void    Render_Static_Batch(LPDIRECT3DDEVICE9 GRPDEV, LPDIRECT3DTEXTURE9 Texture);
 
     void    Update_Tile(_uint _Num, Transform* TransCom);
 
 private:
-    IDirect3DTexture9*      m_pTileTex;
+    IDirect3DTexture9* m_pTileTex;
 
     _uint                   m_uiMaxTile = 0;
     LPDIRECT3DVERTEXBUFFER9 m_pTileVB = nullptr;

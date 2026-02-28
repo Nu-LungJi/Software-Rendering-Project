@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_pPlayer(nullptr), m_pCamera(nullptr) {}
+MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV) {}
 MiniGameScene::~MiniGameScene() {}
 HRESULT	MiniGameScene::Ready_Scene() {
 	Scene::Ready_Scene();
@@ -63,10 +63,11 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer(){
 	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
-	m_pCamera = static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera"));
+	Monster::Set_Camera(static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera")));
 	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
-	m_pPlayer = static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player")));
-	m_pCamera->Set_Target(m_pPlayer);
+	Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
+	
+	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 1.f,1.f,10.f }, { 20.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
 	//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{15.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//m_pCamera->Set_Target(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Monster"));
 
