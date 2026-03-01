@@ -619,7 +619,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     }
 
     else if (Tag == L"CheonLog") {
-        atk = 1.f;
+        atk = 100.f;
         Component_Collider->Set_Hp(hp - atk);
         //COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 1.f);

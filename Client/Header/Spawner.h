@@ -45,7 +45,7 @@ private:
     _bool                   m_bStopFrame;
     _bool                   m_bSpawn;
     _bool                   m_bTrigger;
-
+    _bool                   m_bEndGame;
 
     _int                    m_SpawnCnt;
     _int                    m_iCnt;

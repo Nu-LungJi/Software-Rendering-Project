@@ -357,7 +357,7 @@ VOID PlayerEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
 
-	//GRPDEV->SetTexture(0, TextureList[TextureIndex]);
+	GRPDEV->SetTexture(0, TextureList[TextureIndex]);
 
 	// COLOR = Texture * TFACTOR
 	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);

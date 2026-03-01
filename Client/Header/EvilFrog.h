@@ -11,6 +11,7 @@ class EvilFrog :  public GameObject
 	virtual ~EvilFrog();
 
 public:
+	virtual			HRESULT		Ready_GameObject(_vec3 vPos = {}, BOOL bMini = false);
 	virtual			HRESULT		Ready_GameObject();
 	virtual			INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
@@ -27,7 +28,7 @@ private:
 	Transform* Component_Transform;
 	Collider* Component_Collider;
 public:
-	static			EvilFrog* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static			EvilFrog* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos = {}, BOOL bMini = false);
 	MONSTERINFO* Get_Info() { return &m_tInfo; }
 
 private:

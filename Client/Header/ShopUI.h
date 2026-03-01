@@ -20,6 +20,7 @@ public:
 	HRESULT            Text_Initialize();
 	HRESULT            Item_Initialize();
 	void			   Show_Item();
+	_bool			   buy_Item(Player* pPlayer,_int iIndex);
 public:
 	static	ShopUI*		Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	VOID Display_ShopItemInfo(ItemINFO* _pItem); 
@@ -33,6 +34,7 @@ private:
 	Transform* Component_Transform;
 	Collider* Component_Collider;
 	Buffer* Component_Buffer;
+
 
 	vector<SpriteINFO*> ItemInfo_Screen;
 

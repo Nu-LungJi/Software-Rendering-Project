@@ -71,7 +71,8 @@ public:
 
     void                    Save_Tile(HWND g_hWnd);
     void                    Load_TilePush(GameObject* pGame,TILE_STAGE eStage, TILEMODE_CHANGE eMod) { m_vecTileBuffer[eStage][eMod].push_back(pGame); }
-
+    
+    void                    Set_ZeroMonster() { m_bZeroMonster = true; }
     _bool                   Choice_Tile(_int* eState, _int* eMode, _int* iTileNumber, _vec3 Origin, _vec3 vDir, _vec3* returnPos, _vec3* returnScale, _vec3* returnRot, _bool* bAni, TILE_STAGE* eid);
     void                    Set_Tile(_vec3 vPos, _vec3 returnPos, _vec3 returnRot, _int eStage, _int eMode, _int TileNumber, _bool bAni, TILE_STAGE eid);
     void                    Move_Tile(_vec3 vPos, _vec3 Origin, _vec3 vDir);
@@ -83,7 +84,7 @@ private:
     _bool                   m_bStageChange;
     _bool                   m_bCheck;
     _bool                   m_EndLoading;
-
+    _bool                   m_bZeroMonster;
     TILE_STAGE              m_eCurrent;
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;

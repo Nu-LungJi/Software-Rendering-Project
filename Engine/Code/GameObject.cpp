@@ -107,6 +107,7 @@ VOID		GameObject::Free() {
 	for (auto& COM : ComponentList)
 		Safe_Release(COM);
 
+	ComponentList.clear();
 	
 	Safe_Release(GRPDEV);
 }

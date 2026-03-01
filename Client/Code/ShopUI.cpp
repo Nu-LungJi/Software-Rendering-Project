@@ -17,7 +17,6 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
     GameObject::Update_GameObject(_DT);
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-    Show_Item();
 
     if (!isActive)
     {
@@ -34,17 +33,6 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
     if (isActive) {
         Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
 
-        if (KEY_DOWN(DIK_RIGHT)) {
-            m_iCurrentItemIndex++;
-            if (m_iCurrentItemIndex >= (INT)Item_Index.size()) m_iCurrentItemIndex = 0;
-            Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
-        }
-
-        if (KEY_DOWN(DIK_LEFT)) {
-            m_iCurrentItemIndex--;
-            if (m_iCurrentItemIndex < 0) m_iCurrentItemIndex = (INT)Item_Index.size() - 1;
-            Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
-        }
     }
     else {
       Display_ShopItemInfo(nullptr);
@@ -55,7 +43,7 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
-     Show_Item();
+    // Show_Item();
     
     return 0;
 }
@@ -185,83 +173,95 @@ HRESULT ShopUI::Item_Initialize() {
 
 void ShopUI::Show_Item()
 {
+    Player* pPlayer;
     _vec3 vPos, vTilePos;
     TILE_SPAWNER eSpawn;
     dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS,&vPos);
-    for (auto& iter : TileManager::GetInstance()->Get_TileList(TILE_STAGE4,TILEMODE_CHANGE::MODE_TILE))
+    pPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+    for (auto iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4,TILEMODE_CHANGE::MODE_TILE).begin(); iter != TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).end();)
     {
-        eSpawn   = dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner();
-        vTilePos = *dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+        eSpawn   = dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner();
+        vTilePos = *dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
  
-        switch (eSpawn)
+        if (eSpawn <= TILE_SPAWNER::ITEM_SPAWN6 && vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
         {
-        case TILE_SPAWNER::ITEM_SPAWN1:
-           if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-           {
-               m_iCurrentItemIndex = 0;
-               isActive = true;
-               return;
-           }
-           else
-               isActive = false;
-           break;
-        case TILE_SPAWNER::ITEM_SPAWN2:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
+            switch (eSpawn)
             {
-                m_iCurrentItemIndex = 1;
+            case TILE_SPAWNER::ITEM_SPAWN1:              
                 isActive = true;
+                if (buy_Item(pPlayer, 0))
+                {
+                    Safe_Release(*iter);
+                    iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN2:               
+                    isActive = true;
+                    if (buy_Item(pPlayer, 1))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN3:              
+                    isActive = true;    
+                    if (buy_Item(pPlayer, 2))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN4:            
+                    isActive = true;        
+                    if (buy_Item(pPlayer, 3))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN5:
+                 isActive = true;
+                 if (buy_Item(pPlayer, 4))
+                 {
+                     Safe_Release(*iter);
+                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                 }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN6:
+                  isActive = true;
+                  if (buy_Item(pPlayer, 5))
+                  {
+                      Safe_Release(*iter);
+                      iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                  }
                 return;
             }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN3:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 2;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN4:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 3;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN5:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 4;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN6:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 5;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
         }
-      
+        else
+        {
+            isActive = false;
+        }
+        ++iter;
     }
+}
+
+_bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
+{
+    m_iCurrentItemIndex = iIndex;
+    if (KeyManager::GetInstance()->Get_KeyState(DIK_E))
+    {
+        //if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
+        //    return false;
+
+        REPLAY_UI_EFFECT(L"COIN_EFFECT");
+        
+        pPlayer->Set_Coin(pPlayer->Get_Coin() - Item_Index[iIndex]->ItemPrice);
+     
+        Safe_Release(Item_Index[iIndex]->TEXTURE);
+        Safe_Delete(Item_Index[iIndex]);
+        return true;
+    }
+    return false;
 }
 
 BOOL ShopUI::Get_Collision_Enter(GameObject* _Other) {
@@ -314,10 +314,13 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 }
 
 VOID	ShopUI::Free() {
-    for (auto& II : Item_Index)
-    {
-        Safe_Release(II->TEXTURE);
-            Safe_Delete(II);
-    }
+   for (auto& II : Item_Index)
+   {
+       if (II == nullptr)
+           continue;
+   
+       Safe_Release(II->TEXTURE);
+       Safe_Delete(II);
+   }
 	GameObject::Free();
 }

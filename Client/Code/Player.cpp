@@ -877,24 +877,24 @@ void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	if (MOUSE_RBUTTON && _dashstock > 0) {
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
-		_pState = pState::STATE_DASH;
-		_dashStart = true;
-		_frame = 1;
-		_dashstock--;
-		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-		_isInvincible = true;
-	}
-	else if (mouseLB) {
-		_pState = pState::STATE_ATTACK;
-		_attackDelay = 2.0f;
-		_frame = 1;
-	}
-	else if (KEY_HOLD(DIK_SPACE)) {
-		_pState = pState::STATE_ATTACK;
-		_frame = 1;
-	}
+	//if (MOUSE_RBUTTON && _dashstock > 0) {
+	//	SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+	//	_pState = pState::STATE_DASH;
+	//	_dashStart = true;
+	//	_frame = 1;
+	//	_dashstock--;
+	//	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+	//	_isInvincible = true;
+	//}
+	//else if (mouseLB) {
+	//	_pState = pState::STATE_ATTACK;
+	//	_attackDelay = 2.0f;
+	//	_frame = 1;
+	//}
+	//else if (KEY_HOLD(DIK_SPACE)) {
+	//	_pState = pState::STATE_ATTACK;
+	//	_frame = 1;
+	//}
 }
 
 void Player::SKILL_NONE(const _float& _DT)
