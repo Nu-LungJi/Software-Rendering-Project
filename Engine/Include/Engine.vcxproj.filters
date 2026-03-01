@@ -34,6 +34,12 @@
     <Filter Include="99. Component\02. Transform">
       <UniqueIdentifier>{a586d953-951b-41a4-aead-120984a11a0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. Component\03. Texture">
+      <UniqueIdentifier>{f901d2b8-ed83-41d1-b248-ff0820f8b24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Component\99. StateMachine">
+      <UniqueIdentifier>{818e8a07-c0d7-48c4-80fd-1a7761d25a68}</UniqueIdentifier>
+    </Filter>
     <Filter Include="04. SoundManager">
       <UniqueIdentifier>{1e3bd1a8-9ca5-4fde-9773-86836f586b6c}</UniqueIdentifier>
     </Filter>
@@ -61,6 +67,9 @@
     <Filter Include="10. CollisionManager">
       <UniqueIdentifier>{5b2479a8-ade8-4ea4-916a-156bb09c66f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="11. FontManager">
+      <UniqueIdentifier>{45e3c7f3-03b5-4afb-a8f9-8cf66c4cb361}</UniqueIdentifier>
+    </Filter>
     <Filter Include="09. ResourceManager">
       <UniqueIdentifier>{4343f91f-80fb-46dc-8b79-fc3119b9473e}</UniqueIdentifier>
     </Filter>
@@ -70,20 +79,11 @@
     <Filter Include="99. Component\06. Tile">
       <UniqueIdentifier>{4e2a987d-50f6-4e59-bd84-9e0016b96795}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Component\03. Texture">
-      <UniqueIdentifier>{f901d2b8-ed83-41d1-b248-ff0820f8b24a}</UniqueIdentifier>
+    <Filter Include="99. Component\07. Font">
+      <UniqueIdentifier>{1b683c38-f84a-441e-9b76-42c8c2fd8f98}</UniqueIdentifier>
     </Filter>
-    <Filter Include="11. UIManager">
+    <Filter Include="13. UIManager">
       <UniqueIdentifier>{06dba40a-cde8-4d74-a015-c5cfb226400f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="99. Component\08. Paticle">
-      <UniqueIdentifier>{c8eb511b-3b51-49e5-9e46-217833419d2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="13. MonsterManager">
-      <UniqueIdentifier>{64b6becc-edbf-4018-8f89-7d7e406bc151}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="99. Component\07. DamageFont">
-      <UniqueIdentifier>{5e787ad3-f69d-433e-9725-bda30ca08bf7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +141,9 @@
     <ClInclude Include="..\Header\SoundManager.h">
       <Filter>04. SoundManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\StateMachine.h">
+      <Filter>99. Component\99. StateMachine</Filter>
+    </ClInclude>
     <ClInclude Include="..\Header\KeyManager.h">
       <Filter>03. KeyManager</Filter>
     </ClInclude>
@@ -157,7 +160,7 @@
       <Filter>10. CollisionManager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\UIManager.h">
-      <Filter>11. UIManager</Filter>
+      <Filter>13. UIManager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\ResourceManager.h">
       <Filter>09. ResourceManager</Filter>
@@ -171,18 +174,13 @@
     <ClInclude Include="..\Header\Collider.h">
       <Filter>99. Component\05. Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\CDYBuffer.h">
-      <Filter>99. Component\08. Paticle</Filter>
+    <ClInclude Include="..\Header\FontManager.h">
+      <Filter>11. FontManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\ParticleRain.h">
-      <Filter>99. Component\08. Paticle</Filter>
+    <ClInclude Include="..\Header\Font.h">
+      <Filter>99. Component\07. Font</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\ParticleEffect.h">
-      <Filter>99. Component\08. Paticle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MonsterManager.h">
-      <Filter>13. MonsterManager</Filter>
-    </ClInclude>
+    <ClInclude Include="..\Header\UISprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDevice.cpp">
@@ -221,6 +219,9 @@
     <ClCompile Include="..\Code\SoundManager.cpp">
       <Filter>04. SoundManager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\StateMachine.cpp">
+      <Filter>99. Component\99. StateMachine</Filter>
+    </ClCompile>
     <ClCompile Include="..\Code\KeyManager.cpp">
       <Filter>03. KeyManager</Filter>
     </ClCompile>
@@ -240,7 +241,7 @@
       <Filter>10. CollisionManager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\UIManager.cpp">
-      <Filter>11. UIManager</Filter>
+      <Filter>13. UIManager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ResourceManager.cpp">
       <Filter>09. ResourceManager</Filter>
@@ -251,17 +252,12 @@
     <ClCompile Include="..\Code\TileInfo.cpp">
       <Filter>99. Component\06. Tile</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\CDYBuffer.cpp">
-      <Filter>99. Component\08. Paticle</Filter>
+    <ClCompile Include="..\Code\FontManager.cpp">
+      <Filter>11. FontManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\ParticleRain.cpp">
-      <Filter>99. Component\08. Paticle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\ParticleEffect.cpp">
-      <Filter>99. Component\08. Paticle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MonsterManager.cpp">
-      <Filter>13. MonsterManager</Filter>
+    <ClCompile Include="..\Code\UISprite.cpp" />
+    <ClCompile Include="..\Code\Font.cpp">
+      <Filter>99. Component\07. Font</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

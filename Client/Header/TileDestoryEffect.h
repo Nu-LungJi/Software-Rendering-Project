@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-enum class OBJECT_DESTORY { STONE, GRASS,POTALEFFECT,BOOM_F,BOOM_S,BOOM_T, DESTORY_END };
+enum class OBJECT_DESTORY { STONE, GRASS, DESTORY_END };
 class TileDestoryEffect :
     public GameObject
 {
@@ -10,7 +10,7 @@ private:
     virtual ~TileDestoryEffect();
 
 public:
-    virtual			HRESULT		Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther);
+    virtual			HRESULT		Ready_GameObject(OBJECT_DESTORY eid, _int iCnt, _vec3 vPos);
     virtual			INT			Update_GameObject(CONST FLOAT& _DT);
     virtual			VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
     virtual			VOID		Render_GameObject();
@@ -20,19 +20,17 @@ public:
     
 public:
     void            Frame_Move(CONST FLOAT& _DT);
-    void            Frame_Normal(CONST FLOAT& _DT);
-    void            Add_Effect(OBJECT_DESTORY eid,const _tchar* pName);
-    BOOL			OnCollisionEnter(GameObject* _Other);
-
+    void            Add_Effect(OBJECT_DESTORY eid,const _tchar* pName,_int iCnt);
 private:
-    HRESULT			                Component_Initialize(_bool bOther, OBJECT_DESTORY eid);
+    HRESULT			                Component_Initialize();
     
 private: 
     vector<IDirect3DBaseTexture9*>	m_vecTileEffectList[static_cast<int>(OBJECT_DESTORY::DESTORY_END)];
+    vector<const _tchar*>           m_vecName[static_cast<int>(OBJECT_DESTORY::DESTORY_END)];
     
     Buffer*                         m_pTileEffectBuff;
     Transform*                      m_pTransform;
-    Collider*                       m_pCollider;
+
     OBJECT_DESTORY                  m_eDestory;
 
     _float                          m_fFrame;
@@ -42,7 +40,7 @@ private:
 
     _int                            m_iCnt;
 public:
-    static         TileDestoryEffect* Create(LPDIRECT3DDEVICE9 pGraphicDev, OBJECT_DESTORY eid, _int iCnt, _vec3 vPos, _vec3 vScale, _vec3 vRot, _bool bOther = false);
+    static         TileDestoryEffect* Create(LPDIRECT3DDEVICE9 pGraphicDev, OBJECT_DESTORY eid, _int iCnt, _vec3 vPos);
 
 private:
     virtual  void            Free();

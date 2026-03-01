@@ -69,9 +69,12 @@ INT			Transform::Update_Component(CONST FLOAT& _DT){
         memcpy(&WorldMatrix.m[i][0], &m_vInfo[i], sizeof(_vec3));
     }
 
+
     return 0;
 }
 VOID		Transform::LateUpdate_Component(CONST FLOAT& _DT) {
+
+
 }
 Transform*	Transform::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	Transform* TRF = new Transform(_GRPDEV);

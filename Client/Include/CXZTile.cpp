@@ -1,631 +1,205 @@
 #include "CXZTile.h"
 #include "../Include/PCH.h"
 
-CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_iCheck(0),m_bEffect(false), m_bDestroy(false), m_fAlpha(0.f), m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
+CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_CubeBuffer(nullptr), m_pCollider(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(1), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 CXZTile::CXZTile(const GameObject& _RHS) : GameObject(_RHS) {}
-CXZTile::~CXZTile() {}
+CXZTile::~CXZTile() { Free(); }
 
 HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
 
-    if (FAILED(Component_Initialize(eid, eState))) return E_FAIL;
-    m_fHeight = rand() % 4 + 1;
-
-    switch (static_cast<int>(m_fHeight))
-    {
-    case 1:
-        m_fHeight = 0.02f;
-        break;
-    case 2:
-        m_fHeight = 0.03f;
-        break;
-    case 3:
-        m_fHeight = 0.024f;
-        break;
-    case 4:
-        m_fHeight = 0.035f;
-        break;
-    }
-    m_fHeightSpeed = 0.01f;
-
-    if (eState == TILE_STATE::STATE_UNDERTILE)
-    {
-        Make_BackGroundTextureList(L"SMT_Stage05_Background_Blue");
-    }
-    return S_OK;
+	if (FAILED(Component_Initialize(eid, eState))) return E_FAIL;
+	
+	return S_OK;
 }
-INT   CXZTile::Update_GameObject(const _float& _DT) {
+INT	CXZTile::Update_GameObject(const _float& _DT) {
 
-    GameObject::Update_GameObject(_DT);
+	GameObject::Update_GameObject(_DT);
 
-    if (Get_ObjectDead() == TRUE)
-        return -1;
-
-    Frame_Move(_DT);
-
-
-
-    if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_COLLISION)
-    {
-        Tile_Move_Effect(_DT, m_pTileInfo->Get_TileStage());
-    }
-
-    if (m_fAlpha < 1.f)
-        m_fAlpha += _DT * m_fAlpha;
-    if (m_fAlpha > 1.f)
-        m_fAlpha = 1.f;
-    else
-    {
-        if (m_fAlpha > 0.f)
-            m_fAlpha -= _DT * m_fAlpha;
-        if (m_fAlpha < 0.f)
-            m_fAlpha = 0.f;
-    }
-
-
-    RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
-    return 0;
+	Frame_Move(_DT);
+	
+	//RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
+		return 0;
 
 }
 VOID CXZTile::LateUpdate_GameObject(const _float& _DT) {
-
-    _vec3      vPos;
-    m_pTransform->Get_Info(INFO_POS, &vPos);
-
-    AlphaYSorting(&vPos);
-
-    GameObject::LateUpdate_GameObject(_DT);
+	GameObject::LateUpdate_GameObject(_DT);
 
 }
+
 VOID CXZTile::Render_GameObject()
 {
-    DWORD Argb = D3DCOLOR_ARGB(255, 255, 255, 255);
+	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
+	
+	if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_ANIMATION
+		|| m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_DESTORY)
+	{
+			GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
 
-    GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
+	}else GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+	if(m_pBuffer!=nullptr)
 
-    switch (m_pTileInfo->Get_TileStateName())
-    {
-    case TILE_STATE::STATE_NORMAL:
-        GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        break;
-    case TILE_STATE::STATE_COLLISION:
-        GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        break;
-    case TILE_STATE::STATE_DESTORY:
-        GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
-        break;
-    case TILE_STATE::STATE_ANIMATION:
-        GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
-        break;
-    case TILE_STATE::STATE_POTAL:
-        GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        break;
-    case TILE_STATE::STATE_POTALEFFECT:
-        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
-        {
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-            break;
-        }
-        if (m_pTileInfo->Get_PotalOpen())
-        {
-            GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
-        }
-        else return;
-        break;
-    case TILE_STATE::STATE_TRIGGER:
-        GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        break;
-    case TILE_STATE::STATE_POTALGASI:
-        if (!m_pTileInfo->Get_PotalOpen())
-        {
+	m_pBuffer->Render_Buffer();
 
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-
-        }
-        else return;
-        break;
-    case TILE_STATE::STATE_POTALGASI_EFFECT:
-
-        if (m_pTileInfo->Get_OnlyAnimation())
-        {
-            GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.png"));
-            break;
-        }
-        else if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1)
-        {
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-            break;
-        }
-        else if (m_pTileInfo->Get_PotalOpen())
-        {
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        }
-        else return;
-        break;
-    case TILE_STATE::STATE_UNDERTILE:
-        //GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        GRPDEV->SetTexture(0, m_vecTextureList[m_iCheck]);
-        break;
-    case TILE_STATE::STATE_POTALGASI_BREAK:
-        if (!m_pTileInfo->Get_PotalOpen())
-        {
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-        }
-        else
-            return;
-        break;
-    case TILE_STATE::STATE_BOOM:
-        GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(m_pTileInfo->Get_AnimationName((_uint)(m_fFrame))));
-        break;
-    }
-
-
-    if (m_pBuffer != nullptr)
-        m_pBuffer->Render_Buffer();
-    GRPDEV->SetTexture(0, NULL);
+	
 }
 
 void CXZTile::Set_Buffer(TILE_SIDE eid)
 {
-    switch (eid)
-    {
-    case TILE_SIDE::TILE_FRONT:
-        m_pBuffer = ADD_COMPONENT_TILEFRONT;
-        break;
-    case TILE_SIDE::TILE_RIGHT:
-        m_pBuffer = ADD_COMPONENT_TILERIGHT;
-        break;
-    case TILE_SIDE::TILE_LEFT:
-        m_pBuffer = ADD_COMPONENT_TILELEFT;
-        break;
-    case TILE_SIDE::TILE_BACK:
-        m_pBuffer = ADD_COMPONENT_TILEBACK;
-        break;
-    case TILE_SIDE::TILE_OTHER:
-        m_pBuffer = ADD_COMPONENT_TILE;
-        break;
-    }
-}
-
-D3DMATERIAL9 CXZTile::Set_Material()
-{
-    m_Material.Diffuse.r = 0.1f;
-    m_Material.Diffuse.g = 0.1f;
-    m_Material.Diffuse.b = 0.1f;
-    m_Material.Diffuse.a = 0.1f;
-
-    return m_Material;
+	switch (eid)
+	{
+	case TILE_SIDE::TILE_FRONT:
+		m_pBuffer = ADD_COMPONENT_TILEFRONT;
+		break;
+	case TILE_SIDE::TILE_RIGHT:
+		m_pBuffer = ADD_COMPONENT_TILERIGHT;
+		break;
+	case TILE_SIDE::TILE_LEFT:
+		m_pBuffer = ADD_COMPONENT_TILELEFT;
+		break;
+	case TILE_SIDE::TILE_BACK:
+		m_pBuffer = ADD_COMPONENT_TILEBACK;
+		break;
+	case TILE_SIDE::TILE_OTHER:
+		m_pBuffer = ADD_COMPONENT_TILE;
+		break;
+	}
 }
 
 void CXZTile::Frame_Move(const FLOAT& _DT)
-{
+{  
 
-    switch (m_pTileInfo->Get_TileStateName())
-    {
-    case TILE_STATE::STATE_ANIMATION:
-        Tile_Animation(_DT);
-        break;
-    case TILE_STATE::STATE_COLLISION:
-        //Crash_Player();
-        break;
-    case TILE_STATE::STATE_DESTORY: //ÌîåÎ†àÏù¥Ïñ¥ ÎòêÎäî Î™¨Ïä§ÌÑ∞ Ï¥ùÏïåÏóê ÎãøÏïòÏùÑÎñÑ
-        Tile_Destory(_DT);
-        break;
-    case TILE_STATE::STATE_POTAL:
-        Tile_Potal(_DT);
-        break;
-    case TILE_STATE::STATE_POTALEFFECT:
-        Tile_Potal_Effect(_DT);
-        break;
-    case TILE_STATE::STATE_TRIGGER:
-        //Tile_Trigger();
-        break;
-    case TILE_STATE::STATE_POTALGASI:
-        break;
-    case TILE_STATE::STATE_POTALGASI_EFFECT:
-        //Tile_Gasi_Destory();
-        break;
-    case TILE_STATE::STATE_POTALGASI_BREAK:
-         Tile_Gasi_Destory(_DT);
-        break;
-    case TILE_STATE::STATE_UNDERTILE:
-        if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
-            KeyManager::GetInstance()->Get_KeyState(DIK_N) & 0x8001)
-            ++m_iCheck;
-
-        if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
-            KeyManager::GetInstance()->Get_KeyState(DIK_M) & 0x8001)
-            --m_iCheck;
-
-        if (m_iCheck > m_vecTextureList.size() -1)
-            m_iCheck = m_vecTextureList.size() -1;
-        if (m_iCheck < 0)
-            m_iCheck = 0;
-
-        break;
-    case TILE_STATE::STATE_BOOM:
-        Tile_Boom(_DT);
-        break;
-    }
+	switch (m_pTileInfo->Get_TileStateName())
+	{
+	case TILE_STATE::STATE_ANIMATION:  
+		Tile_Animation(_DT);
+		break;
+	case TILE_STATE::STATE_DESTORY: //«√∑π¿ÃæÓ ∂«¥¬ ∏ÛΩ∫≈Õ √—æÀø° ¥Íæ“¿ªãö
+		Tile_Destory(_DT);
+		break;
+	case TILE_STATE::STATE_POTAL:
+		Tile_Potal(_DT);
+		break;
+	}
+	
 }
 
-void CXZTile::Tile_Animation(CONST FLOAT& _DT)
+void CXZTile::Tile_Animation(const FLOAT& _DT)
 {
-    //ÌîåÎ†àÏù¥Ïñ¥ÏôÄ Ï∂©Îèå ÌñàÍ≥†, ÌîåÎ†àÏù¥Ïñ¥Í∞Ä Ï∂©ÎèåÌïú ÏÉÅÌÉúÏóêÏÑú Ïù¥Îèô ÌñàÏùÑÎïå true
-    if (m_pTileInfo->Get_OnlyAnimation())
-    {
-        m_fTime += _DT;               //ÏßÄÎÇú ÏãúÍ∞Ñ
-        if (m_fTime > 0.15f) //0.1Ï¥àÍ∞Ä ÏßÄÎÇòÎ©¥
-        {
-            ++m_fFrame;     //ÌîÑÎ†àÏûÑ Ï¶ùÍ∞Ä
-            m_fTime = 0.f;   //ÏãúÍ∞Ñ Ï¥àÍ∏∞Ìôî
+	//«√∑π¿ÃæÓøÕ √Êµπ «ﬂ∞Ì, «√∑π¿ÃæÓ∞° √Êµπ«— ªÛ≈¬ø°º≠ ¿Ãµø «ﬂ¿ª∂ß true
+	Transform* pTransform = Crash_Player();
+	if (pTransform != nullptr)
+		m_bStopFrame = true;
 
-            if (m_fFrame >= (_float)m_pTileInfo->Get_TileTextureNumber() - 1.f)
-            {
-                m_fFrame = 0;
-            }
-        }
-        return;
-    }
-    Transform* pTransform = Crash_Player();
-    Player* pPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
-    if (pTransform != nullptr && pPlayer->Get_Speed() != 0)
-        m_bStopFrame = true;
+	if (m_bStopFrame)
+	{
+		m_fTime += _DT;					//¡ˆ≥≠ Ω√∞£
+		if (m_fTime > 0.3f) //0.1√ ∞° ¡ˆ≥™∏È
+		{
+			++m_fFrame;     //«¡∑π¿” ¡ı∞°
+			m_fTime = 0.f;	//Ω√∞£ √ ±‚»≠
 
-    if (m_bStopFrame)
-    {
-        m_fTime += _DT;               //ÏßÄÎÇú ÏãúÍ∞Ñ
-        if (m_fTime > 0.3f) //0.1Ï¥àÍ∞Ä ÏßÄÎÇòÎ©¥
-        {
-            ++m_fFrame;     //ÌîÑÎ†àÏûÑ Ï¶ùÍ∞Ä
-            m_fTime = 0.f;   //ÏãúÍ∞Ñ Ï¥àÍ∏∞Ìôî
+			if (m_fFrame >= (_float)m_pTileInfo->Get_TileTextureNumber() - 1.f)
+			{
+				m_fFrame = 1.f;
+				m_bStopFrame = false;
+			}
+		}
+	}
 
-            if (m_fFrame >= (_float)m_pTileInfo->Get_TileTextureNumber() - 1.f)
-            {
-                m_fFrame = 0;
-                m_bStopFrame = false;
-            }
-        }
-    }
 
 }
-void CXZTile::Tile_Destory(CONST FLOAT& _DT)
+void CXZTile::Tile_Destory(const FLOAT& _DT)
 {
-    _vec3 Pos, Scale, Rot;
+	_vec3 Pos;
+	m_pTransform->Get_Info(INFO_POS, &Pos);
+	Transform* pTransform = Crash_Player();
+	TileDestoryEffect* pEffect = nullptr;
+		m_bStopFrame = true;
 
-    m_pTransform->Get_Info(INFO_POS, &Pos);
-    Scale = *m_pTransform->Get_Scale();
-    Rot = *m_pTransform->Get_Rotation();
-
-    if (m_bDestroy)
-    {
-        m_bStopFrame = true;
-    }
-
-    if (m_bDestroy && m_pTileInfo->Get_OnlyAnimation() && m_fFrame < 1)
-    {
-        Scale.x *= 2.5;
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
-        Set_ObjectDead(TRUE);
-        ++m_fFrame;
-        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_BGM01, 0.1f);
-
-    }
-
-    if (m_bStopFrame && m_bDestroy && m_fFrame < m_pTileInfo->Get_TileTextureNumber() - 1.f)
-    {
-        // Ïï†ÎãàÎ©îÏù¥ÏÖò ÌÑ∞Ìä∏Î¶∞ÌõÑ ÌîÑÎ†àÏûÑ ++
-        // ÌòÑÏû¨ Ïù¥ÎØ∏ÏßÄ Í∞úÏàòÎ≥¥Îã§ ÌÅ¨ÏßÄ ÏïäÏùÑÎïå ÍπåÏßÄ Ïù¥ÌéôÌä∏ ÌÑ∞Ìä∏Î¶¨Í≥† Ïπ¥Ïö¥Ìä∏
-        if (!m_pTileInfo->Get_OnlyAnimation())
-        {
-            EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
-            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01, 0.3f);
-        }
-
-        ++m_fFrame;
-        Set_ObjectDead(TRUE);
-        m_bStopFrame = false;
-    }
+	if (m_bStopFrame && pTransform != nullptr)
+	{
+		// æ÷¥œ∏ﬁ¿Ãº« ≈Õ∆Æ∏∞»ƒ «¡∑π¿” ++
+		// «ˆ¿Á ¿ÃπÃ¡ˆ ∞≥ºˆ∫∏¥Ÿ ≈©¡ˆ æ ¿ª∂ß ±Ó¡ˆ ¿Ã∆Â∆Æ ≈Õ∆Æ∏Æ∞Ì ƒ´øÓ∆Æ
+		
+		if (m_fFrame < 3)
+		{
+			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::ENVIROMENT, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos));
+			
+		}
+			
+		if (!(m_fFrame >= m_pTileInfo->Get_TileTextureNumber() - 1))
+		{
+			++m_fFrame;
+			//¿Ã∆Â∆Æ;
+		}else m_bStopFrame = false;
+	}
 }
-void CXZTile::Tile_Potal(CONST FLOAT& _DT)
+void CXZTile::Tile_Potal(const FLOAT& _DT)
 {
-    Transform* pTransform = Crash_Player();
-    if (Crash_Player() != nullptr)
-    {
-        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHER1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS)
-        {
-            _vec3 vPos = m_pTileInfo->Get_NextPos();
-            dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
-            return;
-        }
-        if (!m_bEffect)
-        {
-            _vec3 vPos = m_pTileInfo->Get_NextPos();
-            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
-            m_bEffect = true;
-        }
-        m_bEffect = false;
-        m_fFrame += _DT;
+	Transform*  pTransform = Crash_Player();
 
-        TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
-
-    }
-
+		if(Crash_Player() != nullptr)
+			pTransform->Set_Pos(m_pTileInfo->Get_NextPos());
 }
-void CXZTile::Tile_Potal_Effect(CONST FLOAT& _DT)
-{
-    //Î™¨Ïä§ÌÑ∞Í∞Ä Îã§ Ïû°ÌûàÎ©¥ Ìè¨ÌÉàÏùÑ ÎûúÎçîÌï¥Îùº
-    if (m_pTileInfo->Get_PotalOpen())
-    {
-        m_fTime += _DT;               //ÏßÄÎÇú ÏãúÍ∞Ñ
-        if (m_fTime > 0.1f) //0.1Ï¥àÍ∞Ä ÏßÄÎÇòÎ©¥
-        {
-            ++m_fFrame;     //ÌîÑÎ†àÏûÑ Ï¶ùÍ∞Ä
-            m_fTime = 0.f;   //ÏãúÍ∞Ñ Ï¥àÍ∏∞Ìôî
 
-            if (m_fFrame >= (_float)m_pTileInfo->Get_TileTextureNumber() - 1.f)
-            {
-                m_fFrame = 0;
-            }
-        }
-    }
-}
-void CXZTile::Tile_Trigger()
-{
-    if (Crash_Player() != nullptr)
-    {
-        if ((int)m_pTileInfo->Get_TileStage() > (int)TILE_FIRSTBOSS)
-            TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
-    }
-}
-void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
-{
-    _vec3 Pos, Scale, Rot;
-    m_pTransform->Get_Info(INFO_POS, &Pos);
-    Scale = *m_pTransform->Get_Scale();
-    Rot = *m_pTransform->Get_Rotation();
-    Transform* pTransform = Crash_Player();
-    TileDestoryEffect* pEffect = nullptr;
-
-    if (m_pTileInfo->Get_PotalOpen() && !m_bStopFrame)
-    {
-        // Ïï†ÎãàÎ©îÏù¥ÏÖò ÌÑ∞Ìä∏Î¶∞ÌõÑ ÌîÑÎ†àÏûÑ ++
-        // ÌòÑÏû¨ Ïù¥ÎØ∏ÏßÄ Í∞úÏàòÎ≥¥Îã§ ÌÅ¨ÏßÄ ÏïäÏùÑÎïå ÍπåÏßÄ Ïù¥ÌéôÌä∏ ÌÑ∞Ìä∏Î¶¨Í≥† Ïπ¥Ïö¥Ìä∏
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
-        m_bStopFrame = true;
-        m_pTileInfo->Set_OnlyAnimation(false);
-    }
-
-    if (m_bStopFrame)
-    {
-        Tile_Potal_Effect(_DT);
-    }
-}
-void CXZTile::Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid)
-{
-    //Îë•Îë• Îñ†Îã§ÎãàÎäî Ïò§Î∏åÏ†ùÌä∏
-    if (eid == TILE_STAGE::TILE_DOCHER1 || eid == TILE_STAGE::TILE_DOCHER2 || eid == TILE_STAGE::TILE_DOCHERBOSS)
-    {
-        _vec3 vPos;
-        m_pTransform->Get_Info(INFO_POS, &vPos);
-
-        m_fTime += _DT;               //ÏßÄÎÇú ÏãúÍ∞Ñ
-        if (m_fTime > 0.35f) //0.1Ï¥àÍ∞Ä ÏßÄÎÇòÎ©¥
-        {
-            m_fCount += 0.01f;
-            m_fTime = 0.f;   //ÏãúÍ∞Ñ Ï¥àÍ∏∞Ìôî
-
-            if (m_fCount > m_fHeight)
-            {
-                m_fCount = 0;
-                m_fHeightSpeed *= -1;
-            }
-        }
-
-        vPos.y += m_fHeightSpeed;
-
-        m_pTransform->Set_Pos(vPos);
-
-    }
-    else return;
-}
-void CXZTile::Tile_Boom(const FLOAT& _DT)
-{
-    _vec3 Pos, Scale, Rot;
-
-    if (!m_bDestroy)
-    {
-        m_pTransform->Get_Info(INFO_POS, &Pos);
-
-        m_fTime += _DT;               //ÏßÄÎÇú ÏãúÍ∞Ñ
-        if (m_fTime > 0.35f) //0.1Ï¥àÍ∞Ä ÏßÄÎÇòÎ©¥
-        {
-            m_fCount += 0.01f;
-            m_fTime = 0.f;   //ÏãúÍ∞Ñ Ï¥àÍ∏∞Ìôî
-
-            if (m_fCount > m_fHeight)
-            {
-                m_fCount = 0;
-                m_fHeightSpeed *= -1;
-            }
-        }
-
-        Pos.y += m_fHeightSpeed;
-
-        m_pTransform->Set_Pos(Pos);
-
-    }
-
-
-    if (m_bDestroy)
-    {
-        if (m_fHeightSpeed > 1)
-        {
-            m_fHeightSpeed = 0;
-        }
-
-        m_pTransform->Get_Info(INFO_POS, &Pos);
-        m_fTime += _DT;
-
-        m_fHeightSpeed -= 0.01f;
-        if (m_fTime > 0.04)
-        {
-            m_fFrame += 1;
-            m_fTime = 0.f;
-
-        }
-
-        Pos.y -= 0.1f;
-        if (Pos.y <= -0.1)
-        {
-            Pos.y = -0.1;
-        }
-        m_pTransform->Set_Pos(Pos);
-        if (m_fFrame == 17)
-        {
-            m_pTransform->Get_Info(INFO_POS, &Pos);
-            Scale = *m_pTransform->Get_Scale();
-            Rot = *m_pTransform->Get_Rotation();
-            EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, { 0,0,0 }, true));
-
-        }
-        if (m_fFrame > m_pTileInfo->Get_TileTextureName().size() - 3)
-        {
-            Set_ObjectDead(TRUE);
-        }
-
-    }
-}
 Transform* CXZTile::Crash_Player()
 {
-    _vec3 vPos{}, vTilePos{}, vScale, vRot, vPlayerScale;
-    //ÌîåÎ†àÏù¥Ïñ¥ÏôÄ Î∂ÄÎî™ÌûàÎ©¥ Îã§Ïùå Ï¢åÌëúÎ°ú Ïù¥Îèô
-    Transform* pPlayer = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-    Player* OriginPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+	_vec3 vPos{}, vTilePos{};
+	//«√∑π¿ÃæÓøÕ ∫Œµ˙»˜∏È ¥Ÿ¿Ω ¡¬«•∑Œ ¿Ãµø
+	Transform* pPlayer = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 
-    pPlayer->Get_Info(INFO_POS, &vPos);
+	pPlayer->Get_Info(INFO_POS, &vPos);
+	m_pTransform->Get_Info(INFO_POS, &vTilePos);
+	if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
+		return pPlayer;
 
-    m_pTransform->Get_Info(INFO_POS, &vTilePos);
-    vScale = *m_pTransform->Get_Scale();
-    vRot = *m_pTransform->Get_Rotation();
-    vPlayerScale = *pPlayer->Get_Scale();
-
-    _float fWidth = fabsf(vPos.x - vTilePos.x);
-    _float fHeight = fabsf(vPos.z - vTilePos.z);
-
-    _float fTileX = (vScale.x + vPlayerScale.x) * 0.5f;
-    _float fTileZ = (vScale.z + vPlayerScale.z) * 0.5f;
-
-    if (fTileX >= fWidth && fTileZ >= fHeight)
-    {
-        if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_COLLISION || m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_DESTORY || m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_POTALEFFECT)
-        {
-            _float fHalfx = fTileX - fWidth;
-            _float fHalfz = fTileZ - fHeight;
-
-            if (fHalfx > fHalfz)
-            {
-                if (vPos.z < vTilePos.z)
-                {
-                    vPos.z -= fHalfz + 0.001f;
-                    pPlayer->Set_Pos(vPos);
-                }
-                else
-                {
-                    vPos.z += fHalfz + 0.001f;
-                    pPlayer->Set_Pos(vPos);
-                }
-            }
-            else
-            {
-
-                if (vPos.x < vTilePos.x)
-                {
-                    vPos.x -= fHalfx + 0.001f;
-                    pPlayer->Set_Pos(vPos);
-                }
-                else
-                {
-                    vPos.x += fHalfx + 0.001f;
-                    pPlayer->Set_Pos(vPos);
-                }
-            }
-            return pPlayer;
-        }
-        return pPlayer;
-    }
-    else
-        return nullptr;
-
-
-}
-Transform* CXZTile::Crash_Arrow()
-{
-    _vec3 vPos{}, vTilePos{};
-    Arrow* pPArrow = nullptr;
-    pPArrow = dynamic_cast<Arrow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerArrow"));
-    if (pPArrow == nullptr)
-        return nullptr;
-    Transform* ObjArrow = dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerArrow")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-
-    ObjArrow->Get_Info(INFO_POS, &vPos);
-
-    m_pTransform->Get_Info(INFO_POS, &vTilePos);
-
-    if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1 && vTilePos.y < 2)
-    {
-        pPArrow->Set_HP(0);
-        return ObjArrow;
-    }
-    return nullptr;
-}
-HRESULT CXZTile::Make_BackGroundTextureList(wstring _FileName)
-{
-    INT FRAME = 0;
-
-    while (++FRAME) {
-        wstring FileName = _FileName + to_wstring(FRAME) + L".dds";
-        IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-        if (TEX == nullptr) break;
-        else { m_vecTextureList.push_back(TEX); }
-    }
-
-    return S_OK;
+	return nullptr;
 }
 HRESULT CXZTile::Component_Initialize(TILE_SIDE eid, TILE_STATE eState) {
 
-    m_pTransform = ADD_COMPONENT_TRANSFORM;
-    m_pTileInfo = ADD_COMPONENT_TILEINFO;
-
-    switch (eid)
-    {
-    case TILE_SIDE::TILE_FRONT:
-        m_pBuffer = ADD_COMPONENT_TILEFRONT;
-        break;
-    case TILE_SIDE::TILE_RIGHT:
-        m_pBuffer = ADD_COMPONENT_TILERIGHT;
-        break;
-    case TILE_SIDE::TILE_LEFT:
-        m_pBuffer = ADD_COMPONENT_TILELEFT;
-        break;
-    case TILE_SIDE::TILE_OTHER:
-        m_pBuffer = ADD_COMPONENT_TILE;
-        break;
-    }
-
-    return S_OK;
+	m_pTransform = ADD_COMPONENT_TRANSFORM;
+	m_pTileInfo  = ADD_COMPONENT_TILEINFO;
+	
+	switch (eid)
+	{
+	case TILE_SIDE::TILE_FRONT:
+		m_pBuffer = ADD_COMPONENT_TILEFRONT;
+		break;
+	case TILE_SIDE::TILE_RIGHT:
+		m_pBuffer = ADD_COMPONENT_TILERIGHT;
+		break;
+	case TILE_SIDE::TILE_LEFT:
+		m_pBuffer = ADD_COMPONENT_TILELEFT;
+		break;
+	case TILE_SIDE::TILE_OTHER:
+		m_pBuffer = ADD_COMPONENT_TILE;
+		break;
+	}
+	switch (eState)
+	{
+	case TILE_STATE::STATE_ANIMATION:
+		m_CubeBuffer = ADD_COMPONENT_CUBE;
+		break;
+	case TILE_STATE::STATE_DESTORY:
+		m_CubeBuffer = ADD_COMPONENT_CUBE;
+		break;
+	}
+	
+	return S_OK;
 }
+
 CXZTile* CXZTile::Create(LPDIRECT3DDEVICE9 _GRPDEV, TILE_SIDE eid, TILE_STATE eState) {
-
-    CXZTile* pCXZTile = new CXZTile(_GRPDEV);
-
-    if (FAILED(pCXZTile->Ready_GameObject(eid, eState))) {
-        MSG_BOX("Cannot Create CXZTile.");
-        Safe_Release(pCXZTile);
-        return nullptr;
-    }
-
-    return pCXZTile;
+	
+	CXZTile* pCXZTile = new CXZTile(_GRPDEV);
+	
+	if (FAILED(pCXZTile->Ready_GameObject(eid, eState))) {
+		MSG_BOX("Cannot Create CXZTile.");
+		Safe_Release(pCXZTile);
+		return nullptr;
+	}
+	
+	return pCXZTile;
 }
 VOID CXZTile::Free() {
-    GameObject::Free();
+	GameObject::Free();
 }

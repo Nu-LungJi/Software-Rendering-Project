@@ -4,7 +4,7 @@
 IMPLEMENT_SINGLETON(GUIManager)
 
 GUIManager::GUIManager() : CameraWindow(TRUE) {};
-GUIManager::~GUIManager() { Safe_Release(GRPDEV); };
+GUIManager::~GUIManager()	{};
 
 VOID GUIManager::Ready_GUIManager() {
     IMGUI_CHECKVERSION();
