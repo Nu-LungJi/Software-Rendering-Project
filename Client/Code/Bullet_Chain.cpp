@@ -127,28 +127,6 @@ Bullet_Chain* Bullet_Chain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-	switch (m_tInfo.eState[0])
-	{
-	default:
-		if (Tag == L"PlayerArrow") {
-
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			return TRUE;
-		}
-		else if (Tag == L"Player")
-		{
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			return TRUE;
-		}
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DISAPPEAR:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_MINIGAME_IDLE:
-	case MONSTER_STATE_MINIGAME_MOVE:
-		break;
-	}
 
 	return FALSE;
 }

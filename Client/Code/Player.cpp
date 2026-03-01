@@ -1,4 +1,4 @@
-#include "../Include/PCH.h"
+﻿#include "../Include/PCH.h"
 #include "Player.h"
 
 Player::Player(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV)	{}
@@ -58,8 +58,6 @@ HRESULT Player::Ready_GameObject() {
 	_MaxArrow			= 1.f;
 	//연출용
 	CameraMove = false;
-	//사운드용 타이머
-	_walk_time = 0.35f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -73,7 +71,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({  28.814f, 1.f, 34.78f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -114,14 +112,11 @@ HRESULT Player::Ready_GameObject() {
 }
 
 INT	Player::Update_GameObject(const _float& _DT) {
-	
-	//KJJ Temp
-	if (m_eCurrScene == SCENE_TYPE::Minigame)
-	{
-		Component_Transform->Get_Position()->y = 1.25f;
-	}
-
 	GameObject::Update_GameObject(_DT);
+
+	_vec3 pPos = *Component_Transform->Get_Position();
+	pPos.y = 1.f;
+	Component_Transform->Set_Pos(pPos);
 
 	if (_isStop) return S_OK;
 
@@ -130,6 +125,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 
 	if(!_isInvincible) _alphaRatio = 1.f;
@@ -220,6 +216,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	}
 
+	AlphaSorting(Component_Transform->Get_Position());
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return S_OK;
@@ -227,11 +224,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	// MiniGame Rendering
-	if (m_eCurrScene == SCENE_TYPE::Minigame) {
-		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
-	}
-
+	//if (m_eCurrScene == SCENE_TYPE::Minigame) 
+	//	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 	CheonLog_Spawn();
 
 	if (_isStop) return;
@@ -250,8 +244,8 @@ VOID Player::Render_GameObject() {
 
 	// 초기화
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 }
 HRESULT Player::Component_Initialize() {
 	Component_Buffer	= ADD_COMPONENT_RECTTEX;
@@ -316,13 +310,9 @@ void Player::Reset()
 			_weaponSlot[i] = nullptr;
 		}
 	}
-
-	_weaponSlot[0]->Set_Bow_Equip(true);
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
-	float footstepInterval = 0.5f;
-	_walk_time += _DT;
 	if (KEY_DOWN(DIK_F3)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
 		Debug ? Debug = FALSE : Debug = TRUE;
 	}
@@ -387,11 +377,6 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_A))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_LU) {
 				_eState = eState::STATE_RUN_LU;
 				_see = pSee::SEE_LU;
@@ -403,11 +388,6 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_A))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_LD) {
 				_eState = eState::STATE_RUN_LD;
 				_see = pSee::SEE_LD;
@@ -420,11 +400,6 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_D))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_RU) {
 				_eState = eState::STATE_RUN_RU;
 				_see = pSee::SEE_RU;
@@ -437,11 +412,6 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_D))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_RD) {
 				_eState = eState::STATE_RUN_RD;
 				_see = pSee::SEE_RD;
@@ -454,14 +424,9 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W))
 		{
-			if(_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav",CHANNELID::SOUND_EFFECT01,0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_UP) {
 				_eState = eState::STATE_RUN_UP;
-				_see = pSee::SEE_UP;		
+				_see = pSee::SEE_UP;
 			}
 			_speed = _defaultSpeed;
 			Component_Transform->Move_Pos(D3DXVec3Normalize(&upDir, &upDir), _speed, _DT);
@@ -469,11 +434,6 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_S))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_DOWN) {
 				_eState = eState::STATE_RUN_DOWN;
 				_see = pSee::SEE_DOWN;
@@ -484,12 +444,6 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_A))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
-
 			if (_eState != eState::STATE_RUN_LEFT) {
 				_eState = eState::STATE_RUN_LEFT;
 				_see = pSee::SEE_LEFT;
@@ -499,11 +453,6 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_D))
 		{
-			if (_walk_time > footstepInterval)
-			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
-				_walk_time = 0.f;
-			}
 			if (_eState != eState::STATE_RUN_RIGHT) {
 				_eState = eState::STATE_RUN_RIGHT;
 				_see = pSee::SEE_RIGHT;
@@ -587,6 +536,8 @@ void Player::DASH_STATE(const _float& _DT)
 
 	_dashTime += _DT;
 	_isInvincible = true;
+
+	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 
 	if (_dashStart)
 	{
@@ -909,6 +860,7 @@ void Player::LANDING_STATE(const _float& _DT)
 	_eState = eState::STATE_LAND;
 
 	if (_frame == 10) {
+		_weaponSlot[0]->Set_Bow_Equip(true);
 		_pState = pState::STATE_IDLE;
 		_eState = eState::STATE_STANDING;
 		_see = pSee::SEE_DOWN;
@@ -963,7 +915,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
 		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06,0.5f);
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
 		_skillArea_On = false;
@@ -974,6 +926,9 @@ void Player::SKILL_NONE(const _float& _DT)
 
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
+
+		wstring txt = L"시간이여 멈춰라";
+		mainUI->Speech_PopUp_Skill(txt);
 	}
 
 	if (KEY_DOWN(DIK_R)) {
@@ -1426,12 +1381,6 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
-
-	if (m_eCurrScene == SCENE_TYPE::Minigame)
-	{
-		return false;
-	}
-
 	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
@@ -1468,16 +1417,8 @@ HRESULT Player::MiniGameInit()
 	m_eCurrScene = SCENE_TYPE::Minigame;
 
 	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(m_fMiniGameScale, m_fMiniGameScale, m_fMiniGameScale);
-	Component_Collider->Set_Scale(m_fMiniGameScale * 0.125f, m_fMiniGameScale * 0.5f, m_fMiniGameScale * 0.125f);
-	return S_OK;
-}
-HRESULT Player::MiniGameUpdate(const _float& _DT)
-{
-	Component_Buffer->Update_Component(_DT);
-	Component_Collider->Update_Component(_DT);
 
-	return E_FAIL;
+	return S_OK;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 

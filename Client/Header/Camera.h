@@ -99,11 +99,11 @@ private:
 	virtual VOID Free();
 
 public:
-	//void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
+	void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
 private:
 	SCENE_TYPE	m_eCurrScene;
 	_float		m_fOffset[(uint8_t)FRUSTUMPLANE::End];
 
-//	Player*		m_pTarget;
-//	HRESULT		MiniGame(const _float& _DT);
+	Player*		m_pTarget;
+	HRESULT		MiniGame(const _float& _DT);
 };

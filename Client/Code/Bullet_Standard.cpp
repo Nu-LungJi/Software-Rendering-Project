@@ -122,7 +122,7 @@ HRESULT Bullet_Standard::Component_Initialize() {
 
 	Component_Collider->Set_Scale(BULLET_STANDARD_WIDTH* 0.5f, BULLET_STANDARD_HEIGHT, BULLET_STANDARD_WIDTH * 0.5f);
 
-	m_tInfo.Change_State(MONSTER_STATE_IDLE);
+	m_tInfo.Change_State(MONSTER_STATE_SUMMON);
 	m_tInfo.fSpeed = BULLET_STANDARD_SPEED;
 	Component_Collider->Set_Hp(1.f);
 	Component_Collider->Set_Att(1.f);
@@ -135,29 +135,12 @@ HRESULT Bullet_Standard::Component_Initialize() {
 BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-	switch (m_tInfo.eState[0])
-	{
-	default:
-		if (Tag == L"PlayerArrow") {
 
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			return TRUE;
-		}
-		else if (Tag == L"Player")
-		{
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			return TRUE;
-		}
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DISAPPEAR:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_MINIGAME_IDLE:
-	case MONSTER_STATE_MINIGAME_MOVE:
-		break;
+	if (Tag == L"PlayerArrow") {
+		
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
 	}
-
 	return FALSE;
 }
 BOOL Bullet_Standard::OnCollisionStay(GameObject* _Other)

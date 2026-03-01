@@ -116,8 +116,11 @@ public:
 		_isStop = isStop; 
 		if (_isStop)
 			_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-		else
+		else 
 			_weaponSlot[_equipNum]->Set_Bow_Equip(true);
+
+		if((_pState == pState::STATE_DASH || _pState == pState::STATE_DEATH))
+			_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 
 	static Player* Create(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -290,7 +293,7 @@ private:
 	float			_slowTime;		// 시간 제어 스킬 지속시간 일단 4초 초기화
 	float			_hit_inv_Time;	// 피격시 무적 유지시간;
 	float			_dash_inv_Time;	// 대시시 무적 유지시간;
-	float			_walk_time;     // 걷는 모션시 사운드 간격 조절용 타이머
+
 	TCHAR FileName[128] = L"";
 	//temp
 	public:
@@ -300,12 +303,10 @@ private:
 		BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	public:
-		_float*			Get_MiniGameScale() { return &m_fMiniGameScale; }
+
 
 
 	private:
 		HRESULT			MiniGameInit();
-		HRESULT			MiniGameUpdate(const _float& _DT);
 		SCENE_TYPE		m_eCurrScene;
-		_float			m_fMiniGameScale;
 };

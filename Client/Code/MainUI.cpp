@@ -36,6 +36,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 	
 	PopUp_Speech_Bubble(Speech_Text, _DT);
+	PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
 	//PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
 	if(Timer02 > 0.1f){
@@ -85,8 +86,6 @@ VOID MainUI::Player_LostHP() {
 
 		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
-
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Haetae_Attacked.wav", CHANNELID::SOUND_EFFECT07, 0.35f);
 
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 		Camera->Camera_Shaking(30, 5.f);
@@ -250,18 +249,21 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
 			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
 			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
+			Effect->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01) + 10.f);
 			Font->Set_Pos( Font->Get_Pos().x, Font->Get_Pos().y - Timer01 * 2 * cosf(Timer01) );
 			
 			if (Timer01 < 1.f) {
 				BackGround->Set_Opacity(Timer01 * 255);
 				Frame->Set_Opacity(Timer01 * 255);
 				Character->Set_Opacity(Timer01 * 255);
+				Effect->Set_Opacity(Timer01 * 255);
 				Font->Set_Color(Timer01 * 200, 255, 255, 255);
 			}
 			else {
 				BackGround->Set_Opacity(255);
 				Frame->Set_Opacity(255);
 				Character->Set_Opacity(255);
+				Effect->Set_Opacity(255);
 				Font->Set_Color(200, 255, 255, 255);
 			}
 		}
@@ -302,6 +304,97 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			Character->Set_Pos(0.f, 529.f + 30.f);
 			Frame->Set_Pos(0.f, 503.f + 30.f);
 			Font->Set_Pos( 180.f, 555.f + 30.f );
+		}
+	}
+}
+
+VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
+{
+	if (Enable_SpeechBubbleSkill) {
+		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"SpeechBubble_BG");
+		SpriteINFO* Frame = Component_Sprite->Get_Texture(L"SpeechBubble_Frame");
+		SpriteINFO* Character = Component_Sprite->Get_Texture(L"SpeechBubble_Tif");
+		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
+
+		// 이펙트
+		FrameTimer += _DT;
+		if (Effect != nullptr)
+			if (FrameTimer > 0.1) {
+				Effect->Set_Opacity(0);
+				ImgFrame++;
+				if (ImgFrame > 19) ImgFrame = 1;
+			}
+		TCHAR FileName[128] = L"";
+		wsprintfW(FileName, L"BubblEffect_%d.png", ImgFrame);
+		Effect = Component_Sprite->Get_Texture(FileName);
+
+		Font->Text = _Text;
+		if (Timer01 < 1.f) {
+			Timer01 += _DT;
+
+			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
+			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
+			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
+			Effect->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01) + 17.f);
+			Font->Set_Pos(Font->Get_Pos().x, Font->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
+
+			if (Timer01 < 1.f) {
+				BackGround->Set_Opacity(Timer01 * 255);
+				Frame->Set_Opacity(Timer01 * 255);
+				Character->Set_Opacity(Timer01 * 255);
+				Effect->Set_Opacity(Timer01 * 255);
+				Font->Set_Color(Timer01 * 200, 255, 255, 255);
+			}
+			else {
+				BackGround->Set_Opacity(255);
+				Frame->Set_Opacity(255);
+				Character->Set_Opacity(255);
+				Effect->Set_Opacity(255);
+				Font->Set_Color(200, 255, 255, 255);
+			}
+		}
+		else if (Timer01 >= 1.f && Timer01 < 6.f) {
+			Timer01 += _DT;
+		}
+		else if (Timer01 >= 6.f && Timer01 < 7.f) {
+			Timer01 += _DT;
+
+			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y + (Timer01 - 6) * 3);
+			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y + (Timer01 - 6) * 3);
+			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 6) * 3);
+			Effect->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 6) * 3 - 17.f);
+			Font->Set_Pos(Font->Get_Pos().x, Font->Get_Pos().y + (Timer01 - 6) * 3);
+
+			if (Timer01 < 7.f) {
+				BackGround->Set_Opacity(255 - 255 * (Timer01 - 6));
+				Frame->Set_Opacity(255 - 255 * (Timer01 - 6));
+				Character->Set_Opacity(255 - 255 * (Timer01 - 6));
+				Effect->Set_Opacity(255 - 255 * (Timer01 - 6));
+				Font->Set_Color(200 - 200 * (Timer01 - 6), 255, 255, 255);
+			}
+			else {
+				BackGround->Set_Opacity(0);
+				Frame->Set_Opacity(0);
+				Character->Set_Opacity(0);
+				Effect->Set_Opacity(0);
+				Font->Set_Color(0, 255, 255, 255);
+			}
+		}
+		else if (Timer01 >= 7.f) {
+			Timer01 = 0;
+			Enable_SpeechBubbleSkill = FALSE;
+
+			BackGround->Set_Opacity(0);
+			Frame->Set_Opacity(0);
+			Character->Set_Opacity(0);
+			Effect->Set_Opacity(0);
+			Font->Set_Color(0, 255, 255, 255);
+
+			BackGround->Set_Pos(0.f, 529.f + 30.f);
+			Character->Set_Pos(0.f, 529.f + 30.f);
+			Frame->Set_Pos(0.f, 503.f + 30.f);
+			Effect->Set_Pos(0.f, 503.f + 30.f);
+			Font->Set_Pos(180.f, 555.f + 30.f);
 		}
 	}
 }
@@ -353,6 +446,14 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_BG.png", L"SpeechBubble_BG", 0.f, 529.f + 30.f, 360, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Tif.png", L"SpeechBubble_Tif", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Frame.png", L"SpeechBubble_Frame", 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
+	for (int i = 1; i <= 19; i++) {
+		TCHAR FileName1[128] = L"";
+		TCHAR FileName2[128] = L"";
+		wsprintfW(FileName1, L"../../UI/MainUI/BubblEffect_%d.png", i);
+		wsprintfW(FileName2, L"BubblEffect_%d.png", i);
+		SpriteINFO* Effect = Component_Sprite->Get_Texture(FileName1);
+		Component_Sprite->Import_Sprite(FileName1, FileName2, 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
+	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SKILL ////////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_BG.png",			L"SkillState_BG", 0.f, 600.f, 290.f, 120.f, TRUE);

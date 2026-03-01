@@ -33,8 +33,10 @@ public:		// Trigger Function
 	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
+	VOID			PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT);
 
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubble = TRUE; }
+	VOID			Speech_PopUp_Skill(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubbleSkill = TRUE; ImgFrame = 1; FrameTimer = 0.f;  Effect = nullptr; }
 
 	VOID			Set_FadeOption(INT _OPT) { Enable_MainUIFade = _OPT; }
 
@@ -84,7 +86,11 @@ private:
 	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
 	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
 	
-
+	// 스킬용 애니메이션
+	INT				ImgFrame;
+	FLOAT			FrameTimer;
+	SpriteINFO*		Effect;
+	BOOL			Enable_SpeechBubbleSkill;
 private:
 	virtual	VOID		Free();
 };

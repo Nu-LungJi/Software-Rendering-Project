@@ -34,7 +34,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	{// ??? ???
 		GameObject::Update_GameObject(_DT);
 		Bat::State_Tracking(_DT);
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 1.f;
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 		return 1;
@@ -53,6 +53,9 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	//GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
+
+	if (Component_Collider->Get_Hp() <= 0.f)
+		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 
 	switch (m_tInfo.eState[0])
 	{
@@ -91,10 +94,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 }
 VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-
-	if (m_tInfo.vDirection.z == -1.f)
-		if(m_tInfo.eState[0]== MONSTER_STATE_MINIGAME_MOVE)
-		int i = 0;
 
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 	m_tInfo.Textureinfo._frameTick += _DT;
@@ -136,29 +135,29 @@ VOID Bat::Render_GameObject() {
 
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
+	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-if (m_tInfo.bMiniGame)
-{
-	GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
-	Component_Buffer->Render_Buffer();
-}
-else
-{
-	switch (m_tInfo.eState[0])
+	if (m_tInfo.bMiniGame)
 	{
-	default:
 		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 		Component_Buffer->Render_Buffer();
-		break;
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_DEAD:
-		break;
 	}
-}
+	else
+	{
+		switch (m_tInfo.eState[0])
+		{
+		default:
+			GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
+			Component_Buffer->Render_Buffer();
+			break;
+		case MONSTER_STATE_SUMMON:
+		case MONSTER_STATE_APPEAR:
+		case MONSTER_STATE_DEAD:
+			break;
+		}
+	}
 
-GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
 }
 HRESULT Bat::Component_Initialize() {
@@ -176,8 +175,8 @@ HRESULT Bat::Component_Initialize() {
 	Component_Collider->Set_Scale(BAT_WIDTH, 1.f, BAT_HEIGHT);
 
 	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-		(uint8_t)MONSTER_TYPE::Bat,
-		(uint8_t)MONSTER_ANIM::Stand);
+										(uint8_t)MONSTER_TYPE::Bat,
+										(uint8_t)MONSTER_ANIM::Stand);
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
@@ -192,28 +191,15 @@ Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
 BOOL Bat::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
+
 	switch (m_tInfo.eState[0])
 	{
 	default:
 		if (Tag == L"PlayerArrow") {
-
-			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Hit.wav", CHANNELID::SOUND_EFFECT03, 0.5f);
-			return TRUE;
-		}
-		else if (Tag == L"Player")
-		{
 			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 			return TRUE;
+			break;
 		}
-		break;
-	case MONSTER_STATE_APPEAR:
-	case MONSTER_STATE_SUMMON:
-	case MONSTER_STATE_DISAPPEAR:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_MINIGAME_IDLE:
-	case MONSTER_STATE_MINIGAME_MOVE:
-		break;
 	}
 
 	return FALSE;
@@ -224,22 +210,16 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
 		if (Tag == L"Player") {
 			Player* pPlayer = static_cast<Player*>(_Other);
 			_vec3* vPlayer = POS(pPlayer);
 			_vec3 vDir = *vPlayer - *MYPOS;
-
-			if (fabsf(vDir.x) >= fabsf(vDir.z)) {
-				_float fDis = fabsf(COLLIDER(pPlayer)->Get_Scale().x);
-				vPlayer->x = (vDir.x < 0.f) ? Component_Collider->Get_MinPoint().x - fDis : Component_Collider->Get_MaxPoint().x + fDis;
-			}
-			else {
-				_float fDis = fabsf(COLLIDER(pPlayer)->Get_Scale().z);
-				vPlayer->z = (vDir.z < 0.f) ? Component_Collider->Get_MinPoint().z - fDis : Component_Collider->Get_MaxPoint().z + fDis;
-			}
+			//_float fDis = D3DXVec3Length(&vDir);
+			//D3DXVec3Normalize(&vDir, &vDir);
+			vPlayer->x += vDir.x;
+			vPlayer->z += vDir.y;
 			return true;
 		}
 		break;
@@ -327,8 +307,7 @@ VOID Bat::State_Tracking(const _float& _DT)
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
 	m_tInfo.fSpeed = BAT_SPEED;
-	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
-	D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
+	m_tInfo.vDirection = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 
 	if (D3DXVec3Length(&m_tInfo.vDirection) < BAT_TRACKINGDIS)
 	{
@@ -396,7 +375,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		_vec3 vEffectScale = { fScale, fScale, fScale };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
-    SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Bat_Attack.wav", CHANNELID::SOUND_EFFECT03, 0.5f);
+
 		m_tInfo.pGameObj[1] == nullptr;
 	}
 
@@ -409,9 +388,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 
 VOID Bat::State_Dead()
 {
-	MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH,
-		*MYPOS, MYSCALE->x, MONSTER_DEATH_PLAYTTIME);
-	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }
