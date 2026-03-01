@@ -97,7 +97,7 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 	}
 	
 
-	if (!Camera_Move) {
+	if (Camera_Move) {
 	
 		_float distance = PlayerObject->Get_MouseDistance();
 		_vec3 dir = PlayerObject->Get_MouseDir();

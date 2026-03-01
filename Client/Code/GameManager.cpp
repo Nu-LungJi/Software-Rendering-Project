@@ -85,7 +85,7 @@ VOID		 GameManager::Free() {
 
 	Safe_Release(DEVCLASS);
 	Safe_Release(GRPDEV);
-
+	
 	GraphicDevice	::DestroyInstance();
 	KeyManager		::DestroyInstance();
 	CollisionManager::DestroyInstance();

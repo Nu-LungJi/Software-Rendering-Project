@@ -296,7 +296,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		else matWorld = matSize * matRotX;
 
 		matWorld._41 = (*_playerPos).x;
-		matWorld._42 = (*_playerPos).y;
+		matWorld._42 = (*_playerPos).y + 0.5f;
 		matWorld._43 = (*_playerPos).z;
 
 		if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC || SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) {

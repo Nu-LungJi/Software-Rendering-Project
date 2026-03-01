@@ -1,4 +1,4 @@
-#include "../Include/PCH.h"
+﻿#include "../Include/PCH.h"
 #include "Player.h"
 
 Player::Player(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV)	{}
@@ -113,6 +113,7 @@ HRESULT Player::Ready_GameObject() {
 
 INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
+
 	_vec3 pPos = *Component_Transform->Get_Position();
 	pPos.y = 1.f;
 	Component_Transform->Set_Pos(pPos);
@@ -925,6 +926,9 @@ void Player::SKILL_NONE(const _float& _DT)
 
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
+
+		wstring txt = L"시간이여 멈춰라";
+		mainUI->Speech_PopUp_Skill(txt);
 	}
 
 	if (KEY_DOWN(DIK_R)) {

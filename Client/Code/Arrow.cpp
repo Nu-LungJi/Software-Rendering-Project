@@ -385,7 +385,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             break;
         }
         if (_type == ArrowType::WindCharging) matWorld._42 = 2.f;
-        if(_type == ArrowType::Atomic_Arrow) matWorld._42 = 0.7f;
+        else if (_type == ArrowType::Atomic_Arrow) matWorld._42 = 1.f;
 
         Component_Transform->Set_World(&matWorld);
         Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
