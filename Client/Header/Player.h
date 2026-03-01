@@ -300,10 +300,12 @@ private:
 		BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	public:
-
+		_float*			Get_MiniGameScale() { return &m_fMiniGameScale; }
 
 
 	private:
 		HRESULT			MiniGameInit();
+		HRESULT			MiniGameUpdate(const _float& _DT);
 		SCENE_TYPE		m_eCurrScene;
+		_float			m_fMiniGameScale;
 };

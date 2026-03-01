@@ -269,19 +269,29 @@ EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos, BOOL bMini) {
 BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag;
+
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		Tag = _Other->Get_ObjectTag();
-		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
-		return true;
-	//case MONSTER_STATE_SUMMON:
-	//case MONSTER_STATE_APPEAR:
-	//case MONSTER_STATE_DEAD:
-	//case MONSTER_STATE_DISAPPEAR:
-	//case MONSTER_STATE_CASTING:
-	//case EVILSLIME_FISSION:
-	//	return 0;
+		if (Tag == L"PlayerArrow") {
+
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		else if (Tag == L"Player")
+		{
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		break;
+	case MONSTER_STATE_CASTING:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		break;
 	}
 
 	return FALSE;

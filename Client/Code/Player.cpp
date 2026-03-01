@@ -112,6 +112,13 @@ HRESULT Player::Ready_GameObject() {
 }
 
 INT	Player::Update_GameObject(const _float& _DT) {
+	
+	//KJJ Temp
+	if (m_eCurrScene == SCENE_TYPE::Minigame)
+	{
+		Component_Transform->Get_Position()->y = 1.25f;
+	}
+
 	GameObject::Update_GameObject(_DT);
 
 	if (_isStop) return S_OK;
@@ -218,8 +225,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	if (m_eCurrScene == SCENE_TYPE::Minigame) 
+	// MiniGame Rendering
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	}
+
 	CheonLog_Spawn();
 
 	if (_isStop) return;
@@ -1369,23 +1379,29 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	//if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
-	//wstring Tag = _Other->Get_ObjectTag();
-	//MainUI* mainUI;
-	//if (Tag == L"MonsterBullet")
-	//{
-	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-	//	mainUI->Player_LostHP();
+	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
+	wstring Tag = _Other->Get_ObjectTag();
 
-	//	return TRUE;
-	//}
-	//else if(Tag == L"Monster")
-	//{
-	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-	//	mainUI->Player_LostHP();
+	if (m_eCurrScene == SCENE_TYPE::Minigame)
+	{
+		return false;
+	}
 
-	//	return TRUE;
-	//}
+	MainUI* mainUI;
+	if (Tag == L"MonsterBullet")
+	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+
+		return TRUE;
+	}
+	else if(Tag == L"Monster")
+	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+
+		return TRUE;
+	}
 
 	return FALSE;
 }
@@ -1407,8 +1423,16 @@ HRESULT Player::MiniGameInit()
 	m_eCurrScene = SCENE_TYPE::Minigame;
 
 	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
-
+	Component_Transform->Set_Scale(m_fMiniGameScale, m_fMiniGameScale, m_fMiniGameScale);
+	Component_Collider->Set_Scale(m_fMiniGameScale * 0.125f, m_fMiniGameScale * 0.5f, m_fMiniGameScale * 0.125f);
 	return S_OK;
+}
+HRESULT Player::MiniGameUpdate(const _float& _DT)
+{
+	Component_Buffer->Update_Component(_DT);
+	Component_Collider->Update_Component(_DT);
+
+	return E_FAIL;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 
