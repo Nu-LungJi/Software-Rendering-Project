@@ -630,7 +630,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
         atk = 1.f;
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());

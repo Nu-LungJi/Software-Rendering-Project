@@ -143,7 +143,7 @@ VOID BossEffect::Render_GameObject() {
 }
 BOOL BossEffect::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Player") {
-		int a = 0;
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Player_LostHP();
 	}
 	return TRUE;
 }

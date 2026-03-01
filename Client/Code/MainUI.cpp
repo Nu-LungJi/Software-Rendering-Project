@@ -1,4 +1,4 @@
-ï»¿#include "../Include/PCH.h"
+#include "../Include/PCH.h"
 #include "MainUI.h"
 
 MainUI::MainUI(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV)	{}
@@ -409,23 +409,23 @@ HRESULT MainUI::Effect_Initialize() {
 }
 HRESULT MainUI::Text_Initialize() {
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
 	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText", L"Bastard", D3DCOLOR_ARGB(200, 255, 255, 255));
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08ì„œìš¸í•œê°•ì²´ L",	D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08¼­¿ïÇÑ°­Ã¼ L",	D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08ì„œìš¸í•œê°•ì²´ L", D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08¼­¿ïÇÑ°­Ã¼ L", D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
@@ -448,19 +448,19 @@ void MainUI::Imgui_Setting()
 	_float fMin(0.0f), fMax(100), UMin(0), UMax(0), fMovePosMin(-100), fMovePosMax(129), fMoveScaleMin(-100), fMoveScaleMax(129), fMoveRotMin(-360), fMoveRotMax(360), vMouseMin(0), vMouseMax(0), fHeightMin(0.f), fHeightMax(10.f), fPosMin(0.f), fPosMax(200.f);
 
 
-	///////////ìœ„ì¹˜
+	///////////À§Ä¡
 	_vec2 vPos = { GuiVar.POSX, GuiVar.POSY};
 	ImGui::Text("UI_POS");
 	ImGui::SameLine(200.f, 0.f);
 	ImGui::SliderFloat2("##1", vPos, sMin, sMax);
 
-	Imgui_ButtonStyle();				// ë²„íŠ¼ ì‹œì‘
-	if (ImGui::Button("UI_POSX+"))		// ì´ë¦„ ë‹¬ë¼ì•¼ëŒ ëˆ„ë¥¼ ë²„íŠ¼
+	Imgui_ButtonStyle();				// ¹öÆ° ½ÃÀÛ
+	if (ImGui::Button("UI_POSX+"))		// ÀÌ¸§ ´Ş¶ó¾ß´ï ´©¸¦ ¹öÆ°
 	{
-		vPos.x += fPivot1;				// ìˆ˜ì¹˜ì…ë ¥
+		vPos.x += fPivot1;				// ¼öÄ¡ÀÔ·Â
 	}
-	ImGui::SameLine(150, 0.f);			// ê°™ì€ë¼ì¸ ë²„íŠ¼
-	ImGui::PopStyleColor(3);			// ë²„íŠ¼ ë
+	ImGui::SameLine(150, 0.f);			// °°Àº¶óÀÎ ¹öÆ°
+	ImGui::PopStyleColor(3);			// ¹öÆ° ³¡
 
 	Imgui_ButtonStyle();
 	if (ImGui::Button("UI_POSX-"))
@@ -487,7 +487,7 @@ void MainUI::Imgui_Setting()
 	GuiVar.POSY = vPos.y;
 
 
-	///////////ìŠ¤ì¼€ì¼
+	///////////½ºÄÉÀÏ
 	_vec2 vScale = { GuiVar.WIDTHX, GuiVar.WIDTHY };
 	ImGui::Text("UI_SCALE");
 	ImGui::SameLine(200.f, 0.f);
@@ -522,7 +522,7 @@ void MainUI::Imgui()
 		{
 			if (ImGui::MenuItem("Save"))
 				cout << ("Save clicked\n");
-			ImGui::Separator(); //êµ¬ë¶„ì¤„
+			ImGui::Separator(); //±¸ºĞÁÙ
 			if (ImGui::MenuItem("Open"))
 				cout << ("Open clicked\n");
 			ImGui::EndMenu();

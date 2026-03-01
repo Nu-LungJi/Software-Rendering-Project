@@ -180,7 +180,7 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 
 	D3DXMatrixInverse(&CameraMatrix, 0, &ViewMatrix);
 
-	if (Camera_Move)
+	if (Camera_Move && !FocusOn_Boss)
 	{
 		if (KEY_HOLD(DIK_W)) {
 			memcpy(&FrontVector, &CameraMatrix.m[2][0], sizeof(_vec3));
