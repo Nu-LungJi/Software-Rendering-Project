@@ -113,7 +113,7 @@
 #define EVILFROG_WIDTH									1.f
 #define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
 
-#define EVILFROG_SPEED									4.f
+#define EVILFROG_SPEED									8.f
 #define EVILFROG_HP											20.f
 
 #define EVILFROG_TRACKINGDIS							20.f
@@ -270,8 +270,8 @@ typedef struct tagTextureInfo
 
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
-		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false), _pHurdle(nullptr),
-		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){}
+		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false),
+		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){} 
 
 	~tagMonsterInfo() {}
 

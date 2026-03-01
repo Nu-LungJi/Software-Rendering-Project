@@ -46,11 +46,11 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 			if (iType != INIT) {
-				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apsotle/UI_Bless_Select.wav", CHANNELID::SOUND_EFFECT04, 0.5f);
 				Add_PlayerStatus(iType);
 				isActive = FALSE;
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
 				PlayerObject->Set_PlayerStop(FALSE);
+
 				return 0;
 			}
 		}
@@ -167,18 +167,12 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 
 VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {  
-	if (_PerkType == FIRST) {
+	if (_PerkType == FIRST)
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 200);
-		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apsotle/UI_Bless_Choice_03.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
-	}
-	if(_PerkType == SECOND){
+	if(_PerkType == SECOND)
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 200);
-		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apsotle/UI_Bless_Choice_03.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
-	}
-  if (_PerkType == THIRD){
+  if (_PerkType == THIRD)
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 200);
-		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apsotle/UI_Bless_Choice_03.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
-	}
 }
 
 VOID Augment::FadeOut(FLOAT Frame)

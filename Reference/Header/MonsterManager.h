@@ -76,7 +76,7 @@ typedef struct tagHurdleInfo {
         vSrc = _vSrc;
         vDst = _vDst;
         vPos = (vSrc + vDst) * 0.5f;
-        vDir = _vDst - _vSrc;
+        vDir = _vDst - vSrc;
         fDis = D3DXVec3Length(&vDir);
         D3DXVec3Normalize(&vDir, &vDir);
         fSpeed = _fSpeed;

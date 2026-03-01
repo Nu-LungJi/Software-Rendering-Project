@@ -86,8 +86,6 @@ VOID MainUI::Player_LostHP() {
 		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
 
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Haetae_Attacked.wav", CHANNELID::SOUND_EFFECT07, 0.35f);
-
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 		Camera->Camera_Shaking(30, 5.f);
 	}

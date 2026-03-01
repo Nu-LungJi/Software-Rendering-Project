@@ -11,13 +11,12 @@ HRESULT   StartScene::Ready_Scene() {
 
     MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
-    SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
-
     pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
 
     //Load Tile

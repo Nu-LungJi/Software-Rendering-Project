@@ -195,11 +195,8 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")	{
-	Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 
-	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Hit.wav", CHANNELID::SOUND_EFFECT03, 0.35f);
-	return TRUE;
-	}
+	if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
+
 	return FALSE;
 }
 BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
