@@ -11,6 +11,7 @@ HRESULT Shadow::Ready_GameObject() {
 }
 INT	Shadow::Update_GameObject(const _float& _DT)
 {
+	Component_Transform->Update_Component(_DT);
 	Component_Buffer->Update_Component(_DT);
 
 	if (m_tInfo.pGameObj[0] == nullptr) {
@@ -22,8 +23,8 @@ INT	Shadow::Update_GameObject(const _float& _DT)
 	if (m_tInfo.pGameObj[0])
 	{
 		*MYPOS = *POS(m_tInfo.pGameObj[0]);
-		MYPOS->y = 0.001f;
-		MYPOS->z -= SCALE(m_tInfo.pGameObj[0])->y * 0.5f;
+		//MYPOS->y = 0.01f;
+		//MYPOS->z -= SCALE(m_tInfo.pGameObj[0])->y * 0.5f;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -41,7 +42,7 @@ VOID Shadow::Render_GameObject() {
 
 	// 1. 알파 블렌딩 및 테스트 설정
 	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); // 테스트는 일단 끄고 블렌딩만 확인
+	//GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); // 테스트는 일단 끄고 블렌딩만 확인
 
 	// 2. 투명도 설정 (120: 적당히 연함)
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(120, 255, 255, 255));
@@ -59,7 +60,6 @@ VOID Shadow::Render_GameObject() {
 	GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"spr_Effect_Shadow_01.png"));
 	Component_Buffer->Render_Buffer();
 
-	// 5. 복구 (SelectArg1이 기본값)
 	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 }
 HRESULT Shadow::Component_Initialize() {
