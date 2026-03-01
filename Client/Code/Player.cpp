@@ -58,6 +58,8 @@ HRESULT Player::Ready_GameObject() {
 	_MaxArrow			= 1.f;
 	//연출용
 	CameraMove = false;
+	//사운드용 타이머
+	_walk_time = 0.35f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -319,6 +321,8 @@ void Player::Reset()
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
+	float footstepInterval = 0.5f;
+	_walk_time += _DT;
 	if (KEY_DOWN(DIK_F3)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
 		Debug ? Debug = FALSE : Debug = TRUE;
 	}
@@ -383,6 +387,11 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_LU) {
 				_eState = eState::STATE_RUN_LU;
 				_see = pSee::SEE_LU;
@@ -394,6 +403,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_LD) {
 				_eState = eState::STATE_RUN_LD;
 				_see = pSee::SEE_LD;
@@ -406,6 +420,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RU) {
 				_eState = eState::STATE_RUN_RU;
 				_see = pSee::SEE_RU;
@@ -418,6 +437,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RD) {
 				_eState = eState::STATE_RUN_RD;
 				_see = pSee::SEE_RD;
@@ -430,9 +454,14 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W))
 		{
+			if(_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav",CHANNELID::SOUND_EFFECT01,0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_UP) {
 				_eState = eState::STATE_RUN_UP;
-				_see = pSee::SEE_UP;
+				_see = pSee::SEE_UP;		
 			}
 			_speed = _defaultSpeed;
 			Component_Transform->Move_Pos(D3DXVec3Normalize(&upDir, &upDir), _speed, _DT);
@@ -440,6 +469,11 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_S))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_DOWN) {
 				_eState = eState::STATE_RUN_DOWN;
 				_see = pSee::SEE_DOWN;
@@ -450,6 +484,12 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
+
 			if (_eState != eState::STATE_RUN_LEFT) {
 				_eState = eState::STATE_RUN_LEFT;
 				_see = pSee::SEE_LEFT;
@@ -459,6 +499,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RIGHT) {
 				_eState = eState::STATE_RUN_RIGHT;
 				_see = pSee::SEE_RIGHT;
@@ -918,7 +963,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
 		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06,0.5f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
 		_skillArea_On = false;

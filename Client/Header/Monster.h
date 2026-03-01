@@ -113,7 +113,7 @@
 #define EVILFROG_WIDTH									1.f
 #define EVILFROG_HEIGHT								EVILFROG_WIDTH * EVILFROGIMG_ASPECTRATIO
 
-#define EVILFROG_SPEED									8.f
+#define EVILFROG_SPEED									4.f
 #define EVILFROG_HP											20.f
 
 #define EVILFROG_TRACKINGDIS							20.f

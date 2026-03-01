@@ -143,6 +143,16 @@ BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
 		break;
+	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+		if (Tag == L"Player")
+		{
+			MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
+			return TRUE;
+		}
+
+	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
+		wstring Tag = _Other->Get_ObjectTag();
 	}
 
 	return FALSE;
