@@ -52,6 +52,9 @@ public:
 	VOID Set_All_Visible(BOOL _B) {
 		for (auto& info : TextureList) info.Set_Visible(_B);
 	}
+
+	VOID	Set_EffectFadeOption(INT _OPT) { FADEOUT = _OPT; }
+	INT		Get_EffectFadeOption()		{ return FADEOUT; }
 private:
 	HRESULT						Component_Initialize();
 	virtual			VOID		Free();
@@ -72,5 +75,8 @@ private:
 	D3DXMATRIX		MatScale;
 
 	SpriteObject*	Component_Sprite;
+
+	INT				FADEOUT;
+	FLOAT			GlobalOPC;
 };
 

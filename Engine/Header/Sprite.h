@@ -77,6 +77,7 @@ public:
 
 	vector<SpriteINFO>* Get_TextureList() { return &TextureList; }
 	SpriteINFO*			Get_Texture(wstring _KEY);
+	
 public:
 	static		SpriteObject*		Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*			Clone();

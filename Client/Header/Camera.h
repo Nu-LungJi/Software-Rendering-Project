@@ -48,8 +48,11 @@ public:
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
 	void			Docheol_Spawn(CONST FLOAT& _DT);
 
-	VOID			Set_FocusOnBoss(BOOL _FOB)	{ FocusOn_Boss = _FOB; }
+	VOID			Set_FocusOnBoss(BOOL _FOB); 
 	BOOL			Get_FocusOnBoss()			{ return FocusOn_Boss; }
+
+	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
+	BOOL			Get_ButtonLock() { return Button_Lock; }
 private:	
 	HRESULT			Component_Initialize();
 
@@ -69,6 +72,8 @@ private:
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
 	BOOL		StopMove;
+	BOOL		Velocity_Lock;
+	BOOL		Button_Lock;
 
 	Player*		PlayerObject;
 

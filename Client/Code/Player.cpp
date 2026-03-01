@@ -253,13 +253,13 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
@@ -1369,23 +1369,23 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	//if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
-	//wstring Tag = _Other->Get_ObjectTag();
-	//MainUI* mainUI;
-	//if (Tag == L"MonsterBullet")
-	//{
-	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-	//	mainUI->Player_LostHP();
+	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
+	wstring Tag = _Other->Get_ObjectTag();
+	MainUI* mainUI;
+	if (Tag == L"MonsterBullet")
+	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 
-	//	return TRUE;
-	//}
-	//else if(Tag == L"Monster")
-	//{
-	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-	//	mainUI->Player_LostHP();
+		return TRUE;
+	}
+	else if(Tag == L"Monster")
+	{
+		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
 
-	//	return TRUE;
-	//}
+		return TRUE;
+	}
 
 	return FALSE;
 }

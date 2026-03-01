@@ -40,9 +40,13 @@ public:		// Trigger Function
 
 	VOID			Set_EnableSpeechBubble(BOOL _ESB) {}
 
+	VOID			Set_BossMaxHP(FLOAT _HP) { MaxHP = _HP; }
 
+	VOID			Set_EnableBossTitle(INT _EBT) { Enable_BossTitle = _EBT; }
 private:
 	VOID			MainUI_FadeAction(CONST FLOAT& _DT);
+	VOID			Display_BossTitle(CONST FLOAT& _DT);
+	VOID			Synchronize_BossHPBar();
 
 public:
 	HRESULT Component_Initialize();
@@ -84,7 +88,26 @@ private:
 	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
 	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
 	
+////////////////////////////////////////////// 보스전 활용 변수들
+	vector<FontObject*> AllFontOBJ;
+	vector<SpriteINFO*> AllSpriteOBJ;
+	vector<UIEffect*>	AllUIEffect;
+	FLOAT				GlobalOPC;
+	INT					EffectFaded;
 
+	FLOAT				MaxHP;
+	FLOAT				CurrentHP;
+
+	_vec3				BarScale;
+	SpriteINFO*			HPBarFill;
+	SpriteINFO*			BossTitleBar;
+	ID3DXSprite*		BossHPSprite;
+
+	INT					Enable_BossTitle;
+	FLOAT				BossTitleTimer;
+	FontObject*			Title_Name;
+	FontObject*			Title_Tag;
+//////////////////////////////////////////////
 private:
 	virtual	VOID		Free();
 };

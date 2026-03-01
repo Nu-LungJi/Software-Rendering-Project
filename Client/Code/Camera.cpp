@@ -24,9 +24,11 @@ HRESULT CameraObject::Ready_GameObject() {
 	Focusing_Timer = 0.f;
 	OriginCameraPos = { 0.f, 0.f, 0.f };
 	
-
 	Camera_Show = TRUE;
-	Camera_Move = TRUE;
+	Camera_Move = FALSE;
+
+	Velocity_Lock = FALSE;
+	Button_Lock = FALSE;
 
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	D3DXMatrixPerspectiveFovLH(&ProjMatrix, FOVValue, AspectValue, NearValue, FarValue);
@@ -41,44 +43,27 @@ HRESULT CameraObject::Ready_GameObject() {
 	OriginEye = EyeVec;
 	OriginAt = AtVec;
 
-	
-
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
-
 	CameraObject::Update_Frustum();
 
 	if (KEY_DOWN(DIK_F2)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-if (m_eCurrScene == SCENE_TYPE::Minigame)
-	{
+	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
+		Velocity_Lock = !Velocity_Lock;
+	}
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		MiniGame(_DT);
 		return 0;
 	}
+	
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
-	if (FocusOn_Boss == FALSE) {
-		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
-    _vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
-    _vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 
-    EyeVec = (*playerPos) + eyeCalc;
-    AtVec = (*playerPos) + atCalc;
-
-    if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
-    	EyeVec.z -= 1.5f;
-    	EyeVec.y += 1.5f;
-    	
-    	AtVec.z -= 1.5f;
-    	AtVec.y += 1.5f;
-    }
-  }
-	if (!Camera_Move)
-	{
+	if (!Camera_Move) {
 		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
@@ -90,15 +75,11 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 		if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
 			EyeVec.z -= 1.5f;
 			EyeVec.y += 1.5f;
-			
+
 			AtVec.z -= 1.5f;
 			AtVec.y += 1.5f;
 		}
-	}
-	
 
-	if (!Camera_Move) {
-	
 		_float distance = PlayerObject->Get_MouseDistance();
 		_vec3 dir = PlayerObject->Get_MouseDir();
 		_float offset = 2.f;
@@ -106,30 +87,33 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 		_vec3 targetEye = EyeVec;
 		_vec3 targetAt = AtVec;
 
-		_float moveAmount = (distance - offset) * 4;
-		if (distance > offset)
-		{
-			targetEye += dir * moveAmount;
-			targetAt  += dir * moveAmount;
+		
+		if (Velocity_Lock == FALSE) {		//  커서가 움직이면 화면도 같이 움직이게 함.(FALSE = 움직이게 하기, TRUE = 고정)
+			_float moveAmount = (distance - offset) * 4;
+			if (distance > offset)
+			{
+				targetEye += dir * moveAmount;
+				targetAt += dir * moveAmount;
+			}
+
+			//float smoothSpeed = 8.f;
+			//
+			//EyeVec += (targetEye - EyeVec) * smoothSpeed * 0.01;
+			//AtVec += (targetAt - AtVec) * smoothSpeed * 0.01;
+
+			_float stiffness = 40.f;
+			_float damping = 2.f * sqrtf(stiffness);
+
+			_vec3 toTarget = targetEye - EyeVec;
+
+			_vec3 accel = toTarget * stiffness - m_vVelocity * damping;
+
+			if (moveAmount > 0.1f)
+				m_vVelocity += accel * 0.02;
+
+			EyeVec += m_vVelocity * 0.02;
+			AtVec += m_vVelocity * 0.02;
 		}
-
-		//float smoothSpeed = 8.f;
-		//
-		//EyeVec += (targetEye - EyeVec) * smoothSpeed * 0.01;
-		//AtVec += (targetAt - AtVec) * smoothSpeed * 0.01;
-
-		_float stiffness = 40.f;
-		_float damping = 2.f * sqrtf(stiffness);
-		
-		_vec3 toTarget = targetEye - EyeVec;
-		
-		_vec3 accel = toTarget * stiffness - m_vVelocity * damping;
-		
-		if(moveAmount > 0.1f)
-			m_vVelocity += accel * 0.02;
-		
-		EyeVec += m_vVelocity * 0.02;
-		AtVec += m_vVelocity * 0.02;
 	}
 	if (Shake_Time > 0.f) {
 		OriginEye = EyeVec;
@@ -147,8 +131,8 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 	}
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
-
-	if (Shake_Time > 0.f) {
+	
+	if		(Shake_Time > 0.f) {
 		Shake_Time -= _DT;
 		EyeVec = OriginEye;
 		AtVec = OriginAt;
@@ -159,11 +143,12 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 	}
 	
 	return 0;
+	
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
 	Camera_Transform_Control(_DT);
 
-	if (MouseCheck && !FocusOn_Boss) {
+	if (MouseCheck) {
 		POINT       ptMouse{ WINCX >> 1, WINCY >> 1 };
 
 		ClientToScreen(hWnd, &ptMouse);
@@ -180,7 +165,7 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 
 	D3DXMatrixInverse(&CameraMatrix, 0, &ViewMatrix);
 
-	if (Camera_Move && !FocusOn_Boss)
+	if (Camera_Move && Button_Lock == FALSE) // Button_Lock = 키보드 입력 무효화
 	{
 		if (KEY_HOLD(DIK_W)) {
 			memcpy(&FrontVector, &CameraMatrix.m[2][0], sizeof(_vec3));
@@ -229,7 +214,7 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 
 	LONG MouesAngle = 0;
 
-	if (Camera_Move && !FocusOn_Boss)
+	if (Camera_Move)
 	{
 		if (MouesAngle = MOUSE_MOVE(DIMS_Y)) {
 			_matrix RotationMat;
@@ -326,6 +311,10 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 	_float fLength(0.f);
 	if (!StopMove)
 	{
+		// 광윤 추가 ▼
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
+		
+		Button_Lock = TRUE;	// 키보드 입력 무효화 ON
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 
@@ -361,6 +350,9 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 			{
 				dynamic_cast<Spawner*>(pObj)->Set_Spawn(false);
 				StopMove = true;
+				Button_Lock = FALSE;	// 키보드 입력 무효화 OFF
+				// 광윤 추가 ▼
+				dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableBossTitle(TRUE);
 				return;
 			}
 		
@@ -381,38 +373,54 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 	if (FocusOn_Boss) {
 		Focusing_Timer += _DT;
-		Camera_Move = TRUE;
+		
 		if (Focusing_Timer < 0.15f) {
 			OriginCameraPos = EyeVec;
 			OriginCameraAt = AtVec;
 		}
 
 		if (Focusing_Timer > 1.f && Focusing_Timer < 3.f) {
+			//_vec3 CameraEyeSRC = { 61.95f, 18.55f, 77.841f };
+			//_vec3 CameraAtSRC = { 61.95f, 15.04f, 78.84f };
+			_vec3 CameraEyeDEST = { 63.6f, 18.55f, 95.105f };
+			_vec3 CameraAtDEST = { 63.6f, 15.04f, 96.105f };
 			Transform* BossTransform = static_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-			_vec3 BossPos = { BossTransform->Get_Position()->x - 1.f, 1.f,  BossTransform->Get_Position()->z - 2.f };
+			_vec3 BossPos = { BossTransform->Get_Position()->x - 0.5f, 1.f,  BossTransform->Get_Position()->z - 3.f };
 			_vec3 PlayerPos = *static_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 
 			_vec3 PlayerToBoss = BossPos - PlayerPos;
+			_vec3 Temp = CameraEyeDEST - OriginCameraPos;
 
-			EyeVec.x = OriginCameraPos.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			EyeVec.z = OriginCameraPos.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			EyeVec.x = OriginCameraPos.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			EyeVec.z = OriginCameraPos.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 
-			AtVec.x = OriginCameraAt.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			AtVec.z = OriginCameraAt.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.x = OriginCameraAt.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.z = OriginCameraAt.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+
+			//EyeVec.x = OriginCameraPos.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			//EyeVec.z = OriginCameraPos.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			
+			//AtVec.x = OriginCameraAt.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			//AtVec.z = OriginCameraAt.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 		}
-		//else if (Focusing_Timer >= 3.f) {
-		//	Camera_Move = FALSE;
-		//	FocusOn_Boss = 0.f;
-		//	Focusing_Timer = 0.f;
-		//	FocusOn_Boss = FALSE;
-		//}
 	}
 }
-
+VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
+	FocusOn_Boss = _FOB; 
+	if (FocusOn_Boss) {
+		MouseCheck = FALSE;
+		Velocity_Lock = TRUE;
+		Camera_Move = TRUE;
+		Button_Lock = TRUE;
+	}
+	else {
+		MouseCheck = FALSE;
+		Velocity_Lock = FALSE;
+		Camera_Move = FALSE;
+		Button_Lock = FALSE;
+	}
+}
 HRESULT CameraObject::Component_Initialize() {
-
-	//Component_Transform = ADD_COMPONENT_TRANSFORM;
-
 	return S_OK;
 }
 CameraObject* CameraObject::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

@@ -63,7 +63,14 @@ VOID AppearState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(TRUE);
 }
-VOID AppearState::FSM_StateUpdate(GameObject* _Owner) {}
+VOID AppearState::FSM_StateUpdate(GameObject* _Owner) {
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableBossTitle(TRUE);
+	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 21 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 21) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableBossTitle(FALSE);
+	}
+}
 VOID AppearState::FSM_StateExit(GameObject* _Owner) {
 	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, FALSE);
 	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);

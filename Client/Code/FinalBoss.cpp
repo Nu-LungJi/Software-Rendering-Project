@@ -20,6 +20,8 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	FSM->FSM_SetOwner(this);
 
 	ObjectTAG = L"Docheol";
+	Component_Collider->Set_Hp(10000.f);
+	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
 	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
 	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;	// 다른 행동 간섭 방지
@@ -69,10 +71,10 @@ HRESULT	FinalBoss::Ready_GameObject() {
 
 	Component_Transform->Rotation(ROT_X, 80.f);
 	//도철 UI
-	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
-	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	pBossUi->Set_ObjectTag(L"BossUI");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+	//BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
+	//pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	//pBossUi->Set_ObjectTag(L"BossUI");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
 	return S_OK;
 }
