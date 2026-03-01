@@ -197,6 +197,7 @@ BOOL Bat::OnCollisionEnter(GameObject* _Other)
 	default:
 		if (Tag == L"PlayerArrow") {
 			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Hit.wav", CHANNELID::SOUND_EFFECT03, 0.5f);
 			return TRUE;
 			break;
 		}
@@ -375,7 +376,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		_vec3 vEffectScale = { fScale, fScale, fScale };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
-
+    SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Bat_Attack.wav", CHANNELID::SOUND_EFFECT03, 0.5f);
 		m_tInfo.pGameObj[1] == nullptr;
 	}
 

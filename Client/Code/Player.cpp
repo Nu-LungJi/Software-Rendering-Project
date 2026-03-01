@@ -379,7 +379,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_LU) {
@@ -395,7 +395,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_LD) {
@@ -412,7 +412,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_RU) {
@@ -429,7 +429,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_RD) {
@@ -446,7 +446,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if(_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav",CHANNELID::SOUND_EFFECT01,0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav",CHANNELID::SOUND_EFFECT01,0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_UP) {
@@ -461,7 +461,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_DOWN) {
@@ -474,6 +474,12 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
+				_walk_time = 0.f;
+			}
+
 			if (_eState != eState::STATE_RUN_LEFT) {
 				_eState = eState::STATE_RUN_LEFT;
 				_see = pSee::SEE_LEFT;
@@ -485,7 +491,7 @@ void Player::IDLE_STATE(const _float& _DT)
 		{
 			if (_walk_time > footstepInterval)
 			{
-				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.7f);
 				_walk_time = 0.f;
 			}
 			if (_eState != eState::STATE_RUN_RIGHT) {
@@ -947,7 +953,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::BLUE_SHADER, &_nearPos, 4.f, Size, true);
 		Size = { 1.5f, 1.5f, 1.5f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_TIMESLOW, &_NPC_Pos, 1.f, Size, false);
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06,0.5f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Deva_Tif on.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
 		_skillState = skillState::STATE_TIMESLOW;
 		_skillNPC_On = false;
 		_skillArea_On = false;

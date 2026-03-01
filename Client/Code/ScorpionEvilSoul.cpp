@@ -273,6 +273,7 @@ BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 
 	if (Tag == L"PlayerArrow") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Hit.wav", CHANNELID::SOUND_EFFECT03, 0.35f);
 		return TRUE;
 	}
 
