@@ -11,12 +11,6 @@ HRESULT		Layer::Ready_Layer() {
 INT			Layer::Update_Layer(const FLOAT& _DT) {
 	if (!_isTimeSlow) {
 		for (auto iter = GameObjectList.begin(); iter != GameObjectList.end();) {
-			if ((*iter)->Get_ObjectDead())
-			{
-				CollisionManager::GetInstance()->Delete_ColliderObject((*iter));
-				++iter;
-				continue;
-			}
 			int ObjectResult = (*iter)->Update_GameObject(_DT);
 			if (ObjectResult == -1) (*iter)->Set_ObjectDead(true);
 			if ((*iter)->Get_ObjectDead() == TRUE || ObjectResult == -1) {

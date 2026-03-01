@@ -23,8 +23,6 @@ HRESULT NPC::Ready_GameObject() {
 
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 
-	
-
 	return S_OK;
 }
 INT	NPC::Update_GameObject(const _float& _DT) {
@@ -119,7 +117,7 @@ BOOL NPC::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 		
-		PlayerUI->PopUp_Interaction_Notice(L"¬¥√´√à¬≠ - √Ü¬º√á√Å", TRUE);
+		PlayerUI->PopUp_Interaction_Notice(L"¥Î»≠«œ±‚ - ∆º«¡", TRUE);
 		
 		return TRUE;
 	}

@@ -81,6 +81,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 		}
 	}
 	//EffectManager::GetInstanceku()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
+
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {

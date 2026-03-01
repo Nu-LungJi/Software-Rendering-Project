@@ -27,12 +27,12 @@ namespace Engine
 		OBJECT_UI, 
 		OBJECT_FINALBOSS, OBJECT_SUPPORTER, OBJECT_BOSS_FIREBALL, OBJECT_END };
 
-
 	enum class LAYER_TYPE { LAYER_DYNAMIC_OBJECT, LAYER_STATIC_OBJECT, LAYER_USER_INTERFACE, LAYER_END };
 
 	enum class BUFFER_TYPE { TRIANGLE, RECTANGLE, TEXTURE, TERRAIN, TILE, CUBE, TILEFRONT, TILELEFT, TILERIGHT, TILEBACK, END };
 
 	enum class FONT_LAYER { MAIN_UI, INVENTORY, LAYER_END };
+
 
 	enum class TILE_SIDE		{TILE_FRONT,TILE_RIGHT,TILE_LEFT,TILE_BACK, TILE_OTHER, TILE_END};
 	enum class CUBE_SIDE		{CUBE_FRONT, CUBE_RIGHT, CUBE_LEFT, CUBE_BACK, CUBE_OTHER, CUBE_END };
@@ -41,27 +41,19 @@ namespace Engine
 	enum	   TILE_STAGE		{TILE_STAGE1, TILE_STAGE2, TILE_STAGE3, TILE_STAGE4, TILE_FIRSTBOSS,TILE_DOCHER1,TILE_DOCHER2,TILE_DOCHERBOSS, TILE_DEFENSE, STAGE_END};
 	enum	   TILEMODE_CHANGE  { MODE_TILE, MODE_CUBE, MODE_OBJECT, MODE_END };
 
-
-	enum class TILE_SIDE { TILE_FRONT, TILE_RIGHT, TILE_LEFT, TILE_BACK, TILE_OTHER, TILE_END };
-	enum class CUBE_SIDE { CUBE_FRONT, CUBE_RIGHT, CUBE_LEFT, CUBE_BACK, CUBE_OTHER, CUBE_END };
-	enum	   TILE_STATE { STATE_NORMAL, STATE_COLLISION, STATE_TRIGGER, STATE_ANIMATION, STATE_DESTORY, STATE_POTAL, STATE_POTALEFFECT, STATE_POTALGASI, STATE_POTALGASI_EFFECT, STATE_POTALGASI_BREAK, STATE_UNDERTILE, STATE_BOOM, STATE_END };
-	enum class TILE_SPAWNER { NPC1, NPC2, ITEM_SPAWN1, ITEM_SPAWN2, ITEM_SPAWN3, ITEM_SPAWN4, ITEM_SPAWN5, ITEM_SPAWN6, MONSTER_SPAWN1, MONSTER_SPAWN2, MONSTER_SPAWN3, MONSTER_SPAWN4, BOSS_SPAWN, CL_SPAWN, RANDOM_SPAWNER, SPAWN_END };
-	enum	   TILE_STAGE { TILE_STAGE1, TILE_STAGE2, TILE_STAGE3, TILE_STAGE4, TILE_FIRSTBOSS, TILE_DOCHER1, TILE_DOCHER2, TILE_DOCHERBOSS, TILE_DEFENSE, STAGE_END };
-	enum	   TILEMODE_CHANGE { MODE_TILE, MODE_CUBE, MODE_OBJECT, MODE_END };
-
-	enum class MONSTER_SEP : uint8_t { Monster = 1, Bullet, Effect };
-	enum class MONSTER_TYPE : uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
-	enum class MONSTER_ANIM : uint8_t { Stand = 0, Appear, Disappear, Attack, Death, Random, End };
-	enum class BULLET_TYPE : uint8_t { Standard = 0, ScorpionBullet, Chain, Fireball, GroundIce, Random, End };
-	enum class BULLET_CHAIN_TYPE : uint8_t { Head = 0, Rect, Line, End };
-	enum class ALERT_TYPE : uint8_t { Circle = 0, Rect, Line, End };
-	enum class MONSTER_EFFECT : uint8_t {
-		MONSTER_SUMMONS01 = 0, MONSTER_SUMMONS02, MONSTER_SUMMONS03, MONSTER_DEATH,
-		BULLET_STANDARD_BIRTH, BULLET_STANDARD_BIRTHRAY, BULLET_STANDARD_CHARGE, BULLET_STANDARD_DEATH,
-		ALERT,
-		SKILL_END
-	};
-
+	//enum class MONSTER_SEP : uint8_t { Monster = 1, Bullet, Effect };
+	//enum class MONSTER_TYPE : uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
+	//enum class MONSTER_ANIM : uint8_t { Stand = 0, Appear, Disappear, Attack, Death, Random, End };
+	//enum class BULLET_TYPE : uint8_t { Standard = 0, ScorpionBullet, Chain, Fireball, GroundIce, Random, End };
+	//enum class BULLET_CHAIN_TYPE : uint8_t { Head = 0, Rect, Line, End };
+	//enum class ALERT_TYPE : uint8_t { Circle = 0, Rect, Line, End };
+	//enum class MONSTER_EFFECT : uint8_t {
+	//	MONSTER_SUMMONS01 = 0, MONSTER_SUMMONS02, MONSTER_SUMMONS03, MONSTER_DEATH,
+	//	BULLET_STANDARD_BIRTH, BULLET_STANDARD_BIRTHRAY, BULLET_STANDARD_CHARGE, BULLET_STANDARD_DEATH,
+	//	ALERT,
+	//	SKILL_END
+	//};
+	// 밑에거랑 겹쳐서 주석
 	enum class MONSTER_SEP		: uint8_t { Tile = 0, Monster = 1, Bullet, Effect };
 	enum class MONSTER_TYPE		: uint8_t { Bat = 0, ScorpionEvilSoul, ShotGunEvilSoul, EvilSlime, Random, End };
 	enum class MONSTER_ANIM		: uint8_t { Stand = 0, Appear, Disappear, Attack, Death,  Random, End };

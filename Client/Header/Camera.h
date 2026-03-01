@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Player.h"
 
 enum class FRUSTUMPLANE : uint8_t { Left, Right, bottom, Top, Far, Near, End };
 
@@ -45,7 +46,11 @@ public:
 	void			Set_Obj(GameObject* pDst, _vec3 Center) { pObj = pDst; vCenter = Center; }
 	void			Set_Move(BOOL bMove) { StopMove = bMove; }
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
-private:
+	void			Docheol_Spawn(CONST FLOAT& _DT);
+
+	VOID			Set_FocusOnBoss(BOOL _FOB)	{ FocusOn_Boss = _FOB; }
+	BOOL			Get_FocusOnBoss()			{ return FocusOn_Boss; }
+private:	
 	HRESULT			Component_Initialize();
 
 private:
@@ -65,7 +70,7 @@ private:
 	BOOL		MouseCheck;
 	BOOL		StopMove;
 
-	//GameObject* Player;
+	Player*		PlayerObject;
 
 	bool		Camera_Show;
 	bool		Camera_Move;
@@ -83,7 +88,11 @@ private:
 	GameObject*		pObj;
 	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
 
-
+	BOOL		FocusOn_Boss;
+	FLOAT		Focusing_Timer;
+	_vec3		OriginCameraPos;
+	_vec3		OriginCameraAt;
+	bool temp;
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:

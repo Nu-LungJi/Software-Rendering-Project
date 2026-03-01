@@ -1,4 +1,4 @@
-#include "../Include/PCH.h"
+﻿#include "../Include/PCH.h"
 #include "StateMachine.h"
 #include <random>
 
@@ -15,6 +15,7 @@ IMPLEMENT_SINGLETON(Rage_RSwingState)
 IMPLEMENT_SINGLETON(Rage_NormalSlamState)
 IMPLEMENT_SINGLETON(Rage_ChargeState)
 IMPLEMENT_SINGLETON(Rage_SupporterState)
+IMPLEMENT_SINGLETON(Rage_ExplosionRushState)
 
 StateMachine:: StateMachine(LPDIRECT3DDEVICE9 _GRPDEV)	:	GameObject(_GRPDEV)	{}
 StateMachine:: StateMachine(CONST GameObject& _RHS)		:	GameObject(_RHS)	{}
@@ -55,11 +56,24 @@ VOID		  StateMachine::Free() {
 	GameObject::Free();
 }
 
-VOID AppearState::FSM_StateEnter(GameObject* _Owner)			{}
+VOID AppearState::FSM_StateEnter(GameObject* _Owner)			{
+	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, TRUE);
+	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
+	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
+	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(TRUE);
+}
 VOID AppearState::FSM_StateUpdate(GameObject* _Owner)			{}
-VOID AppearState::FSM_StateExit(GameObject* _Owner)				{}
+VOID AppearState::FSM_StateExit(GameObject* _Owner)				{
+	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, FALSE);
+	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);
+	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE);
+	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Speech_PopUp(L"조심해요 연! 굉장히 위험한 \n사념체에요, 빠르게 처치하죠!");
+	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(FALSE);
+}
 
-VOID DeadState	::FSM_StateEnter(GameObject* _Owner)			{}
+VOID DeadState	::FSM_StateEnter(GameObject* _Owner)			{
+	dynamic_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, TRUE);
+}
 VOID DeadState	::FSM_StateUpdate(GameObject* _Owner)			{}
 VOID DeadState	::FSM_StateExit(GameObject* _Owner)				{
 	_Owner->Set_ObjectDead(TRUE);
@@ -97,6 +111,7 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
 		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::FSWING_CIRCLE_EFFET, L"FSwing Circle Effect", &CirclePos, CircleScale, 0.4f);
 	}
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 10 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 10) {
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(80, 2.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		Transform* BossTR = dynamic_cast<Transform*>((_Owner)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		_vec3 GlobalPosition = { BossTR->Get_Position()->x, BossTR->Get_Position()->y - 1.f,  BossTR->Get_Position()->z - 7.5f };
@@ -120,7 +135,7 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner)	{
 		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEC"))->Set_EffectRotation(0.f, 20.f, 0.f);
 	}
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 20 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 20) {
-		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Activate_BossFilter(TRUE);
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(80, 2.f);
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableRageUpFireBall(TRUE);
 	}
 }
@@ -181,6 +196,7 @@ VOID FSwingState::FSM_StateUpdate(GameObject* _Owner)	{
 	}
 	// FSWING - CIRCLE & ELECTRIC												  
 	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(30, 1.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.07f);
 		float Circlepow = 10.f;
@@ -339,6 +355,7 @@ VOID NormalSlamState::FSM_StateUpdate(GameObject* _Owner)	{
 	}
 	// SLAM - CIRCLE EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(25, 1.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float pow = 7.f;
 		_vec3 Scale = { 1.f * pow, 0.7f * pow, 0.7f * pow };
@@ -378,6 +395,7 @@ VOID MeteorSlamState::FSM_StateUpdate(GameObject* _Owner)	{
 	}
 	// SLAM - SLAM EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
+		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(25, 1.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float pow = 7.f;
 		_vec3 Scale = { 1.f * pow, 0.7f * pow, 0.7f * pow };
@@ -523,16 +541,8 @@ VOID Rage_ChargeState::FSM_StateEnter(GameObject* _Owner)		{
 	PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_FLAME_EFFECT, L"Charge Flame", &FlamePos, FlameScale, 0.5f);
 }
 VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner)		{
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
-		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
-		float Circlepow = 7.f;
-		_vec3 CircleScale = { 1.f * Circlepow, 0.6f * Circlepow, 0.6f * Circlepow };
-		_vec3 CirclePos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
-					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.f,
-					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
-		};
-		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT, L"Charge Elec", &CirclePos, CircleScale, 0.8f);
-	}
+	
+
 }
 VOID Rage_ChargeState::FSM_StateExit(GameObject* _Owner)		{}
 
@@ -545,8 +555,38 @@ VOID Rage_SupporterState::FSM_StateEnter(GameObject* _Owner)	{
 						(*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
 	};
 	PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::FSWING_CIRCLE_EFFET, L"FSwing Circle Effect", &CirclePos, CircleScale, 0.4f);
+	dynamic_cast<FinalBoss*>(_Owner)->Set_EnableSupporterFlame(TRUE);
 }
 VOID Rage_SupporterState::FSM_StateUpdate(GameObject* _Owner)	{
-	
+	// Circle Blue Electric
+	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && static_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float Circlepow = 7.f;
+		_vec3 CircleScale = { 1.f * Circlepow, 0.6f * Circlepow, 0.6f * Circlepow };
+		_vec3 CirclePos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y - 1.f,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
+		};
+		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::RAGE_CHARGE_ELECTRIC_EFFECT, L"Charge Elec", &CirclePos, CircleScale, 0.8f);
+	}
+	// Pink Electric
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
+		float Elecpow = 6.f;
+		_vec3 ElecScale = { 1.f * Elecpow, 1.f * Elecpow, 1.f * Elecpow };
+		_vec3 ElecPos = { (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->x ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->y ,
+					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 4.5f
+		};
+		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FSWING_ELECTRIC_EFFECT, L"FSwing Electric Effect", &ElecPos, ElecScale, 0.5f);
+		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"FSwing Electric Effect")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
+			->Set_Rotation(85.f, 0.f, 0.f);
+	}
 }
 VOID Rage_SupporterState::FSM_StateExit(GameObject* _Owner)		{}
+
+VOID Rage_ExplosionRushState::FSM_StateEnter(GameObject* _Owner)	{
+	dynamic_cast<FinalBoss*>(_Owner)->Set_EnableExplosionRush(TRUE);
+}
+VOID Rage_ExplosionRushState::FSM_StateUpdate(GameObject* _Owner)	{}
+VOID Rage_ExplosionRushState::FSM_StateExit(GameObject* _Owner)		{}

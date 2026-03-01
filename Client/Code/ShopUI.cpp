@@ -98,15 +98,15 @@ HRESULT   ShopUI::Effect_Initialize() {
 }
 HRESULT	ShopUI::Text_Initialize() {
 	/////////////////////////////////////////////////////// ITEM INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 275.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 275.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 							
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (!isActive)
     {
@@ -118,61 +118,61 @@ HRESULT	ShopUI::Text_Initialize() {
 
 HRESULT ShopUI::Item_Initialize() {
     ItemINFO* pItem1 = new ItemINFO;
-    pItem1->ItemDesc = { L"ì‚¬ë„ì˜ ê°€í˜¸",L"ì†Œëª¨í’ˆ",L"",L"",L"",
-                                            L"ì‚¬ë„ì˜ ê°€í˜¸ë¥¼ í•˜ë‚˜ ì¶©ì „í•©ë‹ˆë‹¤.",
+    pItem1->ItemDesc = { L"»çµµÀÇ °¡È£",L"¼Ò¸ðÇ°",L"",L"",L"",
+                                            L"»çµµÀÇ °¡È£¸¦ ÇÏ³ª ÃæÀüÇÕ´Ï´Ù.",
                                             L"", L"20" };
     pItem1->ItemPrice = 20;
     pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem1);
 
     ItemINFO* pItem2 = new ItemINFO;
-    pItem2->ItemDesc = { L"ìƒëª…ë ¥", L"ì†Œëª¨í’ˆ", L"",L"",L"",
-                                             L"ìžƒì€ ì²´ë ¥ì„ í•œ ì¹¸ íšŒë³µí•©ë‹ˆë‹¤.",
+    pItem2->ItemDesc = { L"»ý¸í·Â", L"¼Ò¸ðÇ°", L"",L"",L"",
+                                             L"ÀÒÀº Ã¼·ÂÀ» ÇÑ Ä­ È¸º¹ÇÕ´Ï´Ù.",
                                              L"", L"15" };
     pItem2->ItemPrice = 15;
     pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem2);
 
     ItemINFO* pItem3 = new ItemINFO;
-    pItem3->ItemDesc = { L"í™”ì‚´ ì¶©ì „", L"ì†Œëª¨í’ˆ",L"",L"",L"",
-                                            L"í˜„ìž¬ ì‚¬ìš©ì¤‘ì¸ í™œì˜ í™”ì‚´ì„ ì „ë¶€ ì¶©ì „í•©ë‹ˆë‹¤.",
+    pItem3->ItemDesc = { L"È­»ì ÃæÀü", L"¼Ò¸ðÇ°",L"",L"",L"",
+                                            L"ÇöÀç »ç¿ëÁßÀÎ È°ÀÇ È­»ìÀ» ÀüºÎ ÃæÀüÇÕ´Ï´Ù.",
                                             L"", L"15" };
     pItem3->ItemPrice = 15;
     pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem3);
 
     ItemINFO* pItem4 = new ItemINFO;
-    pItem4->ItemDesc = { L"ë¹™ê²°ì˜ í™œ", L"ë¬´ê¸°/í¬ê·€", L"ì¼ë°˜ ê³µê²©",
-                                            L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26", L"ê³µê²© ì†ë„ 2.5",
-                                            L"ì ì—ê²Œ í”¼í•´ë¥¼ ìž…íž ê²½ìš° \nì ì´ ë¹™ê²° ìƒíƒœì— ë¹ ì§‘ë‹ˆë‹¤.",
-                                            L"ì–¼ì–´ë¶™ì–´ë¼..", L"80" };
+    pItem4->ItemDesc = { L"ºù°áÀÇ È°", L"¹«±â/Èñ±Í", L"ÀÏ¹Ý °ø°Ý",
+                                            L"ÀÏ¹Ý °ø°Ý·Â 24 ~ 26", L"°ø°Ý ¼Óµµ 2.5",
+                                            L"Àû¿¡°Ô ÇÇÇØ¸¦ ÀÔÈú °æ¿ì \nÀûÀÌ ºù°á »óÅÂ¿¡ ºüÁý´Ï´Ù.",
+                                            L"¾ó¾îºÙ¾î¶ó..", L"80" };
 
     pItem4->ItemPrice = 80;
     pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem4);
 
     ItemINFO* pItem5 = new ItemINFO;
-    pItem5->ItemDesc = { L"ì˜¤ë™ë‚˜ë¬´ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
-                                            L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26",L"ê³µê²© ì†ë„ 2.5",
-                                            L"ê°€ìž¥ ê¸°ë³¸ì ì¸ í™œìž…ë‹ˆë‹¤.", L"ì´ í™œ... ì˜¤ë™ë‚˜ë¬´ë„¤?",
+    pItem5->ItemDesc = { L"¿Àµ¿³ª¹« È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
+                                            L"ÀÏ¹Ý °ø°Ý·Â 24 ~ 26",L"°ø°Ý ¼Óµµ 2.5",
+                                            L"°¡Àå ±âº»ÀûÀÎ È°ÀÔ´Ï´Ù.", L"ÀÌ È°... ¿Àµ¿³ª¹«³×?",
                                             L"0" };
     pItem5->ItemPrice = 0;
     pItem5->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
     Item_Index.push_back(pItem5);
 
     ItemINFO* pItem6 = new ItemINFO;
-    pItem6->ItemDesc = { L"ì–´ë‘ ì˜ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
-                                            L"ì¼ë°˜ ê³µê²©ë ¥ 30 ~ 36",L"ê³µê²© ì†ë„ 2.3",
-                                            L"ì–´ë‘ ì˜ íž˜ì„ ë‹´ì•„ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤.",L"ì–´ë‘ ì˜ íž˜ì„ ë‹´ì•„..",
+    pItem6->ItemDesc = { L"¾îµÒÀÇ È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
+                                            L"ÀÏ¹Ý °ø°Ý·Â 30 ~ 36",L"°ø°Ý ¼Óµµ 2.3",
+                                            L"¾îµÒÀÇ ÈûÀ» ´ã¾Æ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù.",L"¾îµÒÀÇ ÈûÀ» ´ã¾Æ..",
                                             L"75" };
     pItem6->ItemPrice = 75;
     pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem6);
 
     ItemINFO* pItem7 = new ItemINFO;
-    pItem7->ItemDesc = { L"ìžì—°ì˜ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
-                                         L"ì¼ë°˜ ê³µê²©ë ¥ 30 ~ 36", L"ê³µê²© ì†ë„ 2.6",
-                                         L"ìžì—°ì˜ íž˜ì„ ë‹´ì•„ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤.", L"ìžì—°ì˜ íž˜ì„ ë‹´ì•„..",
+    pItem7->ItemDesc = { L"ÀÚ¿¬ÀÇ È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
+                                         L"ÀÏ¹Ý °ø°Ý·Â 30 ~ 36", L"°ø°Ý ¼Óµµ 2.6",
+                                         L"ÀÚ¿¬ÀÇ ÈûÀ» ´ã¾Æ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù.", L"ÀÚ¿¬ÀÇ ÈûÀ» ´ã¾Æ..",
                                          L"90" };
     pItem7->ItemPrice = 90;
     pItem7->ItemType = (int)ITEM_TYPE::RARE_WEAPON;

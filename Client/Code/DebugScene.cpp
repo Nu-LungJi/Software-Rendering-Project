@@ -25,8 +25,6 @@ HRESULT	DebugScene::Ready_Scene() {
 	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
 	if (FAILED(Ready_UserInterface_Layer()))	return E_FAIL;
 
-	dynamic_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"))->Set_StartPos({ 64.595f, 0.263f, 103.137f });
-
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 	CollisionManager::GetInstance()->Get_AllObjectOfScene();

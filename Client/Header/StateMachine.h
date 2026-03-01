@@ -136,3 +136,10 @@ public:
 	virtual void FSM_StateUpdate(GameObject* _Owner);
 	virtual void FSM_StateExit(GameObject* _Owner);
 };
+class Rage_ExplosionRushState : public State {
+	DECLARE_FSM_SINGLETON(Rage_ExplosionRushState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
