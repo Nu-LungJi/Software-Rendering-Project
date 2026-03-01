@@ -30,35 +30,6 @@ GameObject* Scene::Get_GameObject(CONST TCHAR* _TAG) {
     }
     return nullptr;
 }
-_vec3* Scene::Search_Target(_vec3* myPos, _float radius, const TCHAR* _TAG)
-{
-    _vec3* TargetPos = nullptr;
-    for (auto& LYR : LayerList) {
-        _vec3* tempTarget = LYR->Search_Target(myPos, radius, _TAG);
-        if (tempTarget == nullptr) continue;
-        if (TargetPos == nullptr) {
-            TargetPos = tempTarget;
-            continue;
-        }
-        _vec3 vlength1 = *TargetPos - *myPos;
-        _vec3 vlength2 = *tempTarget - *myPos;
-        float length1 = D3DXVec3Length(&vlength1);
-        float length2 = D3DXVec3Length(&vlength2);
-        if (length1 > length2) {
-            TargetPos = tempTarget;
-        }
-    }
-    return TargetPos;
-}
-GameObject* Scene::Search_Target_Object(_vec3* myPos, _float radius, const TCHAR* _TAG)
-{
-    GameObject* target = nullptr;
-
-    auto LYR = LayerList[(LONG)LAYER_TYPE::LAYER_DYNAMIC_OBJECT];
-    target = LYR->Search_Target_Object(myPos, radius, _TAG);
-
-    return target;
-}
 VOID	Scene::Free() {
     for (auto& LYR : LayerList)
         Safe_Release(LYR);

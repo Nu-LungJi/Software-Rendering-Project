@@ -1,6 +1,6 @@
 #pragma once
 #include "Scene.h"
-class CLoading;
+
 class MapScene : public Scene {
 protected:
 	explicit MapScene(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -17,11 +17,8 @@ private:
 	HRESULT		Ready_GameLogic_Layer(CONST TCHAR* _LTAG);
 	HRESULT		Ready_UserInterface_Layer(CONST TCHAR* _LTAG);
 
-private:
-	CLoading* pLoading;
 public:
 	static	MapScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-	
 private:
 	virtual void Free();
 };

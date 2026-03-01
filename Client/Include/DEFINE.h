@@ -34,42 +34,32 @@
 #define ADD_COMPONENT_SPRITE			dynamic_cast<SpriteObject*>(Add_Component(COMPONENT_TYPE::COMPONENT_SPRITE));	// 텍스쳐 저장 컴포넌트 추가
 #define ADD_COMPONENT_COLLIDER			dynamic_cast<Collider*>(Add_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));	// 텍스쳐 저장 컴포넌트 추가
 #define ADD_COMPONENT_FSM				dynamic_cast<StateMachine*>(Add_Component(COMPONENT_TYPE::COMPONENT_FSM));	// FSM 컴포넌트
-#define ADD_COMPONENT_TILE	    		dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILE));		// 타일
+#define ADD_COMPONENT_TILE				dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILE));		// 타일
 #define ADD_COMPONENT_CUBE				dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_CUBE));		// 큐브
 #define ADD_COMPONENT_TILEFRONT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEFRONT));   // 타일 옆면
 #define ADD_COMPONENT_TILELEFT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILELEFT));
 #define ADD_COMPONENT_TILERIGHT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILERIGHT));
 #define ADD_COMPONENT_TILEBACK			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEBACK));
 #define ADD_COMPONENT_TILEINFO			dynamic_cast<TileInfo*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEINFO));
+#define ADD_COMPONENT_UISPRITE			dynamic_cast<UISprite*>(Add_Component(COMPONENT_TYPE::COMPONENT_UISPRITE));
 
 ////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////// EFFECT /////////////////////////////////////////				
+#define PLAY_PLAYER_EFFECT(SKILL_TYPE, POSITION, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::PLAYER,	\
+	PlayerEffect::Create(GRPDEV, SKILL_TYPE, POSITION, TRUE, PLAYTIME));						// 플레이어 : 이펙트 반복 실행
+#define PLAY_PLAYER_EFFECT_ONCE(SKILL_TYPE, POSITION, PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::PLAYER,	\
+	PlayerEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME));					// 플레이어 : 이펙트 최초 한번 실행
 
-#define PLAY_PLAYER_EFFECT(SKILL_TYPE, POSITION, PLAYTIME, SIZE, POSCHASE)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::PLAYER,	\
-	PlayerEffect::Create(GRPDEV, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SIZE, POSCHASE));						// 플레이어 : 이펙트 반복 실행
-#define PLAY_PLAYER_EFFECT_ONCE(SKILL_TYPE, POSITION, PLAYTIME, SIZE, POSCHASE)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::PLAYER,	\
-	PlayerEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SIZE, POSCHASE));					// 플레이어 : 이펙트 최초 한번 실행
-
-#define PLAY_MONSTER_EFFECT(SKILL_TYPE, POSITION, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,					\
-	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, TRUE, PLAYTIME));									// 몬스터 : 이펙트 반복 실행
-#define PLAY_MONSTER_EFFECT_ONCE(SKILL_TYPE, POSITION ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,				\
-	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME));									// 몬스터 : 이펙트 최초 한번 실행
-
-#define PLAY_BOSS_FRONTEFFECT(SKILL_TYPE, _TAG, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE));							// 보스 몬스터 : 이펙트 반복 실행
-#define PLAY_BOSS_FRONTEFFECT_ONCE(SKILL_TYPE, _TAG, POSITION, SCALE ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE));						// 보스 몬스터 : 이펙트 최초 한번 실행
-
-#define PLAY_BOSS_BACKEFFECT(SKILL_TYPE, _TAG, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE), 3);						// 보스 몬스터 : 이펙트 반복 실행
-#define PLAY_BOSS_BACKEFFECT_ONCE(SKILL_TYPE, _TAG, POSITION, SCALE ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE), 3);						// 보스 몬스터 : 이펙트 최초 한번 실행
+#define PLAY_MONSTER_EFFECT(SKILL_TYPE, POSITION, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,	\
+	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, TRUE, PLAYTIME));					// 몬스터 : 이펙트 반복 실행
+#define PLAY_MONSTER_EFFECT_ONCE(SKILL_TYPE, POSITION ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,	\
+	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME));					// 몬스터 : 이펙트 최초 한번 실행
 
 #define PLAY_UI_EFFECT(SKILL_TYPE, _TAG, _X, _Y, _SX, _SY, PLAYTIME, OPAC)			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI,	\
-	UIEffect::Create(GRPDEV, _TAG, SKILL_TYPE, {_X, _Y, 0.f}, {_SX, _SY, 0.f}, OPAC, TRUE, PLAYTIME));		// UI : 이펙트 반복 실행
+	UIEffect::Create(GRPDEV, _TAG, SKILL_TYPE, {_X, _Y, 0.f}, {_SX, _SY, 0.f}, OPAC, TRUE, PLAYTIME));		// 몬스터 : 이펙트 반복 실행
 #define PLAY_UI_EFFECT_ONCE(SKILL_TYPE, _TAG, _X, _Y, _SX, _SY, PLAYTIME, OPAC)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI,	\
-	UIEffect::Create(GRPDEV, _TAG, SKILL_TYPE, {_X, _Y, 0.f}, {_SX, _SY, 0.f}, OPAC, FALSE, PLAYTIME));		// UI : 이펙트 최초 한번 실행
+	UIEffect::Create(GRPDEV, _TAG, SKILL_TYPE, {_X, _Y, 0.f}, {_SX, _SY, 0.f}, OPAC, FALSE, PLAYTIME));		// 몬스터 : 이펙트 최초 한번 실행
 
 #define REPLAY_UI_EFFECT(_TAG)		UIEffect::Replay_Effect(_TAG);
 ////////////////////////////////////////////////////////////////////////////////////

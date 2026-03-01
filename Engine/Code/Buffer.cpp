@@ -217,16 +217,16 @@ HRESULT Buffer::Ready_TileRIGHT_Buffer()
 
 
 	Vertex[0].vPosition = { 1.f, 1.f, -1.f };
-	Vertex[0].vTexUV = { 0,0 };
+	Vertex[0].vTexUV = { 0,0,0 };
 
 	Vertex[1].vPosition = { 1.f, 1.f, 1.f };
-	Vertex[1].vTexUV = { 1,0 };
+	Vertex[1].vTexUV = { 1,0,0 };
 
 	Vertex[2].vPosition = { 1.f, -1.f, 1.f };
-	Vertex[2].vTexUV = { 1,1 };
+	Vertex[2].vTexUV = { 1,1,0 };
 
 	Vertex[3].vPosition = { 1.f, -1.f, -1.f };
-	Vertex[3].vTexUV = { 0,1 };
+	Vertex[3].vTexUV = { 0,1,0 };
 	VertexBuffer->Unlock();
 
 	INDEX32* Index = nullptr;
@@ -262,17 +262,16 @@ HRESULT Buffer::Ready_TileFRONT_Buffer()
 
 
 	Vertex[0].vPosition = { -1.f, 1.f, 0.f };
-	Vertex[0].dwColor = D3DXCOLOR(1.f, 1.f, 1.f,1.f);
-	Vertex[0].vTexUV = { 0,0 };
+	Vertex[0].vTexUV = { 0,0,0 };
+
 	Vertex[1].vPosition = { 1.f, 1.f, 0.f };
-	Vertex[1].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[1].vTexUV = { 1,0 };
+	Vertex[1].vTexUV = { 1,0,0 };
+
 	Vertex[2].vPosition = { 1.f, -1.f, 0.f };
-	Vertex[2].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[2].vTexUV = { 1,1 };
+	Vertex[2].vTexUV = { 1,1,0 };
+
 	Vertex[3].vPosition = { -1.f, -1.f, 0.f };
-	Vertex[3].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[3].vTexUV = { 0,1 };
+	Vertex[3].vTexUV = { 0,1,0 };
 	VertexBuffer->Unlock();
 
 	INDEX32* Index = nullptr;
@@ -349,16 +348,16 @@ HRESULT Buffer::Ready_TileLEFT_Buffer()
 	VertexBuffer->Lock(0, 0, (void**)&Vertex, 0);
 
 	Vertex[0].vPosition = { -1.f, 0.f, 1.f };
-	Vertex[0].vTexUV = { 0,0 };
+	Vertex[0].vTexUV = { 0,0,0 };
 
 	Vertex[1].vPosition = { 1.f, 0.f, 1.f };
-	Vertex[1].vTexUV = { 1,0 };
+	Vertex[1].vTexUV = { 1,0,0 };
 
 	Vertex[2].vPosition = { 1.f, 0.f, -1.f };
-	Vertex[2].vTexUV = { 1,1 };
+	Vertex[2].vTexUV = { 1,1,0 };
 
 	Vertex[3].vPosition = { -1.f, 0.f, -1.f };
-	Vertex[3].vTexUV = { 0,1 };
+	Vertex[3].vTexUV = { 0,1,0 };
 	VertexBuffer->Unlock();
 
 	INDEX32* Index = nullptr;
@@ -393,20 +392,16 @@ HRESULT Buffer::Ready_Tile_Buffer()
 
 
 	Vertex[0].vPosition = { -1.f, 0.f, 1.f };
-	Vertex[0].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[0].vTexUV = {0,0};
+	Vertex[0].vTexUV = {0,0,0};
 
 	Vertex[1].vPosition = { 1.f, 0.f, 1.f };
-	Vertex[1].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[1].vTexUV = {1,0};
+	Vertex[1].vTexUV = {1,0,0};
 
 	Vertex[2].vPosition = { 1.f, 0.f, -1.f };
-	Vertex[2].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[2].vTexUV = { 1,1 };
+	Vertex[2].vTexUV = { 1,1,0 };
 
 	Vertex[3].vPosition = { -1.f, 0.f, -1.f };
-	Vertex[3].dwColor = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	Vertex[3].vTexUV = { 0,1};
+	Vertex[3].vTexUV = { 0,1,0 };
 	VertexBuffer->Unlock();
 
 	INDEX32* Index = nullptr;
@@ -426,59 +421,46 @@ HRESULT Buffer::Ready_Tile_Buffer()
 }
 HRESULT Buffer::Ready_Cube_Buffer()
 {
-	VertexSize = sizeof(VTXTRUECUBE);
-	VertexCount = 24;
+	VertexSize = sizeof(VTXCUBE);
+	VertexCount = 8;
 	TRICount = 12;
-	VertexFormat = FVF_TRUECUBE;
+	VertexFormat = FVF_CUBE;
 
 	IndexSize = sizeof(INDEX32);
 	IndexFormat = D3DFMT_INDEX32;
 
 
-	VTXTRUECUBE* pVertex = NULL;
+	VTXCUBE* pVertex = NULL;
 
 	// &pVertex : 버텍스버퍼에 보관된 버텍스 중 첫 번째 버텍스의 주소를 얻어옴
 	if (FAILED(GRPDEV->CreateVertexBuffer(VertexSize * VertexCount, 0, VertexFormat, D3DPOOL_MANAGED, &VertexBuffer, NULL)))	return E_FAIL;
 	if (FAILED(GRPDEV->CreateIndexBuffer(IndexSize * TRICount, 0, IndexFormat, D3DPOOL_MANAGED, &IndexBuffer, NULL)))			return E_FAIL;
 
 	VertexBuffer->Lock(0, 0, (void**)&pVertex, 0);
-	pVertex[0].vPosition = { -1, 1, -1 }; pVertex[0].vNormal = { 0, 0, -1 }; pVertex[0].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[1].vPosition = { 1, 1, -1 }; pVertex[1].vNormal = { 0, 0, -1 }; pVertex[1].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[2].vPosition = { 1,-1, -1 }; pVertex[2].vNormal = { 0, 0, -1 }; pVertex[2].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[3].vPosition = { -1,-1, -1 }; pVertex[3].vNormal = { 0, 0, -1 }; pVertex[3].vTexUV = { 0.f, 1.f, 0.f };
 
-	// --- 4~7: 뒷면 (Z+) ---
-	pVertex[4].vPosition = { 1, 1,  1 }; pVertex[4].vNormal = { 0, 0, 1 }; pVertex[4].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[5].vPosition = { -1, 1,  1 }; pVertex[5].vNormal = { 0, 0, 1 }; pVertex[5].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[6].vPosition = { -1,-1,  1 }; pVertex[6].vNormal = { 0, 0, 1 }; pVertex[6].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[7].vPosition = { 1,-1,  1 }; pVertex[7].vNormal = { 0, 0, 1 }; pVertex[7].vTexUV = { 0.f, 1.f, 0.f };
+	pVertex[0].vPosition = { -1.f, 1.f, -1.f };
+	pVertex[0].vTexUV = pVertex[0].vPosition;
 
-	// --- 8~11: 윗면 (Y+) ---
-	pVertex[8].vPosition = { -1, 1,  1 }; pVertex[8].vNormal = { 0, 1, 0 }; pVertex[8].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[9].vPosition = { 1, 1,  1 }; pVertex[9].vNormal = { 0, 1, 0 }; pVertex[9].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[10].vPosition = { 1, 1, -1 }; pVertex[10].vNormal = { 0, 1, 0 }; pVertex[10].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[11].vPosition = { -1, 1, -1 }; pVertex[11].vNormal = { 0, 1, 0 }; pVertex[11].vTexUV = { 0.f, 1.f, 0.f };
+	pVertex[1].vPosition = { 1.f, 1.f, -1.f };
+	pVertex[1].vTexUV = pVertex[1].vPosition;
 
-	// --- 12~15: 아랫면 (Y-) ---
-	pVertex[12].vPosition = { -1,-1, -1 }; pVertex[12].vNormal = { 0,-1, 0 }; pVertex[12].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[13].vPosition = { 1,-1, -1 }; pVertex[13].vNormal = { 0,-1, 0 }; pVertex[13].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[14].vPosition = { 1,-1,  1 }; pVertex[14].vNormal = { 0,-1, 0 }; pVertex[14].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[15].vPosition = { -1,-1,  1 }; pVertex[15].vNormal = { 0,-1, 0 }; pVertex[15].vTexUV = { 0.f, 1.f, 0.f };
+	pVertex[2].vPosition = { 1.f, -1.f, -1.f };
+	pVertex[2].vTexUV = pVertex[2].vPosition;
 
-	// --- 16~19: 왼쪽면 (X-) ---
-	pVertex[16].vPosition = { -1, 1,  1 }; pVertex[16].vNormal = { -1, 0, 0 }; pVertex[16].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[17].vPosition = { -1, 1, -1 }; pVertex[17].vNormal = { -1, 0, 0 }; pVertex[17].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[18].vPosition = { -1,-1, -1 }; pVertex[18].vNormal = { -1, 0, 0 }; pVertex[18].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[19].vPosition = { -1,-1,  1 }; pVertex[19].vNormal = { -1, 0, 0 }; pVertex[19].vTexUV = { 0.f, 1.f, 0.f };
+	pVertex[3].vPosition = { -1.f, -1.f, -1.f };
+	pVertex[3].vTexUV = pVertex[3].vPosition;
 
-	// --- 20~23: 오른쪽면 (X+) ---
-	pVertex[20].vPosition = { 1, 1, -1 }; pVertex[20].vNormal = { 1, 0, 0 }; pVertex[20].vTexUV = { 0.f, 0.f, 0.f };
-	pVertex[21].vPosition = { 1, 1,  1 }; pVertex[21].vNormal = { 1, 0, 0 }; pVertex[21].vTexUV = { 1.f, 0.f, 0.f };
-	pVertex[22].vPosition = { 1,-1,  1 }; pVertex[22].vNormal = { 1, 0, 0 }; pVertex[22].vTexUV = { 1.f, 1.f, 0.f };
-	pVertex[23].vPosition = { 1,-1, -1 }; pVertex[23].vNormal = { 1, 0, 0 }; pVertex[23].vTexUV = { 0.f, 1.f, 0.f };
+	pVertex[4].vPosition = { -1.f, 1.f, 1.f };
+	pVertex[4].vTexUV = pVertex[4].vPosition;
 
-	// 루프에서 vTexUV = vPosition 부분은 삭제하세요!
-	for (int i = 0; i < 24; ++i) pVertex[i].dwColor = 0xffffffff;
+	pVertex[5].vPosition = { 1.f, 1.f, 1.f };
+	pVertex[5].vTexUV = pVertex[5].vPosition;
+
+	pVertex[6].vPosition = { 1.f, -1.f, 1.f };
+	pVertex[6].vTexUV = pVertex[6].vPosition;
+
+	pVertex[7].vPosition = { -1.f, -1.f, 1.f };
+	pVertex[7].vTexUV = pVertex[7].vPosition;
 
 	VertexBuffer->Unlock();
 
@@ -486,30 +468,69 @@ HRESULT Buffer::Ready_Cube_Buffer()
 
 	IndexBuffer->Lock(0, 0, (void**)&pIndex, 0);
 
-	for (int i = 0; i < 6; ++i)
-	{
-		int vIdx = i * 4; // 각 면의 시작 정점 번호
-		int iIdx = i * 2; // 각 면의 첫 번째 삼각형 번호
+	// X+
+	pIndex[0]._0 = 1;
+	pIndex[0]._1 = 5;
+	pIndex[0]._2 = 6;
 
-		// 첫 번째 삼각형 (0-1-2)
-		pIndex[iIdx]._0 = vIdx;
-		pIndex[iIdx]._1 = vIdx + 1;
-		pIndex[iIdx]._2 = vIdx + 2;
+	// X+
+	pIndex[1]._0 = 1;
+	pIndex[1]._1 = 6;
+	pIndex[1]._2 = 2;
 
-		// 두 번째 삼각형 (0-2-3)
-		pIndex[iIdx + 1]._0 = vIdx;
-		pIndex[iIdx + 1]._1 = vIdx + 2;
-		pIndex[iIdx + 1]._2 = vIdx + 3;
-	}
+	// X-
+	pIndex[2]._0 = 4;
+	pIndex[2]._1 = 0;
+	pIndex[2]._2 = 3;
+
+	// X-
+	pIndex[3]._0 = 4;
+	pIndex[3]._1 = 3;
+	pIndex[3]._2 = 7;
+
+	// Y+
+	pIndex[4]._0 = 4;
+	pIndex[4]._1 = 5;
+	pIndex[4]._2 = 1;
+
+	// Y+
+	pIndex[5]._0 = 4;
+	pIndex[5]._1 = 1;
+	pIndex[5]._2 = 0;
+
+	// Y-
+	pIndex[6]._0 = 3;
+	pIndex[6]._1 = 2;
+	pIndex[6]._2 = 6;
+
+	// Y-
+	pIndex[7]._0 = 3;
+	pIndex[7]._1 = 6;
+	pIndex[7]._2 = 7;
+
+	// Z+
+	pIndex[8]._0 = 7;
+	pIndex[8]._1 = 6;
+	pIndex[8]._2 = 5;
+
+	// Z+
+	pIndex[9]._0 = 7;
+	pIndex[9]._1 = 5;
+	pIndex[9]._2 = 4;
+
+	// Z-
+	pIndex[10]._0 = 0;
+	pIndex[10]._1 = 1;
+	pIndex[10]._2 = 2;
+
+	// Z-
+	pIndex[11]._0 = 0;
+	pIndex[11]._1 = 2;
+	pIndex[11]._2 = 3;
 
 	IndexBuffer->Unlock();
 
 	return S_OK;
-}
-
-HRESULT Buffer::Ready_Cube_Batch()
-{
-	return E_NOTIMPL;
 }
 
 Buffer* Buffer::Create(LPDIRECT3DDEVICE9 _GRPDEV, BUFFER_TYPE _TYPE) {

@@ -49,8 +49,8 @@ HRESULT ResourceManager::PathFinder(IDirect3DDevice9* _GRPDEV, wstring _MasterFo
 	return S_OK;
 }
 
-IDirect3DTexture9* ResourceManager::Find_Texture(wstring _FileName) {
-	auto iter = find_if(TextureList.begin(), TextureList.end(), CTag_Finder(_FileName.c_str()));
+IDirect3DTexture9* ResourceManager::Find_Texture(const TCHAR* _FileName) {
+	auto iter = find_if(TextureList.begin(), TextureList.end(), CTag_Finder(_FileName));
 	if (iter == TextureList.end())	return nullptr;
 	return iter->second;
 }

@@ -19,15 +19,6 @@ public:
 	VOID		Move_Pos(CONST _vec3* _Direction, CONST _float& _Speed, CONST _float& _DT){
 		m_vInfo[INFO_POS] += *_Direction * _Speed * _DT;
 	}
-	VOID		Move_PosX(CONST FLOAT _Direction, CONST _float& _Speed, CONST _float& _DT) {
-		m_vInfo[INFO_POS].x += _Direction * _Speed * _DT;
-	}
-	VOID		Move_PosY(CONST FLOAT _Direction, CONST _float& _Speed, CONST _float& _DT) {
-		m_vInfo[INFO_POS].y += _Direction * _Speed * _DT;
-	}
-	VOID		Move_PosZ(CONST FLOAT _Direction, CONST _float& _Speed, CONST _float& _DT) {
-		m_vInfo[INFO_POS].z += _Direction * _Speed * _DT;
-	}
 	
 	VOID		Rotation(ROTATION eType, const _float& fAngle) {
 		*(((_float*)&m_vAngle) + eType) += fAngle;
@@ -48,7 +39,7 @@ public:
 
 public:
 	_matrix*	Get_World()					{	return &WorldMatrix;		}
-	VOID		Set_World(_matrix* _World)	{ WorldMatrix = *_World; }
+	VOID		Set_World(_matrix* _World)	{	WorldMatrix = *_World;		}
 
 	_vec3*		Get_Position()				{ return &m_vInfo[INFO_POS];	}
 	_vec3*		Get_Rotation()				{ return &m_vAngle;				}
@@ -60,7 +51,6 @@ private:
 	_vec3		m_vAngle;
 
 	_matrix		WorldMatrix;
-	_matrix		PrevMatrix;
 
 public:
 	static		Transform* Create(LPDIRECT3DDEVICE9 _GRPDEV);

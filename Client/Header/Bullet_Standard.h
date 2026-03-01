@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 class Bullet_Standard : public GameObject {
-public:
+private:
 	explicit Bullet_Standard(LPDIRECT3DDEVICE9 _GRPDEV);
 	explicit Bullet_Standard(const GameObject& _RHS);
 	virtual ~Bullet_Standard();
@@ -22,23 +22,25 @@ private:
 	Collider*	Component_Collider;
 
 public:
-	//static Bullet_Standard* Create(LPDIRECT3DDEVICE9 _GRPDEV);
-	BOOL			OnCollisionEnter(GameObject* _Other)	override;
-	BOOL			OnCollisionStay(GameObject* _Other)		override;
-	BOOL			OnCollisionExit(GameObject* _Other)		override;
+	static Bullet_Standard* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
-	VOID			Set_Master(GameObject* pOwner) { m_tInfo.pGameObj[0] = pOwner; }
-	GameObject*		Get_Master() { return m_tInfo.pGameObj[0]; }
+	VOID		Set_Master(GameObject* pOwner)		{ pOwner = m_pMaster; }
+	GameObject* Get_Master()						{ return m_pMaster; }
 
-	VOID			Set_Dir(_vec3 vDir)						{ m_tInfo.vDirection = vDir; }
-	VOID			Set_Dir(_float x, _float y, _float z)	{ m_tInfo.vDirection = { x,y,z }; }
-	_vec3*			Get_Dir()								{ return &m_tInfo.vDirection; }
-
-	MONBULLETINFO*	Get_Info() { return &m_tInfo; }
+	VOID	Set_Dir(_vec3 vDir)						{ m_vDir = vDir; }
+	VOID	Set_Dir(_float x, _float y, _float z)	{ m_vDir = { x,y,z }; }
+	_vec3*	Get_Dir()								{ return &m_vDir; }
 
 private:
 	virtual VOID Free();
 
-	MONBULLETINFO m_tInfo;
+	GameObject* m_pMaster;
+	_vec3		m_vDir;
 
+	_float		m_fSpeed;
+	_uint		_frame;
+	_float		_frameTick;
+
+public:
+		VOID BillBoard();
 };
