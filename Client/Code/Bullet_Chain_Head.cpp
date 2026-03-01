@@ -10,15 +10,7 @@ HRESULT Bullet_Chain_Head::Ready_GameObject() {
 }
 INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 {
-	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	
+
 	Monster::Destory_Tile(this);
 
 	m_tInfo.fTimer[0] += _DT;
@@ -59,13 +51,9 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.bTrigger[0] = !m_tInfo.bTrigger[0];
 		fDis -= MYSCALE->x*2.f;
 
-		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, {MYPOS->x, MYPOS->y -0.001f, MYPOS->z});
+		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, {MYPOS->x, MYPOS->y -0.001f, MYPOS->z},MYSCALE->x * 0.5f);
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-		
-		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.3f;
 
-		*dynamic_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *MYSCALE;
-		
 		MONBULLETINFO* pBulletinfo = static_cast<Bullet_Chain*>(m_tInfo.pGameObj[1])->Get_Info();
 		pBulletinfo->vDirection = m_tInfo.vDirection;
 		pBulletinfo->bTrigger[0] = m_tInfo.bTrigger[0];
@@ -86,10 +74,8 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	}
 	m_tInfo.vDirection.y = 0.f;
 
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x) == (uint8_t)FRUSTUMPLANE::End) {
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	}
 
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
@@ -136,16 +122,26 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-
-	if (_Other->Get_ObjectTag() == L"PlayerArrow") {
-
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	
-	switch (_Other->Get_ObjectType())
+	switch (m_tInfo.eState[0])
 	{
 	default:
+		if (Tag == L"PlayerArrow") {
+
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		else if (Tag == L"Player")
+		{
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		break;
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
 		break;
 	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
 		if (Tag == L"Player")
@@ -158,6 +154,7 @@ BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
 		wstring Tag = _Other->Get_ObjectTag();
 	}
+
 	return FALSE;
 }
 BOOL Bullet_Chain_Head::OnCollisionStay(GameObject* _Other)

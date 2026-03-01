@@ -8,15 +8,6 @@ EvilSlimeGroundIce::~EvilSlimeGroundIce() {}
 HRESULT EvilSlimeGroundIce::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.Change_State(MONSTER_STATE::MONSTER_STATE_SUMMON);
-
-	//MYPOS->z + 0.001f;
-	//m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, { MYPOS->x, 0.002f, MYPOS->z });
-	//Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
-	//pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
-	//pAlert->Get_Info()->pGameObj[1] = this;
-	//pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
-	//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
 
 	return	S_OK;
 }
@@ -136,7 +127,32 @@ HRESULT EvilSlimeGroundIce::Component_Initialize() {
 }
 BOOL EvilSlimeGroundIce::OnCollisionEnter(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+
+
+	// KJJ 03.01
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		if (Tag == L"PlayerArrow") {
+
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		else if (Tag == L"Player")
+		{
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
+		break;
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		break;
+	}
 }
 BOOL EvilSlimeGroundIce::OnCollisionStay(GameObject* _Other)
 {

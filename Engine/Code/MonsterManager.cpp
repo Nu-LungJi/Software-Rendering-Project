@@ -60,6 +60,7 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 		}
 		else if (!wcscmp(tInfo.szName, L"BlueEvilSlime"))			{ tInfo.name = (uint8_t)MONSTER_TYPE::EvilSlime;
 				if		(!wcscmp(tInfo.szState, L"Stand"))					tInfo.State = (uint8_t)MONSTER_ANIM::Stand;
+				else if (!wcscmp(tInfo.szState, L"Attack"))					tInfo.State = (uint8_t)MONSTER_ANIM::Attack;
 		}
 		else if (!wcscmp(tInfo.szName, L"BlueEliteShotGunEvilSoul")){ tInfo.name = (uint8_t)MONSTER_TYPE::ShotGunEvilSoul;
 				if (!wcscmp(tInfo.szState, L"Stand"))						tInfo.State = (uint8_t)MONSTER_ANIM::Stand;
