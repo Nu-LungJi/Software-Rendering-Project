@@ -33,7 +33,7 @@ private:
 	SpriteObject* Component_Sprite;
 	Transform* Component_Transform;
 	Collider* Component_Collider;
-	Buffer* Component_Buffer;
+	//Buffer* Component_Buffer;
 
 
 	vector<SpriteINFO*> ItemInfo_Screen;

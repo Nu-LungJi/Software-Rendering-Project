@@ -430,8 +430,10 @@ void TileManager::Free()
     {
         for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
         {
-            for (auto& iter : m_vecTileBuffer[i][j])
-                Safe_Release(iter);
+            for (auto& iter : m_vecTileBuffer[i][j]) {
+                if(iter != nullptr) Safe_Release(iter);
+            }
+                
 
             m_vecTileBuffer[i][j].clear();
         }

@@ -104,8 +104,10 @@ Component*	GameObject::Add_Component(COMPONENT_TYPE _CID) {
 	return ComponentList[(LONG)_CID];
 }
 VOID		GameObject::Free() {
-	for (auto& COM : ComponentList)
+	for (auto& COM : ComponentList) {
 		Safe_Release(COM);
+	}
+		
 
 	ComponentList.clear();
 	

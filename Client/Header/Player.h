@@ -116,8 +116,11 @@ public:
 		_isStop = isStop; 
 		if (_isStop)
 			_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-		else
+		else 
 			_weaponSlot[_equipNum]->Set_Bow_Equip(true);
+
+		if((_pState == pState::STATE_DASH || _pState == pState::STATE_DEATH))
+			_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 	}
 
 	static Player* Create(LPDIRECT3DDEVICE9 _GRPDEV);

@@ -270,7 +270,7 @@ typedef struct tagTextureInfo
 
 typedef struct tagMonsterInfo {
 	tagMonsterInfo() :
-		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false),
+		bTrigger{}, eState{}, fTimer{}, pGameObj{}, bMiniGame(false),_pHurdle(nullptr),
 		vDirection{-1.f,0.f,-1.f}, fSpeed(0.f){} 
 
 	~tagMonsterInfo() {}

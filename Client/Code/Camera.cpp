@@ -99,7 +99,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	}
 	
 
-	if (!Camera_Move) {
+	if (Camera_Move) {
 	
 		_float distance = PlayerObject->Get_MouseDistance();
 		_vec3 dir = PlayerObject->Get_MouseDir();
