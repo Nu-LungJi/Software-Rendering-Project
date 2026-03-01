@@ -2,7 +2,14 @@
 
 SpriteObject:: SpriteObject()							:					  Sprite(nullptr){}
 SpriteObject:: SpriteObject(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV), Sprite(nullptr){}
-SpriteObject:: SpriteObject(CONST SpriteObject& _RHS)	: Component(_RHS)	, Sprite(_RHS.Sprite), TextureList(_RHS.TextureList){}
+SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_RHS.Sprite) {
+	Sprite->AddRef();
+	_int i = _RHS.TextureList.size();
+	TextureList.reserve(i);
+	TextureList = _RHS.TextureList;
+	for (size_t i = 0; i < TextureList.size(); ++i)
+		TextureList[i].TEXTURE->AddRef();
+}
 SpriteObject::~SpriteObject()																									{}
 
 HRESULT SpriteObject::Ready_Sprite() {
@@ -27,13 +34,22 @@ VOID SpriteObject::Render_Sprite() {
 	GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
-HRESULT SpriteObject::Import_Sprite(CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY) {
+SpriteINFO* SpriteObject::Import_Sprite(CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY) {
 	TextureList.push_back(SpriteINFO(_KEY, _WIDTH, _HEIGHT, _POSX, _POSY, _VIS, _OPACITY));
 
 	D3DXCreateTextureFromFileExW(GRPDEV, _PATH, TextureList.back().WIDTH, TextureList.back().HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&TextureList.back().TEXTURE);
 	
-	return S_OK;
+	return &TextureList.back();
+}
+
+SpriteINFO* SpriteObject::Import_SpriteEX(wstring _RootPath, const TCHAR* _PATH, const TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY) {
+	TextureList.push_back(SpriteINFO(_KEY, _WIDTH, _HEIGHT, _POSX, _POSY, _VIS, _OPACITY));
+	_RootPath += _PATH;
+	D3DXCreateTextureFromFileExW(GRPDEV, _RootPath.c_str(), TextureList.back().WIDTH, TextureList.back().HEIGHT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&TextureList.back().TEXTURE);
+
+	return &TextureList.back();
 }
 
 SpriteINFO* SpriteObject::Get_Texture(wstring _KEY) {
@@ -59,5 +75,9 @@ Component* SpriteObject::Clone() {
 	return new SpriteObject(*this);
 }
 VOID		SpriteObject::Free() {
+	for (auto& iter : TextureList)
+		Safe_Release(iter.TEXTURE);
+
+	Safe_Release(Sprite);
 	Component::Free();
 }

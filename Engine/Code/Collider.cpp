@@ -1,30 +1,43 @@
 #include "Collider.h"
 
 Collider::Collider()							:						ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
-Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE)	{}
+Collider::Collider(LPDIRECT3DDEVICE9 _GRPDEV)	: Component(_GRPDEV),	ColliderPos(nullptr)		 , Curr_ColState(FALSE), Prev_ColState(FALSE), fAtt(0.f) ,fHp(0.f) {}
 Collider::Collider(CONST Collider& _RHS)		: Component(_RHS),		ColliderPos(_RHS.ColliderPos), Curr_ColState(FALSE), Prev_ColState(FALSE),	
-	matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj)																			{}
+matWorld(_RHS.matWorld), matView(_RHS.matView), matProj(_RHS.matProj), fAtt(_RHS.fAtt), fHp(_RHS.fHp), pLine(_RHS.pLine) {}
 Collider::~Collider()																																{}
+
 
 HRESULT		Collider::Ready_Component() {
 	MinPoint = { 0.f, 0.f, 0.f };
 	MaxPoint = { 0.f, 0.f, 0.f };
-
+	fHp = 1.f;
+	fAtt = 0.f;
 	return S_OK;
 }
 INT			Collider::Update_Component(CONST FLOAT& _DT) {
 	if (nullptr == ColliderPos)
 		return 0;
-
-	CenterPos = *ColliderPos->Get_Position();
-	
-	MinPoint = { CenterPos.x - Scale.x, CenterPos.y - Scale.y, CenterPos.z - Scale.z };
-	MaxPoint = { CenterPos.x + Scale.x, CenterPos.y + Scale.y, CenterPos.z + Scale.z };
-	// 1차 통합 테스트
 	return 0;
 }
 VOID		Collider::LateUpdate_Component(CONST FLOAT& _DT) {
-	
+	//if (nullptr == ColliderPos)
+	//	return;
+
+	CenterPos = *ColliderPos->Get_Position();
+	//CenterPos += Offset;
+
+	//MinPoint = { CenterPos.x - Scale.x + Offset.x, CenterPos.y - Scale.y + Offset.y, CenterPos.z - Scale.z + Offset.z };
+	//MaxPoint = { CenterPos.x + Scale.x + Offset.x, CenterPos.y + Scale.y + Offset.y, CenterPos.z + Scale.z + Offset.z };
+
+	_vec3	vSize = Scale;
+
+	vSize.x = fabsf(vSize.x);
+	vSize.y = fabsf(vSize.y);
+	vSize.z = fabsf(vSize.z);
+
+	MinPoint = { CenterPos.x - vSize.x + Offset.x, CenterPos.y - vSize.y + Offset.y, CenterPos.z - vSize.z + Offset.z };
+	MaxPoint = { CenterPos.x + vSize.x + Offset.x, CenterPos.y + vSize.y + Offset.y, CenterPos.z + vSize.z + Offset.z };
+
 }
 VOID		Collider::Render_Component() {
 	ID3DXLine* pLine;
@@ -68,5 +81,7 @@ Component* Collider::Clone() {
 	return new Collider(*this);
 }
 VOID		Collider::Free() {
+	if(pLine != nullptr && !CLONE)
+		Safe_Release(pLine);
 	Component::Free();
 }

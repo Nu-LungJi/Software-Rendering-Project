@@ -15,8 +15,8 @@ struct EffectINFO {
 	VOID	Set_Pos(FLOAT _X, FLOAT _Y) { POS.x = _X, POS.y = _Y; }
 	D3DXVECTOR3	Get_Pos() { return { POS.x, POS.y, 0.f }; }
 	VOID	Move_Pos(FLOAT _TX, FLOAT _TY, FLOAT _Speed) {
-		if (POS.x > _TX) {
-			// 구현해야함
+		if(POS.x > _TX){
+			POS.x -= _Speed;
 		}
 	}
 
@@ -48,6 +48,10 @@ public:
 public:
 	// Utility
 	static	VOID				Replay_Effect(wstring _TAG);
+
+	VOID Set_All_Visible(BOOL _B) {
+		for (auto& info : TextureList) info.Set_Visible(_B);
+	}
 private:
 	HRESULT						Component_Initialize();
 	virtual			VOID		Free();

@@ -16,6 +16,7 @@ public:
 	Component*			Add_Component(COMPONENT_TYPE _CID);
 
 	FLOAT				Get_AlphaZValue() { return AlphaZValue; }
+	FLOAT				Get_AlphaYValue() { return AlphaYValue; }
 
 	VOID				Set_ObjectTag(CONST TCHAR* _OBJTAG)			{ ObjectTAG = _OBJTAG;	 }
 	wstring				Get_ObjectTag()								{	return ObjectTAG;	 }
@@ -27,18 +28,26 @@ public:
 	BOOL				Get_ObjectDead()							{	return ObjectDead;	 }
 
 public:
+
 	virtual	HRESULT		Ready_GameObject();
 	virtual INT			Update_GameObject(CONST FLOAT& _DT);
 	virtual VOID		LateUpdate_GameObject(CONST FLOAT& _DT);
 	virtual VOID		Render_GameObject() = 0;
 
-public:
+	// 스킬용
+	INT			Update_GameObject_Component(CONST FLOAT& _DT);
+	INT         LateUpdate_GameObject_Component(CONST FLOAT& _DT);
 	virtual BOOL		OnCollisionEnter(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionStay	(GameObject* _Other)	{ return TRUE; }
 	virtual BOOL		OnCollisionExit	(GameObject* _Other)	{ return TRUE; }
 
 public:
 	VOID	AlphaSorting(CONST D3DXVECTOR3* _Vec);
+	VOID	AlphaYSorting(CONST D3DXVECTOR3* _Vec);
+
+	BOOL	Search_CollisionObject(GameObject* _COL);
+	VOID	Add_CollisionObject(GameObject* _COL);
+	VOID	Delete_CollisionObject(GameObject* _COL);
 
 protected:
 	vector<Component*>				ComponentList;
@@ -49,6 +58,10 @@ protected:
 	BOOL							ObjectDead;
 
 	FLOAT							AlphaZValue;
+	FLOAT							AlphaYValue;
+
+	list<GameObject*>				CollisionList;
+
 
 protected:
 	virtual VOID		Free();

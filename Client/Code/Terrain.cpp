@@ -7,35 +7,58 @@ Terrain::~Terrain() {}
 
 HRESULT Terrain::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
+	bOnOff = false;
 	return S_OK;
 }
 INT	Terrain::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
+	_vec3		vPos;
+	Component_Transform->Get_Info(INFO_POS, &vPos);
+
+	AlphaYSorting(&vPos);
+
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
-	return 0;
+
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_Z) & 0x8000)
+		bOnOff = true;
+	
+	if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_X) & 0x8000)
+		bOnOff = false;
+
+		return 0;
 }
 VOID Terrain::LateUpdate_GameObject(const _float& _DT) {
 	//GameObject::LateUpdate_GameObject(_DT);
+
 }
 VOID Terrain::Render_GameObject() {
+	if (bOnOff)
+		return;
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
-	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
-
 	GRPDEV->SetTexture(0, StaticTexture);
 
 	Component_Buffer->Render_Buffer();
-	//GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
 	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+
 }
 HRESULT Terrain::Component_Initialize() {
 
 	Component_Buffer = ADD_COMPONENT_TERRAIN;
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Texture = ADD_COMPONENT_TEXTURE;
-
+	Component_Transform->Set_Pos(0, -0.5f, 0);
 	Component_Texture->Import_TextureFromFolder(L"../../Resource/Extra/Example");
 
 	StaticTexture = Component_Texture->Find_Texture(L"Tile01.tga");

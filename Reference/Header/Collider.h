@@ -2,8 +2,12 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Buffer.h"
+#include "GameObject.h"
+
 
 BEGIN(Engine)
+
+class GameObject;
 
 class ENGINE_DLL Collider : public Component {
 private:
@@ -19,13 +23,17 @@ public:
 	virtual VOID		Render_Component();
 	
 public:
-	BOOL		OnCollisionEnter();
-	BOOL		OnCollisionStay();
-	BOOL		OnCollisionExit();
+	//BOOL		OnCollisionEnter();
+	//BOOL		OnCollisionStay();
+	//BOOL		OnCollisionExit();
 
 	VOID		Set_CenterPos(Transform* _ColliderPos) { ColliderPos = _ColliderPos; }
+	Transform* Get_CenterPos()							{return ColliderPos;}
+
+	VOID		Set_Offset(_vec3 _Offset) { Offset = _Offset;}
 
 	VOID		Set_Scale(FLOAT _XRANGE, FLOAT _YRANGE, FLOAT _ZRANGE) { Scale = { _XRANGE,  _YRANGE,  _ZRANGE }; }
+	_vec3		Get_Scale() { return Scale; }
 
 	VOID		Set_MinPoint(FLOAT _X, FLOAT _Y, FLOAT _Z) { MinPoint = { _X , _Y , _Z }; }
 	VOID		Set_MaxPoint(FLOAT _X, FLOAT _Y, FLOAT _Z) { MaxPoint = { _X , _Y , _Z }; }
@@ -36,11 +44,20 @@ public:
 	VOID		Set_CollisionState(BOOL _State) { Curr_ColState = _State; }
 	BOOL		Get_CollisionState()			{ return Curr_ColState;   }
 
+	void		Set_Hp(_float fH) { fHp = fH; }
+	void		Set_Att(_float fA) { fAtt = fA; }
+
+	_float      Get_Att() { return fAtt; }
+	_float      Get_Hp() { return fHp; }
+
+	list<GameObject*>& Get_ObjList() { return ObjList; }
+
 public:
 	static		Collider*	Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	virtual		Component*	Clone();
 
 private:
+	list<GameObject*> ObjList;
 	Transform*		ColliderPos;
 	Buffer*			ColliderArea;
 	_vec3			CenterPos;
@@ -48,12 +65,17 @@ private:
 	_vec3			MinPoint;
 	_vec3			MaxPoint;
 
+	_vec3			Offset;
+
 	BOOL		Curr_ColState;
 	BOOL		Prev_ColState;
 
 	D3DXMATRIX matWorld, matView, matProj, Sum;
 
 	ID3DXLine* pLine;
+
+	_float         fHp;
+	_float         fAtt;
 	
 private:
 	virtual		VOID		Free();
