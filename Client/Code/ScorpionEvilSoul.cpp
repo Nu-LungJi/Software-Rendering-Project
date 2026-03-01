@@ -273,7 +273,8 @@ BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 
 	if (Tag == L"PlayerArrow") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	}return TRUE;
+		return TRUE;
+	}
 
 	return FALSE;
 }

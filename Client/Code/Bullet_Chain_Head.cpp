@@ -135,6 +135,8 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
+	wstring Tag = _Other->Get_ObjectTag();
+
 	if (_Other->Get_ObjectTag() == L"PlayerArrow") {
 
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
@@ -146,6 +148,12 @@ BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 	default:
 		break;
 	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
+		if (Tag == L"Player")
+		{
+			MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
+			return TRUE;
+		}
 
 	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
 		wstring Tag = _Other->Get_ObjectTag();
