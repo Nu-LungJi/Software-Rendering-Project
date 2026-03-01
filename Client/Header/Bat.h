@@ -4,8 +4,6 @@
 #define BatIMGX 280
 #define BatIMGY 219
 
-enum BAT_STATE { BAT_SUMMON, BAT_IDLE, BAT_TRACKING, BAT_ATTACKING, BAT_Hit, BAT_DEAD };
-
 class Bat : public GameObject
 {
 public:

@@ -3,9 +3,9 @@
 
 #define MINIGAMESCENE static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())
 
-#define MINIGAMETILEX	16
+#define MINIGAMETILEX	25
 #define MINIGAMETILEY	1
-#define MINIGAMETILEZ	10
+#define MINIGAMETILEZ	5
 
 class MiniGameScene : public Scene {
 protected:

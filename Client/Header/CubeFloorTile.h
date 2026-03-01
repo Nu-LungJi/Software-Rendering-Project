@@ -51,12 +51,15 @@ private:
     virtual  void            Free();
 
     bool    Pooling();
+
 private:
+    GameObject* m_pTarget = nullptr;
     CameraObject*   m_pCam = nullptr;
     bool            m_bTrigger = false;
     bool            IsIn_Cam = true;
     _float          m_fTimer = 0.f;
     IDirect3DTexture9* m_pTexture;
+    int             m_iFalling;
 };
 
 class CubeFunction
