@@ -53,30 +53,32 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-if (m_eCurrScene == SCENE_TYPE::Minigame)
+	if (m_eCurrScene == SCENE_TYPE::Minigame)
 	{
 		MiniGame(_DT);
 		return 0;
 	}
+
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
 	if (FocusOn_Boss == FALSE) {
 		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
-    _vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
-    _vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 
-    EyeVec = (*playerPos) + eyeCalc;
-    AtVec = (*playerPos) + atCalc;
 
-    if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
-    	EyeVec.z -= 1.5f;
-    	EyeVec.y += 1.5f;
-    	
-    	AtVec.z -= 1.5f;
-    	AtVec.y += 1.5f;
-    }
-  }
+		 EyeVec = (*playerPos) + eyeCalc;
+		 AtVec = (*playerPos) + atCalc;
+
+		 if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+		 	EyeVec.z -= 1.5f;
+		 	EyeVec.y += 1.5f;
+		 	
+		 	AtVec.z -= 1.5f;
+		 	AtVec.y += 1.5f;
+		 }
+	}
 	if (!Camera_Move)
 	{
 		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
@@ -128,8 +130,8 @@ if (m_eCurrScene == SCENE_TYPE::Minigame)
 		if(moveAmount > 0.1f)
 			m_vVelocity += accel * 0.02;
 		
-		EyeVec += m_vVelocity * 0.02;
-		AtVec += m_vVelocity * 0.02;
+		//EyeVec += m_vVelocity * 0.02;
+		//AtVec += m_vVelocity * 0.02;
 	}
 	if (Shake_Time > 0.f) {
 		OriginEye = EyeVec;
@@ -326,6 +328,7 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 	_float fLength(0.f);
 	if (!StopMove)
 	{
+	
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 

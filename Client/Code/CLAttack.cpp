@@ -115,7 +115,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 9 || CHEONLOG->Get_Statu() == CL_DEAD)
+    if (m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD)
     {
         m_bPoolCheck = true;
     }
@@ -143,7 +143,7 @@ HRESULT CLAttack::Component_Initialize()
     Component_Collider  = ADD_COMPONENT_COLLIDER;
 
     Component_Collider->Set_CenterPos(Component_Transform);
-    Component_Collider->Set_Scale(1.f, 1.0f, 1.f);
+    Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);
     return S_OK;
 }
 

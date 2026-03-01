@@ -41,6 +41,7 @@ private:
     Buffer*                 m_pBuffer;
     Buffer*                 m_CubeBuffer;
     D3DMATERIAL9            m_Material;
+
 private:
     _float                  m_fAlpha;
     _float                  m_fHeight;

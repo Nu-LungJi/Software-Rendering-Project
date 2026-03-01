@@ -17,7 +17,6 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
     GameObject::Update_GameObject(_DT);
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-    Show_Item();
 
     if (!isActive)
     {
@@ -34,17 +33,6 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
     if (isActive) {
         Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
 
-        if (KEY_DOWN(DIK_RIGHT)) {
-            m_iCurrentItemIndex++;
-            if (m_iCurrentItemIndex >= (INT)Item_Index.size()) m_iCurrentItemIndex = 0;
-            Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
-        }
-
-        if (KEY_DOWN(DIK_LEFT)) {
-            m_iCurrentItemIndex--;
-            if (m_iCurrentItemIndex < 0) m_iCurrentItemIndex = (INT)Item_Index.size() - 1;
-            Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
-        }
     }
     else {
       Display_ShopItemInfo(nullptr);
@@ -55,7 +43,7 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
-     Show_Item();
+    // Show_Item();
     
     return 0;
 }
@@ -98,15 +86,15 @@ HRESULT   ShopUI::Effect_Initialize() {
 }
 HRESULT	ShopUI::Text_Initialize() {
 	/////////////////////////////////////////////////////// ITEM INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 275.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 215.f }, 15, L"ITEM_Title", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 255.f }, 12, L"ITEM_Class", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 275.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 295.f }, 12, L"ITEM_ATK", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 315.f }, 12, L"ITEM_Add", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 							
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 350.f }, 12, L"ITEM_DESC", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 190.f, 400.f }, 12, L"ITEM_ExDESC", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 438.f }, 12, L"ITEM_PRICE", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (!isActive)
     {
@@ -118,61 +106,61 @@ HRESULT	ShopUI::Text_Initialize() {
 
 HRESULT ShopUI::Item_Initialize() {
     ItemINFO* pItem1 = new ItemINFO;
-    pItem1->ItemDesc = { L"»çµµÀÇ °¡È£",L"¼Ò¸ðÇ°",L"",L"",L"",
-                                            L"»çµµÀÇ °¡È£¸¦ ÇÏ³ª ÃæÀüÇÕ´Ï´Ù.",
+    pItem1->ItemDesc = { L"ì‚¬ë„ì˜ ê°€í˜¸",L"ì†Œëª¨í’ˆ",L"",L"",L"",
+                                            L"ì‚¬ë„ì˜ ê°€í˜¸ë¥¼ í•˜ë‚˜ ì¶©ì „í•©ë‹ˆë‹¤.",
                                             L"", L"20" };
     pItem1->ItemPrice = 20;
     pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem1);
 
     ItemINFO* pItem2 = new ItemINFO;
-    pItem2->ItemDesc = { L"»ý¸í·Â", L"¼Ò¸ðÇ°", L"",L"",L"",
-                                             L"ÀÒÀº Ã¼·ÂÀ» ÇÑ Ä­ È¸º¹ÇÕ´Ï´Ù.",
+    pItem2->ItemDesc = { L"ìƒëª…ë ¥", L"ì†Œëª¨í’ˆ", L"",L"",L"",
+                                             L"ìžƒì€ ì²´ë ¥ì„ í•œ ì¹¸ íšŒë³µí•©ë‹ˆë‹¤.",
                                              L"", L"15" };
     pItem2->ItemPrice = 15;
     pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem2);
 
     ItemINFO* pItem3 = new ItemINFO;
-    pItem3->ItemDesc = { L"È­»ì ÃæÀü", L"¼Ò¸ðÇ°",L"",L"",L"",
-                                            L"ÇöÀç »ç¿ëÁßÀÎ È°ÀÇ È­»ìÀ» ÀüºÎ ÃæÀüÇÕ´Ï´Ù.",
+    pItem3->ItemDesc = { L"í™”ì‚´ ì¶©ì „", L"ì†Œëª¨í’ˆ",L"",L"",L"",
+                                            L"í˜„ìž¬ ì‚¬ìš©ì¤‘ì¸ í™œì˜ í™”ì‚´ì„ ì „ë¶€ ì¶©ì „í•©ë‹ˆë‹¤.",
                                             L"", L"15" };
     pItem3->ItemPrice = 15;
     pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem3);
 
     ItemINFO* pItem4 = new ItemINFO;
-    pItem4->ItemDesc = { L"ºù°áÀÇ È°", L"¹«±â/Èñ±Í", L"ÀÏ¹Ý °ø°Ý",
-                                            L"ÀÏ¹Ý °ø°Ý·Â 24 ~ 26", L"°ø°Ý ¼Óµµ 2.5",
-                                            L"Àû¿¡°Ô ÇÇÇØ¸¦ ÀÔÈú °æ¿ì \nÀûÀÌ ºù°á »óÅÂ¿¡ ºüÁý´Ï´Ù.",
-                                            L"¾ó¾îºÙ¾î¶ó..", L"80" };
+    pItem4->ItemDesc = { L"ë¹™ê²°ì˜ í™œ", L"ë¬´ê¸°/í¬ê·€", L"ì¼ë°˜ ê³µê²©",
+                                            L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26", L"ê³µê²© ì†ë„ 2.5",
+                                            L"ì ì—ê²Œ í”¼í•´ë¥¼ ìž…íž ê²½ìš° \nì ì´ ë¹™ê²° ìƒíƒœì— ë¹ ì§‘ë‹ˆë‹¤.",
+                                            L"ì–¼ì–´ë¶™ì–´ë¼..", L"80" };
 
     pItem4->ItemPrice = 80;
     pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem4);
 
     ItemINFO* pItem5 = new ItemINFO;
-    pItem5->ItemDesc = { L"¿Àµ¿³ª¹« È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
-                                            L"ÀÏ¹Ý °ø°Ý·Â 24 ~ 26",L"°ø°Ý ¼Óµµ 2.5",
-                                            L"°¡Àå ±âº»ÀûÀÎ È°ÀÔ´Ï´Ù.", L"ÀÌ È°... ¿Àµ¿³ª¹«³×?",
+    pItem5->ItemDesc = { L"ì˜¤ë™ë‚˜ë¬´ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
+                                            L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26",L"ê³µê²© ì†ë„ 2.5",
+                                            L"ê°€ìž¥ ê¸°ë³¸ì ì¸ í™œìž…ë‹ˆë‹¤.", L"ì´ í™œ... ì˜¤ë™ë‚˜ë¬´ë„¤?",
                                             L"0" };
     pItem5->ItemPrice = 0;
     pItem5->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
     Item_Index.push_back(pItem5);
 
     ItemINFO* pItem6 = new ItemINFO;
-    pItem6->ItemDesc = { L"¾îµÒÀÇ È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
-                                            L"ÀÏ¹Ý °ø°Ý·Â 30 ~ 36",L"°ø°Ý ¼Óµµ 2.3",
-                                            L"¾îµÒÀÇ ÈûÀ» ´ã¾Æ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù.",L"¾îµÒÀÇ ÈûÀ» ´ã¾Æ..",
+    pItem6->ItemDesc = { L"ì–´ë‘ ì˜ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
+                                            L"ì¼ë°˜ ê³µê²©ë ¥ 30 ~ 36",L"ê³µê²© ì†ë„ 2.3",
+                                            L"ì–´ë‘ ì˜ íž˜ì„ ë‹´ì•„ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤.",L"ì–´ë‘ ì˜ íž˜ì„ ë‹´ì•„..",
                                             L"75" };
     pItem6->ItemPrice = 75;
     pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem6);
 
     ItemINFO* pItem7 = new ItemINFO;
-    pItem7->ItemDesc = { L"ÀÚ¿¬ÀÇ È°",L"¹«±â/Èñ±Í",L"ÀÏ¹Ý °ø°Ý",
-                                         L"ÀÏ¹Ý °ø°Ý·Â 30 ~ 36", L"°ø°Ý ¼Óµµ 2.6",
-                                         L"ÀÚ¿¬ÀÇ ÈûÀ» ´ã¾Æ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù.", L"ÀÚ¿¬ÀÇ ÈûÀ» ´ã¾Æ..",
+    pItem7->ItemDesc = { L"ìžì—°ì˜ í™œ",L"ë¬´ê¸°/í¬ê·€",L"ì¼ë°˜ ê³µê²©",
+                                         L"ì¼ë°˜ ê³µê²©ë ¥ 30 ~ 36", L"ê³µê²© ì†ë„ 2.6",
+                                         L"ìžì—°ì˜ íž˜ì„ ë‹´ì•„ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤.", L"ìžì—°ì˜ íž˜ì„ ë‹´ì•„..",
                                          L"90" };
     pItem7->ItemPrice = 90;
     pItem7->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
@@ -185,83 +173,95 @@ HRESULT ShopUI::Item_Initialize() {
 
 void ShopUI::Show_Item()
 {
+    Player* pPlayer;
     _vec3 vPos, vTilePos;
     TILE_SPAWNER eSpawn;
     dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Info(INFO_POS,&vPos);
-    for (auto& iter : TileManager::GetInstance()->Get_TileList(TILE_STAGE4,TILEMODE_CHANGE::MODE_TILE))
+    pPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+    for (auto iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4,TILEMODE_CHANGE::MODE_TILE).begin(); iter != TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).end();)
     {
-        eSpawn   = dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner();
-        vTilePos = *dynamic_cast<Transform*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+        eSpawn   = dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner();
+        vTilePos = *dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
  
-        switch (eSpawn)
+        if (eSpawn <= TILE_SPAWNER::ITEM_SPAWN6 && vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
         {
-        case TILE_SPAWNER::ITEM_SPAWN1:
-           if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-           {
-               m_iCurrentItemIndex = 0;
-               isActive = true;
-               return;
-           }
-           else
-               isActive = false;
-           break;
-        case TILE_SPAWNER::ITEM_SPAWN2:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
+            switch (eSpawn)
             {
-                m_iCurrentItemIndex = 1;
+            case TILE_SPAWNER::ITEM_SPAWN1:              
                 isActive = true;
+                if (buy_Item(pPlayer, 0))
+                {
+                    Safe_Release(*iter);
+                    iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN2:               
+                    isActive = true;
+                    if (buy_Item(pPlayer, 1))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN3:              
+                    isActive = true;    
+                    if (buy_Item(pPlayer, 2))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN4:            
+                    isActive = true;        
+                    if (buy_Item(pPlayer, 3))
+                    {
+                        Safe_Release(*iter);
+                        iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN5:
+                 isActive = true;
+                 if (buy_Item(pPlayer, 4))
+                 {
+                     Safe_Release(*iter);
+                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                 }
+                return;
+            case TILE_SPAWNER::ITEM_SPAWN6:
+                  isActive = true;
+                  if (buy_Item(pPlayer, 5))
+                  {
+                      Safe_Release(*iter);
+                      iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                  }
                 return;
             }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN3:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 2;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN4:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 3;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN5:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 4;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
-
-        case TILE_SPAWNER::ITEM_SPAWN6:
-            if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z - 1 && vPos.z < vTilePos.z + 1)
-            {
-                m_iCurrentItemIndex = 5;
-                isActive = true;
-                return;
-            }
-            else
-                isActive = false;
-            break;
         }
-      
+        else
+        {
+            isActive = false;
+        }
+        ++iter;
     }
+}
+
+_bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
+{
+    m_iCurrentItemIndex = iIndex;
+    if (KeyManager::GetInstance()->Get_KeyState(DIK_E))
+    {
+        //if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
+        //    return false;
+
+        REPLAY_UI_EFFECT(L"COIN_EFFECT");
+        
+        pPlayer->Set_Coin(pPlayer->Get_Coin() - Item_Index[iIndex]->ItemPrice);
+     
+        Safe_Release(Item_Index[iIndex]->TEXTURE);
+        Safe_Delete(Item_Index[iIndex]);
+        return true;
+    }
+    return false;
 }
 
 BOOL ShopUI::Get_Collision_Enter(GameObject* _Other) {
@@ -314,11 +314,15 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 }
 
 VOID	ShopUI::Free() {
-    GameObject::Free();
-    for (auto& II : Item_Index)
-    {
-        Safe_Release(II->TEXTURE);
-        Safe_Delete(II);
-    }
-	
+
+   for (auto& II : Item_Index)
+   {
+       if (II == nullptr)
+           continue;
+   
+       Safe_Release(II->TEXTURE);
+       Safe_Delete(II);
+   }
+	GameObject::Free();
+
 }

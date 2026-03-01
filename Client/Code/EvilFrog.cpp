@@ -15,8 +15,36 @@ HRESULT EvilFrog::Ready_GameObject() {
 
 	return S_OK;
 }
-INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
+HRESULT EvilFrog::Ready_GameObject(_vec3 vPos, BOOL bMini) {
+	if (FAILED(Component_Initialize())) return E_FAIL;
 
+	Component_Collider->Set_Hp(EVILSLIME_HP);
+	Component_Collider->Set_Att(1.f);
+	m_tInfo.vDirection = { -1.f,0.f,0.f };
+
+	m_tInfo.bMiniGame = true;
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
+		ObjectTAG = L"Monster";
+		Component_Transform->Set_Pos(vPos);
+		FAILED(Monster::Set_TextureList(L"Spr_Monster_EvilFrog_Attack", &m_tInfo));
+
+	}
+
+	return S_OK;
+}
+INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
+	if (m_tInfo.bMiniGame)
+	{// 창준 추가
+		GameObject::Update_GameObject(_DT);
+		EvilFrog::State_Tracking(_DT);
+		MYPOS->y = MYSCALE->y * 0.5f;
+		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+		return 1;
+	}
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
@@ -113,20 +141,20 @@ VOID EvilFrog::LateUpdate_GameObject(const FLOAT& _DT)
 VOID EvilFrog::Render_GameObject() {
 	if (!ObjectDead)
 	{
-		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
+			GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+			GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-		switch (m_tInfo.eState[0])
-		{
-		default:
-			GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
-			Component_Buffer->Render_Buffer();
-			break;
-		case MONSTER_STATE_SUMMON:
-		case MONSTER_STATE_DEAD:
-			break;
-		}
-		GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+			switch (m_tInfo.eState[0])
+			{
+			default:
+				GRPDEV->SetTexture(0, m_tInfo.Textureinfo._vecTexture[m_tInfo.Textureinfo._frame]);
+				Component_Buffer->Render_Buffer();
+				break;
+			case MONSTER_STATE_SUMMON:
+			case MONSTER_STATE_DEAD:
+				break;
+			}
+			GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	}
 }
 HRESULT EvilFrog::Component_Initialize() {
@@ -156,7 +184,13 @@ VOID EvilFrog::State_Idle(const _float& _DT) {
 }
 
 VOID EvilFrog::State_Tracking(const _float& _DT) {
-
+	if (m_tInfo.bMiniGame)
+	{// 창준 추기
+		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		m_tInfo.vDirection = vPos - *MYPOS;
+		m_tInfo.fSpeed = 3.f;
+		return;
+	}
 	if(nullptr== m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
     m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
@@ -209,9 +243,9 @@ BOOL EvilFrog::OnCollisionStay(GameObject* _Other) {
 BOOL EvilFrog::OnCollisionExit(GameObject* _Other) {
 	return FALSE;
 }
-EvilFrog* EvilFrog::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+EvilFrog* EvilFrog::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
 	EvilFrog* EF = new EvilFrog(_GRPDEV);
-	if (FAILED(EF->Ready_GameObject())) {
+	if (FAILED(EF->Ready_GameObject(vPos, bMini))) {
     MSG_BOX("Cannot Create EvilFrog.");
 		Safe_Release(EF);
 		return nullptr;

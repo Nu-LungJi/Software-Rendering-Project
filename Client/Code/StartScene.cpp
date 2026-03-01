@@ -12,6 +12,8 @@ HRESULT   StartScene::Ready_Scene() {
     MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
@@ -20,97 +22,90 @@ HRESULT   StartScene::Ready_Scene() {
     pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
 
     //Load Tile
-    {
-        HANDLE   hFile = CreateFile(L"../../Data/Cheonglock.dat",
-            GENERIC_READ,    
-            NULL,          
-            NULL,           
-            OPEN_EXISTING,   
-            FILE_ATTRIBUTE_NORMAL,  
-            NULL);            
+	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
+		GENERIC_READ,		// 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
+		NULL,				// 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
+		NULL,				// 보안 속성(기본값인 경우 NULL)
+		OPEN_EXISTING,		// 파일이 없을 경우 파일을 생성하여 저장(OPEN_EXISTING : 파일이 있을 경우에만 로드)
+		FILE_ATTRIBUTE_NORMAL,	// 파일 속성(아무런 속성이 없는 일반 파일)
+		NULL);				// 생성될 파일의 속성ㅇ르 제공할 템플릿 파일
 
-        if (hFile == INVALID_HANDLE_VALUE)
-        {
-           // MSG_BOX("濡쒕뱶 ?ㅽ뙣");
-            return E_FAIL;
-        }
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		MSG_BOX("로드 실패");
+		return E_FAIL;
+	}
 
-        DWORD   dwByte(0);      // eof ??븷
-        _int             iTilenum = 0;
-        TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
-        TILE_STATE       eTileState = TILE_STATE::STATE_END;
-        TILEMODE_CHANGE  eTileMode = TILEMODE_CHANGE::MODE_END;
-        TILE_STAGE        eTileStage = TILE_STAGE::STAGE_END;
-        TILE_STAGE       eNext = TILE_STAGE::STAGE_END;
-        _tchar          cTileName[128] = {};
-        _vec3           Info = {};
-        _vec3          Scale = {};
-        _vec3          Rotation = {};
-        _int           iTileTextureCnt = 0;
-        _vec3          vNextPos = {};
-        _bool           bAni = false;
-        _int      i = 0;
-        TILE_SPAWNER      eSpawn = TILE_SPAWNER::SPAWN_END;
+	DWORD	dwByte(0);		// eof 역할
+	_int             iTilenum = 0;
+	TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
+	TILE_STATE       eTileState = TILE_STATE::STATE_END;
+	TILEMODE_CHANGE  eTileMode = TILEMODE_CHANGE::MODE_END;
+	TILE_STAGE	     eTileStage = TILE_STAGE::STAGE_END;
+	TILE_STAGE		 eNext = TILE_STAGE::STAGE_END;
+	_tchar			 cTileName[128] = {};
+	_vec3		     Info = {};
+	_vec3			 Scale = {};
+	_vec3			 Rotation = {};
+	_int		     iTileTextureCnt = 0;
+	_vec3			 vNextPos = {};
+	_bool		     bAni = false;
+	_int				 i = 0;
+	TILE_SPAWNER		eSpawn = TILE_SPAWNER::SPAWN_END;
+	while (true)
+	{
+		ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
+		ReadFile(hFile, &iTilenum, sizeof(_int), &dwByte, NULL);
+		ReadFile(hFile, &eTileSide, sizeof(TILE_SIDE), &dwByte, NULL);
+		ReadFile(hFile, &eTileState, sizeof(TILE_STATE), &dwByte, NULL);
+		ReadFile(hFile, &eTileMode, sizeof(TILEMODE_CHANGE), &dwByte, NULL);
+		ReadFile(hFile, &cTileName, sizeof(_tchar) * 128, &dwByte, NULL);
+		ReadFile(hFile, &Scale, sizeof(_vec3), &dwByte, NULL);
+		ReadFile(hFile, &Rotation, sizeof(_vec3), &dwByte, NULL);
+		ReadFile(hFile, &eTileStage, sizeof(TILE_STAGE), &dwByte, NULL);
+		ReadFile(hFile, &iTileTextureCnt, sizeof(_int), &dwByte, NULL);
+		ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
+		ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
+		ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
+		ReadFile(hFile, &eNext, sizeof(TILE_STAGE), &dwByte, NULL);
 
-        while (true)
-        {
-            ReadFile(hFile, &Info, sizeof(_vec3), &dwByte, NULL);
-            ReadFile(hFile, &iTilenum, sizeof(_int), &dwByte, NULL);
-            ReadFile(hFile, &eTileSide, sizeof(TILE_SIDE), &dwByte, NULL);
-            ReadFile(hFile, &eTileState, sizeof(TILE_STATE), &dwByte, NULL);
-            ReadFile(hFile, &eTileMode, sizeof(TILEMODE_CHANGE), &dwByte, NULL);
-            ReadFile(hFile, &cTileName, sizeof(_tchar) * 128, &dwByte, NULL);
-            ReadFile(hFile, &Scale, sizeof(_vec3), &dwByte, NULL);
-            ReadFile(hFile, &Rotation, sizeof(_vec3), &dwByte, NULL);
-            ReadFile(hFile, &eTileStage, sizeof(TILE_STAGE), &dwByte, NULL);
-            ReadFile(hFile, &iTileTextureCnt, sizeof(_int), &dwByte, NULL);
-            ReadFile(hFile, &vNextPos, sizeof(_vec3), &dwByte, NULL);
-            ReadFile(hFile, &bAni, sizeof(_bool), &dwByte, NULL);
-            ReadFile(hFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
-            ReadFile(hFile, &eNext, sizeof(TILE_STAGE), &dwByte, NULL);
+		if (0 == dwByte)
+			break;
 
-            if (0 == dwByte)
-                break;
+		GameObject* GOBJ = nullptr;
 
-            GameObject* GOBJ = nullptr;
+		if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
+		{
+			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
+		}
+		else
+			GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
 
-            if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
-            {
-                GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
-            }
-            else
-                GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
+		GOBJ->Set_ObjectTag(L"CXZTile");
+		dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
 
+		if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
+		else
+		{
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, eNext);
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
+				->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
+		}
 
+		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
+		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
+		dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
+		if (TILE_STATE::STATE_BOOM == eTileState)
+			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
 
-            if (eTileStage == TILE_STAGE1 && eSpawn == TILE_SPAWNER::MONSTER_SPAWN1)
-                _int i = 0;
+		TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 
-            GOBJ->Set_ObjectTag(L"CXZTile");
-            dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
+	}
+	TileManager::GetInstance()->Set_StageCnt();
+	MSG_BOX("로드 성공");
+	CloseHandle(hFile);
 
-            if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
-                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
-            else
-            {
-                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAll(nullptr, cTileName, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, eNext);
-                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
-                    ->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
-            }
-
-            dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
-            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
-            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
-            dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
-            if (TILE_STATE::STATE_BOOM == eTileState)
-                dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
-
-            TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
-
-        }
-        TileManager::GetInstance()->Set_StageCnt();
-        CloseHandle(hFile);
-    }
 
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
@@ -174,6 +169,9 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     //Add_GameObjectToScene<MainMenuButton>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainButton");
     //Add_GameObjectToScene<MainMenu>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainMenu");
     Add_GameObjectToScene<MainUI>         (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"MainUI"      );
+    ShopKeeper* pObj = ShopKeeper::Create(GRPDEV, { 22.420f,0.5f, 117.391f });
+    pObj->Set_ObjectTag(L"ShopNPC");
+    SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
 
     Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
     Add_GameObjectToScene<Augment>          (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
