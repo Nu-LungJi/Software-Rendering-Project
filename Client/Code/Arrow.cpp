@@ -20,7 +20,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
-    Component_Collider->Set_Att(100);
+    Component_Collider->Set_Att(1);
     _hp = 1;
     Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;
@@ -169,7 +169,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::IceArrow_LV1:
-            Size = { 2.5f, 2.5f, 2.5f };
+            Size = { 1.5f, 1.5f, 1.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_BOMB, &effectPos, 0.2f, Size, false);
             break;
         case ArrowType::IceCharging:
@@ -187,13 +187,12 @@ INT Arrow::Update_GameObject(const _float& _DT)
             Size = { 1.5f, 1.5f, 1.5f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
             // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 늦게 ㅇ나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
-            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+            //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
             break;
         case ArrowType::WindCharging:
             Size = { 7.f, 7.f, 7.f };
             effectPos.y += 2.f;
             effectPos.z += 3.f;
-            //PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::PAREND, &effectPos, 0.8f, Size, false);
             {
                 PlayerEffect* effect = nullptr;
 
@@ -339,13 +338,13 @@ INT Arrow::Update_GameObject(const _float& _DT)
         if (_type == ArrowType::EvilHead_Arrow) {
             _sumSpeed += _DT * _speed * (*_playerArrowSpeed);
             matWorld._41 = _playerPos.x + _sumSpeed * cosf(_angle);
-            matWorld._42 = 0.5f;
+            matWorld._42 = (*curPos).y;
             matWorld._43 = _playerPos.z - _sumSpeed * sinf(_angle);
         }
         else {
             _calcSpeed = _DT * _speed * (*_playerArrowSpeed);
             matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
-            matWorld._42 = 0.5f;
+            matWorld._42 = (*curPos).y;
             matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
         }
 
@@ -358,7 +357,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 _angle = atan2f(-dir.z, dir.x);
 
                 matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
-                matWorld._42 = 0.5f;
+                matWorld._42 = (*curPos).y;
                 matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
             }
         }
@@ -457,7 +456,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         ObjectDead = true;
     }
         
-    
+    AlphaSorting(Component_Transform->Get_Position());
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
     return 0;

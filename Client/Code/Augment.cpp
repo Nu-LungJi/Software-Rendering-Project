@@ -24,7 +24,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	if (isActive) {
-		PlayerObject->Set_PlayerStop(TRUE);
+		PlayerObject->Set_PlayerStop(FALSE);
 		Perk_Text[2]->Text = L"가호 선택";
 		Perk_Text[2]->Visible = TRUE;
 

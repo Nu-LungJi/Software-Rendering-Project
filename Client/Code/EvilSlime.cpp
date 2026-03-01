@@ -33,7 +33,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
 		EvilSlime::State_Tracking(_DT);
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 1.f;
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 

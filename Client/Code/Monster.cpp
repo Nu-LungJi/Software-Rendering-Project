@@ -154,20 +154,20 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }
 void Monster::Release_Hurdle(MONSTERINFO* _Info) {
-	if (_Info->_pHurdle != nullptr) {
-		_Info->_pHurdle->RefCount--;
-
-		if (_Info->_pHurdle->RefCount == 0) {
-			vector<tagHurdleInfo*>* pContainer = MonsterManager::GetInstance()->Get_Hurdles();
-			for (auto it = pContainer->begin(); it != pContainer->end(); ++it) {
-				if (*it == _Info->_pHurdle) {
-					delete* it;
-					pContainer->erase(it);
-					break;
-				}
-			}
-		}
-	}
+	//if (_Info->_pHurdle != nullptr) {
+	//	_Info->_pHurdle->RefCount--;
+	//
+	//	if (_Info->_pHurdle->RefCount == 0) {
+	//		vector<tagHurdleInfo*>* pContainer = MonsterManager::GetInstance()->Get_Hurdles();
+	//		for (auto it = pContainer->begin(); it != pContainer->end(); ++it) {
+	//			if (*it == _Info->_pHurdle) {
+	//				delete* it;
+	//				pContainer->erase(it);
+	//				break;
+	//			}
+	//		}
+	//	}
+	//}
 }
 //
 //VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)

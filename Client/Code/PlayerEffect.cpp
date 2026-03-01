@@ -310,7 +310,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 	if (SKILL_TYPE == PLAYER_SKILL::PAREND ) {
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
-
+	AlphaSorting(Component_Transform->Get_Position());
 
 	return 0;
 }
@@ -336,6 +336,7 @@ VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 			CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 				Get_GameObject(L"Camera"));
 			Camera->Camera_Shaking(10.f, 0.5f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 		}
 	}
 		
@@ -357,7 +358,7 @@ VOID PlayerEffect::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
 
-	//GRPDEV->SetTexture(0, TextureList[TextureIndex]);
+	GRPDEV->SetTexture(0, TextureList[TextureIndex]);
 
 	// COLOR = Texture * TFACTOR
 	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
@@ -375,8 +376,8 @@ VOID PlayerEffect::Render_GameObject() {
 
 	// ÃÊ±âÈ­
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 }
 BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 	wstring Tag = _Other->Get_ObjectTag();
