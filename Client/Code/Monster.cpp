@@ -34,7 +34,7 @@ HRESULT Monster::Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo)
 
 	_TexInfo->_frame = 0;
 	_TexInfo->_frameTick = 0.f;
-	_TexInfo->_Endframe = _TexInfo->pTexture->size() - (_TexInfo->_Endframe > 0);
+	_TexInfo->_Endframe = _TexInfo->pTexture->size() -1 ;
 
 	return S_OK;
 }
@@ -275,23 +275,12 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 
 HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)
 {
-
 	if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		CameraObject* pCamera = Monster::Get_Camera();
 		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
 		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
-
-		if (vPos->x + 50.f < POS(Monster::Get_Player())->x) {
-			vPos->x += 100.f;
-			pHurdle->vDst.x += 100.f;
-			pHurdle->vPos.x += 100.f;
-		}
-		else if (vPos->x - 50.f > POS(Monster::Get_Player())->x)
-			vPos->x -= 100.f;
-
-		return 0;
 	}
 	else if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
 		CameraObject* pCamera = Monster::Get_Camera();
@@ -300,13 +289,11 @@ HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
 		_vec3 vCalc = pHurdle->vDst - *vPos;
-		_float fCalc = D3DXVec3Dot(&vCalc, &pHurdle->vDir);
+		_float fCalc = D3DXVec3Dot(&vCalc, vPos);
 		if (fCalc < 0.f)
 			*vPos = pHurdle->vSrc;
-
-		return 0;
 	}
-	return E_FAIL;
+	return S_OK;
 }
 
 BOOL Monster::Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo)
@@ -322,12 +309,13 @@ BOOL Monster::Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo)
 		}
 		return FALSE;
 	}
-	else if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
+	else if (_pInfo->eState[1] == MONSTER_STATE_MINIGAME_MOVE) {
 		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
 		if (pHurdle == nullptr)
 			return FALSE;
 		if (pHurdle->VisibleCount == 0) {
-			_pInfo->Change_State(MONSTER_STATE_MINIGAME_IDLE);
+			_pInfo->Change_State(MONSTER_STATE_MINIGAME_MOVE);
+			_pInfo->fSpeed = 0.f;
 		}
 		return TRUE;
 	}
