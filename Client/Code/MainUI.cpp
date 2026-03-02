@@ -598,17 +598,17 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"CRYSTAL_BG", 13.f, 113.f, 100, 150, TRUE, 255);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////// HP/MP /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
 
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Crystal.png", L"CRYSTAL", 18.f, 175.f, 20, 20, TRUE);
