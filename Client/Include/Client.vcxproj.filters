@@ -250,6 +250,9 @@
     <Filter Include="04. UI\05. ShopUI">
       <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\01. Player\02. Artifact">
+      <UniqueIdentifier>{23b52e8e-4776-4af9-b9ad-2f3cfab8769d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -517,6 +520,9 @@
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\09. Hurdle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Artifact.h">
+      <Filter>03. GameObject\01. Player\02. Artifact</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -766,6 +772,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
       <Filter>03. GameObject\09. Hurdle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Artifact.cpp">
+      <Filter>03. GameObject\01. Player\02. Artifact</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

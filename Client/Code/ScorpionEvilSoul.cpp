@@ -42,12 +42,14 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
 		ScorpionEvilSoul::State_Tracking(_DT);
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 0.5f;
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 		return 1;
 	}
+
+	MYPOS->y = 0.5f; 
 
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
@@ -59,7 +61,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	}
 	else
 	{
-		MYPOS->y = 1.f;
+		MYPOS->y = 0.5f;
 	}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
@@ -294,7 +296,7 @@ BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)
 	return FALSE;
 }
 VOID ScorpionEvilSoul::Free() {
-
+	CollisionManager::GetInstance()->Delete_ColliderObject(this);
 	GameObject::Free();
 }
 

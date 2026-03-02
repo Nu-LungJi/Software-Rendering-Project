@@ -42,8 +42,9 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 	
-	//PopUp_Speech_Bubble(Speech_Text, _DT);
-	//PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
+	PopUp_Speech_Bubble(Speech_Text, _DT);
+	PopUp_Speech_Bubble_Skill(Speech_Text, _DT, skillType);
+  
 	//PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
 	if(Timer02 > 0.1f){
@@ -347,13 +348,18 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 		}
 	}
 }
-VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
+VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type)
 {
 	if (Enable_SpeechBubbleSkill) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"SpeechBubble_BG");
 		SpriteINFO* Frame = Component_Sprite->Get_Texture(L"SpeechBubble_Frame");
-		SpriteINFO* Character = Component_Sprite->Get_Texture(L"SpeechBubble_Tif");
+		SpriteINFO* Character = nullptr;
 		FontObject* Font = UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
+
+		if(type == 0)
+			Character = Component_Sprite->Get_Texture(L"SpeechBubble_TimeStop");
+		else if(type == 1)
+			Character = Component_Sprite->Get_Texture(L"SpeechBubble_Angry");
 
 		// 이펙트
 		FrameTimer += _DT;
@@ -392,24 +398,27 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
 				Font->Set_Color(200, 255, 255, 255);
 			}
 		}
-		else if (Timer01 >= 1.f && Timer01 < 6.f) {
+		else if (Timer01 >= 1.f && Timer01 < 4.f) {
 			Timer01 += _DT;
+			Effect->Set_Opacity(255);
+			Effect->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - 2 * cosf(Timer01) + 17.f);
 		}
-		else if (Timer01 >= 6.f && Timer01 < 7.f) {
+		else if (Timer01 >= 4.f && Timer01 < 5.f) {
 			Timer01 += _DT;
 
-			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y + (Timer01 - 6) * 3);
-			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y + (Timer01 - 6) * 3);
-			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 6) * 3);
-			Effect->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 6) * 3 - 17.f);
-			Font->Set_Pos(Font->Get_Pos().x, Font->Get_Pos().y + (Timer01 - 6) * 3);
+			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y + (Timer01 - 4) * 3);
+			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y + (Timer01 - 4) * 3);
+			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 4) * 3);
+			Effect->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 4) * 3 + 17.f);
+			Font->Set_Pos(Font->Get_Pos().x, Font->Get_Pos().y + (Timer01 - 4) * 3);
 
-			if (Timer01 < 7.f) {
-				BackGround->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Frame->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Character->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Effect->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Font->Set_Color(200 - 200 * (Timer01 - 6), 255, 255, 255);
+			if (Timer01 < 5.f) {
+				BackGround->Set_Opacity(255 - 255 * (Timer01 - 4));
+				Frame->Set_Opacity(255 - 255 * (Timer01 - 4));
+				Character->Set_Opacity(255 - 255 * (Timer01 - 4));
+				//Effect->Set_Opacity(255 - 255 * (Timer01 - 6));
+				Effect->Set_Opacity(0);
+				Font->Set_Color(200 - 200 * (Timer01 - 4), 255, 255, 255);
 			}
 			else {
 				BackGround->Set_Opacity(0);
@@ -419,7 +428,7 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
 				Font->Set_Color(0, 255, 255, 255);
 			}
 		}
-		else if (Timer01 >= 7.f) {
+		else if (Timer01 >= 5.f) {
 			Timer01 = 0;
 			Enable_SpeechBubbleSkill = FALSE;
 
@@ -641,14 +650,16 @@ HRESULT MainUI::Sprite_Initialize() {
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_BG.png", L"SpeechBubble_BG", 0.f, 529.f + 30.f, 360, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Tif.png", L"SpeechBubble_Tif", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_TimeStop.png", L"SpeechBubble_TimeStop", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Angry.png", L"SpeechBubble_Angry", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Frame.png", L"SpeechBubble_Frame", 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
 	for (int i = 1; i <= 19; i++) {
 		TCHAR FileName1[128] = L"";
 		TCHAR FileName2[128] = L"";
 		wsprintfW(FileName1, L"../../UI/MainUI/BubblEffect_%d.png", i);
 		wsprintfW(FileName2, L"BubblEffect_%d.png", i);
-		Component_Sprite->Import_Sprite(FileName1, FileName2, 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
 		SpriteINFO* Effect = Component_Sprite->Get_Texture(FileName1);
+		Component_Sprite->Import_Sprite(FileName1, FileName2, 0.f, 529.f + 30.f, 360, 80, TRUE, 0);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SKILL ////////////////////////////////////////////////////////

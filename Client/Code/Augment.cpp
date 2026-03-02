@@ -24,7 +24,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	if (isActive) {
-		PlayerObject->Set_PlayerStop(FALSE);
+		//PlayerObject->Set_PlayerStop(FALSE);
 		Perk_Text[2]->Text = L"가호 선택";
 		Perk_Text[2]->Visible = TRUE;
 
@@ -49,7 +49,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 				Add_PlayerStatus(iType);
 				isActive = FALSE;
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
-				PlayerObject->Set_PlayerStop(FALSE);
+				//PlayerObject->Set_PlayerStop(FALSE);
 
 				return 0;
 			}
@@ -58,7 +58,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 
 	if (!isActive) {
 		for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
-		if (PlayerObject) PlayerObject->Set_PlayerStop(FALSE);
+		//if (PlayerObject) PlayerObject->Set_PlayerStop(FALSE);
 	}
 		return 0;
 }
