@@ -26,20 +26,20 @@ public:
 	const D3DXPLANE* Get_FrustumPlane(FRUSTUMPLANE side = FRUSTUMPLANE::End) { return (side == FRUSTUMPLANE::End) ? FrustumPlane : &FrustumPlane[(uint8_t)side]; }
 	BOOL			 IsIn_Frustum(_vec3 _vPos, _float _fRadius);
 
-	_matrix*		Get_ViewMatrix() { return &ViewMatrix; }
-	_matrix*		Get_ProjMatrix() { return &ProjMatrix; }
-	_matrix*		Get_WorldMatrix() { return Component_Transform->Get_World(); }
+	_matrix* Get_ViewMatrix() { return &ViewMatrix; }
+	_matrix* Get_ProjMatrix() { return &ProjMatrix; }
+	_matrix* Get_WorldMatrix() { return Component_Transform->Get_World(); }
 
-	_vec3*			Get_EyeVec() { return &EyeVec; }
+	_vec3* Get_EyeVec() { return &EyeVec; }
 	BOOL			Set_EyeVec(_vec3 _EyeVec) { AtVec += (_EyeVec - EyeVec); EyeVec = _EyeVec; return TRUE; }
 
-	_vec3*			Get_AtVec() { return &AtVec; }
-	BOOL			Set_AtVec(_vec3 _EyeVec) { EyeVec = _EyeVec; AtVec = _EyeVec;  AtVec.z += 1; return TRUE;}
+	_vec3* Get_AtVec() { return &AtVec; }
+	BOOL			Set_AtVec(_vec3 _EyeVec) { EyeVec = _EyeVec; AtVec = _EyeVec;  AtVec.z += 1; return TRUE; }
 
-	FLOAT*			Get_FOV()				{ return &FOVValue; }
-	BOOL			Set_FOV(FLOAT _Value)	{ FOVValue = _Value; return TRUE;}
+	FLOAT* Get_FOV() { return &FOVValue; }
+	BOOL			Set_FOV(FLOAT _Value) { FOVValue = _Value; return TRUE; }
 
-	FLOAT*			Get_Speed() { return &CameraSpeed; }
+	FLOAT* Get_Speed() { return &CameraSpeed; }
 	BOOL			Set_Speed(FLOAT _Value) { CameraSpeed = _Value; return TRUE; }
 
 	void			Set_Tracking_Player(BOOL bCameMove) { Camera_Move = bCameMove; }
@@ -48,19 +48,19 @@ public:
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
 	void			Docheol_Spawn(CONST FLOAT& _DT);
 
-	VOID			Set_FocusOnBoss(BOOL _FOB); 
-	BOOL			Get_FocusOnBoss()				{ return FocusOn_Boss; }
+	VOID			Set_FocusOnBoss(BOOL _FOB);
+	BOOL			Get_FocusOnBoss() { return FocusOn_Boss; }
 
-	VOID			Set_ButtonLock(BOOL _BTL)		{ Button_Lock = _BTL; }
-	BOOL			Get_ButtonLock()				{ return Button_Lock; }
+	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
+	BOOL			Get_ButtonLock() { return Button_Lock; }
 
-	VOID			Set_EnableQuickZoom(INT _QZM)	{ Enable_QuickZoom = _QZM; }
-	BOOL			Get_EnableQuickZoom()			{ return Enable_QuickZoom; }
-private:	
+	VOID			Set_EnableQuickZoom(INT _QZM) { Enable_QuickZoom = _QZM; }
+	BOOL			Get_EnableQuickZoom() { return Enable_QuickZoom; }
+private:
 	HRESULT			Component_Initialize();
 	VOID			Camera_QuickZoom(CONST FLOAT& _DT);
 private:
-	Transform*	Component_Transform;
+	Transform* Component_Transform;
 
 	_matrix		ViewMatrix, ProjMatrix;
 
@@ -78,7 +78,7 @@ private:
 	BOOL		Velocity_Lock;
 	BOOL		Button_Lock;
 
-	Player*		PlayerObject;
+	Player* PlayerObject;
 
 	bool		Camera_Show;
 	bool		Camera_Move;
@@ -93,9 +93,9 @@ private:
 	_vec3		vPlayer;
 	_vec3		m_vVelocity;
 
-	GameObject*		pObj;
+	GameObject* pObj;
 	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
-	
+
 	////////////////////////////////////////////// 보스전 활용 변수들
 	BOOL		FocusOn_Boss;
 	FLOAT		Focusing_Timer;
@@ -116,6 +116,6 @@ private:
 	SCENE_TYPE	m_eCurrScene;
 	_float		m_fOffset[(uint8_t)FRUSTUMPLANE::End];
 
-	Player*		m_pTarget;
+	Player* m_pTarget;
 	HRESULT		MiniGame(const _float& _DT);
 };

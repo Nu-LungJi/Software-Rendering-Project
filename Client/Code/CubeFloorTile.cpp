@@ -39,28 +39,28 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 		m_bTrigger = true;
 	}
 
-	if (m_iFalling == 1)
-	{
-		m_fTimer += _DT;
-		_vec3 vDir = { 0.f, -1.f,0.f };
-		m_pTransform->Move_Pos(&vDir, 10, _DT);
-		Monster::Staic_Obj(GRPDEV, m_pTransform);
-		m_pCollider->Update_Component(_DT);
-		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
-		if (m_fTimer > 2.f)
-			m_iFalling = 3;
-	}
-	
-	if (m_iFalling == 4)
-	{
-		m_fTimer = 0.f;
-		m_iFalling = 0;
-		m_pTransform->Get_Position()->y = (m_pTransform->Get_Scale()->y * -0.5f);
-		Monster::Staic_Obj(GRPDEV, m_pTransform);
-		m_pCollider->Update_Component(_DT);
-		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
-	}
-
+	//if (m_iFalling == 1)
+	//{
+	//	m_fTimer += _DT;
+	//	_vec3 vDir = { 0.f, -1.f,0.f };
+	//	m_pTransform->Move_Pos(&vDir, 10, _DT);
+	//	Monster::Staic_Obj(GRPDEV, m_pTransform);
+	//	m_pCollider->Update_Component(_DT);
+	//	MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
+	//	if (m_fTimer > 2.f)
+	//		m_iFalling = 3;
+	//}
+	//
+	//if (m_iFalling == 4)
+	//{
+	//	m_fTimer = 0.f;
+	//	m_iFalling = 0;
+	//	m_pTransform->Get_Position()->y = (m_pTransform->Get_Scale()->y * -0.5f);
+	//	Monster::Staic_Obj(GRPDEV, m_pTransform);
+	//	m_pCollider->Update_Component(_DT);
+	//	MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
+	//}
+	// m_iFalling 정의 없어서 주석 처리
 	if (!IsIn_Cam) return;
 
 	GameObject::LateUpdate_GameObject(_DT);

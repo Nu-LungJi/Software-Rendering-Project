@@ -253,6 +253,10 @@ VOID Bat::State_Idle()
 
 VOID Bat::State_Tracking(const _float& _DT)
 {
+	m_tInfo.fSpeed = BAT_SPEED;
+	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
+
 	if (m_tInfo.bMiniGame)
 	{
 		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
@@ -263,10 +267,6 @@ VOID Bat::State_Tracking(const _float& _DT)
 	}
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
-
-	m_tInfo.fSpeed = BAT_SPEED;
-	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
-	D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
 
 
 	if (D3DXVec3Length(&m_tInfo.vDirection) < BAT_TRACKINGDIS)
