@@ -7,6 +7,8 @@ CXZTile::~CXZTile() {}
 
 HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
 
+    m_bPotalOpen = false;
+
     if (FAILED(Component_Initialize(eid, eState))) return E_FAIL;
     m_fHeight = rand() % 4 + 1;
 
@@ -336,6 +338,11 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
          if (!m_bEffect)
         {
             _vec3 vPos = m_pTileInfo->Get_NextPos();
+            if(!m_bEffect&& !m_bPotalOpen)
+            { 
+              SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+              m_bPotalOpen = TRUE;
+            }
             dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
             m_bEffect = true;
         }

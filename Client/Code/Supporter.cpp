@@ -235,8 +235,10 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 			}
 			else {
 				for (auto& BFB : BFBVec) {
-					BossFireBall* Origin = dynamic_cast<BossFireBall*>(BFB);
-					Origin->Set_FireBall_Angle(Origin->Get_FireBall_Angle() + 2.7f);
+					if (BFB->Get_ObjectDead() == FALSE) {
+						BossFireBall* Origin = dynamic_cast<BossFireBall*>(BFB);
+						Origin->Set_FireBall_Angle(Origin->Get_FireBall_Angle() + 2.7f);
+					}
 				}
 			}
 		}

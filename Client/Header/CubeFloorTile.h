@@ -20,7 +20,7 @@ public:
     virtual			VOID		Render_GameObject();
 
     //이건.. 지형이 가지고 있는 타일의 인덱스 정보를 담기위함 해당 인덱스가 가진 위치위에 이 타일이 놓여있다는걸 확인하기 위해서
-    int             Get_TileNumber()                    { return m_iTileNumber; }
+    int             Get_TileNumber() { return m_iTileNumber; }
     void            Set_TileNumber(_int iTileNumber) {
         m_iTileNumber = iTileNumber;
         if (m_pTransform != nullptr) m_pTransform->Get_Position()->y += 0.0001f * iTileNumber;
@@ -34,10 +34,10 @@ private:
 
     int m_iTileNumber = 0;
 
-    Buffer*             m_pBuffer;
-    Buffer*             m_pOriginBuffer;
-    Transform*          m_pTransform;
-    Collider*           m_pCollider;
+    Buffer* m_pBuffer;
+    Buffer* m_pOriginBuffer;
+    Transform* m_pTransform;
+    Collider* m_pCollider;
 
 public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid = true);
@@ -51,12 +51,15 @@ private:
     virtual  void            Free();
 
     bool    Pooling();
+
 private:
-    CameraObject*   m_pCam = nullptr;
+    GameObject* m_pTarget = nullptr;
+    CameraObject* m_pCam = nullptr;
     bool            m_bTrigger = false;
     bool            IsIn_Cam = true;
     _float          m_fTimer = 0.f;
     IDirect3DTexture9* m_pTexture;
+    int             m_iFalling;
 };
 
 class CubeFunction
@@ -71,7 +74,7 @@ public:
             return  E_FAIL;
 
         float SnapDgree = (fabsf(_SnapAngle) < 360.f) ? _SnapAngle :
-                           fmodf(_SnapAngle, 360.f);
+            fmodf(_SnapAngle, 360.f);
         SnapDgree += (SnapDgree < 0.f) * 360;
 
         if (_Grid)

@@ -36,6 +36,8 @@ HRESULT ScorpionEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 {
 
+	Component_Collider->Update_Component(_DT);
+
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
@@ -47,8 +49,6 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = 1.f; // 병합하다가 지우기 애매해서 놔둡니다. 오류나면 지워주세요
-  
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
 		return 0;
@@ -67,9 +67,6 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
-	Component_Collider->Update_Component(_DT);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DISAPPEAR;
@@ -191,7 +188,8 @@ VOID ScorpionEvilSoul::Render_GameObject() {
 
 	if (m_tInfo.Textureinfo._frame > m_tInfo.Textureinfo._Endframe) return;
 		
-  
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -217,8 +215,6 @@ VOID ScorpionEvilSoul::Render_GameObject() {
 				break;
 			}
 		}
-		//GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
-		//Component_Buffer->Render_Buffer();
 		break;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_DEAD:
@@ -281,7 +277,16 @@ BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 	return FALSE;
 }
 BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
-
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
 	return FALSE;
 }
 BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)
@@ -460,6 +465,6 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpionEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 	ObjectDead = true;
 }

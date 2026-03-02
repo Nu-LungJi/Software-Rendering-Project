@@ -809,7 +809,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	if (m_iSkillDelay > 12)
 	{
 		// 광윤 추가 ▼
-		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 2.f);
 
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;
