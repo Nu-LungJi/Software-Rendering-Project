@@ -347,6 +347,39 @@ HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
 	return S_OK;
 }
 
+BOOL Monster::Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOOL x, BOOL y, BOOL z)
+{
+	Collider* pColliderNoMove = static_cast<Collider*>(_pNoMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+	Collider* pColliderMove = static_cast<Collider*>(_pMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+	_vec3* pPosNoMove = pColliderNoMove->Get_CenterPos()->Get_Position();
+	_vec3* pPosMove = pColliderMove->Get_CenterPos()->Get_Position();
+
+	_vec3		vDir = *pPosMove - *pPosNoMove;
+
+	_float	dx(-1.f), dy(-1.f), dz(-1.f);
+	if (x) dx = fabsf(vDir.x);
+	if (y) dy = fabsf(vDir.y);
+	if (z) dz = fabsf(vDir.z);
+
+	if ((dx >= dz) && (dx > dy) && (dx >= 0.f)) {
+		_float fDis = pColliderMove->Get_Scale().x * 0.501f;
+		pPosMove->x = (vDir.x < 0.f) ? pColliderNoMove->Get_MinPoint().x - fDis : pColliderNoMove->Get_MaxPoint().x + fDis;
+		return true;
+	}
+	else if ((dz >= dy) && (dz >= 0.f)) {
+		_float fDis = pColliderMove->Get_Scale().z * 0.501f;
+		pPosMove->z = (vDir.z < 0.f) ? pColliderNoMove->Get_MinPoint().z - fDis : pColliderNoMove->Get_MaxPoint().z + fDis;
+		return true;
+	}
+	else if (dy >= 0.f) {
+		_float fDis = pColliderMove->Get_Scale().y * 0.501f;
+		pPosMove->y = (vDir.y < 0.f) ? pColliderNoMove->Get_MinPoint().y - fDis : pColliderNoMove->Get_MaxPoint().y + fDis;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 //
 //template<typename T>
 //inline GameObject* Monster::Create(LPDIRECT3DDEVICE9 GRPDEV, _vec3 _vSrc, _vec3 _vDst, _float _fSpeed, _float _fScalemult)

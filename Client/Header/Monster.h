@@ -355,6 +355,8 @@ public:
 	static	BOOL			Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo);
 	static	HRESULT			Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom);
 
+	static	BOOL			Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOOL x = 1, BOOL y = 0, BOOL z = 1);
+
 public:
 	static	void		    Set_Camera(CameraObject* pCam)	{ m_pCam = pCam; }
 	static	CameraObject*	Get_Camera()					{ return m_pCam; }
