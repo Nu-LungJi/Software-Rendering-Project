@@ -26,6 +26,9 @@ HRESULT ShotGunEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 }
 INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
+
+	Component_Collider->Update_Component(_DT);
+
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
@@ -52,8 +55,6 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	Component_Buffer->Update_Component(_DT);
-	Component_Collider->Update_Component(_DT);
 	
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
@@ -132,6 +133,7 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID ShotGunEvilSoul::Render_GameObject() {
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 

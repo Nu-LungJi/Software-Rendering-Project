@@ -53,9 +53,6 @@ INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
 
 	GameObject::Update_GameObject(_DT);
 
-	if (Component_Collider->Get_Hp() <= 0.f)
-		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
-
 	switch (m_tInfo.eState[0])
 	{
 	default:

@@ -30,6 +30,8 @@ HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 }
 INT	Bat::Update_GameObject(const _float& _DT)
 {
+	Component_Collider->Update_Component(_DT);
+
 	if (m_tInfo.bMiniGame)
 	{
 		GameObject::Update_GameObject(_DT);
@@ -50,12 +52,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
-	Component_Buffer->Update_Component(_DT);
-	Component_Collider->Update_Component(_DT);
-
-	if (Component_Collider->Get_Hp() <= 0.f)
-		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
-
 	switch (m_tInfo.eState[0])
 	{
 	case MONSTER_STATE_SUMMON:
@@ -75,9 +71,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		break;
 	case MONSTER_STATE_DEAD:
 		Bat::State_Dead();
-		break;
-	case MONSTER_STATE_MINIGAME_MOVE:
-
 		break;
 	default:
 		break;
@@ -129,6 +122,7 @@ VOID Bat::LateUpdate_GameObject(const _float& _DT) {
 VOID Bat::Render_GameObject() {
 	if (m_tInfo.Textureinfo._frame > m_tInfo.Textureinfo._Endframe) return;
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -206,19 +200,21 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 	switch (m_tInfo.eState[0])
 	{
 	default:
+		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player") {
-			Player* pPlayer = static_cast<Player*>(_Other);
-			_vec3* vPlayer = POS(pPlayer);
-			_vec3 vDir = *vPlayer - *MYPOS;
-			//_float fDis = D3DXVec3Length(&vDir);
-			//D3DXVec3Normalize(&vDir, &vDir);
-			vPlayer->x += vDir.x;
-			vPlayer->z += vDir.y;
-			return true;
+		if (Tag == L"Player")
+			return Monster::Hurdle_CollisionStay(this, _Other);
+	case MONSTER_STATE_TRACKING:
+		if (Tag != L"Monster_Bullet") {
+			_vec3 vDir = *POS(_Other) - *MYPOS;
+			if (D3DXVec3Dot(&vDir, &m_tInfo.vDirection) > 0.f) {
+				m_tInfo.fSpeed = 0.f;
+				return true;
+			}
+			else
+				return false;
 		}
-		break;
 	}
 	return FALSE;
 }
@@ -329,13 +325,6 @@ VOID Bat::State_Channeling(const _float& _DT)
 
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
-
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, BAT_CHANNELING_TIME - m_tInfo.fTimer[0]);
-		_float fScale = 2.f * SCALE(m_tInfo.pGameObj[1])->x;
-		_vec3 vEffectScale = { fScale, fScale, fScale };
-		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
-
 		m_tInfo.pGameObj[1] == nullptr;
 	}
 
@@ -348,7 +337,8 @@ VOID Bat::State_Channeling(const _float& _DT)
 
 VOID Bat::State_Dead()
 {
-	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x * 2.f, MONSTER_DEATH_PLAYTTIME);
+	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }

@@ -11,7 +11,7 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
 	{
@@ -32,12 +32,12 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 
 
 	//Kill Timer
-	if (m_tInfo.fTimer[0] >= 2.f)
+	if (m_tInfo.fTimer[0] >= 3.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
 	}
 
-	if (Component_Collider->Get_Hp() < 0.f)
+	if (Component_Collider->Get_Hp() <= 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
 
@@ -77,6 +77,8 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 
 }
 VOID Bullet_Chain::Render_GameObject() {
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -117,7 +119,15 @@ Bullet_Chain* Bullet_Chain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"PlayerArrow") {
 
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
+	}
 	return FALSE;
 }
 BOOL Bullet_Chain::OnCollisionStay(GameObject* _Other)

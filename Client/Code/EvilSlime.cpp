@@ -29,6 +29,9 @@ HRESULT EvilSlime::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 }
 INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
+	// 하나만 해도 됨
+	Component_Collider->Update_Component(_DT);
+
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
@@ -55,16 +58,6 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-
-	//if (!IsIn_Cam) return 0;
-
-	GameObject::Update_GameObject(_DT);
-
-	//if (KEY_DOWN(DIK_H))
-	//{
-	//	m_tInfo.bTrigger[2] = true;
-	//	m_tInfo.Change_State(EVILSLIME_FISSION);
-	//}
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
@@ -176,6 +169,7 @@ VOID EvilSlime::Render_GameObject() {
 
 	if (m_tInfo.Textureinfo._Endframe < m_tInfo.Textureinfo._frame) return;
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -313,6 +307,7 @@ VOID EvilSlime::State_Tracking(const _float& _DT)
 	_float fDis = D3DXVec3Length(&m_tInfo.vDirection);
 
 	m_tInfo.fSpeed = (fDis > SCORPIONEVILSOUL_TRACKINGMIN) * SCORPIONEVILSOUL_SPEED;
+
 
 	if (fDis < EVILSLIME_TRACKINGDIS)
 	{

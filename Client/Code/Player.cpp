@@ -1379,23 +1379,24 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
-	wstring Tag = _Other->Get_ObjectTag();
-	MainUI* mainUI;
-	if (Tag == L"MonsterBullet")
-	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+	// KJJ Temp
+	//if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
+	//wstring Tag = _Other->Get_ObjectTag();
+	//MainUI* mainUI;
+	//if (Tag == L"MonsterBullet")
+	//{
+	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	//	mainUI->Player_LostHP();
 
-		return TRUE;
-	}
-	else if(Tag == L"Monster")
-	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+	//	return TRUE;
+	//}
+	//else if(Tag == L"Monster")
+	//{
+	//	mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+	//	mainUI->Player_LostHP();
 
-		return TRUE;
-	}
+	//	return TRUE;
+	//}
 
 	return FALSE;
 }

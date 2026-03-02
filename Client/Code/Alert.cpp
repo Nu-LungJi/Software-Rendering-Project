@@ -11,11 +11,6 @@ HRESULT Alert::Ready_GameObject() {
 }
 INT	Alert::Update_GameObject(const _float& _DT)
 {
-
-	// <플레이어 업데이트 시점>
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
-
 	m_tInfo.fTimer[0] += _DT;
 
 	if (!m_tInfo.bTrigger[0])
@@ -76,12 +71,13 @@ VOID Alert::LateUpdate_GameObject(const _float& _DT) {
 	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV,{1.f,0.f,0.f},0);
 }
 VOID Alert::Render_GameObject() {
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
 	if(!ObjectDead)
 	{
-		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"AlertCircle.png"));
+		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[0]);
 		Component_Buffer->Render_Buffer();
 	}
 
@@ -96,7 +92,9 @@ HRESULT Alert::Component_Initialize() {
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
 	Component_Transform->Set_Scale(0.5f, 0.313f, 1.f);
 
-	return S_OK;
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect, (uint8_t)MONSTER_EFFECT::ALERT, (uint8_t)ALERT_TYPE::Circle);
+
+	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 Alert* Alert::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	Alert* MST = new Alert(_GRPDEV);

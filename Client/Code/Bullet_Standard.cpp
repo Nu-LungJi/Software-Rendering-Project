@@ -23,13 +23,12 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 
 	if (m_tInfo.fTimer[0] <= 0.f)
 	{
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV,
-			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.f, false);
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x * 2.f, 1.f, false);
 
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		pEffect = MonsterEffect::Create(GRPDEV,
-			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.2f, false);
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY, *MYPOS, MYSCALE->x * 2.f, 1.2f, false);
 
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 	}
@@ -85,6 +84,8 @@ VOID Bullet_Standard::Render_GameObject() {
 	if (m_tInfo.fTimer[0] < 1.f)
 		return;
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -126,6 +127,10 @@ BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 		
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
+	}
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
 	}
 	return FALSE;
 }

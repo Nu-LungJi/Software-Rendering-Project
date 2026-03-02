@@ -11,7 +11,7 @@ HRESULT MonsterEffect::Ready_Effect(MONSTER_EFFECT _SKILLTYPE, _vec3 _vPos, _flo
 	Notify = 0;
 
 	*Component_Transform->Get_Position() = _vPos;
-	*Component_Transform->Get_Scale() *= _fScalemult;
+	*Component_Transform->Get_Scale() *= fabsf(_fScalemult);
 
 	m_eEffect = _SKILLTYPE;
 	Repeatable = _Repeatable;
@@ -93,25 +93,10 @@ HRESULT MonsterEffect::Make_TextureList(CONST TCHAR* _Filename)
 
 	return S_OK;
 }
-
-//HRESULT MonsterEffect::Make_TextureList(wstring _FileName) {
-//	INT FRAME = 0;
-//	while (++FRAME) {
-//		wstring FileName = _FileName + to_wstring(FRAME) + L".png";
-//		IDirect3DBaseTexture9* TEX = ResourceManager::GetInstance()->Find_Texture(FileName.c_str());
-//		if (TEX == nullptr) break;
-//		else { TextureList.push_back(TEX); }
-//	}
-//	ENDFRAME = TextureList.size() + 1;
-//
-//	return S_OK;
-//}
-
 INT  MonsterEffect::Update_GameObject(CONST FLOAT& _DT) {
 
 	GameObject::Update_GameObject(_DT);
 
-	//FrameTick += _DT;
 	m_fTimer[0] += _DT;
 	m_fTimer[1] += _DT;
 
@@ -127,7 +112,7 @@ INT  MonsterEffect::Update_GameObject(CONST FLOAT& _DT) {
 	{
 		if (ENDFRAME > 1)
 		{
-			if (m_fTimer[0] > FRAMETICK / (_float)ENDFRAME)
+			if (m_fTimer[0] > PlayTime / (_float)ENDFRAME)
 			{
 				m_fTimer[0] = 0.f;
 				ObjectDead = ++TextureIndex >= ENDFRAME;

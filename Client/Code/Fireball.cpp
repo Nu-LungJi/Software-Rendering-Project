@@ -12,23 +12,13 @@ HRESULT Fireball::Ready_GameObject() {
 }
 INT	Fireball::Update_GameObject(const _float& _DT)
 {
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = MYSCALE->y * 0.5f;
-	}
-
-
 	Monster::Destory_Tile(this);
 
 	Component_Collider->Update_Component(_DT);
+
+	if (Component_Collider->Get_Hp() <= 0.f) {
+		m_tInfo.bTrigger[0] = true;
+	}
 
 
 	//	 Kill Timer
@@ -76,6 +66,9 @@ VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
 
 }
 VOID Fireball::Render_GameObject() {
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -94,6 +87,7 @@ HRESULT Fireball::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
+	Component_Collider->Set_Hp(1.f);
 
 	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet,
 										(uint8_t)BULLET_TYPE::Fireball, 0);
@@ -114,10 +108,13 @@ Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Fireball::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-	MainUI* mainUI;
 	if (Tag == L"PlayerArrow") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
+	}
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
 	}
 	return FALSE;
 }

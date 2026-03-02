@@ -41,6 +41,7 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 		{
 			MYPOS->z + 0.001f;
 			m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, {MYPOS->x, 0.002f, MYPOS->z});
+			m_tInfo.pGameObj[1]->AddRef();
 			Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
 			pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
 			pAlert->Get_Info()->pGameObj[1] = this;
@@ -95,6 +96,7 @@ VOID EvilSlimeGroundIce::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID EvilSlimeGroundIce::Render_GameObject() {
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
