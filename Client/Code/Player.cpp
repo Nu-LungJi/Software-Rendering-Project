@@ -71,7 +71,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  28.814f, 1.f, 34.78f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"FairyBow");
@@ -115,7 +115,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 
 	_vec3 pPos = *Component_Transform->Get_Position();
-	pPos.y = 1.f;
+	pPos.y = 0.5f;
 	Component_Transform->Set_Pos(pPos);
 
 	if (_isStop) return S_OK;
