@@ -12,7 +12,8 @@ HRESULT	MainUI::Ready_GameObject() {
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-	
+	D3DXCreateSprite(GRPDEV, &BossHPSprite);
+
 	Enable_SpeechBubble = FALSE;
 	Speech_Text = L"";
 	ArrowCountText = L"";
@@ -27,8 +28,13 @@ HRESULT	MainUI::Ready_GameObject() {
 
 	GuiVar.GUIInit(1166.f, 580.f, 100, 100);
 
-	Enable_MainUIFade = 0;
-
+	GlobalOPC = 255;
+	Enable_MainUIFade = 3;
+	EffectFaded = FALSE;
+	BarScale = { 1.f, 1.f, 1.f };
+	MaxHP = 0.f; CurrentHP = 0.f;
+	Enable_BossTitle = 2;
+	BossTitleTimer = 0.f;
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -47,7 +53,8 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	}
 	MainUI_FadeAction(_DT);
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
-
+	Synchronize_BossHPBar();
+	Display_BossTitle(_DT);
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
 
@@ -69,6 +76,21 @@ VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	
 }
 VOID	MainUI::Render_GameObject() {
+	_matrix matWorld, matScale, matTrans;
+
+	GRPDEV->GetTransform(D3DTS_WORLD, &matWorld);
+	D3DXMatrixScaling(&matScale, BarScale.x, 0.7f, BarScale.z);
+
+	matWorld = matScale;// *matTrans;
+	BossHPSprite->SetTransform(&matWorld);
+
+	BossHPSprite->Begin(D3DXSPRITE_ALPHABLEND);
+	BossHPSprite->Draw(HPBarFill->TEXTURE, NULL, NULL, &HPBarFill->POS, D3DCOLOR_ARGB(HPBarFill->OPACITY, 255, 255, 255));
+	BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
+	BossHPSprite->End();
+	D3DXMatrixIdentity(&matWorld);
+	BossHPSprite->SetTransform(&matWorld);
+	
 	Component_Sprite->Render_Sprite();
 }
 
@@ -399,16 +421,166 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
 	}
 }
 
-
-
 VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT) {
 	if		(Enable_MainUIFade == 2)		return;
 	else if (Enable_MainUIFade == TRUE) {
-		// FADE IN
+		if (GlobalOPC > 2.f)	GlobalOPC -= _DT * 255.f / 2;
+		else					GlobalOPC = 0.f;
+	
+		for (auto& FO : AllFontOBJ) 
+			FO->TextColor = D3DCOLOR_ARGB((INT)GlobalOPC, 255, 255, 255);
+	
+		for (auto& SO : AllSpriteOBJ)
+			SO->Set_Opacity((INT)GlobalOPC);
+
+		if (EffectFaded == FALSE) {
+			for (auto& AUE : AllUIEffect) {
+				AUE->Set_EffectFadeOption(TRUE);
+				
+			}
+			EffectFaded = TRUE;
+		}
 	}
 	else if (Enable_MainUIFade == FALSE) {
-		// FADE OUT
+		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE) {
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE = TRUE;
+			HPBarFill->VISIBLE = TRUE;
+
+			if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
+				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
+				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
+			}
+			else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
+				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
+			}
+		}
+		if (GlobalOPC < 253.f) GlobalOPC += _DT * 255.f;
+		else {
+			GlobalOPC = 255.f;
+			Enable_MainUIFade = 2;
+		}
+		for (auto& FO : AllFontOBJ) {
+			HPBarFill->Set_Opacity((INT)GlobalOPC);
+			FO->TextColor = D3DCOLOR_ARGB((INT)GlobalOPC, 255, 255, 255);
+		}
+			
+		for (auto& SO : AllSpriteOBJ) 
+			SO->Set_Opacity((INT)GlobalOPC);
+
+		if (EffectFaded == TRUE) {
+			for (auto& AUE : AllUIEffect) {
+				AUE->Set_EffectFadeOption(FALSE);
+			}
+			EffectFaded = FALSE;
+		}
+		
 	}
+	else if (Enable_MainUIFade == 3) {		// Vector Initialize
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_BG"		));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"TEARDROP_BG"	));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"KEY_BG"		));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"COIN_BG"		));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"CRYSTAL_BG"	));
+
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_SPRITE1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_SPRITE2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_SPRITE3"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_SPRITE4"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HP_SPRITE5"));
+
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EHP_SPRITE1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EHP_SPRITE2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EHP_SPRITE3"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EHP_SPRITE4"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EHP_SPRITE5"));
+
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"CRYSTAL"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"KEY"));
+
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"SkillState_BG"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"SkillState_Frame"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"SkillState_Symbol_OFF"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"SkillState_SkillOn"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"SkillState_Symbol_ON"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"KEY_Q"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Token1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Token2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_Arrow"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_ArrowCount"				));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"				));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"				));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HPBar_Frame"));
+		
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT1")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT2")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT3")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT4")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT5")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT1")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT2")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT3")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"COIN_EFFECT")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"TOKEN_EFFECT1")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"TOKEN_EFFECT2")));
+
+		Enable_MainUIFade = 2;								
+	}														
+}
+
+VOID MainUI::Display_BossTitle(const FLOAT& _DT) {
+	if (Enable_BossTitle == TRUE) {
+		if (BossTitleTimer < 254.f) {
+			BossTitleTimer += _DT * 255;
+			BossTitleBar->Set_Opacity(BossTitleTimer);
+			Title_Name->Set_Color(BossTitleTimer, 255, 255, 255);
+			Title_Tag->Set_Color(BossTitleTimer, 255, 255, 255);
+		}
+		else {
+			BossTitleTimer = 255.f;
+			BossTitleBar->Set_Opacity(255);
+			Title_Name->Set_Color(255, 255, 255, 255);
+			Title_Tag->Set_Color(255, 255, 255, 255);
+		}
+		if (BossTitleTimer <= 10.f && TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Title_Name")->Set_Text(L"라 우 라");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Title_Tag")->Set_Text(L"타락한 자연의 사도");
+		}
+		else if (BossTitleTimer <= 10.f && TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Title_Name")->Set_Text(L"도 철");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Title_Tag")->Set_Text(L"분노의 거대 사념체");
+		}
+	}
+	else if (Enable_BossTitle == FALSE) {
+		if (BossTitleBar->OPACITY > 3 && BossTitleTimer > 1.f) {
+			BossTitleTimer -= _DT * 255;
+			BossTitleBar->Set_Opacity(BossTitleTimer);
+			Title_Name->Set_Color(BossTitleTimer, 255, 255, 255);
+			Title_Tag->Set_Color(BossTitleTimer, 255, 255, 255);
+		}
+		else {
+			BossTitleBar->Set_Opacity(0);
+			Title_Name->Set_Color(0, 255, 255, 255);
+			Title_Tag->Set_Color(0, 255, 255, 255);
+			Enable_BossTitle = 2;
+			BossTitleTimer = 0.f;
+		}
+	}
+}
+
+VOID MainUI::Synchronize_BossHPBar() {
+	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
+		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+		CurrentHP = 1.f - ((float)(CheonLog->Get_Hp()) / (float)MaxHP);
+	}
+	else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS && SceneManager::GetInstance()->Get_GameObject(L"Docheol") != nullptr) {
+		Collider* Docheol = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+		CurrentHP = 1.f - ((float)(Docheol->Get_Hp()) / (float)MaxHP);
+	}
+	BarScale = { 1.f - CurrentHP, BarScale.y, BarScale.z };
+	if (BarScale.x <= 0) BarScale.x = 0;
 }
 
 HRESULT MainUI::Component_Initialize() {
@@ -419,24 +591,24 @@ HRESULT MainUI::Component_Initialize() {
 }
 HRESULT MainUI::Sprite_Initialize() {
 	////////////////////////////////////////////// BACKBAR //////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"HP_BG", 13.f, -60.f, 183, 180, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"TEARDROP_BG", 13.f, -15.f, 130, 180, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"KEY_BG", 13.f, 42.f, 100, 150, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"COIN_BG", 13.f, 77.f, 100, 150, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png",				L"CRYSTAL_BG", 13.f, 113.f, 100, 150, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"HP_BG", 13.f, -60.f, 183, 180, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"TEARDROP_BG", 13.f, -15.f, 130, 180, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"KEY_BG", 13.f, 42.f, 100, 150, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"COIN_BG", 13.f, 77.f, 100, 150, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"CRYSTAL_BG", 13.f, 113.f, 100, 150, TRUE, 255);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////// HP/MP /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
 
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Crystal.png", L"CRYSTAL", 18.f, 175.f, 20, 20, TRUE);
@@ -456,22 +628,22 @@ HRESULT MainUI::Sprite_Initialize() {
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SKILL ////////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_BG.png",			L"SkillState_BG", 0.f, 600.f, 290.f, 120.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Frame.png",		L"SkillState_Frame", 0.f, 600.f, 290.f, 120.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Symbol_OFF.png",	L"SkillState_Symbol_OFF", 15.f, 615.f, 80.f, 80.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_SkillOn.png",		L"SkillState_SkillOn", 15.f, 615.f, 80.f, 80.f, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Symbol_ON.png",	L"SkillState_Symbol_ON", 15.f, 615.f, 80.f, 80.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_Q.png",					L"KEY_Q", 45.f, 595.f, 20.f, 20.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png",					L"Token1", 104.f, 669.f, 33.f, 29.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png",					L"Token2", 137.f, 669.f, 33.f, 29.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_BG.png", L"SkillState_BG", 0.f, 600.f, 290.f, 120.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Frame.png", L"SkillState_Frame", 0.f, 600.f, 290.f, 120.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Symbol_OFF.png", L"SkillState_Symbol_OFF", 15.f, 615.f, 80.f, 80.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_SkillOn.png", L"SkillState_SkillOn", 15.f, 615.f, 80.f, 80.f, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SkillState_Symbol_ON.png", L"SkillState_Symbol_ON", 15.f, 615.f, 80.f, 80.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_Q.png", L"KEY_Q", 45.f, 595.f, 20.f, 20.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token1", 104.f, 669.f, 33.f, 29.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token2", 137.f, 669.f, 33.f, 29.f, TRUE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// INTERACT /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png",				L"KEY_E", 720.f, 590.f, 35, 35, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Interaction_BG.png",		L"Interaction_BG", 720.f, 590.f, 215, 35, TRUE, 155);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png",		L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png",			L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png",			L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png",			L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png", L"KEY_E", 720.f, 590.f, 35, 35, TRUE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Interaction_BG.png", L"Interaction_BG", 720.f, 590.f, 215, 35, TRUE, 155);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// WEAPON /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png", L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
@@ -485,10 +657,21 @@ HRESULT MainUI::Sprite_Initialize() {
 	BowIMG_List.push_back(EquipArrowImg);
 	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IRABow_UI.png", L"IRABow_IMG", 1173.f, 588.f, 95, 95, FALSE, 150);
 	BowIMG_List.push_back(EquipArrowImg);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// BOSSUI /////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HPFrame.png", L"HPBar_Frame", 320, 40, 600, 30, FALSE, 0);
+	//Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HP.png"		, L"HPBar_Fill"	, 325, 45, 590, 28, FALSE, 250);
+	HPBarFill = new SpriteINFO(L"HPBar_Fill", 590, 28, 325, 65, FALSE, 0);
+	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Spr_Ui_Boss_HP.png", HPBarFill->WIDTH, HPBarFill->HEIGHT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&HPBarFill->TEXTURE);
+	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 575, FALSE, 0);
+	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Boss_TitleBar.png", BossTitleBar->WIDTH, BossTitleBar->HEIGHT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&BossTitleBar->TEXTURE);
 
 	return S_OK;
 }
 HRESULT MainUI::Effect_Initialize() {
+
 	/////////////////////////////////////// STATE ////////////////////////////////////////////////
 	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::HP_EFFECT, L"HP_EFFECT1",   8.f, -30.f, 75, 75, 0.75f, 255);
 	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::HP_EFFECT, L"HP_EFFECT2",  38.f, -30.f, 75, 75, 0.75f, 255);
@@ -512,24 +695,29 @@ HRESULT MainUI::Effect_Initialize() {
 }
 HRESULT MainUI::Text_Initialize() {
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 106.f }, 16, L"KeyCountText",		L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 142.f }, 16, L"CoinCountText",		L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText", L"Bastard", D3DCOLOR_ARGB(200, 255, 255, 255));
-
+	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText",			L"Bastard",			D3DCOLOR_ARGB(200, 255, 255, 255));
+	AllFontOBJ.push_back(FO_ArrowCount);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",		L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 400.f }, 12, L"ItemClass",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text",					L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.091,	5.f }, 15, L"Boss_Name",		L"배달의민족 도현", D3DCOLOR_ARGB(0, 255, 255, 255), 700));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 616.967f, 25.f }, 13, L"Boss_Tag",			L"Caviar Dreams",	D3DCOLOR_ARGB(0, 160, 160, 160)));
+	Title_Name = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 30.f, 270.f }, 65, L"Boss_Title_Name",	TEXT("Yoon\u00AE 대한"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	Title_Tag = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 45.f, 370.f }, 32, L"Boss_Title_Tag", TEXT("Yoon\u00AE 민국 Bold"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+
 	return S_OK;
 }
 
@@ -648,6 +836,11 @@ void MainUI::Imgui_ButtonStyle()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.8f, 0.7f, 0.7f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.5f, 0.7f, 0.7f));
 }
-VOID	MainUI::Free() {
+VOID MainUI::Free() {
+	Safe_Delete(Title_Name);
+	Safe_Delete(Title_Tag);
+	Safe_Delete(HPBarFill);
+	Safe_Delete(BossTitleBar);
+	Safe_Release(BossHPSprite);
 	GameObject::Free();
 }

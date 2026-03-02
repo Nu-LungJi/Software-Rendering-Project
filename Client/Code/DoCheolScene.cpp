@@ -8,20 +8,20 @@ HRESULT   DoCheolScene::Ready_Scene() {
 
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
     
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlamShake");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+   ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
+   //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+   //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+   // ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlamShake");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
 
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Weapon/FairyBow");
+
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
@@ -152,8 +152,8 @@ HRESULT DoCheolScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>		(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 
-    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-    Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+    //Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
     return S_OK;
 }
 HRESULT DoCheolScene::Ready_UserInterface_Layer() {

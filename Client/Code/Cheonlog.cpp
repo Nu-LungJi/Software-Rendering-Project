@@ -6,7 +6,7 @@ Cheonlog::~Cheonlog() {}
 
 HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
-	
+
 	Texture_Initalize(8, L"Spr_Boss_Cheonlog_Shining_Stand_R_0%d.png",    CL_IDELR);
 	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_Jump_L_045_0%d.png", CL_LJUMP);
 	Texture_Initalize(6, L"Spr_Boss_Cheonlog_Shining_LU_135_0%d.png",    CL_LUJUMP);
@@ -736,6 +736,10 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, TRUE));
 		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 		++m_iSkillDelay;
+
+		// 광윤 추가 ▼
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableBossTitle(FALSE);
+
 		break;
 	}
 		
@@ -791,6 +795,9 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	}
 	if (m_iSkillDelay > 12)
 	{
+		// 광윤 추가 ▼
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE);
+
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Tracking_Player(false);
