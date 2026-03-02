@@ -203,7 +203,8 @@
     </ClInclude>
     <ClInclude Include="..\Header\CLoading.h" />
     <ClInclude Include="..\Header\CubeFloorTile.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\CubeTile.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -250,7 +251,8 @@
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
     <ClInclude Include="..\Header\Frog_Bullet.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h" />
     <ClInclude Include="..\Header\MainUI.h" />
@@ -445,7 +447,8 @@
     </ClCompile>
     <ClCompile Include="..\Code\CLoading.cpp" />
     <ClCompile Include="..\Code\CubeFloorTile.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\CubeTile.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -503,10 +506,12 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Frog_Bullet.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MainUI.cpp" />
     <ClCompile Include="..\Code\BossFireBall.cpp" />
@@ -515,7 +520,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MiniGameScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

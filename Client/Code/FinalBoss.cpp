@@ -70,11 +70,6 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	_float _cameraAngle = angle / D3DX_PI * 180.f;
 
 	Component_Transform->Rotation(ROT_X, 80.f);
-	//도철 UI
-	//BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
-	//pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	//pBossUi->Set_ObjectTag(L"BossUI");
-	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
 	return S_OK;
 }
@@ -89,6 +84,9 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Set_FocusOnBoss(TRUE);
 		Enable_BossAppearStaging = TRUE;
+
+		PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM01);
+
 	}
 
 	if (Animation_TexList == &Animation_Death_TexList && Animation_CurrentIndex == ANIMATION_DEATH_FRAMECOUNT - 1) {
@@ -192,7 +190,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
 		}
 		// <<< RageMode >>>
-		if (Component_Collider->Get_Hp() <= 500.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
+		if (Component_Collider->Get_Hp() <= 5000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Stunning_TexList;
 			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -306,7 +304,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 		//Animation_CurrentIndex = 0;
 	}
 	else if (KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(500);
+		Component_Collider->Set_Hp(5000);
 		BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 		Animation_TexList = &Animation_Rage_Stand_TexList;
 		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;

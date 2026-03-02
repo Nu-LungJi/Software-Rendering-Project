@@ -22,7 +22,7 @@ struct ENGINE_DLL SpriteINFO {
 	}
 
 	VOID	Set_Scale(FLOAT _X, FLOAT _Y)	{ WIDTH = _X, HEIGHT = _Y; }
-
+	D3DXVECTOR2	Get_Scale() { return { (FLOAT)WIDTH, (FLOAT)HEIGHT }; }
 	VOID	Set_Opacity(FLOAT _V) { OPACITY = _V; }
 	VOID	Decrease_Opacity(FLOAT _V) { 
 		if (OPACITY > 0)	

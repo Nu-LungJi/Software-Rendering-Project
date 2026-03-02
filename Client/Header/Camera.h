@@ -49,13 +49,16 @@ public:
 	void			Docheol_Spawn(CONST FLOAT& _DT);
 
 	VOID			Set_FocusOnBoss(BOOL _FOB); 
-	BOOL			Get_FocusOnBoss()			{ return FocusOn_Boss; }
+	BOOL			Get_FocusOnBoss()				{ return FocusOn_Boss; }
 
-	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
-	BOOL			Get_ButtonLock() { return Button_Lock; }
+	VOID			Set_ButtonLock(BOOL _BTL)		{ Button_Lock = _BTL; }
+	BOOL			Get_ButtonLock()				{ return Button_Lock; }
+
+	VOID			Set_EnableQuickZoom(INT _QZM)	{ Enable_QuickZoom = _QZM; }
+	BOOL			Get_EnableQuickZoom()			{ return Enable_QuickZoom; }
 private:	
 	HRESULT			Component_Initialize();
-
+	VOID			Camera_QuickZoom(CONST FLOAT& _DT);
 private:
 	Transform*	Component_Transform;
 
@@ -92,12 +95,16 @@ private:
 
 	GameObject*		pObj;
 	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
-
+	
+	////////////////////////////////////////////// 보스전 활용 변수들
 	BOOL		FocusOn_Boss;
 	FLOAT		Focusing_Timer;
 	_vec3		OriginCameraPos;
 	_vec3		OriginCameraAt;
-	bool temp;
+
+	INT			Enable_QuickZoom;
+	FLOAT		QZoom_Timer;
+	////////////////////////////////////////////// 보스전 활용 변수들
 public:
 	static CameraObject* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
