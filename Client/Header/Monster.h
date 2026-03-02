@@ -384,7 +384,7 @@ public:
 	}
 
 	template<typename T>
-	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)
+	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 2.f)
 	{
 		GameObject* MST = Create<T>(_GRPDEV);
 
