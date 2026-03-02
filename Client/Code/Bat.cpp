@@ -40,8 +40,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	if (SUCCEEDED(Monster::Minigame_Update(_DT, &m_tInfo, MYPOS)))	
-		return 0;
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
@@ -50,7 +49,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
-	GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
@@ -59,9 +57,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 
 	switch (m_tInfo.eState[0])
 	{
-	//case MONSTER_STATE_APPEAR:
-	//	Bat::State_Appear(_DT);
-	//	break;
 	case MONSTER_STATE_SUMMON:
 		Bat::State_Summon(_DT);
 		break;
@@ -307,7 +302,9 @@ VOID Bat::State_Tracking(const _float& _DT)
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
 	m_tInfo.fSpeed = BAT_SPEED;
-	m_tInfo.vDirection = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
+
 
 	if (D3DXVec3Length(&m_tInfo.vDirection) < BAT_TRACKINGDIS)
 	{
