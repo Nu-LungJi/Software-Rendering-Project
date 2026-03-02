@@ -17,6 +17,7 @@ HRESULT   StartScene::Ready_Scene() {
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
+    SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
