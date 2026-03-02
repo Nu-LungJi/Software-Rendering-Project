@@ -295,7 +295,7 @@ VOID Bat::State_Tracking(const _float& _DT)
 	{// ??? ???
 		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 		m_tInfo.vDirection = vPos - *MYPOS;
-	  D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
+		D3DXVec3Normalize(&m_tInfo.vDirection, &m_tInfo.vDirection);
 		m_tInfo.fSpeed = 3.f;
 		return;
 	}

@@ -25,7 +25,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	OriginCameraPos = { 0.f, 0.f, 0.f };
 	
 	Camera_Show = TRUE;
-	Camera_Move = TRUE;
+	Camera_Move = FALSE;
 
 	Velocity_Lock = FALSE;
 	Button_Lock = FALSE;

@@ -928,7 +928,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		mainUI->Player_UseSkill();
 
 		wstring txt = L"시간이여 멈춰라";
-		mainUI->Speech_PopUp_Skill(txt);
+		mainUI->Speech_PopUp_Skill(txt, 0);
 	}
 
 	if (KEY_DOWN(DIK_R)) {
@@ -955,6 +955,8 @@ void Player::SKILL_NONE(const _float& _DT)
 
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
+		wstring txt = L"할아버지 힘을 빌려줘요!";
+		mainUI->Speech_PopUp_Skill(txt, 1);
 	}
 }
 

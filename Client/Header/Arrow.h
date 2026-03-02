@@ -59,6 +59,7 @@ private:
 	BowType		_bowType;
 	int			_hp;
 	_float		_originAngle;
+	float			_alphaRatio;
 
 	float*		_playerRange;
 	float*		_playerArrowSize;

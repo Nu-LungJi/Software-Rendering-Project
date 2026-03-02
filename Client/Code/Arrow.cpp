@@ -34,6 +34,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _searchDelay = 0.f;
     turnSpeed == D3DXToRadian(2.5f);
     _isReady = false;
+    _alphaRatio = 1.f;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -481,6 +482,8 @@ VOID Arrow::Render_GameObject()
 
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
+    GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+
     return VOID();
 }
 
@@ -498,6 +501,16 @@ HRESULT Arrow::Component_Initialize()
 
 void Arrow::SetGrahpic()
 {
+    DWORD tfactor = D3DCOLOR_ARGB(
+        (BYTE)(_alphaRatio * 255.f),
+        255, 255, 255
+    );
+
+    GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
     TCHAR FileName[128] = L"";
 
     // ÀÌÆåÆ® ¼Óµµ
@@ -562,6 +575,16 @@ void Arrow::SetGrahpic()
     }
     
     GRPDEV->SetTexture(0, (ResourceManager::GetInstance()->Find_Texture(FileName)));
+
+    // COLOR = Texture * TFACTOR
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+    // ALPHA = TextureAlpha * TFACTORAlpha
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 
 void Arrow::Destory_Tile()
