@@ -233,6 +233,7 @@ VOID Bat::State_Summon(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
 	if (FAILED(MonsterEffect::Monster_SummonEffect_Set(GRPDEV, Component_Transform, &m_tInfo.bTrigger[0], &m_tInfo.fTimer[0]))) { ObjectDead = true; return; }
+  SoundManager::GetInstance()->Play_Sound_Once(L"Mosnter/MonsterSummon.wav", CHANNELID::SOUND_EFFECT08, 0.2f);
 	if (m_tInfo.bTrigger[0] > 3)	m_tInfo.Change_State(MONSTER_STATE_IDLE);
 }
 

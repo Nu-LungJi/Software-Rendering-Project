@@ -32,6 +32,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
 
 			for (auto& TXT : ItemInfo_Text) {
@@ -41,6 +42,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 			}
 		}
 		else if (UIManager::GetInstance()->Get_Active() == FALSE){
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Close_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = FALSE;
 			FocusOn_EquipedItem = FALSE;
 
@@ -353,6 +355,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		if (KEY_DOWN(DIK_W)) {
 			if (SavedItemIndex <= 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex -= 5;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 5);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -362,12 +365,14 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		}
 		else if (KEY_DOWN(DIK_A)) {
 			if (SavedItemIndex == 1 || SavedItemIndex == 6) {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(FALSE);
 				FocusOn_EquipedItem = TRUE;
 				Selecting_EquipItem();
 			}
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex -= 1;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 1);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -378,6 +383,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		else if (KEY_DOWN(DIK_S)) {
 			if (SavedItemIndex >= 6)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex += 5;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex - 5);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -386,6 +392,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 			}
 		}
 		else if (KEY_DOWN(DIK_D)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			if (SavedItemIndex == 10)	return E_FAIL;
 			else {
 				SavedItemIndex += 1;
@@ -417,6 +424,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		if (KEY_DOWN(DIK_W)) {
 			if (EquipedItemIndex <= 4)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex -= 4;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 4);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -427,6 +435,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		else if (KEY_DOWN(DIK_A)) {
 			if (EquipedItemIndex == 1 || EquipedItemIndex == 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex -= 1;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 1);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -437,6 +446,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		else if (KEY_DOWN(DIK_S)) {
 			if (EquipedItemIndex >= 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex += 4;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 4);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -467,6 +477,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 				return S_OK;
 			}
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex += 1;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 1);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -483,6 +494,7 @@ HRESULT PlayerInven::Equip_Item() {
 		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
 		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ÀåÂø";
 		if (KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
 				PlayerObject->Chage_Item(srcIdx, SavedItemIndex + 7);
@@ -512,22 +524,26 @@ HRESULT PlayerInven::Equip_Item() {
 
 	if (FocusOn_SavedItem) {
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			EquipMode = TRUE;
 			EquipObject = &Saved_ItemList[SavedItemIndex - 1];
 			srcIdx = SavedItemIndex +7;
 		}
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Saved_ItemList[SavedItemIndex - 1];
 			Safe_Delete(Saved_ItemList[SavedItemIndex - 1]);
 		}
 	}
 	if (FocusOn_EquipedItem) {
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			EquipMode = TRUE;
 			EquipObject = &Equip_ItemList[EquipedItemIndex - 1];
 			srcIdx = EquipedItemIndex - 1;
 		}
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Equip_ItemList[EquipedItemIndex - 1];
 			Safe_Delete(Equip_ItemList[EquipedItemIndex - 1]);
 		}

@@ -58,6 +58,8 @@ HRESULT Player::Ready_GameObject() {
 	_MaxArrow			= 1.f;
 	//연출용
 	CameraMove = false;
+	//사운드용 타이머
+	_walk_time = 0.35f;
 
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
@@ -126,6 +128,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/gta-v-wasted-death-sound.mp3", CHANNELID::SOUND_EFFECT01, 0.25f);
 	}
 
 	if(!_isInvincible) _alphaRatio = 1.f;
@@ -314,6 +317,9 @@ void Player::Reset()
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
+	float footstepInterval = 0.5f;
+	_walk_time += _DT;
+
 	if (KEY_DOWN(DIK_F3)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
 		Debug ? Debug = FALSE : Debug = TRUE;
 	}
@@ -378,6 +384,11 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_LU) {
 				_eState = eState::STATE_RUN_LU;
 				_see = pSee::SEE_LU;
@@ -389,6 +400,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_LD) {
 				_eState = eState::STATE_RUN_LD;
 				_see = pSee::SEE_LD;
@@ -401,6 +417,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W) && KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RU) {
 				_eState = eState::STATE_RUN_RU;
 				_see = pSee::SEE_RU;
@@ -413,6 +434,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_S) && KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RD) {
 				_eState = eState::STATE_RUN_RD;
 				_see = pSee::SEE_RD;
@@ -425,6 +451,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_W))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_UP) {
 				_eState = eState::STATE_RUN_UP;
 				_see = pSee::SEE_UP;
@@ -435,6 +466,11 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_S))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_DOWN) {
 				_eState = eState::STATE_RUN_DOWN;
 				_see = pSee::SEE_DOWN;
@@ -445,6 +481,11 @@ void Player::IDLE_STATE(const _float& _DT)
 
 		else if (KEY_HOLD(DIK_A))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_LEFT) {
 				_eState = eState::STATE_RUN_LEFT;
 				_see = pSee::SEE_LEFT;
@@ -454,6 +495,11 @@ void Player::IDLE_STATE(const _float& _DT)
 		}
 		else if (KEY_HOLD(DIK_D))
 		{
+			if (_walk_time > footstepInterval)
+			{
+				SoundManager::GetInstance()->Play_Sound_Once(L"Player/Character_Move_Forest_Walk_07.wav", CHANNELID::SOUND_EFFECT01, 0.6f);
+				_walk_time = 0.f;
+			}
 			if (_eState != eState::STATE_RUN_RIGHT) {
 				_eState = eState::STATE_RUN_RIGHT;
 				_see = pSee::SEE_RIGHT;

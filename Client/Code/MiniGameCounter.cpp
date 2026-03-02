@@ -6,8 +6,11 @@ MiniGameCounter::~MiniGameCounter() {}
 
 HRESULT MiniGameCounter::Ready_GameObject() {
 
-	if (FAILED(Component_Initialize())) return E_FAIL;
+	SoundManager::GetInstance()->Stop_AllSound();
+  SoundManager::GetInstance()->Play_Sound(L"Stage/MiniGame_VamPire.mp3", CHANNELID::SOUND_BGM01, 0.3f);
 
+	if (FAILED(Component_Initialize())) return E_FAIL;
+	
 	m_iCnt = 0;
 	m_iKeyCnt = 0;
 	m_StageCnt[0] = 5;
