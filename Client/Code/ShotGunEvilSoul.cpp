@@ -17,7 +17,7 @@ HRESULT ShotGunEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 
 	m_tInfo.bMiniGame = bMini;
 	if (m_tInfo.bMiniGame)
-	{// â�� �߰�
+	{
 		ObjectTAG = L"Monster";
 		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
 		Component_Transform->Set_Pos(vPos);
@@ -52,7 +52,6 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	//GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 	
@@ -133,12 +132,10 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID ShotGunEvilSoul::Render_GameObject() {
 
-	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
-
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
-	if (m_tInfo.bMiniGame)// â�� �߰�
+	if (m_tInfo.bMiniGame)
 	{
 		GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[m_tInfo.Textureinfo._frame]);
 
@@ -222,6 +219,16 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 }
 BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
 {
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
 	return FALSE;
 }
 BOOL ShotGunEvilSoul::OnCollisionExit(GameObject* _Other)
@@ -255,7 +262,7 @@ VOID ShotGunEvilSoul::State_Idle(const _float& _DT)
 VOID ShotGunEvilSoul::State_Tracking(const _float& _DT)
 {
 	if (m_tInfo.bMiniGame)
-	{// â�� �߱�
+	{
 		_vec3 vPos = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 		m_tInfo.vDirection = vPos - *MYPOS;
 		m_tInfo.fSpeed = 3.f;
@@ -351,6 +358,11 @@ VOID ShotGunEvilSoul::State_Dead()
 {
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,
 		MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x));
+	for (int i = 1; i < _countof(m_tInfo.pGameObj); ++i)
+	{
+		if (m_tInfo.pGameObj[i] != nullptr)
+			m_tInfo.pGameObj[i]->Set_ObjectDead(true);
+	}
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }
