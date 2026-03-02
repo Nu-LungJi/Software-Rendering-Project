@@ -46,7 +46,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = MYSCALE->y * 0.5f; // 병합하다가 지우기 애매해서 놔둡니다. 오류나면 지워주세요
+	MYPOS->y = 1.f; // 병합하다가 지우기 애매해서 놔둡니다. 오류나면 지워주세요
   
 	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		ObjectDead = false;
@@ -58,7 +58,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	}
 	else
 	{
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 1.f;
 	}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
@@ -179,10 +179,12 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 		break;
 	}
 	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
+		AlphaSorting(Component_Transform->Get_Position());
 		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
+	
 }
 VOID ScorpionEvilSoul::Render_GameObject() {
 

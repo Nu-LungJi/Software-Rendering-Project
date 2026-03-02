@@ -156,7 +156,7 @@ VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJEC
 void Monster::Release_Hurdle(MONSTERINFO* _Info) {
 	if (_Info->_pHurdle != nullptr) {
 		_Info->_pHurdle->RefCount--;
-
+	
 		if (_Info->_pHurdle->RefCount == 0) {
 			vector<tagHurdleInfo*>* pContainer = MonsterManager::GetInstance()->Get_Hurdles();
 			for (auto it = pContainer->begin(); it != pContainer->end(); ++it) {

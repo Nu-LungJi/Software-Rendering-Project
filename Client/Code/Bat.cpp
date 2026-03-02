@@ -34,7 +34,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	{// ??? ???
 		GameObject::Update_GameObject(_DT);
 		Bat::State_Tracking(_DT);
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 1.f;
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 		return 1;
@@ -50,7 +50,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
-	//GameObject::Update_GameObject(_DT);
+	GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 

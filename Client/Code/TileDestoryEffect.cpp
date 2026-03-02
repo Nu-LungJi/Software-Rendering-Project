@@ -78,8 +78,6 @@ VOID TileDestoryEffect::LateUpdate_GameObject(const _float& _DT) {
 VOID TileDestoryEffect::Render_GameObject()
 {
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
     if (m_bEffect)
     {
         GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
@@ -89,8 +87,6 @@ VOID TileDestoryEffect::Render_GameObject()
 
     }
 
-    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
@@ -126,7 +122,9 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 					Pos.y += 2.f;
 					Pos.z -= 0.5f;
 
-					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, {4.f,4.f,4.f}, Rot));
+					//GameObject* pObj = TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, { 4.f,4.f,4.f }, Rot);
+					//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_S, 0, Pos, {4.f,4.f,4.f}, Rot));
 
 					Set_ObjectDead(TRUE);
 				}
@@ -143,7 +141,7 @@ void TileDestoryEffect::Frame_Move(const FLOAT& _DT)
 				{
 					TileDestoryEffect* pDestory = TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_T, 0, Pos, { 4.f,4.f,4.f }, Rot);
 					pDestory->Set_ObjectTag(L"Tile_Boom");
-					pDestory->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_PLAYER);
+					pDestory->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 				
 					SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pDestory);
 				

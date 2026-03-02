@@ -23,8 +23,6 @@ INT	ShopKeeper::Update_GameObject(const _float& _DT) {
 	}
 		
 	GameObject::Update_GameObject(_DT);
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
 	TalkWithShopKeeper(_DT);
 
 	if (bQuest)
@@ -33,6 +31,8 @@ INT	ShopKeeper::Update_GameObject(const _float& _DT) {
 		bQuest = false;
 	}
 	//dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"NPC_Shop"))->Set_SpeechPos(Component_Transform->Get_Position());
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 	return 0;
 }
@@ -97,7 +97,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 
 	if (_Other->Get_ObjectTag() == L"Player") {
 
-		//퀘스트 수락할 경우 왼쪽 미니게임 포탈 열림
+		//퀘스트 수락할 경우 왼쪽 미니게임 포탈 열림 지금은 충돌시 바로 열림
 		bQuest = true;
 		//PlayerUI->PopUp_Interaction_Notice(L"대화하기", TRUE);
 		//Speech_BubbleUI->Set_Active(TRUE);

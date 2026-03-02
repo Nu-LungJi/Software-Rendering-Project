@@ -137,16 +137,6 @@ VOID CXZTile::Render_GameObject()
         }
         else if (m_pTileInfo->Get_PotalOpen())
         {
-            GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-            GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, Argb);
-
-            GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-            GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-            GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
-
-            GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-            GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); //위에 두개 옵션 혼합해라
-            GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
             GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
         }
         else return;
@@ -171,22 +161,6 @@ VOID CXZTile::Render_GameObject()
 
     if (m_pBuffer != nullptr)
         m_pBuffer->Render_Buffer();
-
-    if (m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_POTALGASI_EFFECT || m_pTileInfo->Get_TileStateName() == TILE_STATE::STATE_UNDERTILE)
-    {
-
-        //GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTSS_ALPHAARG1);
-        //GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-        //GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTSS_COLORARG1);
-        //GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-        //
-        //GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-        //
-        //GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
-    }
-
-
-    //GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
     GRPDEV->SetTexture(0, NULL);
 }
 
@@ -243,7 +217,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         Tile_Potal_Effect(_DT);
         break;
     case TILE_STATE::STATE_TRIGGER:
-        Tile_Trigger();
+        //Tile_Trigger();
         break;
     case TILE_STATE::STATE_POTALGASI:
         break;
@@ -251,7 +225,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Tile_Gasi_Destory();
         break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
-       Tile_Gasi_Destory(_DT);
+         Tile_Gasi_Destory(_DT);
         break;
     case TILE_STATE::STATE_UNDERTILE:
         if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&

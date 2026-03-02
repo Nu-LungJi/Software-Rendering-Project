@@ -47,7 +47,7 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 	}
 	else
 	{
-		MYPOS->y = MYSCALE->y * 0.5f;
+		MYPOS->y = 1.f;
 	}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);

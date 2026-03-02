@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
@@ -15,8 +15,8 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 		break;
 	  case TILE_SPAWNER::RANDOM_SPAWNER:
 		  
-		  for (int i = 0; i < 3; ++i)
-		  {
+		for (int i = 0; i < 3; ++i)
+		{
 			  if (TileManager::GetInstance()->Get_Defense().size() > 2000)
 				  break;
 			  _int iRand = rand() % 5;
@@ -24,11 +24,10 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  switch (iRand)
 			  {
 			  case 0:
-
+		
 				  pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
@@ -37,11 +36,14 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  case 3:
 				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
 				  break;
+			  case 4:
+				  pObj = EvilFrog::Create(GRPDEV, vPos, true);
+				  break;
 			  }
 			  if(pObj != nullptr)
 			  TileManager::GetInstance()->Get_Defense().push_back(pObj);
 			 
-		  }
+		}
 		  
 		break;
 	}
@@ -136,16 +138,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	switch (m_pTileInfo->Get_Spawner())
 	{
 	case TILE_SPAWNER::NPC1:
-		if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_STAGE4)
-		{
-			if (!m_bSpawn)
-			{
-				ShopKeeper* pObj = ShopKeeper::Create(GRPDEV, *m_pTransform->Get_Position());
-				pObj->Set_ObjectTag(L"ShopNPC");
-				SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
-				m_bSpawn = true;
-			}
-		}
+		//if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_STAGE4)
+		//{
+		//	if (!m_bSpawn)
+		//	{
+		//		ShopKeeper* pObj = ShopKeeper::Create(GRPDEV, *m_pTransform->Get_Position());
+		//		pObj->Set_ObjectTag(L"ShopNPC");
+		//		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+		//		m_bSpawn = true;
+		//	}
+		//}
 		break;
 
 	case TILE_SPAWNER::NPC2:
@@ -229,7 +231,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -239,7 +241,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	  Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -270,7 +272,8 @@ void Spawner::CL_Spawn()
 void Spawner::Defense_Spawn(const _float& _DT)
 {
 	m_fDefense += _DT;
-
+	if (m_bEndGame)
+		return;
 	if (dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI")) != nullptr)
 	{
 		if (dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Get_End())
@@ -280,7 +283,7 @@ void Spawner::Defense_Spawn(const _float& _DT)
 				CollisionManager::GetInstance()->Delete_ColliderObject(iter);
 				Safe_Release(iter);
 			}
-				
+
 			m_vecMonsterDefense.clear();
 
 			for (auto& iterer : TileManager::GetInstance()->Get_Defense())
@@ -290,11 +293,13 @@ void Spawner::Defense_Spawn(const _float& _DT)
 
 				Safe_Release(iterer);
 			}
-
-
+			TileManager::GetInstance()->Get_Defense().clear();
+			m_bEndGame = true;
 			return;
 		}
 	}
+		
+	
 	
 	if (m_fDefense > m_SpawnDelay)
 	{
@@ -390,7 +395,7 @@ HRESULT Spawner::Component_Initialize(TILE_SIDE eid, TILE_SPAWNER eSpawn) {
 		m_pBuffer = ADD_COMPONENT_TILE;
 		break;
 	}
-
+	m_pTileInfo->Set_TileSpawner(eSpawn);
 	return S_OK;
 }
 

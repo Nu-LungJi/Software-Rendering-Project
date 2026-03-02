@@ -313,8 +313,9 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 	{
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
-		
+		// 광윤 추가 ▼
 		Button_Lock = TRUE;	// 키보드 입력 무효화 ON
+
 		Player* player = dynamic_cast<Player*> (SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
 		_vec3* playerPos = (dynamic_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 

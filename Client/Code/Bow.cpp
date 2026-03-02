@@ -112,7 +112,7 @@ INT Bow::Update_GameObject(const _float& _DT)
 		matWorld._43 = (*_bowPos).z - offsetY;
 
 		Component_Transform->Set_World(&matWorld);
-		//Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
+		Component_Transform->Set_Pos({ matWorld._41 , matWorld._42 , matWorld._43 });
 
 		// 차징
 		if (KEY_HOLD(DIK_SPACE)) {
@@ -171,6 +171,8 @@ INT Bow::Update_GameObject(const _float& _DT)
 	}
 	else
 		_alphaRatio = 0.f;
+
+	AlphaSorting(Component_Transform->Get_Position());
 	
 	return S_OK;
 }
@@ -196,8 +198,8 @@ VOID Bow::Render_GameObject()
 
 		// 초기화
 		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
-		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	}
 	
 	return VOID();

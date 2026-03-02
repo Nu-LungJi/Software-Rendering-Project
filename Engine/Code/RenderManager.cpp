@@ -58,10 +58,13 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 		if(_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
 	}
-
+	
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::MONSTER_EFFECT);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_FRONT_EFFECT);
+
+	//_GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::PLAYER_EFFECT);
+	//_GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
@@ -80,7 +83,8 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			}
 		}
 	}
-	//EffectManager::GetInstanceku()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
+	//씬 전환 가림막
+	EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
 
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
