@@ -10,14 +10,6 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
-	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
 
@@ -56,8 +48,6 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 		ObjectDead = true;
 	}
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
@@ -132,7 +122,17 @@ BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 }
 BOOL Bullet_Chain::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 BOOL Bullet_Chain::OnCollisionExit(GameObject* _Other)
 {

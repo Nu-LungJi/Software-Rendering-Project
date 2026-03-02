@@ -204,7 +204,7 @@ HRESULT MonsterEffect::Monster_SummonEffect_Set(LPDIRECT3DDEVICE9 GRPDEV, Transf
 
 	_vec3 vPos = *TransCom->Get_Position();
 	_vec3 vScale = *TransCom->Get_Scale();
-	_float fScale = (vScale.x > vScale.y) ? vScale.x : vScale.y;
+	_float fScale = (vScale.x > vScale.y) ? vScale.x * 1.5f : vScale.y * 1.5f;
 	MonsterEffect* pEffect = nullptr;
 
 	if (*bTrigger == 0) {

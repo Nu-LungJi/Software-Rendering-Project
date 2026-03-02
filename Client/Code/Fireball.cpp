@@ -27,8 +27,7 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 
 
 	Monster::Destory_Tile(this);
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
+
 	Component_Collider->Update_Component(_DT);
 
 

@@ -280,7 +280,16 @@ BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 	return FALSE;
 }
 BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
-
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
 	return FALSE;
 }
 BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)

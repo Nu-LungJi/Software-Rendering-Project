@@ -76,8 +76,6 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 		}
 	}
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
@@ -215,7 +213,17 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 
 BOOL ScorpionBullet::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 
 BOOL ScorpionBullet::OnCollisionExit(GameObject* _Other)
