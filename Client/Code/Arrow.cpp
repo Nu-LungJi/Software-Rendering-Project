@@ -647,6 +647,7 @@ BOOL Arrow::OnCollisionStay(GameObject* _Other)
 
 VOID Arrow::Free()
 {
+    CollisionManager::GetInstance()->Delete_ColliderObject(this);
     GameObject::Free();
 }
 

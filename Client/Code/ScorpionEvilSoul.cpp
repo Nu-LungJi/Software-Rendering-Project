@@ -288,7 +288,7 @@ BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)
 	return FALSE;
 }
 VOID ScorpionEvilSoul::Free() {
-
+	CollisionManager::GetInstance()->Delete_ColliderObject(this);
 	GameObject::Free();
 }
 
