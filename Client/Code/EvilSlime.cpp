@@ -436,6 +436,7 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 		for (int i = 1; i < EVILSLIME_BULLET_NUM + 1; ++i)
 		{
 			static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i])->Get_Info()->fTimer[0] = m_tInfo.fTimer[0];
+      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Guardian_IceFairy_GroundHit_02.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		}
 	}
 

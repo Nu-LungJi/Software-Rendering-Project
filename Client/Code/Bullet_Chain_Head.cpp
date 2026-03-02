@@ -31,6 +31,7 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() < 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ChainAttack.wav", CHANNELID::SOUND_EFFECT08, 0.05f);
 
 		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;

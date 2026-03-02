@@ -304,6 +304,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ShotGun_Monster_35_Attack.wav", CHANNELID::SOUND_EFFECT06, 0.3f);
 	}
 
 	m_tInfo.fTimer[0] += _DT;

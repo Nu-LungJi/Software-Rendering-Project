@@ -166,7 +166,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 2.5f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
-            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 1.5f, 1.5f, 1.5f };
@@ -411,7 +411,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.35f);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
             }
             break;
