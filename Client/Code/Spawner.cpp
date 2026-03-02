@@ -25,19 +25,19 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  {
 			  case 0:
 		
-				  //pObj = Bat::Create(GRPDEV, vPos, true);
+				  pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
+				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
-				  //pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				  pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 3:
-				  //pObj = EvilSlime::Create(GRPDEV, vPos, true);
+				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
 				  break;
 			  case 4:
-				  //pObj = EvilFrog::Create(GRPDEV, vPos, true);
+				  pObj = EvilFrog::Create(GRPDEV, vPos, true);
 				  break;
 			  }
 			  if(pObj != nullptr)
@@ -210,7 +210,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -221,7 +221,7 @@ void Spawner::Monster_Spawn2()
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
 
-		//Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -231,7 +231,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -241,7 +241,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -262,10 +262,10 @@ void Spawner::CL_Spawn()
 	
 	if (!m_bSpawn)
 	{
-		//Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
-		//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-		//pCL->Set_ObjectTag(L"CheonLog");
-		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+		Cheonlog* pCL = Cheonlog::Create(GRPDEV, vPos);
+		pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		pCL->Set_ObjectTag(L"CheonLog");
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
 		m_bSpawn = true;
 	}
 }
