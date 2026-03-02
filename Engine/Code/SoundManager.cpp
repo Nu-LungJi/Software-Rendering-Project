@@ -9,12 +9,16 @@ HRESULT SoundManager::Ready_SoundManager() {
 	System_Create(&SoundSystem);
 	SoundSystem->init(32, FMOD_INIT_NORMAL, NULL);
 
+	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT01]);
+
 	return S_OK;
 }
 VOID SoundManager::Update_SoundManager() {
-
+	SoundSystem->update();
 }
-HRESULT SoundManager::Play_Sound(const TCHAR* _FilePath, CHANNELID _SoundChannel) {
+HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume)
+{
 	Sound* SoundObject = nullptr;
 
 	string RootPath = "../../Sound/";
@@ -27,14 +31,51 @@ HRESULT SoundManager::Play_Sound(const TCHAR* _FilePath, CHANNELID _SoundChannel
 
 	auto iter = find_if(SoundMap.begin(), SoundMap.end(), CTag_Finder(_FilePath));
 
+	Channel* pSound = nullptr;
+	
+	if (iter == SoundMap.end()) {
+		SoundSystem->createSound(RootPath.c_str(), FMOD_LOOP_OFF | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
+		SoundMap.insert({ _FilePath, SoundObject });
+		SoundSystem->playSound(SoundObject, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
+	
+		
+	}
+	else {
+		SoundSystem->playSound(iter->second, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
+		
+	}
+	pSound->setVolume(Volume);
+	return S_OK;
+
+}
+HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume) {
+	Sound* SoundObject = nullptr;
+
+	string RootPath = "../../Sound/";
+	wstring strUni = _FilePath;
+
+	int len = WideCharToMultiByte(CP_ACP, 0, &strUni[0], -1, NULL, 0, NULL, NULL);
+	string strMulti(len, 0);
+	WideCharToMultiByte(CP_ACP, 0, &strUni[0], -1, &strMulti[0], len, NULL, NULL);
+	RootPath += strMulti;
+
+	auto iter = find_if(SoundMap.begin(), SoundMap.end(), CTag_Finder(_FilePath));
+
+	IsPlaying(_SoundChannel);
+
+	Channel* pSound = nullptr;
+
 	if (iter == SoundMap.end()) {
 		SoundSystem->createStream(RootPath.c_str(), FMOD_LOOP_NORMAL | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
 		SoundMap.insert({ _FilePath, SoundObject });
 		SoundSystem->playSound(SoundObject, NULL, FALSE, &SoundChannel[(LONG)_SoundChannel]);
 	}
 	else {
-		SoundSystem->playSound(iter->second, NULL, FALSE, &SoundChannel[(LONG)_SoundChannel]);
+		SoundSystem->playSound(iter->second, NULL, FALSE, &pSound);
+		
 	}
+
+	SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
 	return S_OK;
 }
 HRESULT SoundManager::Stop_Sound(CHANNELID _SoundChannel) {

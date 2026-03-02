@@ -7,13 +7,21 @@ GameManager::~GameManager() { Free(); }
 HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
+
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
+	DamageFontManager::GetInstance()->Ready_DamageFontManager();
+
+
 	return S_OK;
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
 	//TileManager::GetInstance()->Update_TileList(_DT);
+	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
+	
 }
 VOID	GameManager::LateUpdate_GameManager(CONST FLOAT& _DT) {
 	KeyManager::GetInstance()->LateUpdate_KeyManager(_DT);
@@ -49,13 +57,18 @@ HRESULT GameManager::Ready_DefaultSetting() {
 	return S_OK;
 }
 HRESULT GameManager::Ready_SceneSetting() {
+	Scene* EnterScene = StartScene::Create(GRPDEV);
+	//Scene* EnterScene = DebugScene::Create(GRPDEV);
+	//Scene* EnterScene = MapScene::Create(GRPDEV);
+	//Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
+	//Scene* EnterScene = MiniGameScene::Create(GRPDEV);
 
-	Scene* StartScene = StartScene::Create(GRPDEV);
-	//Scene* MapScene = MapScene::Create(GRPDEV);
-	if (StartScene == nullptr)	return E_FAIL;
-	if (FAILED(SceneManager::GetInstance()->Scene_Transition(StartScene))) {
+
+	if (EnterScene == nullptr)	return E_FAIL;
+	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
+
 		MSG_BOX("Cannot Setting LogoScene.");
-		Safe_Release(StartScene);
+		Safe_Release(EnterScene);
 		return E_FAIL;
 	}
 	return S_OK;
@@ -73,7 +86,7 @@ VOID		 GameManager::Free() {
 
 	Safe_Release(DEVCLASS);
 	Safe_Release(GRPDEV);
-
+	
 	GraphicDevice	::DestroyInstance();
 	KeyManager		::DestroyInstance();
 	CollisionManager::DestroyInstance();
@@ -83,9 +96,11 @@ VOID		 GameManager::Free() {
 	SoundManager	::DestroyInstance();
 	RenderManager	::DestroyInstance();
 	GUIManager		::DestroyInstance();
-	TileManager		::DestroyInstance();
+	TileManager	    ::DestroyInstance();
 	ResourceManager	::DestroyInstance();
-	UIManager			::DestroyInstance();
+	UIManager		::DestroyInstance();
 	EffectManager	::DestroyInstance();
+	MonsterManager	::DestroyInstance();
+	DamageFontManager::DestroyInstance();
 	DEVCLASS		->DestroyInstance();
 }

@@ -17,19 +17,47 @@ struct ENGINE_DLL SpriteINFO {
 	D3DXVECTOR2	Get_Pos() { return { POS.x, POS.y }; }
 	VOID	Move_Pos(FLOAT _TX, FLOAT _TY, FLOAT _Speed) {
 		if (POS.x > _TX) {
-
+			POS.x -= _Speed;
 		}
 	}
 
 	VOID	Set_Scale(FLOAT _X, FLOAT _Y)	{ WIDTH = _X, HEIGHT = _Y; }
 
 	VOID	Set_Opacity(FLOAT _V) { OPACITY = _V; }
-	VOID	Decrease_Opacity(FLOAT _V) { if (OPACITY > 0)	OPACITY -= _V; }
-	VOID	QuickDecrease_Opacity(FLOAT _V) { 
-		while (OPACITY > 0.f) { OPACITY -= _V; }
+	VOID	Decrease_Opacity(FLOAT _V) { 
+		if (OPACITY > 0)	
+			OPACITY -= _V;
+	}
+	VOID	Increase_Opacity(FLOAT _V) { 
+		if (OPACITY <= 254)	
+			OPACITY += _V; 
+		if (OPACITY > 254)
+			OPACITY = 255;
 	}
 
 	VOID	Set_Visible(BOOL  _B) { VISIBLE = _B; }
+};
+
+struct ENGINE_DLL ItemINFO {
+	enum ITINFO { KEY, NAME, CLASS, EFFECT01, EFFECT02, EFFECT03, DESC, EXDESC, INVFRAME, INFFRAME};
+
+	LPDIRECT3DTEXTURE9		TEXTURE;
+
+	vector<wstring>			ItemDesc;
+
+	_int					ItemPrice;
+	_int					ItemType;
+
+	VOID	Set_ItemClass(wstring _Class) { ItemDesc[(LONG)CLASS] = _Class; }
+	wstring Get_ItemClass() { return ItemDesc[(LONG)CLASS]; }
+
+	VOID	Set_ItemDesc(wstring _Desc) { ItemDesc[(LONG)DESC] = _Desc; }
+	wstring Get_ItemDesc() { return ItemDesc[(LONG)DESC]; }
+
+	VOID	Set_ItemExDesc(wstring _ExDesc) { ItemDesc[(LONG)EXDESC] = _ExDesc; }
+	wstring Get_ItemExDesc() { return  ItemDesc[(LONG)EXDESC]; }
+
+	ItemINFO() : TEXTURE(nullptr), ItemDesc{}, ItemPrice(0), ItemType(0) { ItemDesc.resize((LONG)ITINFO::INFFRAME + 1); }
 };
 
 class ENGINE_DLL SpriteObject: public Component {
@@ -44,7 +72,8 @@ public:
 	INT			Update_Sprite();
 	VOID		Render_Sprite();
 
-	HRESULT		Import_Sprite(CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY = 255);
+	SpriteINFO*		Import_Sprite(CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY = 255);
+	SpriteINFO*		Import_SpriteEX(wstring _RootPath, CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY = 255);
 
 	vector<SpriteINFO>* Get_TextureList() { return &TextureList; }
 	SpriteINFO*			Get_Texture(wstring _KEY);
