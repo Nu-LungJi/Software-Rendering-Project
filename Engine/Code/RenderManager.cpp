@@ -15,7 +15,6 @@ VOID RenderManager::Add_RenderGroup(RENDERID _RID, GameObject* _GOBJ) {
 	_GOBJ->AddRef();
 }
 VOID RenderManager::Render_GameObject(LPDIRECT3DDEVICE9& _GRPDEV) {
-
 	Render_TILE(_GRPDEV);
 	Render_Priority(_GRPDEV);
 	Render_NonAlpha(_GRPDEV);
@@ -38,6 +37,10 @@ VOID RenderManager::Render_Priority(LPDIRECT3DDEVICE9& _GRPDEV) {
 }
 VOID RenderManager::Render_NonAlpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	for (auto& _OBJ : RenderGroup[RENDER_NONALPHA]) {
+		RenderGroup[RENDER_NONALPHA].sort([](GameObject* DEST, GameObject* SRC)->bool
+		{
+			return DEST->Get_AlphaZValue() > SRC->Get_AlphaZValue();
+		});
 		if (_OBJ->Get_ObjectDead() == FALSE)
 			_OBJ->Render_GameObject();
 	}
@@ -83,8 +86,10 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			}
 		}
 	}
-	//씬 전환 가림막
-	EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut")->Render_GameObject();
+
+	GameObject* pBlackOut = EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"BlackOut");
+	if (pBlackOut != nullptr)
+		pBlackOut->Render_GameObject();
 
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)

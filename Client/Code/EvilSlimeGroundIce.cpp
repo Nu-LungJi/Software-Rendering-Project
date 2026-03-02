@@ -21,13 +21,10 @@ HRESULT EvilSlimeGroundIce::Ready_GameObject() {
 	return	S_OK;
 }
 INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
+
 	Component_Collider->Update_Component(_DT);
 
 	m_tInfo.fTimer[0] += _DT;
-
-	//Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
 	{
@@ -44,6 +41,7 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 		{
 			MYPOS->z + 0.001f;
 			m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, {MYPOS->x, 0.002f, MYPOS->z});
+			m_tInfo.pGameObj[1]->AddRef();
 			Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
 			pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
 			pAlert->Get_Info()->pGameObj[1] = this;
@@ -98,6 +96,7 @@ VOID EvilSlimeGroundIce::LateUpdate_GameObject(const _float& _DT) {
 }
 VOID EvilSlimeGroundIce::Render_GameObject() {
 
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -129,8 +128,6 @@ HRESULT EvilSlimeGroundIce::Component_Initialize() {
 	Component_Collider->Set_Hp(0.f);
 	Component_Collider->Set_Att(0.f);
 
-	//return FAILED(Monster::Set_TextureList(L"Spr_Effect_BlueEvilSlimeGroudIceEffect", &m_tInfo));
-
 	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect, (uint8_t)BULLET_TYPE::GroundIce, 0);
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
@@ -140,21 +137,23 @@ BOOL EvilSlimeGroundIce::OnCollisionEnter(GameObject* _Other)
 }
 BOOL EvilSlimeGroundIce::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 BOOL EvilSlimeGroundIce::OnCollisionExit(GameObject* _Other)
 {
 	return 0;
 }
-//EvilSlimeGroundIce* EvilSlimeGroundIce::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
-//	EvilSlimeGroundIce* NPN = new EvilSlimeGroundIce(_GRPDEV);
-//	if (FAILED(NPN->Ready_GameObject())) {
-//		MSG_BOX("Cannot Create EvilSlimeGroundIce.");
-//		Safe_Release(NPN);
-//		return nullptr;
-//	}
-//	return NPN;
-//}
+
 VOID EvilSlimeGroundIce::Free() {
 	GameObject::Free();
 }

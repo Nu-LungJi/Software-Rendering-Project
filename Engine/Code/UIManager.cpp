@@ -101,5 +101,4 @@ VOID UIManager::Free() {
     Safe_Release(DXSprite);
     ItemList.clear();
     FontList.clear();
-
 }

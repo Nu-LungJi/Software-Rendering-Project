@@ -7,6 +7,8 @@ CXZTile::~CXZTile() {}
 
 HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
 
+    m_bPotalOpen = false;
+
     if (FAILED(Component_Initialize(eid, eState))) return E_FAIL;
     m_fHeight = rand() % 4 + 1;
 
@@ -217,7 +219,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         Tile_Potal_Effect(_DT);
         break;
     case TILE_STATE::STATE_TRIGGER:
-        //Tile_Trigger();
+        Tile_Trigger();
         break;
     case TILE_STATE::STATE_POTALGASI:
         break;
@@ -331,15 +333,16 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
     Transform* pTransform = Crash_Player();
     if (Crash_Player() != nullptr)
     {
-        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHER1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS)
+
+        _vec3 vPos = m_pTileInfo->Get_NextPos();
+         if (!m_bEffect)
         {
             _vec3 vPos = m_pTileInfo->Get_NextPos();
-            dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
-            return;
-        }
-        if (!m_bEffect)
-        {
-            _vec3 vPos = m_pTileInfo->Get_NextPos();
+            if(!m_bEffect&& !m_bPotalOpen)
+            { 
+              SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+              m_bPotalOpen = TRUE;
+            }
             dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
             m_bEffect = true;
         }

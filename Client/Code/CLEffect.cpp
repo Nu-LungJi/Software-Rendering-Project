@@ -25,6 +25,7 @@ HRESULT CLEffect::Ready_Effect(CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3
 	case CL_EFFECT::LEAF_CHARGING:
 		break;
 	case CL_EFFECT::LEAF_SPIN:
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_pattern_rage1.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
 		break;
 	case CL_EFFECT::LEAF_SPIN_DEATH:
 		break;
@@ -219,7 +220,10 @@ void CLEffect::Move_Normal(const _float& _DT)
 
 				if (m_eEffect == CL_EFFECT::SPAWN_BOOM)
 					dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog"))->Set_Statu(vPos);
-			
+				
+				if(m_eEffect == CL_EFFECT::LEAF_SPIN_DEATH)
+					SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SeedlingDeath.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
 				Set_ObjectDead(m_bDead);
 			}
 		}
@@ -246,36 +250,6 @@ void CLEffect::Move_Frame(const _float& _DT)
 		Move_Normal(_DT);
 		break;
 	case CL_EFFECT::LEAF_EXPLOSION_CIRCLE:
-		if (m_bDead == FALSE)
-		{
-			if (m_FrameTick > m_fFrame)
-			{
-				++m_TextureIndex;
-				m_FrameTick = 0.f;
-				++m_iCnt;
-			}
-			if (m_TextureIndex > CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1)
-			{
-				m_TextureIndex = CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1;
-			}
-			if (m_iCnt > 17)
-				Set_ObjectDead(TRUE);
-		}
-		else if (m_bDead == TRUE)
-		{
-			++m_TextureIndex;
-			m_FrameTick = 0.f;
-
-			if (m_TextureIndex > CHEONLOG->Get_EffectTexture(m_eEffect).size() - 1)
-			{
-				m_TextureIndex = 0;
-
-				if (m_bDead)
-				{
-					Set_ObjectDead(m_bDead);
-				}
-			}
-		}
 		break;
 	case CL_EFFECT::LEAF_SPIN:
 		if (m_FrameTick > m_fFrame && CL_EFFECT::LEAF_SPIN == m_eEffect && m_TextureIndex != 5)

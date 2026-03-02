@@ -32,6 +32,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
 
 			for (auto& TXT : ItemInfo_Text) {
@@ -41,6 +42,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 			}
 		}
 		else if (UIManager::GetInstance()->Get_Active() == FALSE){
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Close_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = FALSE;
 			FocusOn_EquipedItem = FALSE;
 
@@ -239,11 +241,33 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InvenFrame_GreenBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
 
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png",  L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png",  L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
+
+	ItemINFO* it06 = new ItemINFO;
+	it06->ItemDesc = {
+		L"헤르메스의 신발",
+		L"아티펙트/희귀",
+
+		L"이동속도가 20% 증가합니다.",
+		L"",
+		L"",
+
+		L"",
+
+
+		L"" ,
+
+		L"DIC_InvenFrame_Relic_Item1",
+		L"DIC_InfoFrame_Relic_Item1"
+	};
+	it06->ItemPrice = 70;
+	it06->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
@@ -343,7 +367,8 @@ HRESULT PlayerInven::Item_Initialize() {
 	Append_Item(it04);
 	Append_Item(it02);
 	Append_Item(it01);
-	Append_Item(it05);
+	Append_Item(it06);
+	//Append_Item(it05);
 
 	return S_OK;
 }
@@ -353,6 +378,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		if (KEY_DOWN(DIK_W)) {
 			if (SavedItemIndex <= 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex -= 5;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 5);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -362,12 +388,14 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		}
 		else if (KEY_DOWN(DIK_A)) {
 			if (SavedItemIndex == 1 || SavedItemIndex == 6) {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
 				Component_Sprite->Get_Texture(SelectedFrame)->Set_Visible(FALSE);
 				FocusOn_EquipedItem = TRUE;
 				Selecting_EquipItem();
 			}
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex -= 1;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex + 1);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -378,6 +406,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 		else if (KEY_DOWN(DIK_S)) {
 			if (SavedItemIndex >= 6)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				SavedItemIndex += 5;
 				wstring PastFrame = L"INV_HighLight" + to_wstring(SavedItemIndex - 5);
 				wstring SelectedFrame = L"INV_HighLight" + to_wstring(SavedItemIndex);
@@ -386,6 +415,7 @@ HRESULT PlayerInven::Selecting_SavedItem() {
 			}
 		}
 		else if (KEY_DOWN(DIK_D)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			if (SavedItemIndex == 10)	return E_FAIL;
 			else {
 				SavedItemIndex += 1;
@@ -417,6 +447,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		if (KEY_DOWN(DIK_W)) {
 			if (EquipedItemIndex <= 4)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex -= 4;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 4);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -427,6 +458,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		else if (KEY_DOWN(DIK_A)) {
 			if (EquipedItemIndex == 1 || EquipedItemIndex == 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex -= 1;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex + 1);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -437,6 +469,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 		else if (KEY_DOWN(DIK_S)) {
 			if (EquipedItemIndex >= 5)	return E_FAIL;
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex += 4;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 4);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -467,6 +500,7 @@ HRESULT PlayerInven::Selecting_EquipItem() {
 				return S_OK;
 			}
 			else {
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select up.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 				EquipedItemIndex += 1;
 				wstring PastFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex - 1);
 				wstring SelectedFrame = L"EQP_HighLight" + to_wstring(EquipedItemIndex);
@@ -483,6 +517,7 @@ HRESULT PlayerInven::Equip_Item() {
 		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
 		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"장착";
 		if (KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			if (FocusOn_SavedItem) {
 				swap(Saved_ItemList[SavedItemIndex - 1], *EquipObject);
 				PlayerObject->Chage_Item(srcIdx, SavedItemIndex + 7);
@@ -512,22 +547,26 @@ HRESULT PlayerInven::Equip_Item() {
 
 	if (FocusOn_SavedItem) {
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			EquipMode = TRUE;
 			EquipObject = &Saved_ItemList[SavedItemIndex - 1];
 			srcIdx = SavedItemIndex +7;
 		}
 		if (Saved_ItemList[SavedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Saved_ItemList[SavedItemIndex - 1];
 			Safe_Delete(Saved_ItemList[SavedItemIndex - 1]);
 		}
 	}
 	if (FocusOn_EquipedItem) {
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_E)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			EquipMode = TRUE;
 			EquipObject = &Equip_ItemList[EquipedItemIndex - 1];
 			srcIdx = EquipedItemIndex - 1;
 		}
 		if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && KEY_DOWN(DIK_Q)) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Equip_ItemList[EquipedItemIndex - 1];
 			Safe_Delete(Equip_ItemList[EquipedItemIndex - 1]);
 		}
@@ -662,6 +701,40 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 		}
 		return E_FAIL;
 	}
+	return S_OK;
+}
+HRESULT PlayerInven::Buy_Item(INT itemIdx)
+{
+	switch (itemIdx) {
+	case 3:
+		ItemINFO * it06 = new ItemINFO;
+		it06->ItemDesc = {
+			L"얼음 정령의 활",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"일반 공격력 14 - 16",
+			L"공격 속도 2",
+
+			L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
+
+			L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
+
+			L"DIC_InvenFrame_IceBow",
+			L"DIC_InfoFrame_IceBow"
+		};
+		it06->ItemPrice = 68;
+		it06->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
+		for (int idx = 0; idx < 10; idx++) {
+			if (nullptr == Saved_ItemList[idx]) {
+				Append_Item(it06);
+				break;
+			}
+		}
+		break;
+	}
+
 	return S_OK;
 }
 PlayerInven* PlayerInven::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

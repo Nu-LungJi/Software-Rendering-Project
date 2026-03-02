@@ -10,16 +10,8 @@ HRESULT Bullet_Chain::Ready_GameObject() {
 }
 INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 {
-	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->y * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
 
 	if (m_tInfo.bTrigger[0])
 	{
@@ -40,14 +32,15 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 
 
 	//Kill Timer
-	if (m_tInfo.fTimer[0] >= 2.f)
+	if (m_tInfo.fTimer[0] >= 3.f)
 	{
 		Component_Collider->Set_Hp(-1.f);
 	}
 
-	if (Component_Collider->Get_Hp() < 0.f)
+	if (Component_Collider->Get_Hp() <= 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ChainAttack.wav", CHANNELID::SOUND_EFFECT08, 0.02f);
 
 		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
@@ -56,8 +49,6 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 		ObjectDead = true;
 	}
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
@@ -87,6 +78,8 @@ VOID Bullet_Chain::LateUpdate_GameObject(const _float& _DT) {
 
 }
 VOID Bullet_Chain::Render_GameObject() {
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -127,12 +120,30 @@ Bullet_Chain* Bullet_Chain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"PlayerArrow") {
 
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		return TRUE;
+	}
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
+	}
 	return FALSE;
 }
 BOOL Bullet_Chain::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 BOOL Bullet_Chain::OnCollisionExit(GameObject* _Other)
 {

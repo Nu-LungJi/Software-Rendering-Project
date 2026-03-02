@@ -33,18 +33,22 @@ public:		// Trigger Function
 	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
 	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
-	VOID			PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT);
+	VOID			PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type);
 
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubble = TRUE; }
-	VOID			Speech_PopUp_Skill(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubbleSkill = TRUE; ImgFrame = 1; FrameTimer = 0.f;  Effect = nullptr; }
+	VOID			Speech_PopUp_Skill(wstring _Text, int type) { Speech_Text = _Text; Enable_SpeechBubbleSkill = TRUE; ImgFrame = 1; FrameTimer = 0.f;  Effect = nullptr; skillType = type; }
 
-	VOID			Set_FadeOption(INT _OPT) { Enable_MainUIFade = _OPT; }
+	VOID			Set_FadeOption(INT _OPT, FLOAT _SPEED) { Enable_MainUIFade = _OPT; FadeSpeed = _SPEED; }
 
 	VOID			Set_EnableSpeechBubble(BOOL _ESB) {}
 
+	VOID			Set_BossMaxHP(FLOAT _HP) { MaxHP = _HP; }
 
+	VOID			Set_EnableBossTitle(INT _EBT) { Enable_BossTitle = _EBT; }
 private:
-	VOID			MainUI_FadeAction(CONST FLOAT& _DT);
+	VOID			MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED);
+	VOID			Display_BossTitle(CONST FLOAT& _DT);
+	VOID			Synchronize_BossHPBar();
 
 public:
 	HRESULT Component_Initialize();
@@ -86,11 +90,33 @@ private:
 	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
 	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
 	
+////////////////////////////////////////////// 보스전 활용 변수들
+	vector<FontObject*> AllFontOBJ;
+	vector<SpriteINFO*> AllSpriteOBJ;
+	vector<UIEffect*>	AllUIEffect;
+	FLOAT				GlobalOPC;
+	INT					EffectFaded;
+	FLOAT				FadeSpeed;
+
+	FLOAT				MaxHP;
+	FLOAT				CurrentHP;
+
+	_vec3				BarScale;
+	SpriteINFO*			HPBarFill;
+	SpriteINFO*			BossTitleBar;
+	ID3DXSprite*		BossHPSprite;
+
+	INT					Enable_BossTitle;
+	FLOAT				BossTitleTimer;
+	FontObject*			Title_Name;
+	FontObject*			Title_Tag;
+//////////////////////////////////////////////
 	// 스킬용 애니메이션
 	INT				ImgFrame;
 	FLOAT			FrameTimer;
 	SpriteINFO*		Effect;
 	BOOL			Enable_SpeechBubbleSkill;
+	INT				skillType;
 private:
 	virtual	VOID		Free();
 };

@@ -20,7 +20,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
-    Component_Collider->Set_Att(1);
+    Component_Collider->Set_Att(arrowAtk);
     _hp = 1;
     Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;
@@ -34,6 +34,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _searchDelay = 0.f;
     turnSpeed == D3DXToRadian(2.5f);
     _isReady = false;
+    _alphaRatio = 1.f;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -166,7 +167,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 2.5f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
-            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 1.5f, 1.5f, 1.5f };
@@ -181,7 +182,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             break;
         case ArrowType::EvilHeadCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
-            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_67_Lightning_Fire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_67_Lightning_Fire.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
             break;
         case ArrowType::Wind_Arrow:
             Size = { 1.5f, 1.5f, 1.5f };
@@ -411,7 +412,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.35f);
+                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
             }
             break;
@@ -481,6 +482,8 @@ VOID Arrow::Render_GameObject()
 
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
+    GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
+
     return VOID();
 }
 
@@ -498,6 +501,16 @@ HRESULT Arrow::Component_Initialize()
 
 void Arrow::SetGrahpic()
 {
+    DWORD tfactor = D3DCOLOR_ARGB(
+        (BYTE)(_alphaRatio * 255.f),
+        255, 255, 255
+    );
+
+    GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
+
     TCHAR FileName[128] = L"";
 
     // ÀÌÆåÆ® ¼Óµµ
@@ -562,6 +575,16 @@ void Arrow::SetGrahpic()
     }
     
     GRPDEV->SetTexture(0, (ResourceManager::GetInstance()->Find_Texture(FileName)));
+
+    // COLOR = Texture * TFACTOR
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+
+    // ALPHA = TextureAlpha * TFACTORAlpha
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 
 void Arrow::Destory_Tile()
@@ -620,16 +643,15 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     else if (Tag == L"CheonLog") {
         atk = 100.f;
         Component_Collider->Set_Hp(hp - atk);
-        //COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 1.f);
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
-        atk = 1.f;
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+        atk = 20.f;
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
@@ -647,6 +669,7 @@ BOOL Arrow::OnCollisionStay(GameObject* _Other)
 
 VOID Arrow::Free()
 {
+    CollisionManager::GetInstance()->Delete_ColliderObject(this);
     GameObject::Free();
 }
 

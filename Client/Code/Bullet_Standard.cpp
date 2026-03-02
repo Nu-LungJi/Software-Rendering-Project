@@ -11,22 +11,9 @@ HRESULT Bullet_Standard::Ready_GameObject() {
 	return S_OK;
 }
 INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
-	//if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	//else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-	//	ObjectDead = false;
-	//	return 0;
-	//}
-	//else
-	//{
-	//	MYPOS->y = MYSCALE->y * 0.5f;
-	//}
-	
+
 	Monster::Destory_Tile(this);	
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
+
 	Component_Collider->Update_Component(_DT);
 	
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
@@ -36,13 +23,12 @@ INT	Bullet_Standard::Update_GameObject(const _float& _DT) {
 
 	if (m_tInfo.fTimer[0] <= 0.f)
 	{
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV,
-			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.f, false);
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x * 2.f, 1.f, false);
 
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		pEffect = MonsterEffect::Create(GRPDEV,
-			MONSTER_EFFECT::BULLET_STANDARD_BIRTH, *MYPOS, MYSCALE->x, 1.2f, false);
+			MONSTER_EFFECT::BULLET_STANDARD_BIRTHRAY, *MYPOS, MYSCALE->x * 2.f, 1.2f, false);
 
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 	}
@@ -79,8 +65,7 @@ VOID Bullet_Standard::LateUpdate_GameObject(const _float& _DT) {
 	m_tInfo.vDirection.y = 0.f;
 	Component_Transform->Move_Pos(&m_tInfo.vDirection, m_tInfo.fSpeed, _DT);
 
-	//if (!static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->IsIn_Frustum(this)) return;
-
+	
 	m_tInfo.Textureinfo._frameTick += _DT;
 	if (m_tInfo.Textureinfo._frameTick > FRAMETICK)
 	{
@@ -98,6 +83,8 @@ VOID Bullet_Standard::Render_GameObject() {
 
 	if (m_tInfo.fTimer[0] < 1.f)
 		return;
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -141,11 +128,25 @@ BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
+	}
 	return FALSE;
 }
 BOOL Bullet_Standard::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 BOOL Bullet_Standard::OnCollisionExit(GameObject* _Other)
 {

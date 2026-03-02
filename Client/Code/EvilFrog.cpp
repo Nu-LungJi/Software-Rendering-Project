@@ -53,9 +53,6 @@ INT EvilFrog::Update_GameObject(const FLOAT& _DT) {
 
 	GameObject::Update_GameObject(_DT);
 
-	if (Component_Collider->Get_Hp() <= 0.f)
-		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
-
 	switch (m_tInfo.eState[0])
 	{
 	default:
@@ -227,9 +224,17 @@ VOID EvilFrog::State_Channeling(const _float& _DT) {
 
 VOID EvilFrog::State_Dead() {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+  SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Frog_Death.mp3", CHANNELID::SOUND_EFFECT07, 0.5f);
 	ObjectDead = TRUE;
 }
 BOOL EvilFrog::OnCollisionEnter(GameObject* _Other) {
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Player")
+	{
+		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		return TRUE;
+	}
 	return FALSE;
 }
 BOOL EvilFrog::OnCollisionStay(GameObject* _Other) {
