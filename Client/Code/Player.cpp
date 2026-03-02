@@ -253,7 +253,7 @@ HRESULT Player::Component_Initialize() {
 	Component_Texture	= ADD_COMPONENT_TEXTURE;
 	//Component_FSM		= ADD_COMPONENT_FSM;
 
-	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포넌트 추가
+	Component_Collider = ADD_COMPONENT_COLLIDER;					// 충돌체 컴포트 추가
 	Component_Collider->Set_CenterPos(Component_Transform);			// 충돌체가 오브젝트를 따라 다니도록
 	Component_Collider->Set_Scale(0.3f, 0.5f, 0.3f);				// 충돌체의 범위 조절
 	Component_Collider->Set_Hp(5.f);
@@ -884,24 +884,24 @@ void Player::Idle_Final_Input(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 
-	//if (MOUSE_RBUTTON && _dashstock > 0) {
-	//	SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
-	//	_pState = pState::STATE_DASH;
-	//	_dashStart = true;
-	//	_frame = 1;
-	//	_dashstock--;
-	//	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-	//	_isInvincible = true;
-	//}
-	//else if (mouseLB) {
-	//	_pState = pState::STATE_ATTACK;
-	//	_attackDelay = 2.0f;
-	//	_frame = 1;
-	//}
-	//else if (KEY_HOLD(DIK_SPACE)) {
-	//	_pState = pState::STATE_ATTACK;
-	//	_frame = 1;
-	//}
+	if (MOUSE_RBUTTON && _dashstock > 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Player_Dash.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
+		_pState = pState::STATE_DASH;
+		_dashStart = true;
+		_frame = 1;
+		_dashstock--;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
+		_isInvincible = true;
+	}
+	else if (mouseLB) {
+		_pState = pState::STATE_ATTACK;
+		_attackDelay = 2.0f;
+		_frame = 1;
+	}
+	else if (KEY_HOLD(DIK_SPACE)) {
+		_pState = pState::STATE_ATTACK;
+		_frame = 1;
+	}
 }
 
 void Player::SKILL_NONE(const _float& _DT)
