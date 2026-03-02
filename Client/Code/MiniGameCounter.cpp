@@ -14,7 +14,7 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 	m_StageCnt[1] = 10;
 	m_StageCnt[2] = 20;
 
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"STAGE :", { 423.14f, 10.f }, 30, L"STAGE_NAME", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"WAVE :", { 423.14f, 10.f }, 30, L"STAGE_NAME", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 495.52f, 10.f }, 30, L"STAGE_COUNT", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
 
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"남은 마리 수 : ", { 766.537f, 10.f }, 30, L"MONSTER_NUMBER", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));

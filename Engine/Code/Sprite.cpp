@@ -22,6 +22,7 @@ INT SpriteObject::Update_Sprite() {
 	return 0;
 }
 VOID SpriteObject::Render_Sprite() {
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
 	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
@@ -32,6 +33,7 @@ VOID SpriteObject::Render_Sprite() {
 
 	Sprite->End();
 	GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 SpriteINFO* SpriteObject::Import_Sprite(CONST TCHAR* _PATH, CONST TCHAR* _KEY, FLOAT _POSX, FLOAT _POSY, UINT _WIDTH, UINT _HEIGHT, BOOL _VIS, INT _OPACITY) {

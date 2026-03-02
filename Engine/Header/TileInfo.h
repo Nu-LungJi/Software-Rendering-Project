@@ -32,7 +32,7 @@ public:
     void            Set_TileAnimaiton(const _tchar* pName, _int iCnt, Engine::TILE_SIDE eId, TILE_STATE eState, TILEMODE_CHANGE eMode, _int iTileNumber = 0, _vec3 vNext = {}, _bool bAni = false)
     {
         m_iTextureCount = iCnt;
-        m_pTileName     = pName;
+        m_pTileName = pName;
         m_eTileSide     = eId;
         m_eTileState    = eState;
         m_eTileMode     = eMode;
@@ -41,8 +41,9 @@ public:
         m_bOnlyAnimation = bAni;
         for (int i = 1; i < iCnt +1; ++i)
         {
-            TCHAR   Name[128] = L"";
+            TCHAR   Name[256] = L"";
             wsprintf(Name, m_pTileName.c_str(), i);
+
             m_vecAnimationName.push_back(Name);
         }
     

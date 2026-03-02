@@ -21,6 +21,7 @@ VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
 	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
+	
 }
 VOID	GameManager::LateUpdate_GameManager(CONST FLOAT& _DT) {
 	KeyManager::GetInstance()->LateUpdate_KeyManager(_DT);
@@ -95,7 +96,7 @@ VOID		 GameManager::Free() {
 	SoundManager	::DestroyInstance();
 	RenderManager	::DestroyInstance();
 	GUIManager		::DestroyInstance();
-	TileManager		::DestroyInstance();
+	TileManager	    ::DestroyInstance();
 	ResourceManager	::DestroyInstance();
 	UIManager		::DestroyInstance();
 	EffectManager	::DestroyInstance();

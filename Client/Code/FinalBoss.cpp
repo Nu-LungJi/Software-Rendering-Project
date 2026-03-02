@@ -1,15 +1,15 @@
 #include "../Include/PCH.h"
 #include "FinalBoss.h"
 
-FinalBoss::FinalBoss(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV)	{}
-FinalBoss::FinalBoss(CONST GameObject& _RHS)	: GameObject(_RHS)		{}
-FinalBoss::~FinalBoss()													{}
+FinalBoss::FinalBoss(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+FinalBoss::FinalBoss(CONST GameObject& _RHS) : GameObject(_RHS) {}
+FinalBoss::~FinalBoss() {}
 
 HRESULT	FinalBoss::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
-	PlayerObject	= static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+	PlayerObject = static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 	PlayerTransform = static_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 	PlayerPos = { 0.f, 0.f, 0.f };
 
@@ -20,22 +20,24 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	FSM->FSM_SetOwner(this);
 
 	ObjectTAG = L"Docheol";
+	Component_Collider->Set_Hp(10000.f);
+	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
-	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE]		= FALSE;	
-	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;		// 다른 행동 간섭 방지
-	BossMode[(LONG)BOSSMODE::MODE_RAGE]				= FALSE;	// 폭주화 단계
-	BossMode[(LONG)BOSSMODE::MODE_DEATH]			= FALSE;	// 사망 단계
+	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
+	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;	// 다른 행동 간섭 방지
+	BossMode[(LONG)BOSSMODE::MODE_RAGE] = FALSE;	// 폭주화 단계
+	BossMode[(LONG)BOSSMODE::MODE_DEATH] = FALSE;	// 사망 단계
 
-	Animation_Timer		 = 0.f;
-	Animation_Interval	 = 0.07f;
-	Animation_CurrentIndex		= 0;
-	Animation_PreviousIndex		= 0;
+	Animation_Timer = 0.f;
+	Animation_Interval = 0.07f;
+	Animation_CurrentIndex = 0;
+	Animation_PreviousIndex = 0;
 
-	Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
-	Animation_TexList = &Animation_Normal_Stand_TexList;
+	//Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
+	//Animation_TexList		= &Animation_Normal_Stand_TexList;
 
-	//Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
-	//Animation_TexList		= &Animation_NonAnim_TexList;
+	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_TexList = &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 
@@ -67,34 +69,30 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
 	_float _cameraAngle = angle / D3DX_PI * 180.f;
 
-	Component_Transform->Rotation(ROT_X, 80.f);//90.f - _cameraAngle);
+	Component_Transform->Rotation(ROT_X, 80.f);
 	//도철 UI
-	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
-	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	pBossUi->Set_ObjectTag(L"BossUI");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
-
-	//보스 죽을때 이거 넣으면 UI 사라짐
-	//dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+	//BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::DOCHEOL, this);
+	//pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	//pBossUi->Set_ObjectTag(L"BossUI");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
 
 	return S_OK;
 }
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead) return -1;
-	
+
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	FSM->Update_GameObject(_DT);
 
-	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= 50.f 
-		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= 50.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Set_FocusOnBoss(TRUE);
 		Enable_BossAppearStaging = TRUE;
 	}
-	
+
 	if (Animation_TexList == &Animation_Death_TexList && Animation_CurrentIndex == ANIMATION_DEATH_FRAMECOUNT - 1) {
-		Animation_Timer = 0.f; 
+		Animation_Timer = 0.f;
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 		Animation_CurrentIndex = ANIMATION_DEATH_FRAMECOUNT - 1;
 	}
@@ -102,6 +100,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	Skill_GroundExplosion(_DT);
 	Skill_MeteorExplosion(_DT);
 	Skill_RSwingFireBall(_DT);
+	Skill_FSwingFireBall(_DT);
 	Skill_RageUpFireBall(_DT);
 	Skill_SupporterFlame(_DT);
 	Skill_ExplosionRush(_DT);
@@ -123,88 +122,88 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.f) {
 		srand(time(NULL));
 		if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) { Action_Selector = rand() % 4 + 1; }
-		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) { Action_Selector = 1;}// rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
-	
+		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) { Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
+
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 	}
 
-	if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
+	if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
 		// < Stand -> RSwing >
 		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 1) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_RSwing_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_RSWING_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_RSwing_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_RSWING_FRAMECOUNT;
 
-				FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-			}
+			FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+		}
 		// < Stand -> FSwing >
 		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 2) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_FSwing_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_FSWING_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_FSwing_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_FSWING_FRAMECOUNT;
 
-				FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-			}
+			FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+		}
 		// < Stand -> Normal Slam >
 		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 3) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_Slam_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_Slam_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
-				FSM->FSM_StateChange(NormalSlamState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-				//DoubleSlam = TRUE;
-			}
+			FSM->FSM_StateChange(NormalSlamState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+			//DoubleSlam = TRUE;
+		}
 		// < Stand -> Meteor Slam >
 		if (Animation_TexList == &Animation_Normal_Stand_TexList && Action_Selector == 4) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_Slam_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_Slam_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
-				FSM->FSM_StateChange(MeteorSlamState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-			}
+			FSM->FSM_StateChange(MeteorSlamState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+		}
 
 		if ((Animation_TexList == &Animation_Normal_RSwing_TexList && Animation_CurrentIndex == ANIMATION_NORMAL_RSWING_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Normal_Slam_TexList && Animation_CurrentIndex == ANIMATION_NORMAL_SLAM_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Normal_FSwing_TexList && Animation_CurrentIndex == ANIMATION_NORMAL_FSWING_FRAMECOUNT - 1)) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_Stand_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_Stand_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
-				FSM->FSM_StateChange(StandState::GetInstance()->Instance());
-			}
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
+			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+		}
 
 		// < Appear -> Stand >
 		if (Animation_TexList == &Animation_Appear_TexList && Animation_CurrentIndex == ANIMATION_APPEAR_FRAMECOUNT - 1) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Normal_Stand_TexList;
-				Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Normal_Stand_TexList;
+			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
-				FSM->FSM_StateChange(StandState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
-			}
+			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
+		}
 		// <<< RageMode >>>
 		if (Component_Collider->Get_Hp() <= 500.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Stunning_TexList;
-				Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
-				Animation_Interval = 0.25f;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Stunning_TexList;
+			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
+			Animation_Interval = 0.25f;
 
-				FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = TRUE;
-				BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+			FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = TRUE;
+			BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 
-			}
-	} 
+		}
+	}
 	else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) {
 		// < Death >
 		if (Component_Collider->Get_Hp() <= 0 && BossMode[(LONG)BOSSMODE::MODE_DEATH] == FALSE) {
@@ -218,24 +217,24 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		}
 		// < Stand -> RSwing >
 		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 1) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Rage_RSwing_TexList;
-				Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_RSwing_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
 
-				FSM->FSM_StateChange(Rage_RSwingState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-			}
+			FSM->FSM_StateChange(Rage_RSwingState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+		}
 		// < Stand -> Normal Slam >
 		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 2) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Rage_Slam_TexList;
-				Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Slam_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
 
-				FSM->FSM_StateChange(Rage_NormalSlamState::GetInstance()->Instance());
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
-				Action_Selector = 0;
-			}
+			FSM->FSM_StateChange(Rage_NormalSlamState::GetInstance()->Instance());
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
+			Action_Selector = 0;
+		}
 		// < Stand -> Rush >
 		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 3 && BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] <= 1.f) {
 			Animation_CurrentIndex = 0;
@@ -269,25 +268,25 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		//		Action_Selector = 0;
 		//	}
 		// < All State -> Stand >
-		if ((	Animation_TexList == &Animation_Rage_RSwing_TexList && Animation_CurrentIndex == ANIMATION_RAGE_RSWING_FRAMECOUNT - 1)
+		if ((Animation_TexList == &Animation_Rage_RSwing_TexList && Animation_CurrentIndex == ANIMATION_RAGE_RSWING_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Rage_Slam_TexList && Animation_CurrentIndex == ANIMATION_RAGE_SLAM_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_RageUp_TexList && Animation_CurrentIndex == ANIMATION_RAGEUP_FRAMECOUNT - 1)
 			//|| (Animation_TexList == &Animation_Rage_Charge_TexList && Animation_CurrentIndex == ANIMATION_RAGE_CHARGE_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Rage_Stand_TexList && Animation_CurrentIndex == ANIMATION_RAGE_STAND_FRAMECOUNT - 1
-			|| (Animation_TexList == &Animation_Rage_Rush_TexList && Animation_CurrentIndex == ANIMATION_RAGE_RUSH_FRAMECOUNT - 1)	
+				|| (Animation_TexList == &Animation_Rage_Rush_TexList && Animation_CurrentIndex == ANIMATION_RAGE_RUSH_FRAMECOUNT - 1)
 				&& FSM->FSM_GetCurrentState() != Rage_ChargeState::GetInstance()->Instance())) {
-				Animation_CurrentIndex = 0;
-				Animation_TexList = &Animation_Rage_Stand_TexList;
-				Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
-				Animation_Interval = 0.07f;
-				BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
-				FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
-			}
+			Animation_CurrentIndex = 0;
+			Animation_TexList = &Animation_Rage_Stand_TexList;
+			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+			Animation_Interval = 0.07f;
+			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
+			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
+		}
 	}
 
 	return 0;
 }
-VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT)	{
+VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	if (KEY_DOWN(DIK_O)) Enable_ExplosionRush = TRUE;
@@ -298,7 +297,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT)	{
 		memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 		memset(BBTrap, TRUE, sizeof(BBTrap));
 	}
-	
+
 	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
 		Component_Collider->Set_Hp(0);
 		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
@@ -322,13 +321,13 @@ VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetTexture(0, (*Animation_TexList)[Animation_CurrentIndex]);
 
 	Component_Buffer->Render_Buffer();
-	
+
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 BOOL	FinalBoss::OnCollisionEnter(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"PlayerArrow" && BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE) {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
+		//Component_Collider->Set_Hp(Component_Collider->Get_Hp() - dynamic_cast<Arrow*>(_Other)->Get_Atk());
 	}
 	if (_Other->Get_ObjectTag() == L"Supporter1" || _Other->Get_ObjectTag() == L"Supporter2" || _Other->Get_ObjectTag() == L"Supporter3") {
 		Animation_CurrentIndex = 0;
@@ -342,14 +341,14 @@ BOOL	FinalBoss::OnCollisionStay(GameObject* _Other) { return TRUE; }
 BOOL	FinalBoss::OnCollisionExit(GameObject* _Other) { return TRUE; }
 
 HRESULT	FinalBoss::Component_Initialize() {
-	Component_Buffer		= ADD_COMPONENT_RECTTEX;
-	Component_Texture		= ADD_COMPONENT_TEXTURE;
+	Component_Buffer = ADD_COMPONENT_RECTTEX;
+	Component_Texture = ADD_COMPONENT_TEXTURE;
 
-	Component_Transform		= ADD_COMPONENT_TRANSFORM;
+	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Pos(-0.4f, 1.7f, 1.7f);
 	Component_Transform->Set_Scale(9.f, 9.f, 9.f);
 
-	Component_Collider		= ADD_COMPONENT_COLLIDER;
+	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
@@ -428,78 +427,78 @@ HRESULT FinalBoss::Texture_Initialize() {
 		Base = L"Boss_Rush" + to_wstring(PIC) + L".png";
 		Animation_Rage_Rush_TexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
-	
+
 	return S_OK;
 }
 
 VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 	if (Enable_BossAppearStaging) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] += _DT;
-		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f};
+		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f };
 		FLOAT GloabalScale = 2.f;
 		// Floor Glow
 		// Floor Pool
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 2.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SPOOL_APPEAR]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 2.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_APPEAR]) {
 			_vec3 SpoolAppearSca = { 250.f / 70.f * GloabalScale, 112.5f / 70.f * GloabalScale, 300.f / 70.f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.65f};
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.65f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_APPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_APPEAR] = FALSE;
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 3.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SPOOL_FLOW1]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 3.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW1]) {
 			_vec3 SpoolAppearSca = { 250.f / 70.f * GloabalScale, 112.5f / 70.f * GloabalScale, 300.f / 70.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.65f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW1] = FALSE;
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 4.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SPOOL_FLOW2]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 4.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW2]) {
 			_vec3 SpoolAppearSca = { 250.f / 70.f * GloabalScale, 112.5f / 70.f * GloabalScale, 300.f / 70.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.65f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW2] = FALSE;
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SPOOL_FLOW3]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW3]) {
 			_vec3 SpoolAppearSca = { 250.f / 70.f * GloabalScale, 112.5f / 70.f * GloabalScale, 300.f / 70.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.65f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_FLOW_EFFECT, L"SPOOL_FLOW_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SPOOL_FLOW3] = FALSE;
 		}
-		// Emblem Staging
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 4.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::EMBLEM_APPEAR]) {
+		// Emblem Staging										  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 4.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::EMBLEM_APPEAR]) {
 			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::EMBLEM_APPEAR_EFFECT, L"EMBLEM_APPEAR", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::EMBLEM_APPEAR] = FALSE;
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::EMBLEM_DESTROY]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::EMBLEM_DESTROY]) {
 			_vec3 SpoolAppearSca = { 1.f * GloabalScale, 1.f * GloabalScale, 1.2f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 1.f, GlobalPosition.z + 1.7f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::EMBLEM_DESTROY_EFFECT, L"EMBLEM_DESTROY", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::EMBLEM_DESTROY] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.8f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::ANIMATION]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.8f && STAGING_TRIGGER[(INT)APPEAR_STAGING::ANIMATION]) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Appear_TexList;
 			Animation_FrameCount = ANIMATION_APPEAR_FRAMECOUNT;
 			Component_Transform->Set_Pos(Component_Transform->Get_Position()->x - 0.3f, Component_Transform->Get_Position()->y, Component_Transform->Get_Position()->z + 0.5f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::ANIMATION] = FALSE;
 		}
-		// Blue Water Staging
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::WATER_POPUP]) {
+		// Blue Water Staging									  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::WATER_POPUP]) {
 			Camera->Camera_Shaking(100, 3.f);
 			_vec3 SpoolAppearSca = { 3.f * GloabalScale, 2.5f * 2.f * GloabalScale, 5.f * 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y + 2.f, GlobalPosition.z + 8.4f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 0.7f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::WATER_POPUP] = FALSE;
 		}
-		// Small Flame Staging
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SMALL_FLAMEL]) {
+		// Small Flame Staging									  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.0f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMEL]) {
 			_vec3 SpoolAppearSca = { 3.5f * GloabalScale, 3.5f * GloabalScale, 3.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 4.5f, GlobalPosition.y + 3.f / 2.f, GlobalPosition.z + 4.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEL", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 10.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMEL] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.2f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SMALL_FLAMER]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.2f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMER]) {
 
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x + 4.5f, GlobalPosition.y + 2.5f, GlobalPosition.z + 6.3f };
@@ -507,7 +506,7 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 			dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMER"))->Set_EffectRotation(0.f, 60.f, -10.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMER] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.2f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SMALL_FLAMEC]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 6.2f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMEC]) {
 			_vec3 SpoolAppearSca = { 4.5f * GloabalScale, 4.5f * GloabalScale, 4.5f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x + 2.5f, GlobalPosition.y + 2.5f , GlobalPosition.z + 6.3f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"SMALL_FLAMEC", &SpoolAppearPos, SpoolAppearSca, 1.f);
@@ -515,26 +514,26 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::SMALL_FLAMEC] = FALSE;
 			Animation_Interval = 0.14f;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.2f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::ROCK_CAMERA_SHAKE]) {
-			
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.2f && STAGING_TRIGGER[(INT)APPEAR_STAGING::ROCK_CAMERA_SHAKE]) {
+
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::ROCK_CAMERA_SHAKE] = FALSE;
 		}
-		// Big Flame Staging
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::BIG_FLAME]) {
+		// Big Flame Staging									  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f && STAGING_TRIGGER[(INT)APPEAR_STAGING::BIG_FLAME]) {
 			Camera->Camera_Shaking(120, 1.f);
 			_vec3 SpoolAppearSca = { 7.f * GloabalScale, 7.f * GloabalScale, 7.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x, GlobalPosition.y + 3.8f / 2.f, GlobalPosition.z + 8.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"BIG_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::BIG_FLAME] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::BIG_CIRCLE_FLAME]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f && STAGING_TRIGGER[(INT)APPEAR_STAGING::BIG_CIRCLE_FLAME]) {
 			_vec3 SpoolAppearSca = { 7.f * GloabalScale, 7.f / 2.f * GloabalScale, 7.f / 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 1.f, GlobalPosition.z + 1.f };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::CIRCLE_FLAME_EFFECT, L"BIG_CIRCLE_FLAME", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::BIG_CIRCLE_FLAME] = FALSE;
 		}
-		// Circle Flame Staging
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::SPIRAL_FLAME]) {
+		// Circle Flame Staging									  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 7.6f && STAGING_TRIGGER[(INT)APPEAR_STAGING::SPIRAL_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 2.1f / 2.f , GlobalPosition.z + 3.5f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SPIRAL_FLAME_EFFECT, L"SPIRAL_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.4f);
@@ -542,8 +541,8 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 
 			Component_Transform->Set_Pos(Component_Transform->Get_Position()->x + 0.3f, Component_Transform->Get_Position()->y, Component_Transform->Get_Position()->z - 0.5f);
 		}
-		// Camera Shaking
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 9.5f	&& STAGING_TRIGGER	[(INT)APPEAR_STAGING::CAMERA_SHAKE]) {
+		// Camera Shaking										  
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 9.5f && STAGING_TRIGGER[(INT)APPEAR_STAGING::CAMERA_SHAKE]) {
 			Camera->Camera_Shaking(100, 4.f);
 			Animation_Interval = 0.07f;
 			STAGING_TRIGGER[(INT)APPEAR_STAGING::CAMERA_SHAKE] = FALSE;
@@ -553,12 +552,12 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 }
 VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 	if (Enable_BossDisappearStaging) {
-		
+
 		BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] += _DT;
 		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f };
 		FLOAT GloabalScale = 2.f;
 
-		if		(STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_APPEAR]) {
+		if (STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_APPEAR]) {
 			Camera->Camera_Shaking(10.f, 3.f);
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale * 1.5f, 112.5f / 100.f * GloabalScale * 1.5f , 300.f / 100.f * GloabalScale * 1.5f };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 0.3f, GlobalPosition.z };
@@ -595,25 +594,25 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_DISAPPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 0.5f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_FLOW5] = FALSE;
 		}
-		
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 3.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP1]) {
+
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 3.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP1]) {
 			Camera->Camera_Shaking(30.f, 1.f);
-			_vec3 SpoolAppearSca = { 1.2f * GloabalScale, 1.4f * GloabalScale, 1.4f * GloabalScale};
-			_vec3 SpoolAppearPos = { GlobalPosition.x - 2.f, GlobalPosition.y + 2.f, GlobalPosition.z + 3.f};
+			_vec3 SpoolAppearSca = { 1.2f * GloabalScale, 1.4f * GloabalScale, 1.4f * GloabalScale };
+			_vec3 SpoolAppearPos = { GlobalPosition.x - 2.f, GlobalPosition.y + 2.f, GlobalPosition.z + 3.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.2f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP1] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 3.5f && STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP2]) {
 			Camera->Camera_Shaking(30.f, 1.f);
 			_vec3 SpoolAppearSca = { 1.4f * GloabalScale, 1.7f * GloabalScale, 1.7f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x + 1.f, GlobalPosition.y + 1.5f, GlobalPosition.z + 0.5f};
+			_vec3 SpoolAppearPos = { GlobalPosition.x + 1.f, GlobalPosition.y + 1.5f, GlobalPosition.z + 0.5f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 0.6f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP2] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 4.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP3]) {
 			Camera->Camera_Shaking(30.f, 1.f);
 			_vec3 SpoolAppearSca = { 1.3f * GloabalScale, 1.6f * GloabalScale, 1.6f * GloabalScale };
-			_vec3 SpoolAppearPos = { GlobalPosition.x + 1.5f, GlobalPosition.y + 2.f, GlobalPosition.z + 1.f};
+			_vec3 SpoolAppearPos = { GlobalPosition.x + 1.5f, GlobalPosition.y + 2.f, GlobalPosition.z + 1.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 0.8f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP3] = FALSE;
 		}
@@ -624,14 +623,14 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::WATER_POPUP_EFFECT, L"WATER_POPUP_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::WATER_POPUP4] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::BIG_FLAME]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::BIG_FLAME]) {
 			Camera->Camera_Shaking(30.f, 15.f);
 			_vec3 SpoolAppearSca = { 5.f * GloabalScale, 5.f * GloabalScale, 5.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.25f, GlobalPosition.y + 1.4f, GlobalPosition.z + 5.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::FLAME_EFFECT, L"BIG_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::BIG_FLAME] = FALSE;
 		}
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::BIG_CIRCLE_FLAME]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] > 5.0f && STAGING_TRIGGER[(INT)DEATH_STAGING::BIG_CIRCLE_FLAME]) {
 			_vec3 SpoolAppearSca = { 6.f * GloabalScale, 6.f / 2.f * GloabalScale, 6.f / 2.f * GloabalScale };
 			_vec3 SpoolAppearPos = { GlobalPosition.x , GlobalPosition.y + 1.f, GlobalPosition.z - 1.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::CIRCLE_FLAME_EFFECT, L"BIG_CIRCLE_FLAME_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
@@ -640,15 +639,18 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
 			Enable_BossDisappearStaging = FALSE;
 			BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] = 0.f;
+
+			ObjectDead = TRUE;
+			dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
 		}
 	}
 }
 
 VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
-	if		(Enable_GroundExplosion == 0 && Enable_GroundQuadExplosion == 0) return;
+	if (Enable_GroundExplosion == 0 && Enable_GroundQuadExplosion == 0) return;
 	else if (Enable_GroundExplosion == 1) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_EXP] += _DT;
-		
+
 		if (BossTimer[(LONG)BOSSTIMER::TIMER_EXP] > 0.5f) {
 
 			_vec3 Scale = { 6.f, 6.f, 6.f };
@@ -681,7 +683,7 @@ VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 		_vec3 Scale = { 6.f, 6.f, 6.f };
 		_vec3 BossBottomPos = { Component_Transform->Get_Position()->x, 1.f, Component_Transform->Get_Position()->z - 7.f };
 		_vec3 vecvec = PlayerPos - BossBottomPos;
-		
+
 		D3DXVec3Normalize(&vecvec, &vecvec);
 
 		if (BossTimer[(LONG)BOSSTIMER::TIMER_EXP] > 0.5f && EXPLOSION_TRIGGER[(INT)EXPLOSION::METEOR_SLAM_EXPLOSION1]) {
@@ -772,7 +774,7 @@ VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 	if (Enable_MeteorExplosion == 0) return;
 	if (Enable_MeteorExplosion == 1) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_MEXP] += _DT;
-		
+
 		// Activate Danger Area
 		if (BossTimer[(LONG)BOSSTIMER::TIMER_MEXP] > 0.2f && METEOR_TRIGGER[(INT)METEOR::DANGER_AREA]) {
 			_vec3 Scale = { 1.f, 1.f, 1.f };
@@ -813,10 +815,10 @@ VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 				}
 			}
 			FLOAT MeteorSpeed = 0.01f;
-			MeteorTransform[0]->Set_Pos(MeteorTransform[0]->Get_Position()->x - MeteorSpeed * 9, MeteorTransform[0]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[0]->Get_Position()->z- MeteorSpeed * 50);
-			MeteorTransform[1]->Set_Pos(MeteorTransform[1]->Get_Position()->x - MeteorSpeed * 9, MeteorTransform[1]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[1]->Get_Position()->z- MeteorSpeed * 50);
-			MeteorTransform[2]->Set_Pos(MeteorTransform[2]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[2]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[2]->Get_Position()->z- MeteorSpeed * 50);
-			MeteorTransform[3]->Set_Pos(MeteorTransform[3]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[3]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[3]->Get_Position()->z- MeteorSpeed * 50);
+			MeteorTransform[0]->Set_Pos(MeteorTransform[0]->Get_Position()->x - MeteorSpeed * 9, MeteorTransform[0]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[0]->Get_Position()->z - MeteorSpeed * 50);
+			MeteorTransform[1]->Set_Pos(MeteorTransform[1]->Get_Position()->x - MeteorSpeed * 9, MeteorTransform[1]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[1]->Get_Position()->z - MeteorSpeed * 50);
+			MeteorTransform[2]->Set_Pos(MeteorTransform[2]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[2]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[2]->Get_Position()->z - MeteorSpeed * 50);
+			MeteorTransform[3]->Set_Pos(MeteorTransform[3]->Get_Position()->x + MeteorSpeed * 9, MeteorTransform[3]->Get_Position()->y - MeteorSpeed * 27, MeteorTransform[3]->Get_Position()->z - MeteorSpeed * 50);
 		}
 		// Ground Explosion
 		if (BossTimer[(LONG)BOSSTIMER::TIMER_MEXP] > 0.9f && METEOR_TRIGGER[(INT)METEOR::METEOR_EXPLOSION]) {
@@ -827,10 +829,10 @@ VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 					MeteorTransform[IDX] = dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Meteor" + to_wstring(IDX + 1))->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 				}
 			}
-			_vec3 Pos0 = { MeteorTransform[0]->Get_Position()->x, MeteorTransform[0]->Get_Position()->y + 1.5f, MeteorTransform[0]->Get_Position()->z + 3.f};
-			_vec3 Pos1 = { MeteorTransform[1]->Get_Position()->x, MeteorTransform[1]->Get_Position()->y + 1.5f, MeteorTransform[1]->Get_Position()->z + 3.f};
-			_vec3 Pos2 = { MeteorTransform[2]->Get_Position()->x, MeteorTransform[2]->Get_Position()->y + 1.5f, MeteorTransform[2]->Get_Position()->z + 3.f};
-			_vec3 Pos3 = { MeteorTransform[3]->Get_Position()->x, MeteorTransform[3]->Get_Position()->y + 1.5f, MeteorTransform[3]->Get_Position()->z + 3.f};
+			_vec3 Pos0 = { MeteorTransform[0]->Get_Position()->x, MeteorTransform[0]->Get_Position()->y + 1.5f, MeteorTransform[0]->Get_Position()->z + 3.f };
+			_vec3 Pos1 = { MeteorTransform[1]->Get_Position()->x, MeteorTransform[1]->Get_Position()->y + 1.5f, MeteorTransform[1]->Get_Position()->z + 3.f };
+			_vec3 Pos2 = { MeteorTransform[2]->Get_Position()->x, MeteorTransform[2]->Get_Position()->y + 1.5f, MeteorTransform[2]->Get_Position()->z + 3.f };
+			_vec3 Pos3 = { MeteorTransform[3]->Get_Position()->x, MeteorTransform[3]->Get_Position()->y + 1.5f, MeteorTransform[3]->Get_Position()->z + 3.f };
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::METEOR_EXP_EFFECT, L"MeteorExp1", &Pos0, Scale, 0.4f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::METEOR_EXP_EFFECT, L"MeteorExp2", &Pos1, Scale, 0.4f);
@@ -997,14 +999,48 @@ VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_RageUpFireBall (CONST FLOAT& _DT) {
+VOID FinalBoss::Skill_FSwingFireBall(CONST FLOAT& _DT) {
+	if (Enable_FSwingFireBall) {
+		BossTimer[(INT)BOSSTIMER::TIMER_RSWING] += _DT;
+		if (BossTimer[(INT)BOSSTIMER::TIMER_RSWING] <= 0.05f && ObjectPool_FSwing.size() <= 0) {
+			for (INT IDX = 0; IDX < 30; IDX++) {
+				GameObject* BPB = BossFireBall::Create(GRPDEV);
+				BossFireBall* DBPB = static_cast<BossFireBall*>(BPB);
+				_vec3 GeneratePos = {
+					Component_Transform->Get_Position()->x - 0.5f,
+					Component_Transform->Get_Position()->y - 1.0f,
+					Component_Transform->Get_Position()->z - 4.0f
+				};
+
+				srand(time(NULL));
+				random_device rd;
+				mt19937 gen(rd());
+
+				uniform_int_distribution<int> dis(0, 359);
+				DBPB->Set_FireBall_Angle(dis(gen));
+				DBPB->Set_FireBall_Pos(GeneratePos);
+
+				ObjectPool_FSwing.push_back(BPB);
+			}
+		}
+		else if (Animation_TexList == &Animation_Normal_FSwing_TexList && Animation_CurrentIndex == 6) {
+			for (auto& BPB : ObjectPool_FSwing)
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, BPB);
+
+			BossTimer[(INT)BOSSTIMER::TIMER_RSWING] = 0.f;
+			Enable_FSwingFireBall = FALSE;
+			ObjectPool_FSwing.clear();
+		}
+	}
+}
+VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
 	if (Enable_RageUpFireBall == FALSE)	return;
-	if (Enable_RageUpFireBall == TRUE ) {
+	if (Enable_RageUpFireBall == TRUE) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] += _DT;
-		
+
 		FLOAT SectorAngle = 20.f;
 
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.05f && FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.05f && FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL]) {
 			for (INT IDX = 0; IDX < 48; ++IDX) {
 				GameObject* Pull = BossFireBall::Create(GRPDEV);
 				BossFireBall* BFB = static_cast<BossFireBall*>(Pull);
@@ -1018,7 +1054,7 @@ VOID FinalBoss::Skill_RageUpFireBall (CONST FLOAT& _DT) {
 			}
 			FIREBALL_TRIGGER[(INT)FIREBALL::FIREBALL_POOL] = FALSE;
 		}
-		else if	(BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.45f && FIREBALL_TRIGGER[(INT)FIREBALL::FIRST_FIREBALL]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.45f && FIREBALL_TRIGGER[(INT)FIREBALL::FIRST_FIREBALL]) {
 			for (INT IDX = 0; IDX < 12; ++IDX) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[IDX]);
 			}
@@ -1040,19 +1076,19 @@ VOID FinalBoss::Skill_RageUpFireBall (CONST FLOAT& _DT) {
 			for (INT IDX = 0; IDX < 12; ++IDX) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[12 * 3 + IDX]);
 			}
-			
+
 			BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_RageUpFireBall = FALSE;
 		}
 	}
 }
-VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
+VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
 	if (Enable_SupporterFlame) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] += _DT;
 		_vec3 EmblemScale = { 1.f, 1.f, 1.f };
-		_vec3 CenterPosition = { Component_Transform->Get_Position()->x - 1.f, Component_Transform->Get_Position()->y - 0.5f, Component_Transform->Get_Position()->z - 3.f};
-		
+		_vec3 CenterPosition = { Component_Transform->Get_Position()->x - 1.f, Component_Transform->Get_Position()->y - 0.5f, Component_Transform->Get_Position()->z - 3.f };
+
 		_vec3 Sup1_Pos = { CenterPosition.x, CenterPosition.y + 0.1f, CenterPosition.z };
 		_vec3 Sup2_pos = { CenterPosition.x - 1.2f, CenterPosition.y + 1.9f * sinf(D3DXToRadian(10)) + 0.1f, CenterPosition.z + 1.9f * cosf(D3DXToRadian(10)) };
 		_vec3 Sup3_pos = { CenterPosition.x + 1.2f, CenterPosition.y + 1.9f * sinf(D3DXToRadian(10)) + 0.1f, CenterPosition.z + 1.9f * cosf(D3DXToRadian(10)) };
@@ -1061,7 +1097,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 		_vec3 Sup6_pos = { CenterPosition.x + 2.3f, CenterPosition.y + 0.1f, CenterPosition.z };
 		_vec3 Sup7_pos = { CenterPosition.x - 2.3f, CenterPosition.y + 0.1f, CenterPosition.z };
 
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 0.1f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_POOLING]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 0.1f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_POOLING]) {
 			for (INT IDX = 0; IDX < 7; ++IDX) {
 				GameObject* SUP = Supporter::Create(GRPDEV);
 				dynamic_cast<Supporter*>(SUP)->Set_SupporterType(2);
@@ -1169,7 +1205,7 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 3.25f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_SPAWNFADEIN3]) {
 			PLAY_BOSS_FRONTEFFECT(BOSS_EFFECT::SUPPORTER_STAY_EFFECT, L"SUP7_STAY", &Sup7_pos, EmblemScale, 0.25f);
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_SPAWNFADEIN3] = FALSE;
-			}
+		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 3.5f && BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] <= 4.5f) {
 			if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 3.5f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_MOVE]) {
 				for (INT IDX = 0; IDX < ObjectPool_Supporter.size(); ++IDX) {
@@ -1207,11 +1243,11 @@ VOID FinalBoss::Skill_SupporterFlame (CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_ExplosionRush	(CONST FLOAT& _DT) {
+VOID FinalBoss::Skill_ExplosionRush(CONST FLOAT& _DT) {
 	if (Enable_ExplosionRush) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] += _DT;
-		
-		if		(ERUSH_TRIGGER[(INT)RUSH::RUSH_POOL]) {
+
+		if (ERUSH_TRIGGER[(INT)RUSH::RUSH_POOL]) {
 			ObjectPool_RageUp.clear();
 			for (INT IDX = 0; IDX < 60; ++IDX) {
 				GameObject* Pull = BossFireBall::Create(GRPDEV);
@@ -1228,9 +1264,9 @@ VOID FinalBoss::Skill_ExplosionRush	(CONST FLOAT& _DT) {
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_POOL] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 0.25f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL1]) {
-			for (INT IDX = 0; IDX < 15; ++IDX) 
+			for (INT IDX = 0; IDX < 15; ++IDX)
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[IDX]);
-			
+
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL1] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 0.85f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL2]) {
@@ -1249,25 +1285,25 @@ VOID FinalBoss::Skill_ExplosionRush	(CONST FLOAT& _DT) {
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_FIREBALL4] = FALSE;
 		}
 
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 0.25f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION1]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 0.25f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION1]) {
 			Enable_BBTrap = TRUE;
 
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION1] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 0.85f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION2]) {
-			
+
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION2] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 1.45f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION3]) {
 
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION3] = FALSE;
-		}	
+		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION4]) {
 
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_EXPLOSION4] = FALSE;
 		}
 
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 2.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1]) {
 
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1] = FALSE;
 		}
@@ -1297,8 +1333,8 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 		_vec3 BossBottomPos = { Component_Transform->Get_Position()->x, 1.f, Component_Transform->Get_Position()->z - 7.f };
 
 		_vec3 DGR000[5], DGR090[5], DGR180[5], DGR270[5],
-			  DGR330[5], DGR060[5], DGR150[5], DGR240[5],
-			  DGR300[5], DGR030[5], DGR120[5], DGR210[5];
+			DGR330[5], DGR060[5], DGR150[5], DGR240[5],
+			DGR300[5], DGR030[5], DGR120[5], DGR210[5];
 
 		for (INT IDX = 0; IDX < 5; ++IDX) {
 			DGR000[IDX] = { BossBottomPos.x + (IDX + 1.5f) * 3 * cosf(D3DXToRadian(0.00f)),	BossBottomPos.y, BossBottomPos.z - (IDX + 1.5f) * 2.5f * sinf(D3DXToRadian(0.00f)) };
@@ -1315,14 +1351,14 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			DGR030[IDX] = { BossBottomPos.x + (IDX + 1.5f) * 3 * cosf(D3DXToRadian(30.0f)),	BossBottomPos.y, BossBottomPos.z - (IDX + 1.5f) * 2.5f * sinf(D3DXToRadian(30.0f)) };
 			DGR120[IDX] = { BossBottomPos.x + (IDX + 1.5f) * 3 * cosf(D3DXToRadian(120.f)),	BossBottomPos.y, BossBottomPos.z - (IDX + 1.5f) * 2.5f * sinf(D3DXToRadian(120.f)) };
 			DGR210[IDX] = { BossBottomPos.x + (IDX + 1.5f) * 3 * cosf(D3DXToRadian(210.f)),	BossBottomPos.y, BossBottomPos.z - (IDX + 1.5f) * 2.5f * sinf(D3DXToRadian(210.f)) };
-		}																															 
+		}
 		_vec3 EXPScale = { 5.f, 5.f, 5.f };
 		_vec3 Scale = { 3.f, 3.f, 3.f };
-		
+
 		BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] += _DT;
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.1f && BBTrap[0]) {
+		if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.1f && BBTrap[0]) {
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N0", &DGR000[0], Scale, 0.3f);
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N0",&DGR090[0], Scale, 0.3f);
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N0", &DGR090[0], Scale, 0.3f);
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N0", &DGR180[0], Scale, 0.3f);
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N0", &DGR270[0], Scale, 0.3f);
 
@@ -1332,15 +1368,15 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N1", &DGR000[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N1", &DGR090[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N1", &DGR180[1], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,  L"DGR270N1", &DGR270[1], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N1", &DGR270[1], Scale, 0.3f);
 
 			BBTrap[1] = FALSE;
 		}
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 0.3f && BBTrap[2]) {
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N2",  &DGR000[2], Scale, 0.3f);
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N2",  &DGR090[2], Scale, 0.3f);
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N2",  &DGR180[2], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,  L"DGR270N2",  &DGR270[2], Scale, 0.3f);
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N2", &DGR000[2], Scale, 0.3f);
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N2", &DGR090[2], Scale, 0.3f);
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N2", &DGR180[2], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N2", &DGR270[2], Scale, 0.3f);
 
 			BBTrap[2] = FALSE;
 		}
@@ -1348,7 +1384,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N3", &DGR000[3], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N3", &DGR090[3], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N3", &DGR180[3], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,  L"DGR270N3", &DGR270[3], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N3", &DGR270[3], Scale, 0.3f);
 
 			BBTrap[3] = FALSE;
 		}
@@ -1356,7 +1392,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N4", &DGR000[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N4", &DGR090[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N4", &DGR180[4], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,  L"DGR270N4", &DGR270[4], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N4", &DGR270[4], Scale, 0.3f);
 
 			BBTrap[4] = FALSE;
 		}
@@ -1365,7 +1401,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N0", &DGR330[0], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N0", &DGR060[0], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N0", &DGR150[0], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N0", &DGR240[0], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N0", &DGR240[0], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N0", &DGR000[0], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N0", &DGR090[0], EXPScale, 0.7f);
@@ -1378,7 +1414,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N1", &DGR330[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N1", &DGR060[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N1", &DGR150[1], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N1", &DGR240[1], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N1", &DGR240[1], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N1", &DGR000[1], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N1", &DGR090[1], EXPScale, 0.7f);
@@ -1390,7 +1426,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N2", &DGR330[2], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N2", &DGR060[2], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N2", &DGR150[2], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N2", &DGR240[2], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N2", &DGR240[2], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N2", &DGR000[2], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N2", &DGR090[2], EXPScale, 0.7f);
@@ -1402,7 +1438,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N3", &DGR330[3], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N3", &DGR060[3], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N3", &DGR150[3], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N3", &DGR240[3], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N3", &DGR240[3], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N3", &DGR000[3], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N3", &DGR090[3], EXPScale, 0.7f);
@@ -1414,7 +1450,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N4", &DGR330[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N4", &DGR060[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N4", &DGR150[4], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N4", &DGR240[4], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N4", &DGR240[4], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N4", &DGR000[4], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N4", &DGR090[4], EXPScale, 0.7f);
@@ -1422,12 +1458,12 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion270N4", &DGR270[4], EXPScale, 0.7f);
 			BBTrap[9] = FALSE;
 		}
-	
+
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 1.2f && BBTrap[10]) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N0", &DGR300[0], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N0", &DGR030[0], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N0", &DGR120[0], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N0", &DGR210[0], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N0", &DGR210[0], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion330N0", &DGR330[0], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion060N0", &DGR060[0], EXPScale, 0.7f);
@@ -1439,7 +1475,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N1", &DGR300[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N1", &DGR030[1], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N1", &DGR120[1], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N1", &DGR210[1], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N1", &DGR210[1], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion330N1", &DGR330[1], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion060N1", &DGR060[1], EXPScale, 0.7f);
@@ -1451,7 +1487,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N2", &DGR300[2], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N2", &DGR030[2], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N2", &DGR120[2], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N2", &DGR210[2], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N2", &DGR210[2], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion330N2", &DGR330[2], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion060N2", &DGR060[2], EXPScale, 0.7f);
@@ -1475,18 +1511,18 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR330N4", &DGR300[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR060N4", &DGR030[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR150N4", &DGR120[4], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE (BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N4", &DGR210[4], Scale, 0.3f);
-			
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR240N4", &DGR210[4], Scale, 0.3f);
+
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion330N4", &DGR330[4], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion060N4", &DGR060[4], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion150N4", &DGR150[4], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion240N4", &DGR240[4], EXPScale, 0.7f);
 			BBTrap[14] = FALSE;
 		}
-	
+
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 1.7f && BBTrap[15]) {
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N0", &DGR000[0], Scale, 0.3f);
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,L"DGR090N0",&DGR090[0], Scale, 0.3f);
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N0", &DGR090[0], Scale, 0.3f);
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N0", &DGR180[0], Scale, 0.3f);
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N0", &DGR270[0], Scale, 0.3f);
 
@@ -1536,7 +1572,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR000N4", &DGR000[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR090N4", &DGR090[4], Scale, 0.3f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR180N4", &DGR180[4], Scale, 0.3f);
-			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT,  L"DGR270N4", &DGR270[4], Scale, 0.3f);
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"DGR270N4", &DGR270[4], Scale, 0.3f);
 
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion300N4", &DGR300[4], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion030N4", &DGR030[4], EXPScale, 0.7f);
@@ -1544,7 +1580,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion210N4", &DGR210[4], EXPScale, 0.7f);
 			BBTrap[19] = FALSE;
 		}
-	
+
 		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] > 2.2f && BBTrap[20]) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion000N0L", &DGR000[0], EXPScale, 0.7f);
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_GROUND_EXP_EFFECT, L"Ground Explosion090N0L", &DGR090[0], EXPScale, 0.7f);
@@ -1585,7 +1621,7 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 	}
 }
 
-FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+FinalBoss* FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	FinalBoss* FBS = new FinalBoss(_GRPDEV);
 	if (FAILED(FBS->Ready_GameObject())) {
 		MSG_BOX("Cannot Create FinalBoss.");

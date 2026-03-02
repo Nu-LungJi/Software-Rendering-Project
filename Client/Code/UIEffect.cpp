@@ -26,6 +26,33 @@ INT	 UIEffect::Update_GameObject(const _float& _DT) {
 	if (ObjectDead)	return 0;
 	GameObject::Update_GameObject(_DT);
 
+	if (FADEOUT == TRUE) {
+		if (GlobalOPC > 0.1f) {
+			GlobalOPC -= _DT * 255.f / 2;
+		}
+		else {
+			GlobalOPC = 0.f;
+		}
+		for (auto& TL : TextureList) {
+			TL.Set_Opacity((INT)GlobalOPC);
+		}
+	}
+	else if(FADEOUT == FALSE){
+		if (GlobalOPC < 254.9f) {
+			GlobalOPC += _DT * 255.f / 2;
+		}
+		else {
+			GlobalOPC = 255.f;
+			FADEOUT = 2;
+		}
+		for (auto& TL : TextureList) {
+			TL.Set_Opacity((INT)GlobalOPC);
+		}
+	}
+	else if (FADEOUT == 2) {
+
+	}
+
 	FrameTick += _DT;
 
 	return 0;
