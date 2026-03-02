@@ -208,12 +208,15 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 
 HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)
 {
+
 	if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		CameraObject* pCamera = Monster::Get_Camera();
 		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
 		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+
+		return 0;
 	}
 	else if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
 		CameraObject* pCamera = Monster::Get_Camera();
@@ -222,11 +225,13 @@ HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
 		_vec3 vCalc = pHurdle->vDst - *vPos;
-		_float fCalc = D3DXVec3Dot(&vCalc, vPos);
+		_float fCalc = D3DXVec3Dot(&vCalc, &pHurdle->vDir);
 		if (fCalc < 0.f)
 			*vPos = pHurdle->vSrc;
+
+		return 0;
 	}
-	return S_OK;
+	return E_FAIL;
 }
 
 BOOL Monster::Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo)
@@ -270,10 +275,10 @@ HRESULT Monster::Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom)
 
 BOOL Monster::Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOOL x, BOOL y, BOOL z)
 {
-	Collider* pColliderNoMove = static_cast<Collider*>(_pNoMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
-	Collider* pColliderMove = static_cast<Collider*>(_pMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
-	_vec3* pPosNoMove = pColliderNoMove->Get_CenterPos()->Get_Position();
-	_vec3* pPosMove = pColliderMove->Get_CenterPos()->Get_Position();
+	Collider*	pColliderNoMove	= static_cast<Collider*>(_pNoMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+	Collider*	pColliderMove	= static_cast<Collider*>(_pMove->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
+	_vec3*		pPosNoMove		= pColliderNoMove->Get_CenterPos()->Get_Position();
+	_vec3*		pPosMove		= pColliderMove->Get_CenterPos()->Get_Position();
 
 	_vec3		vDir = *pPosMove - *pPosNoMove;
 
@@ -283,17 +288,17 @@ BOOL Monster::Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOO
 	if (z) dz = fabsf(vDir.z);
 
 	if ((dx >= dz) && (dx > dy) && (dx >= 0.f)) {
-		_float fDis = pColliderMove->Get_Scale().x * 0.501f;
+		_float fDis = pColliderMove->Get_Scale().x;
 		pPosMove->x = (vDir.x < 0.f) ? pColliderNoMove->Get_MinPoint().x - fDis : pColliderNoMove->Get_MaxPoint().x + fDis;
 		return true;
 	}
 	else if ((dz >= dy) && (dz >= 0.f)) {
-		_float fDis = pColliderMove->Get_Scale().z * 0.501f;
+		_float fDis = pColliderMove->Get_Scale().z;
 		pPosMove->z = (vDir.z < 0.f) ? pColliderNoMove->Get_MinPoint().z - fDis : pColliderNoMove->Get_MaxPoint().z + fDis;
 		return true;
 	}
 	else if (dy >= 0.f) {
-		_float fDis = pColliderMove->Get_Scale().y * 0.501f;
+		_float fDis = pColliderMove->Get_Scale().y;
 		pPosMove->y = (vDir.y < 0.f) ? pColliderNoMove->Get_MinPoint().y - fDis : pColliderNoMove->Get_MaxPoint().y + fDis;
 		return true;
 	}

@@ -32,6 +32,8 @@ INT	Bat::Update_GameObject(const _float& _DT)
 {
 	Component_Collider->Update_Component(_DT);
 
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
+
 	if (m_tInfo.bMiniGame)
 	{
 		GameObject::Update_GameObject(_DT);
@@ -41,9 +43,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 		return 1;
 	}
-
-	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
-
 
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
@@ -205,6 +204,7 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 	case MONSTER_STATE_MINIGAME_MOVE:
 		if (Tag == L"Player")
 			return Monster::Hurdle_CollisionStay(this, _Other);
+		break;
 	case MONSTER_STATE_TRACKING:
 		if (Tag != L"Monster_Bullet") {
 			_vec3 vDir = *POS(_Other) - *MYPOS;
@@ -215,6 +215,7 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 			else
 				return false;
 		}
+		break;
 	}
 	return FALSE;
 }

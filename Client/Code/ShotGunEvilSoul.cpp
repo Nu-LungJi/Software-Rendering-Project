@@ -28,6 +28,7 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 
 	Component_Collider->Update_Component(_DT);
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
@@ -125,7 +126,9 @@ VOID ShotGunEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
+	if (Monster::Minigame_LateUpdate(_DT, &m_tInfo) ||
+		(static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))
+			->IsIn_Frustum(*MYPOS, 10.f))) {
 		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -218,6 +221,7 @@ BOOL ShotGunEvilSoul::OnCollisionExit(GameObject* _Other)
 }
 VOID ShotGunEvilSoul::Free() {
 
+	Monster::Release_Hurdle(&m_tInfo);
 	GameObject::Free();
 }
 
