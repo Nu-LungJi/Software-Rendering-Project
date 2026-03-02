@@ -24,6 +24,7 @@ HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 	{// ??? ???
 		ObjectTAG = L"Monster";
 		Component_Transform->Set_Pos(vPos);
+		Component_Transform->Set_Scale({ 1.f,1.f,1.f });
 	}
 
 	return S_OK;

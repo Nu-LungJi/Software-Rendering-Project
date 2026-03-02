@@ -138,21 +138,9 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	switch (m_pTileInfo->Get_Spawner())
 	{
 	case TILE_SPAWNER::NPC1:
-		//if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_STAGE4)
-		//{
-		//	if (!m_bSpawn)
-		//	{
-		//		ShopKeeper* pObj = ShopKeeper::Create(GRPDEV, *m_pTransform->Get_Position());
-		//		pObj->Set_ObjectTag(L"ShopNPC");
-		//		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
-		//		m_bSpawn = true;
-		//	}
-		//}
 		break;
-
 	case TILE_SPAWNER::NPC2:
 		break;
-	
 	case TILE_SPAWNER::MONSTER_SPAWN1:
 		Monster_Spawn();
 		break;
@@ -210,7 +198,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos,1.5f),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }
@@ -221,7 +209,7 @@ void Spawner::Monster_Spawn2()
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
 
-		Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.3f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }

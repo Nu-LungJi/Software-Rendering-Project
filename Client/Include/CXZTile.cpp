@@ -333,13 +333,9 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
     Transform* pTransform = Crash_Player();
     if (Crash_Player() != nullptr)
     {
-        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHER1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS)
-        {
-            _vec3 vPos = m_pTileInfo->Get_NextPos();
-            dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(vPos);
-            return;
-        }
-        if (!m_bEffect)
+
+        _vec3 vPos = m_pTileInfo->Get_NextPos();
+         if (!m_bEffect)
         {
             _vec3 vPos = m_pTileInfo->Get_NextPos();
             if(!m_bEffect&& !m_bPotalOpen)
