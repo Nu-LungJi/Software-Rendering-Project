@@ -16,6 +16,8 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
+    SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
+
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
@@ -158,7 +160,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-    //Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
+    Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
 
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
     //Add_GameObjectToScene<Fireball>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");

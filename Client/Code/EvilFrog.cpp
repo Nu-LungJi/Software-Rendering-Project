@@ -230,6 +230,13 @@ VOID EvilFrog::State_Dead() {
 	ObjectDead = TRUE;
 }
 BOOL EvilFrog::OnCollisionEnter(GameObject* _Other) {
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Player")
+	{
+		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+		mainUI->Player_LostHP();
+		return TRUE;
+	}
 	return FALSE;
 }
 BOOL EvilFrog::OnCollisionStay(GameObject* _Other) {
