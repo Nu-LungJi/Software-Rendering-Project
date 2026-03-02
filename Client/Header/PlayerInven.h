@@ -29,6 +29,8 @@ public:
 
 	HRESULT Append_Item(ItemINFO* _ITEM);
 
+	HRESULT Buy_Item(INT itemIdx);
+
 public:
 	static	PlayerInven* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:

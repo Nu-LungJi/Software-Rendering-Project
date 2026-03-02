@@ -20,7 +20,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     _frameDelay = 0.f;
     _playerPos = { _PlayerPOS->x, _PlayerPOS->y, _PlayerPOS->z };
     _arrowAtk = arrowAtk;
-    Component_Collider->Set_Att(1);
+    Component_Collider->Set_Att(arrowAtk);
     _hp = 1;
     Component_Collider->Set_Hp(1.f);
     _EvilTime = 0.f;
@@ -643,8 +643,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     else if (Tag == L"CheonLog") {
         atk = 100.f;
         Component_Collider->Set_Hp(hp - atk);
-        //COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 1.f);
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 

@@ -43,7 +43,7 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
-    // Show_Item();
+    Show_Item();
 
     return 0;
 }
@@ -248,14 +248,17 @@ void ShopUI::Show_Item()
 _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
 {
     m_iCurrentItemIndex = iIndex;
+    PlayerInven* playerInven = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"));
     if (KeyManager::GetInstance()->Get_KeyState(DIK_E))
     {
         //if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
         //    return false;
 
         REPLAY_UI_EFFECT(L"COIN_EFFECT");
-
+        
         pPlayer->Set_Coin(pPlayer->Get_Coin() - Item_Index[iIndex]->ItemPrice);
+        pPlayer->Buy_item(iIndex);
+        playerInven->Buy_Item(iIndex);
 
         Safe_Release(Item_Index[iIndex]->TEXTURE);
         Safe_Delete(Item_Index[iIndex]);

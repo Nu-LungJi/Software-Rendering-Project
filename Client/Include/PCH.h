@@ -116,6 +116,7 @@
 #include "ShopUI.h"
 #include "StageBlackOut.h"
 #include "DamageFont.h"
+#include "Artifact.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

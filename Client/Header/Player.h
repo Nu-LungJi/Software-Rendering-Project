@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Bow.h"
+#include "Artifact.h"
 
 enum class skillState {
 	STATE_TIMESLOW,
@@ -127,6 +128,9 @@ public:
 	float	Get_Speed()				{ return _speed;}
 	void	Set_Speed(INT _value)	{ _speed = _value; }
 
+	float	Get_DefaultSpeed() { return _defaultSpeed; }
+	void	Set_DefaultSpeed(FLOAT _value) { _defaultSpeed *= _value; }
+
 	int		Get_HP() { return Component_Collider->Get_Hp(); }
 	void	Set_HP(INT _value) { Component_Collider->Set_Hp(_value); }
 
@@ -194,7 +198,9 @@ public:
 	_float			Get_MouseDistance();
 
 	/// 인벤용
-	VOID		Chage_Item(int src, int dst);
+	void		Artifact_Effect();
+	void		Chage_Item(int src, int dst);
+	void		Buy_item(int itemIdx);
 private:
 	virtual VOID Free();
 
@@ -222,7 +228,7 @@ private:
 	void			Calc_Near();
 private:
 	Bow*			_weaponSlot[4];
-	GameObject*		_artifactSlot[4];
+	Artifact*		_artifactSlot[4];
 	GameObject*		_inventory[10];
 	int				_equipNum;
 

@@ -64,6 +64,7 @@ public:
 	BowStat*	Get_Bow_Stat()					{ return &_Stat; }
 	_int		Get_Charging()					{ return _Charging; }
 	_int		Get_IMG_IDX()					{ return _imgIDX; }
+	void		Refill_Arrow()					{ _Stat.curArrow = _Stat.maxArrow; }
 private:
 	virtual VOID Free();
 private:

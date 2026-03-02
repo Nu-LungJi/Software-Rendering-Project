@@ -437,7 +437,7 @@ HRESULT	PlayerEffect::Component_Initialize() {
 		if(SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) Component_Collider->Set_Scale(3.f, 3.f, 3.f);
 		else Component_Collider->Set_Scale(5.f, 5.f, 5.f);					// 충돌체의 범위 조절
 		
-		Component_Collider->Set_Att(50.f);
+		Component_Collider->Set_Att(100.f);
 	}
 
 
