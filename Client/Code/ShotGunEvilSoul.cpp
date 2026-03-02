@@ -195,7 +195,12 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); return TRUE;
+	if (Tag == L"PlayerArrow")	
+	{
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 	
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Hit.wav", CHANNELID::SOUND_EFFECT04, 0.25f);
+	}	return TRUE;
+
 
 	return FALSE;
 }
@@ -304,8 +309,9 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ShotGun_Monster_35_Attack.wav", CHANNELID::SOUND_EFFECT06, 0.3f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ShotGun_Monster_35_Attack.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
 	}
+
 
 	m_tInfo.fTimer[0] += _DT;
 
@@ -330,7 +336,8 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 VOID ShotGunEvilSoul::State_Dead()
 {
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER,
-		MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x));
+	MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x));
 	TileManager::GetInstance()->Set_StageArray();
+
 	ObjectDead = true;
 }

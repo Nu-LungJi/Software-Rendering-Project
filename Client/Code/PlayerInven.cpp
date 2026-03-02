@@ -32,6 +32,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
 
 			for (auto& TXT : ItemInfo_Text) {
@@ -41,6 +42,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 			}
 		}
 		else if (UIManager::GetInstance()->Get_Active() == FALSE){
+			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Close_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = FALSE;
 			FocusOn_EquipedItem = FALSE;
 

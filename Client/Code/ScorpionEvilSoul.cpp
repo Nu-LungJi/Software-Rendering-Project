@@ -459,6 +459,6 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpionEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 	ObjectDead = true;
 }
