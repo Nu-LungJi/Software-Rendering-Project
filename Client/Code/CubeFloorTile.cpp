@@ -21,51 +21,86 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 	}
 
 	m_pBuffer->Update_Component(_DT);
-	m_pCollider->Update_Component(_DT);
+	//m_pCollider->Update_Component(_DT);
 
 	return 0;
 }
 VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
-	if (m_pCam == nullptr)	
+	if (m_pCam == nullptr)
 		m_pCam = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
+
+	if (m_pTarget == nullptr)
+		m_pTarget = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
 	Pooling();
 
-	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ -1)	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
+	if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 20.f))
+		m_iFalling = 4;
+	else if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 9.f))
+		m_iFalling = 1;
 
-	if (!IsIn_Cam) return;
+	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
 	if (!m_bTrigger) {
-
 		CubeFunction::Grid(m_pTransform, m_bGrid);
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 		m_bTrigger = true;
 	}
 
+	//if (m_iFalling == 1) {
+	//	m_fTimer += _DT;
+	//	_vec3 vRand = { RANDOM::Get_float(-0.05f, 0.05f, this),
+	//					RANDOM::Get_float(-0.05f, 0.05f),
+	//					RANDOM::Get_float(-0.05f, 0.05f) };
+
+	//	m_pTransform->Move_Pos(&vRand, 1.f, _DT);
+	//	Monster::Staic_Obj(GRPDEV, m_pTransform);
+	//	MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
+
+	if (m_iFalling == 1)
+	{
+		m_fTimer += _DT;
+		_vec3 vDir = { 0.f, -1.f,0.f };
+		m_pTransform->Move_Pos(&vDir, 10, _DT);
+		Monster::Staic_Obj(GRPDEV, m_pTransform);
+		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
+		if (m_fTimer > 2.f)
+			m_iFalling = 3;
+	}
+
+	if (m_iFalling == 4)
+	{
+		m_fTimer = 0.f;
+		m_iFalling = 0;
+		m_pTransform->Get_Position()->y = (m_pTransform->Get_Scale()->y * -1.f);
+		Monster::Staic_Obj(GRPDEV, m_pTransform);
+		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
+	}
+
+	if (!IsIn_Cam) return;
 
 	GameObject::LateUpdate_GameObject(_DT);
 }
 
 VOID CubeFloorTile::Render_GameObject()
 {
+	GRPDEV->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	GRPDEV->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+
 	MonsterManager::GetInstance()->Render_Static_Batch(GRPDEV, m_pTexture);
 
-	//GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	//GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
-	//GRPDEV->SetTexture(0, m_pTexture);
-	//m_pBuffer->Render_Buffer();
-	//GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 HRESULT CubeFloorTile::Component_Initialize() {
 
-	m_pBuffer		= ADD_COMPONENT_CUBE;
-	m_pTransform	= ADD_COMPONENT_TRANSFORM;
+	m_pBuffer = ADD_COMPONENT_CUBE;
+	m_pTransform = ADD_COMPONENT_TRANSFORM;
 	m_pTransform->Set_Scale(2.f, 1.f, 2.f);
 	m_pTransform->Set_Pos(0.f, -0.5f, 0.f);
 
-	m_pCollider		= ADD_COMPONENT_COLLIDER;
+	m_pCollider = ADD_COMPONENT_COLLIDER;
 	m_pCollider->Set_CenterPos(m_pTransform);
 
 	m_bTrigger = false;
@@ -79,7 +114,7 @@ HRESULT CubeFloorTile::Component_Initialize() {
 
 CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid)
 {
-	CubeFloorTile* pCubeFloorTile =DBG_NEWW CubeFloorTile(pGraphicDev);
+	CubeFloorTile* pCubeFloorTile = DBG_NEWW CubeFloorTile(pGraphicDev);
 
 	pCubeFloorTile->m_bGrid = _Grid;
 
@@ -113,7 +148,7 @@ BOOL CubeFloorTile::OnCollisionEnter(GameObject* _Other)
 }
 VOID CubeFloorTile::Free() {
 
-	
+
 	GameObject::Free();
 }
 
@@ -134,27 +169,27 @@ bool CubeFloorTile::Pooling()
 		_vec3 vDir = *vPos - *m_pCam->Get_AtVec();
 
 		_float fTileSize = m_pTransform->Get_Scale()->x * 2.f;
-		_float fDiffX = fTileSize * MINIGAMETILEX; // 3.0 * 32 = 96.0
-		_float fDiffZ = fTileSize * MINIGAMETILEZ;
+		_float fDiffX = fTileSize * MINIGAMETILEX;
+		//_float fDiffZ = fTileSize * MINIGAMETILEZ;
 
 		bool bMoved = false;
 
-		if (vDir.x < -fDiffX * 0.5f)		{
+		if (vDir.x < -fDiffX * 0.5f) {
 			vPos->x += fDiffX;
 			bMoved = true;
 		}
-		else if (vDir.x > fDiffX * 0.5f)	{
+		else if (vDir.x > fDiffX * 0.5f) {
 			vPos->x -= fDiffX;
 			bMoved = true;
 		}
-		if (vDir.z < -fDiffZ * 0.5f)		{
-			vPos->z += fDiffZ;
-			bMoved = true;
-		}
-		else if (vDir.z > fDiffZ * 0.5f)	{
-			vPos->z -= fDiffZ;
-			bMoved = true;
-		}
+		//if (vDir.z < -fDiffZ * 0.5f)		{
+		//	vPos->z += fDiffZ;
+		//	bMoved = true;
+		//}
+		//else if (vDir.z > fDiffZ * 0.5f)	{
+		//	vPos->z -= fDiffZ;
+		//	bMoved = true;
+		//}
 		if (bMoved) {
 			MonsterManager::GetInstance()->Update_Tile((_uint)m_iTileNumber, m_pTransform);
 			Monster::Staic_Obj(GRPDEV, m_pTransform);

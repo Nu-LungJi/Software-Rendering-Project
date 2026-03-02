@@ -42,8 +42,8 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 	
-	PopUp_Speech_Bubble(Speech_Text, _DT);
-	PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
+	//PopUp_Speech_Bubble(Speech_Text, _DT);
+	//PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
 	//PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
 	if(Timer02 > 0.1f){
@@ -124,6 +124,8 @@ VOID MainUI::Player_LostHP() {
 
 		UIKey_HP = L"EHP_SPRITE" + to_wstring(PlayerHP);
 		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(TRUE);
+
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Haetae_Attacked.wav", CHANNELID::SOUND_EFFECT07, 0.35f);
 
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 		Camera->Camera_Shaking(30, 5.f);
@@ -620,17 +622,17 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/HP_BG.png", L"CRYSTAL_BG", 13.f, 113.f, 100, 150, TRUE, 255);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////// HP/MP /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png", L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE1", -45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE2", -15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE3", 15.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE4", 45.f, -60.f, 180, 180, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_HpStock.png",		L"HP_SPRITE5", 75.f, -60.f, 180, 180, TRUE);
 
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png", L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE1", -45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE2", -15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE3", 15.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE4", 45.f, -60.f, 180, 180, FALSE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Crystal.png", L"CRYSTAL", 18.f, 175.f, 20, 20, TRUE);

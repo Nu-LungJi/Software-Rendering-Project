@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 
 Cheonlog::Cheonlog(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV),m_bBgm(false), m_bDead(false), m_bStartPattern(false), m_iNextSkill(0), m_fAttackSecondTick(0.f), m_frameAttack(0.f), m_iBulletCnt(0), m_fRotY(0.f), m_iSkillDelay(0), m_bMoveEffect(false), m_iStatuCnt(0), m_iSkillMaxCnt(0), m_iSkillCnt(0), m_StartAttack(false), m_EndEffect(true), m_vDebug(0, 0, 0), m_pTarget(nullptr), m_frameTick(0.f), m_iFrameCnt(0), m_eCheck(CHECK_END), m_eStatu(CL_END) {}
-Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_pTarget(nullptr), m_bCrystal(false){}
+Cheonlog::Cheonlog(const GameObject& _RHS)    : GameObject(_RHS), m_bDeadBgm(false), m_pTarget(nullptr), m_bCrystal(false){}
 Cheonlog::~Cheonlog() {}
 
 HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
@@ -22,12 +22,12 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv3_White_0", LEAF_ATTACK::LEAF_THIRD);
 	Make_TextureList(L"Spr_Effect_Cheonlog_BigExplosione_Birth", LEAF_ATTACK::LEAF_EXPLOSION);
 	Make_TextureList(L"Spr_Bullet_Cheonlog_DivideFlowerLv2_0", LEAF_ATTACK::LEAF_FOUR);
+	Make_TextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0", LEAF_ATTACK::LEAF_BOOM_CIRCLE);
 
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0", CL_EFFECT::LEFT_HORN);
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackMode_Rage_0", CL_EFFECT::RIGHT_HORN);		
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_AttackModeEffect_0", CL_EFFECT::CL_BODY);		
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_BaseBullet_Birth01_0", CL_EFFECT::LEAF_FIRST);
-	Make_EffectTextureList(L"Spr_Ui_Effect_ChaosGazeCircleEffect01_0", CL_EFFECT::LEAF_EXPLOSION_CIRCLE);
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_ChargeAccelReturn_Birth01_0", CL_EFFECT::LEAF_CHARGING);
 	Make_EffectTextureList(L"Spr_Effect_Cheonlog_RadialCrossSplit_Loop_0", CL_EFFECT::LEAF_SPIN);
 	Make_EffectTextureList(L"Spr_Bullet_Cheonlog_DivideFlower_Death_0", CL_EFFECT::LEAF_SPIN_DEATH);
@@ -54,7 +54,14 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_EXPLOSION].push_back(pAttack);
 	}
-	for (_int i = 0; i < 20; ++i)
+	for (_int i = 0; i < 100; ++i)
+	{
+		GameObject* pAttack;
+		pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_BOOM_CIRCLE, { 0,0,0 }, { 0,0,0 },false,false);
+		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_BOOM_CIRCLE].push_back(pAttack);
+	}
+	for (_int i = 0; i < 40; ++i)
 	{
 		GameObject* pAttack;
 		pAttack = CLAttack::Create(GRPDEV, LEAF_ATTACK::LEAF_FIRST, { 0,0,0 }, { 0,0,0 });
@@ -82,6 +89,8 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_FOUR].push_back(pAttack);
 	}
+	SoundManager::GetInstance()->Stop_AllSound();
+	SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
 	return S_OK;
 }
 HRESULT	 Cheonlog::Make_TextureList(wstring _FileName, LEAF_ATTACK eid)
@@ -195,7 +204,7 @@ void Cheonlog::Render_GameObject() {
 	if (m_eStatu == SPAWN)
 		return;
 
-	GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -203,7 +212,6 @@ void Cheonlog::Render_GameObject() {
     Component_Buffer->Render_Buffer();
 
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-    GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 }
 HRESULT Cheonlog::Component_Initialize() {
     Component_Buffer = ADD_COMPONENT_RECTTEX;
@@ -340,6 +348,11 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		CL_JumpCenter(_DT, iMaxCnt);
 		break;
 	case CL_DEAD:
+		if (!m_bDeadBgm)
+		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_Pattern3-1.wav", CHANNELID::SOUND_EFFECT02, 0.5f);
+			m_bDeadBgm = true;
+		}
 		m_frameTick += _DT;
 		if (m_frameTick > 0.1)
 		{
@@ -540,7 +553,7 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 		{
 			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/No.033_Cheonlog'sHorn_Charge1.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
 
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, {vPos.x,-0.2f,vPos.z}, FALSE, {6,0,5}, {0,0,0}, 0.2f));
+			Create_Pool(LEAF_ATTACK::LEAF_BOOM_CIRCLE, { vPos.x,-0.2f,vPos.z }, { 0,0,0 },0.2f);
 			Create_Pool(LEAF_ATTACK::LEAF_EXPLOSION, { vPos.x  , 2.f, vPos.z }, { 0,0,1 });
 			m_EndEffect = false;
 		}
@@ -557,7 +570,7 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 		
 			vPos += vLookReset * 6;
 		
-			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x  , -0.2f ,vPos.z + _float(i * 0.001) }, FALSE, { 6,0,5 }, { 0,0,0 }, 0.08f));
+			Create_Pool(LEAF_ATTACK::LEAF_BOOM_CIRCLE, { vPos.x,-0.2f,vPos.z + _float(i * 0.001) }, { 0,0,0 }, 0.08f);
 			Create_Pool(LEAF_ATTACK::LEAF_EXPLOSION, { vPos.x  , 2.f, vPos.z }, { 0,0,1 });
 			vLookReset = { 0,0,0 };
 			vPos = vOrigin;
@@ -577,7 +590,7 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 
 				vPos += vLookReset * 13;
 
-				EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x  , -0.2f ,vPos.z + _float(i * 0.001)}, FALSE, { 6,0,5 }, { 0,0,0 }, 0.08f));
+				Create_Pool(LEAF_ATTACK::LEAF_BOOM_CIRCLE, { vPos.x,-0.2f,vPos.z + _float(i * 0.001) }, { 0,0,0 }, 0.08f);
 				Create_Pool(LEAF_ATTACK::LEAF_EXPLOSION,{ vPos.x  , 2.f, vPos.z },{0,0,1});
 				vLookReset = { 0,0,0 };
 				vPos = vOrigin;
@@ -620,7 +633,7 @@ void Cheonlog::AttackLeaf_Third(const _float& _DT, _vec3 vPos)
 			m_fAttackSecondTick = 0.f;
 		}
 		
-		if (m_iSkillCnt > 25)
+		if (m_iSkillCnt > 30)
 		{
 			m_eCheck = IDEL;
 			m_iBulletCnt = 0;
@@ -798,6 +811,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 4.f);
 
+
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Tracking_Player(false);
@@ -956,9 +970,9 @@ void Cheonlog::Create_Leaf_Four(_vec3 vPos, _float fRot)
     D3DXVec3TransformNormal(&vLookReset, &vLook, &RotY);
 	Create_Pool(LEAF_ATTACK::LEAF_FOUR, vPos, vLookReset);
 }
-void Cheonlog::Create_Pool(LEAF_ATTACK eid, _vec3 vPos, _vec3 vL)
+void Cheonlog::Create_Pool(LEAF_ATTACK eid, _vec3 vPos, _vec3 vL, _float fFrameSpeed)
 {
-	dynamic_cast<CLAttack*>(m_vecPoolBullet[(int)eid].back())->Set_Look(vL, vPos);
+	dynamic_cast<CLAttack*>(m_vecPoolBullet[(int)eid].back())->Set_Look(vL, vPos,false, fFrameSpeed);
 	CollisionManager::GetInstance()->Add_ColliderObject(m_vecPoolBullet[(int)eid].back());
 	m_vecOrignBullet[(int)eid].push_back(m_vecPoolBullet[(int)eid].back());
 	m_vecPoolBullet[(int)eid].pop_back();
@@ -989,6 +1003,8 @@ void Cheonlog::CL_Jump(const _float& _DT, _int iMaxCnt)
 	if (m_iFrameCnt > iMaxCnt - 1)
 	{
 		m_iFrameCnt = 0;
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_moveEnd.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
 		m_eStatu = CL_IDELR;
 		m_iSkillDelay = 0;
 	}
@@ -1011,6 +1027,8 @@ void Cheonlog::CL_JumpCenter(const _float& _DT, _int iMaxCnt)
 	if (m_iFrameCnt > iMaxCnt - 1)
 	{
 		m_iFrameCnt = 0;
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_moveEnd.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+
 		m_eStatu = CL_IDELR;
 		m_iSkillDelay = 0;
 	}

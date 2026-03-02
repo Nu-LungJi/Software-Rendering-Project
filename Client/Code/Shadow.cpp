@@ -23,7 +23,6 @@ INT	Shadow::Update_GameObject(const _float& _DT)
 	{
 		*MYPOS = *POS(m_tInfo.pGameObj[0]);
 		MYPOS->y = 0.001f;
-		MYPOS->z -= SCALE(m_tInfo.pGameObj[0])->y * 0.5f;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -41,7 +40,6 @@ VOID Shadow::Render_GameObject() {
 
 	// 1. 알파 블렌딩 및 테스트 설정
 	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); // 테스트는 일단 끄고 블렌딩만 확인
 
 	// 2. 투명도 설정 (120: 적당히 연함)
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(120, 255, 255, 255));

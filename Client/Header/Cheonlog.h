@@ -5,7 +5,7 @@
 
 enum  CL_CHECK { IDEL, SPAWN_AFTER, ATTACK_A, ATTACK_B, ATTACK_C, ATTACK_D, CHECK_END };
 enum  CL_STATU { SPAWN, CL_IDELR, CL_LJUMP, CL_RJUMP,CL_LUJUMP,CL_RUJUMP, CL_DEAD, CL_END};
-enum class LEAF_ATTACK { LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION, LEAF_END };
+enum class LEAF_ATTACK { LEAF_FIRST, LEAF_SECOND, LEAF_THIRD, LEAF_FOUR, LEAF_EXPLOSION, LEAF_BOOM_CIRCLE, LEAF_END };
 enum class CL_EFFECT {
 	LEFT_HORN, RIGHT_HORN, CL_BODY, LEAF_FIRST, LEAF_EXPLOSION_CIRCLE, LEAF_CHARGING, LEAF_SPIN, LEAF_SPIN_DEATH, SPAWN_BOOM, SPAWN_THUNDER, SPAWN_BOOM_CIRCLE, SPAWN_L, SPAWN_R,SPAWN_POTAL,
 CL_EFFECTEND};
@@ -48,7 +48,7 @@ private:
 	void	    Create_Leaf_Third_S(_vec3 vPos);
 	void		Create_Leaf_Four(_vec3 vPos, _float fRot);
 
-	void		Create_Pool(LEAF_ATTACK eid ,_vec3 vPos, _vec3 vL);
+	void		Create_Pool(LEAF_ATTACK eid ,_vec3 vPos, _vec3 vL,_float fFrameSpeed = 0.1f);
 	void		CL_Jump(const _float& _DT, _int iMaxCnt);
 	void		CL_JumpCenter(const _float& _DT, _int iMaxCnt);
 
@@ -112,6 +112,7 @@ private:
 	_bool			m_StartAttack;
 	_bool			m_EndEffect;
 	_bool			m_bCrystal;
+	_bool			m_bDeadBgm;
 	_bool			m_bBgm;
 	_bool		    m_bDead;
 

@@ -8,15 +8,14 @@ HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 	DamageFontManager::GetInstance()->Ready_DamageFontManager();
 
 	return S_OK;
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
-	//TileManager::GetInstance()->Update_TileList(_DT);
 	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
@@ -30,7 +29,6 @@ VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
 
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
-	//TileManager::GetInstance()->Render_TileList();
 	//DEVCLASS->Render_End();
 }
 HRESULT GameManager::Ready_DefaultSetting() {
@@ -56,11 +54,10 @@ HRESULT GameManager::Ready_DefaultSetting() {
 	return S_OK;
 }
 HRESULT GameManager::Ready_SceneSetting() {
-	//Scene* EnterScene = StartScene::Create(GRPDEV);
+	Scene* EnterScene = StartScene::Create(GRPDEV);
 	//Scene* EnterScene = DebugScene::Create(GRPDEV);
 	//Scene* EnterScene = MapScene::Create(GRPDEV);
-	Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
-	//Scene* EnterScene = MiniGameScene::Create(GRPDEV);
+	//Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
 
 
 	if (EnterScene == nullptr)	return E_FAIL;

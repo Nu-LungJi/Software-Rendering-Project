@@ -57,9 +57,11 @@ public:
     void                    LateUpdate_Tile(const _float& fTimeDelta);
     void                    Render_TileList();
     
+
     void                    Set_EndLoading(_bool bLoading) { m_EndLoading = bLoading; }
     void                    Set_TileMode(TILEMODE_CHANGE eMode) { m_eMode = eMode; }
     _int                    Set_StageArray() { return --m_StageCntArray[m_eStage]; }
+    void                    Set_StageAddCount() { ++m_StageCntArray[m_eStage]; }
     void                    Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STATE eState);
     void                    Set_Stage() { m_eStage = m_eCurrent; }
     void                    Set_CurStage(TILE_STAGE es) { m_eCurrent = es; }
