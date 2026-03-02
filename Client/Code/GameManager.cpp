@@ -59,7 +59,6 @@ HRESULT GameManager::Ready_SceneSetting() {
 	//Scene* EnterScene = MapScene::Create(GRPDEV);
 	//Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
 
-
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
 		MSG_BOX("Cannot Setting LogoScene.");
