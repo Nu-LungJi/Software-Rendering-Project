@@ -205,12 +205,12 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
     if (m_bStageChange) //스테이지 스왑용
     {
         m_bStageChange = false;
-        if ((int)m_eCurrent > (int)TILE_FIRSTBOSS)
+       // if ((int)m_eCurrent > (int)TILE_FIRSTBOSS)
             m_eStage = m_eCurrent;
     }
 
 
-    if (m_eStage != TILE_STAGE::TILE_STAGE4 && m_StageCntArray[m_eStage] == 0)
+    if (m_eStage != TILE_STAGE::TILE_STAGE4 && m_StageCntArray[m_eStage] <= 0)
         Set_Trigger(m_eStage, TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 
 
@@ -231,9 +231,9 @@ HRESULT TileManager::Stage_Update(const _float& fTimeDelta)
 
     }
 
-    for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
-        if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
-            iter->Update_GameObject(fTimeDelta);
+   //for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
+   //    if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
+   //        iter->Update_GameObject(fTimeDelta);
 
     return S_OK;
 }
@@ -247,10 +247,10 @@ void TileManager::Stage_LateUpdate(const _float& fTimeDelta)
             iter->LateUpdate_GameObject(fTimeDelta);
 
     }
-    for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
-        if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
-            iter->LateUpdate_GameObject(fTimeDelta);
-
+    //for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
+    //    if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
+    //        iter->LateUpdate_GameObject(fTimeDelta);
+    //
 }
 void TileManager::Stage_Render()
 {
@@ -261,10 +261,10 @@ void TileManager::Stage_Render()
 
     }
 
-    for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
-        if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
-            iter->Render_GameObject();
-
+    //for (auto iter : m_vecTileBuffer[TILE_DOCHERBOSS][0])
+    //    if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName())
+    //        iter->Render_GameObject();
+    //
 
 }
 
@@ -328,7 +328,7 @@ void TileManager::Set_Trigger(TILE_STAGE eStage, TILEMODE_CHANGE eMode, TILE_STA
 
 void TileManager::Save_Tile(HWND g_hWnd)
 {
-    HANDLE   hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
+    HANDLE   hFile = CreateFile(L"../../Data/Docheol.dat", // 파일 이름이 포함된 경로
         GENERIC_WRITE,      // 파일 접근 모드(GENERIC_WRITE : 쓰기, GENERIC_READ : 읽기)
         NULL,            // 공유 방식(파일이 열려 있는 상태에서 다른 프로세스가 오픈 할 때 허가하는 것에 대해 설정, 지정하지 않을 경우 NULL)
         NULL,            // 보안 속성(기본값인 경우 NULL)

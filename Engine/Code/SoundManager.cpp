@@ -11,7 +11,9 @@ HRESULT SoundManager::Ready_SoundManager() {
 
 	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
 	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT01]);
-
+	SoundSystem->createChannelGroup("Effect1", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT02]);
+	SoundSystem->createChannelGroup("Effect2", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT03]);
+	SoundSystem->createChannelGroup("Effect3", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT04]);
 	return S_OK;
 }
 VOID SoundManager::Update_SoundManager() {
@@ -36,12 +38,12 @@ HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundCh
 	if (iter == SoundMap.end()) {
 		SoundSystem->createSound(RootPath.c_str(), FMOD_LOOP_OFF | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
 		SoundMap.insert({ _FilePath, SoundObject });
-		SoundSystem->playSound(SoundObject, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
+		SoundSystem->playSound(SoundObject, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
 	
 		
 	}
 	else {
-		SoundSystem->playSound(iter->second, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
+		SoundSystem->playSound(iter->second, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
 		
 	}
 	pSound->setVolume(Volume);

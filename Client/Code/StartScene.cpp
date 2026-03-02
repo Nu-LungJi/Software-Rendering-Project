@@ -76,6 +76,8 @@ HRESULT   StartScene::Ready_Scene() {
 
 		if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
 		{
+        
+
 			GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
 		}
 		else

@@ -41,8 +41,8 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 	
-	PopUp_Speech_Bubble(Speech_Text, _DT);
-	PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
+	//PopUp_Speech_Bubble(Speech_Text, _DT);
+	//PopUp_Speech_Bubble_Skill(Speech_Text, _DT);
 	//PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
 	if(Timer02 > 0.1f){

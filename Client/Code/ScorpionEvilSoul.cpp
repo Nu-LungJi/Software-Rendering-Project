@@ -29,6 +29,7 @@ HRESULT ScorpionEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 
 		m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
 		Component_Transform->Set_Pos(vPos);
+		Component_Transform->Set_Scale({2.3f,2.3f,2.3f});
 	}
 	return S_OK;
 }

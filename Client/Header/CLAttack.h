@@ -11,7 +11,7 @@ private:
 	virtual ~CLAttack();
 
 public:
-	virtual			HRESULT		Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin);
+	virtual			HRESULT		Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin, _bool bDead);
 	virtual			INT			Update_GameObject(const _float& _DT);
 	virtual			void		LateUpdate_GameObject(const _float& _DT);
 	virtual			void		Render_GameObject();
@@ -20,14 +20,17 @@ public:
 	BOOL						OnCollisionEnter(GameObject* _Other);
 	void						Set_bPool() { m_bPool = false; }
 	BOOL						Get_bPool() { return m_bPool; }
-	void						Set_Look(_vec3 Look, _vec3 vPos,_bool bSpin = false) {
+	void						Set_Look(_vec3 Look, _vec3 vPos, _bool bSpin = false, _float fFrameSpeed = 0.1f,_bool bDead = false) {
 		m_vLook = Look;
 		m_CLPos = vPos;
 		m_bSpin = bSpin;
+		m_fFrameSpeed = fFrameSpeed;
+		m_bDead = bDead;
 		Component_Transform->Set_Pos(vPos);
+		
 	}
 private:
-	HRESULT				     Component_Initialize();
+	HRESULT				     Component_Initialize(LEAF_ATTACK eLeaft);
 
 public:
 	void					 Move_Frame(const _float& _DT);
@@ -51,6 +54,7 @@ private:
 	_int							m_iAttackIndex;
 	_int						    m_iRandCnt;
 	_int							m_iDeadCnt;
+	_int							m_iBoomCnt;
 
 	_vec3							m_vLook;
 	_vec3							m_CLPos;
@@ -61,6 +65,7 @@ private:
 	_bool							m_bPoolCheck;
 	_bool					        m_bCheck;
 	_bool							m_bSpin;
+	_bool							m_bDead;
 	_bool							m_bBgm;
 private:
 	LEAF_ATTACK						m_eLeaf;
@@ -70,7 +75,7 @@ private:
 	Collider*						Component_Collider;
 
 public:
-	static CLAttack* Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin = false);
+	static CLAttack* Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin = false, _bool bDead = false);
 private:
 	virtual void Free();
 

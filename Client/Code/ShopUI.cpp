@@ -43,7 +43,7 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
-    // Show_Item();
+     Show_Item();
 
     return 0;
 }
@@ -259,6 +259,7 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
 
         Safe_Release(Item_Index[iIndex]->TEXTURE);
         Safe_Delete(Item_Index[iIndex]);
+        Item_Index[iIndex] = nullptr;
         return true;
     }
     return false;
