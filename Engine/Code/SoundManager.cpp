@@ -10,7 +10,19 @@ HRESULT SoundManager::Ready_SoundManager() {
 	SoundSystem->init(32, FMOD_INIT_NORMAL, NULL);
 
 	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
+	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM02]);
+	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM03]);
 	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT01]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT02]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT03]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT04]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT05]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT06]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT07]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT08]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT09]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT10]);
+	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT11]);
 
 	return S_OK;
 }
@@ -36,15 +48,14 @@ HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundCh
 	if (iter == SoundMap.end()) {
 		SoundSystem->createSound(RootPath.c_str(), FMOD_LOOP_OFF | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
 		SoundMap.insert({ _FilePath, SoundObject });
-		SoundSystem->playSound(SoundObject, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
+		SoundSystem->playSound(SoundObject, NULL, FALSE, &SoundChannel[(LONG)_SoundChannel]);
 	
 		
 	}
 	else {
-		SoundSystem->playSound(iter->second, ChannelGroup[(int)CHANNELID::SOUND_EFFECT01], FALSE, &pSound);
-		
+		SoundSystem->playSound(iter->second, NULL, FALSE, &pSound);
 	}
-	pSound->setVolume(Volume);
+	SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
 	return S_OK;
 
 }
@@ -60,8 +71,6 @@ HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel
 	RootPath += strMulti;
 
 	auto iter = find_if(SoundMap.begin(), SoundMap.end(), CTag_Finder(_FilePath));
-
-	IsPlaying(_SoundChannel);
 
 	Channel* pSound = nullptr;
 

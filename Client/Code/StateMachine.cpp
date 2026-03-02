@@ -62,6 +62,8 @@ VOID AppearState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(TRUE);
+
+	PLAY_SOUND_ONCE(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_EFFECT04);
 }
 VOID AppearState::FSM_StateUpdate(GameObject* _Owner) {
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
@@ -81,15 +83,15 @@ VOID AppearState::FSM_StateExit(GameObject* _Owner) {
 
 VOID DeadState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, TRUE);
-	static_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.5f);
+	static_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.25f);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_EnableQuickZoom(TRUE);
-	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 1.f);
 }
 VOID DeadState::FSM_StateUpdate(GameObject* _Owner) {
 	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 6 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 6) {
 		static_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.14f);
+	}
+	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 12 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 12) {
 		static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_EnableQuickZoom(FALSE);
-		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 0.5f);
 	}
 }
 VOID DeadState::FSM_StateExit(GameObject* _Owner) {
@@ -159,9 +161,18 @@ VOID RageUpState::FSM_StateExit(GameObject* _Owner) {}
 
 VOID RSwingState::FSM_StateEnter(GameObject* _Owner) {}
 VOID RSwingState::FSM_StateUpdate(GameObject* _Owner) {
+
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 2 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 2) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_Sound.wav", CHANNELID::SOUND_EFFECT07, 1.5f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
 	// RSWING - CREATE PROJECTILE 
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableCreateFireBall(TRUE);
+	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
 	}
 	// RSWING - PUNCH FLAME EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
@@ -174,6 +185,7 @@ VOID RSwingState::FSM_StateUpdate(GameObject* _Owner) {
 		};
 		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RSWING_EFFECT, L"Punch Flame Effect", &Pos, Scale, 0.35f);
 	}
+	
 }
 VOID RSwingState::FSM_StateExit(GameObject* _Owner) {}
 
@@ -181,6 +193,7 @@ VOID FSwingState::FSM_StateEnter(GameObject* _Owner) {}
 VOID FSwingState::FSM_StateUpdate(GameObject* _Owner) {
 	// FSWING - ELECTRIC
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 0 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/FSwing_Sound.wav", CHANNELID::SOUND_EFFECT09, 1.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		dynamic_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.12f);
 		float pow = 3.f;

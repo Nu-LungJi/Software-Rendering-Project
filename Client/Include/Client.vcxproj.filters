@@ -247,7 +247,7 @@
     <Filter Include="07. Font\Manager">
       <UniqueIdentifier>{0d508af8-e4b7-4c38-8f5a-86e3456e62bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\09. Particle\99. Camera">
+    <Filter Include="03. GameObject\99. Camera">
       <UniqueIdentifier>{4e81e72d-aaba-4f6f-aadb-fd7b0e176224}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -274,7 +274,7 @@
       <Filter>02. Scene\01. MainScene</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Camera.h">
-      <Filter>03. GameObject\09. Particle\99. Camera</Filter>
+      <Filter>03. GameObject\99. Camera</Filter>
     </ClInclude>
     <ClInclude Include="DEFINE.h">
       <Filter>00. DefaultWindow</Filter>
@@ -532,7 +532,7 @@
       <Filter>02. Scene\01. MainScene</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Camera.cpp">
-      <Filter>03. GameObject\09. Particle\99. Camera</Filter>
+      <Filter>03. GameObject\99. Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp">
       <Filter>03. GameObject\01. Player</Filter>

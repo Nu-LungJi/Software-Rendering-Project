@@ -259,13 +259,13 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
