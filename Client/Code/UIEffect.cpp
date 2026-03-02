@@ -10,11 +10,12 @@ HRESULT   UIEffect::Ready_Effect(MAIN_UI_EFFECT _EFTTYPE, wstring _TAG, D3DXVECT
 
 	D3DXCreateSprite(GRPDEV, &Sprite);
 
-	if		(_EFTTYPE == MAIN_UI_EFFECT::COIN_EFFECT)	   { Make_TextureList(L"MainUI/Coin"			, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
-	else if (_EFTTYPE == MAIN_UI_EFFECT::TEARDROP_EFFECT)  { Make_TextureList(L"MainUI/TearDrop"		, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
-	else if (_EFTTYPE == MAIN_UI_EFFECT::HP_EFFECT)		   { Make_TextureList(L"MainUI/HP_Lost"			, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
-	else if (_EFTTYPE == MAIN_UI_EFFECT::DASHSTOCK_EFFECT) { Make_TextureList(L"MainUI/DashStock_Lost"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
-	
+	if		(_EFTTYPE == MAIN_UI_EFFECT::COIN_EFFECT)		{ Make_TextureList(L"MainUI/Coin"		, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::DASHSTOCK_EFFECT)  { Make_TextureList(L"MainUI/DashStock"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::HP_EFFECT)			{ Make_TextureList(L"MainUI/HP_Lost"		, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::TOKEN_EFFECT)		{ Make_TextureList(L"MainUI/Token_Lost"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+  else if (_EFTTYPE == MAIN_UI_EFFECT::AUGMENT_EFFECT) { Make_TextureList(L"Augments/Flash", L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+
 	PlayTime	= _PlayTime;
 	Repeatable	= _Repeatable;
 	ObjectTAG	= _TAG;

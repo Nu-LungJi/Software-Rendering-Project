@@ -15,6 +15,10 @@ public:
 	virtual		VOID	Render_Buffer();
 
 	_vec3* Get_BufferPos(_int iArray) { return		&pVBufferPos[iArray]; } //버퍼 pos 가져오기
+
+	LPDIRECT3DVERTEXBUFFER9  Get_VB() { return VertexBuffer; }
+	LPDIRECT3DINDEXBUFFER9   Get_IB() { return IndexBuffer; }
+
 public:
 	HRESULT		Ready_Triangle_Buffer();
 	HRESULT		Ready_Rectangle_Buffer();
@@ -26,6 +30,7 @@ public:
 	HRESULT		Ready_TileBACK_Buffer(); //타일 옆면 비교용
 	HRESULT		Ready_Tile_Buffer(); // 타일 추가 윗면 비교용
 	HRESULT		Ready_Cube_Buffer(); // 큐브타일 추가
+	HRESULT		Ready_Cube_Batch(); // 큐브 한번에 여러개 배치
 protected:
 	LPDIRECT3DVERTEXBUFFER9		VertexBuffer;
 	LPDIRECT3DINDEXBUFFER9		IndexBuffer;
@@ -37,7 +42,6 @@ protected:
 
 	ULONG						IndexSize;
 	D3DFORMAT					IndexFormat;
-
 
 	_vec3*						pVBufferPos; //버퍼 인덱스 담는 용도
 public:
