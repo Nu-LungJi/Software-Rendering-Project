@@ -354,6 +354,9 @@ public:
 	static	HRESULT			Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos);
 	static	BOOL			Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo);
 	static	HRESULT			Staic_Obj(LPDIRECT3DDEVICE9 _GRPDEV, Transform* Transcom);
+	static	BOOL			Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOOL x = 1, BOOL y = 0, BOOL z = 1);
+
+	static	BOOL			Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOOL x = 1, BOOL y = 0, BOOL z = 1);
 
 public:
 	static	void		    Set_Camera(CameraObject* pCam)	{ m_pCam = pCam; }
@@ -384,7 +387,7 @@ public:
 	}
 
 	template<typename T>
-	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 1.f)
+	static	GameObject* Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 _vPos, _float _fScalemult = 2.f)
 	{
 		GameObject* MST = Create<T>(_GRPDEV);
 

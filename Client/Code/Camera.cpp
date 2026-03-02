@@ -25,7 +25,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	OriginCameraPos = { 0.f, 0.f, 0.f };
 	
 	Camera_Show = TRUE;
-	Camera_Move = FALSE;
+	Camera_Move = TRUE;
 
 	Velocity_Lock = FALSE;
 	Button_Lock = FALSE;
@@ -159,7 +159,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
 	Camera_Transform_Control(_DT);
 
-	if (MouseCheck) {
+	if (MouseCheck && !FocusOn_Boss) {
 		POINT       ptMouse{ WINCX >> 1, WINCY >> 1 };
 
 		ClientToScreen(hWnd, &ptMouse);
@@ -225,7 +225,7 @@ VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
 
 	LONG MouesAngle = 0;
 
-	if (Camera_Move)
+	if (Camera_Move && !FocusOn_Boss)
 	{
 		if (MouesAngle = MOUSE_MOVE(DIMS_Y)) {
 			_matrix RotationMat;
