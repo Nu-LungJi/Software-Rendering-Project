@@ -241,7 +241,7 @@ void Spawner::Monster_Spawn4()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-	  Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
 }

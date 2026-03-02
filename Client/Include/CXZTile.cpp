@@ -219,7 +219,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         Tile_Potal_Effect(_DT);
         break;
     case TILE_STATE::STATE_TRIGGER:
-        //Tile_Trigger();
+        Tile_Trigger();
         break;
     case TILE_STATE::STATE_POTALGASI:
         break;

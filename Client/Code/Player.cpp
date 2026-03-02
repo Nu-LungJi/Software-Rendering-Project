@@ -227,8 +227,9 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	//if (m_eCurrScene == SCENE_TYPE::Minigame) 
-	//	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	if (m_eCurrScene == SCENE_TYPE::Minigame) 
+		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+
 	CheonLog_Spawn();
 
 	if (_isStop) return;
@@ -1425,6 +1426,9 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
+	if (m_eCurrScene == SCENE_TYPE::Minigame)
+		return 0;
+
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
 	MainUI* mainUI;
@@ -1461,7 +1465,7 @@ HRESULT Player::MiniGameInit()
 	}
 
 	m_eCurrScene = SCENE_TYPE::Minigame;
-
+	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
 
 	return S_OK;

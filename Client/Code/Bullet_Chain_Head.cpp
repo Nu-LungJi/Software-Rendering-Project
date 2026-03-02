@@ -28,7 +28,7 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 		Component_Collider->Set_Hp(-1.f);
 	}
 
-	if (Component_Collider->Get_Hp() < 0.f)
+	if (Component_Collider->Get_Hp() <= 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
 		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ChainAttack.wav", CHANNELID::SOUND_EFFECT08, 0.05f);
@@ -40,8 +40,6 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 		ObjectDead = true;
 	}
 
-	//GameObject::Update_GameObject(_DT);
-	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
 	if (ObjectDead)
@@ -63,10 +61,8 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		m_tInfo.pGameObj[1] = Monster::Create<Bullet_Chain>(GRPDEV, {MYPOS->x, MYPOS->y -0.001f, MYPOS->z});
 		m_tInfo.pGameObj[1]->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		
-		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.3f;
+		*SCALE(m_tInfo.pGameObj[1]) = *MYSCALE * 0.8f;
 
-		*dynamic_cast<Transform*>(m_tInfo.pGameObj[1]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = *MYSCALE;
-		
 		MONBULLETINFO* pBulletinfo = static_cast<Bullet_Chain*>(m_tInfo.pGameObj[1])->Get_Info();
 		pBulletinfo->vDirection = m_tInfo.vDirection;
 		pBulletinfo->bTrigger[0] = m_tInfo.bTrigger[0];
@@ -83,17 +79,17 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 	{
 		m_tInfo.Textureinfo._frameTick = 0.f;
 		if (m_tInfo.Textureinfo._Endframe > 0)
-			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe;
+			++m_tInfo.Textureinfo._frame %= (m_tInfo.Textureinfo._Endframe + 1);
 	}
 	m_tInfo.vDirection.y = 0.f;
 
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x) == (uint8_t)FRUSTUMPLANE::End) {
-		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
-		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	}
+	AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV, m_tInfo.vDirection, false);
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
 }
 VOID Bullet_Chain_Head::Render_GameObject() {
+
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -136,26 +132,31 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
-	if (_Other->Get_ObjectTag() == L"PlayerArrow") {
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"PlayerArrow") {
 
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
 		return TRUE;
 	}
-	
-	switch (_Other->Get_ObjectType())
-	{
-	default:
-		break;
-	case GAMEOBJECT_TYPE::OBJECT_PLAYER:
-
-	case GAMEOBJECT_TYPE::OBJECT_TERRAIN:
-		wstring Tag = _Other->Get_ObjectTag();
+	else if (Tag == L"Player") {
+		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+		return true;
 	}
 	return FALSE;
 }
 BOOL Bullet_Chain_Head::OnCollisionStay(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		break;
+	case MONSTER_STATE_MINIGAME_IDLE:
+	case MONSTER_STATE_MINIGAME_MOVE:
+		if (Tag == L"Player")
+			return	Monster::Hurdle_CollisionStay(this, _Other);
+	}
+	return FALSE;
 }
 BOOL Bullet_Chain_Head::OnCollisionExit(GameObject* _Other)
 {
