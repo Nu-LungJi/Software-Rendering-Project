@@ -52,9 +52,9 @@
 	MonsterEffect::Create(GRPDEV, SKILL_TYPE, POSITION, FALSE, PLAYTIME));									// 몬스터 : 이펙트 최초 한번 실행
 
 #define PLAY_BOSS_FRONTEFFECT(SKILL_TYPE, _TAG, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE));							// 보스 몬스터 : 이펙트 반복 실행
+	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE), 2);							// 보스 몬스터 : 이펙트 반복 실행
 #define PLAY_BOSS_FRONTEFFECT_ONCE(SKILL_TYPE, _TAG, POSITION, SCALE ,PLAYTIME)	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
-	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE));						// 보스 몬스터 : 이펙트 최초 한번 실행
+	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, FALSE, PLAYTIME, SCALE), 2);						// 보스 몬스터 : 이펙트 최초 한번 실행
 
 #define PLAY_BOSS_BACKEFFECT(SKILL_TYPE, _TAG, POSITION, SCALE, PLAYTIME)		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::BOSS,		\
 	BossEffect::Create(GRPDEV, _TAG, SKILL_TYPE, POSITION, TRUE, PLAYTIME, SCALE), 3);						// 보스 몬스터 : 이펙트 반복 실행

@@ -424,9 +424,9 @@ HRESULT CameraObject::Component_Initialize() {
 }
 VOID CameraObject::Camera_QuickZoom(const FLOAT& _DT) {
 	// 도철 전용입니다. 사용 X
-	_vec3 CameraEyeDEST = { 63.6f, 14.55f, 95.605f };
-	_vec3 CameraAtDEST = { 63.6f, 11.04f, 96.605f };
-	if (Enable_QuickZoom == 2)					return;
+	_vec3 CameraEyeDEST		= { 63.6f, 15.55f, 95.605f };
+	_vec3 CameraAtDEST		= { 63.6f, 12.04f, 96.605f };
+	if		(Enable_QuickZoom == 2)					return;
 	else if (Enable_QuickZoom == TRUE) {
 		QZoom_Timer += _DT;
 		if (QZoom_Timer <= 0.2f) {
