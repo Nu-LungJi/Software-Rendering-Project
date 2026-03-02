@@ -1,10 +1,12 @@
 #pragma once
 
 /////////////////////////////////// SOUNDMANAGER ///////////////////////////////////
-#define PLAY_SOUND(FILENAME, CHANNEL)	SoundManager::GetInstance()->Play_Sound(FILENAME, CHANNEL);						// 채널에 사운드 플레이
-#define STOP_SOUND(CHANNEL)				SoundManager::GetInstance()->Stop_Sound(CHANNEL);								// 해당 채널 사운드 정지
-#define STOP_ALLSOUND					SoundManager::GetInstance()->Stop_AllSound();									// 모든 채널 사운드 정지
-#define CHECK_SOUNDPLAYING(CHANNEL)		SoundManager::GetInstance()->IsPlaying(CHANNEL);								// 음악 플레이 여부 확인
+#define PLAY_SOUND(FILENAME, CHANNEL)		SoundManager::GetInstance()->Play_Sound(FILENAME, CHANNEL);					// 채널에 사운드 플레이
+#define PLAY_SOUND_ONCE(FILENAME, CHANNEL)	SoundManager::GetInstance()->Play_Sound_Once(FILENAME, CHANNEL);			// 채널에 사운드 플레이 한 번만
+#define STOP_SOUND(CHANNEL)					SoundManager::GetInstance()->Stop_Sound(CHANNEL);							// 해당 채널 사운드 정지
+#define STOP_ALLSOUND						SoundManager::GetInstance()->Stop_AllSound();								// 모든 채널 사운드 정지
+#define CHECK_SOUNDPLAYING(CHANNEL)			SoundManager::GetInstance()->IsPlaying(CHANNEL);							// 음악 플레이 여부 확인
+#define VOLUME(CHANNEL, VOLUME)				SoundManager::GetInstance()->Set_ChannelVolume(CHANNEL, VOLUME);			// 채널의 사운드 볼륨 조절
 ////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////// KEYMANAGER /////////////////////////////////////
@@ -17,12 +19,6 @@
 #define MOUSE_MOVE(KEY_IDX)				KeyManager::GetInstance()->Get_MouseMove(KEY_IDX)								// 마우스 움직임 감지
 ////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////// SCENEMANAGER /////////////////////////////////////
-#define CHANGE_SCENE_START				SceneManager::GetInstance()->Scene_Transition(StartScene::Create(GRPDEV));		// 시작 씬으로 전환
-#define CHANGE_SCENE_VILLAGE			SceneManager::GetInstance()->Scene_Transition(VillageScene::Create(GRPDEV));	// 마을 씬으로 전환
-#define CHANGE_SCENE_DUNGEON			SceneManager::GetInstance()->Scene_Transition(DungeonScene::Create(GRPDEV));	// 던전 씬으로 전환
-////////////////////////////////////////////////////////////////////////////////////
-
 /////////////////////////////////// COMPONENT //////////////////////////////////////
 
 #define ADD_COMPONENT_TRIANGLE			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TRIANGLE));		// 삼각형 출력 컴포넌트 추가
@@ -32,16 +28,15 @@
 #define ADD_COMPONENT_TRANSFORM			dynamic_cast<Transform*>(Add_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));	// TRANSFORM 컴포넌트 추가
 #define ADD_COMPONENT_TEXTURE			dynamic_cast<Texture*>(Add_Component(COMPONENT_TYPE::COMPONENT_TEXTURE));		// 텍스쳐 저장 컴포넌트 추가
 #define ADD_COMPONENT_SPRITE			dynamic_cast<SpriteObject*>(Add_Component(COMPONENT_TYPE::COMPONENT_SPRITE));	// 텍스쳐 저장 컴포넌트 추가
-#define ADD_COMPONENT_COLLIDER			dynamic_cast<Collider*>(Add_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));	// 텍스쳐 저장 컴포넌트 추가
-#define ADD_COMPONENT_FSM				dynamic_cast<StateMachine*>(Add_Component(COMPONENT_TYPE::COMPONENT_FSM));	// FSM 컴포넌트
-#define ADD_COMPONENT_TILE	    		dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILE));		// 타일
-#define ADD_COMPONENT_CUBE				dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_CUBE));		// 큐브
-#define ADD_COMPONENT_TILEFRONT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEFRONT));   // 타일 옆면
+#define ADD_COMPONENT_COLLIDER			dynamic_cast<Collider*>(Add_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));		// 텍스쳐 저장 컴포넌트 추가
+#define ADD_COMPONENT_FSM				dynamic_cast<StateMachine*>(Add_Component(COMPONENT_TYPE::COMPONENT_FSM));		// FSM 컴포넌트
+#define ADD_COMPONENT_TILE	    		dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILE));			// 타일
+#define ADD_COMPONENT_CUBE				dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_CUBE));			// 큐브
+#define ADD_COMPONENT_TILEFRONT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEFRONT));		// 타일 옆면
 #define ADD_COMPONENT_TILELEFT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILELEFT));
 #define ADD_COMPONENT_TILERIGHT			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILERIGHT));
 #define ADD_COMPONENT_TILEBACK			dynamic_cast<Buffer*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEBACK));
 #define ADD_COMPONENT_TILEINFO			dynamic_cast<TileInfo*>(Add_Component(COMPONENT_TYPE::COMPONENT_TILEINFO));
-
 ////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////// EFFECT /////////////////////////////////////////				
