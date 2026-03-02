@@ -13,8 +13,6 @@ GameObject* Monster::Set_Target(CONST TCHAR* _TAG)
 	GameObject* GameObj = SceneManager::GetInstance()->Get_GameObject(_TAG);
 	return GameObj;
 }
-
-
 HRESULT Monster::Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo)
 {
 	if (nullptr == _TexInfo)
@@ -25,9 +23,6 @@ HRESULT Monster::Set_TextureList(uint16_t _Key, TEXINFO* _TexInfo)
 	const vector<IDirect3DTexture9*>* pNewTex = MonsterManager::GetInstance()->Find_Textures(SearchKey);
 	if (nullptr == pNewTex)				return E_POINTER;
 	if (pNewTex == _TexInfo->pTexture)	return S_OK;
-	
-	//_TexInfo->pTexture = MonsterManager::GetInstance()->Find_Textures(SearchKey);
-	//if (nullptr == _TexInfo->pTexture)				return E_POINTER;
 
 	_TexInfo->pTexture = pNewTex;
 	_TexInfo->_vecTexture.clear();
@@ -84,10 +79,6 @@ FLOAT Monster::BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 v
 	_vec3 vCampos = *dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->
 					Get_EyeVec();
 
-	//_matrix matView;
-	//_GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-	//_vec3 vCampos	 = ?
-
 	_vec3 vLook = vCampos - vPos;
 	D3DXVec3Normalize(&vLook, &vLook);
 
@@ -136,16 +127,6 @@ HRESULT Monster::Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer
 
 VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType)
 {
-	//TCHAR Classname[256];
-	//swprintf_s(Classname, 256, L"%S", typeid(*pMonster).name());
-	//CONST TCHAR* pName = wcschr(Classname, L' ');
-	//pName = (pName != nullptr) ? pName + 1 : Classname;
-
-	//TCHAR Classname[256];
-	//swprintf_s(Classname, 256, L"%S", typeid(*SceneManager::GetInstance()->Get_CurrentScene()).name());
-	//CONST TCHAR* pName = wcschr(Classname, L' ');
-	//pName = (pName != nullptr) ? pName + 1 : Classname;
-
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);
 
@@ -169,54 +150,6 @@ void Monster::Release_Hurdle(MONSTERINFO* _Info) {
 		}
 	}
 }
-//
-//VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
-//{
-//	_matrix		matBill, matWorld, matView;
-//
-//	matWorld = *Component_Transform->Get_World();
-//	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-//
-//	D3DXMatrixIdentity(&matBill);
-//
-//	//XÃà
-//	matBill._11 = matView._11;
-//	matBill._12 = matView._12;
-//	matBill._13 = matView._13;
-//	//YÃà
-//	matBill._21 = matView._21;
-//	matBill._22 = matView._22;
-//	matBill._23 = matView._23;
-//	//ZÃà
-//	matBill._31 = matView._31;
-//	matBill._32 = matView._32;
-//	matBill._33 = matView._33;
-//
-//	D3DXMatrixInverse(&matBill, 0, &matBill);
-//
-//	// ÁÖÀÇ ÇÒ °Í
-//	matWorld = matBill * matWorld;
-//
-//	Component_Transform->Set_World(&matWorld);
-//}
-
-//uint64_t Monster::XorShift128plus(uint64_t& _Seed1, uint64_t& _Seed2)
-//{
-//	// 창준이형 로컬에서 추가된 함수인것 같습니다. 같이 상의해서 사용 부탁드려요~
-//	if (0 == _Seed1 || 0 == _Seed2)
-//	{
-//		_Seed1 = 0x123456789ABCDEF0;
-//		_Seed2 = 0xFEDCBA9876543210;
-//	}
-//
-//	uint64_t x = _Seed1;
-//	uint64_t const y = _Seed2;
-//	_Seed1 = y;
-//	x ^= x << 23;
-//	_Seed2 = x ^ y ^ (x >> 17) ^ (y >> 26);
-//
-//	return _Seed2 + y;
-//}
 
 
 VOID Monster::BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform)
@@ -275,12 +208,15 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 
 HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)
 {
+
 	if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
 		CameraObject* pCamera = Monster::Get_Camera();
 		tagHurdleInfo* pHurdle = _pInfo->_pHurdle;
 		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+
+		return 0;
 	}
 	else if (_pInfo->eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
 		CameraObject* pCamera = Monster::Get_Camera();
@@ -289,11 +225,13 @@ HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos
 
 		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
 		_vec3 vCalc = pHurdle->vDst - *vPos;
-		_float fCalc = D3DXVec3Dot(&vCalc, vPos);
+		_float fCalc = D3DXVec3Dot(&vCalc, &pHurdle->vDir);
 		if (fCalc < 0.f)
 			*vPos = pHurdle->vSrc;
+
+		return 0;
 	}
-	return S_OK;
+	return E_FAIL;
 }
 
 BOOL Monster::Minigame_LateUpdate(const _float& _DT, MONINFO* _pInfo)
@@ -342,25 +280,25 @@ BOOL Monster::Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOO
 	_vec3*		pPosNoMove		= pColliderNoMove->Get_CenterPos()->Get_Position();
 	_vec3*		pPosMove		= pColliderMove->Get_CenterPos()->Get_Position();
 
-	_vec3		vDir			= *pPosMove - *pPosNoMove;
+	_vec3		vDir = *pPosMove - *pPosNoMove;
 
 	_float	dx(-1.f), dy(-1.f), dz(-1.f);
 	if (x) dx = fabsf(vDir.x);
 	if (y) dy = fabsf(vDir.y);
 	if (z) dz = fabsf(vDir.z);
 
-	if ((dx >= dz)	&&	(dx > dy)	&&	(dx >= 0.f))	{
-		_float fDis = pColliderMove->Get_Scale().x * 0.501f;
+	if ((dx >= dz) && (dx > dy) && (dx >= 0.f)) {
+		_float fDis = pColliderMove->Get_Scale().x;
 		pPosMove->x = (vDir.x < 0.f) ? pColliderNoMove->Get_MinPoint().x - fDis : pColliderNoMove->Get_MaxPoint().x + fDis;
 		return true;
 	}
 	else if ((dz >= dy) && (dz >= 0.f)) {
-		_float fDis = pColliderMove->Get_Scale().z * 0.501f;
+		_float fDis = pColliderMove->Get_Scale().z;
 		pPosMove->z = (vDir.z < 0.f) ? pColliderNoMove->Get_MinPoint().z - fDis : pColliderNoMove->Get_MaxPoint().z + fDis;
 		return true;
 	}
 	else if (dy >= 0.f) {
-		_float fDis = pColliderMove->Get_Scale().y * 0.501f;
+		_float fDis = pColliderMove->Get_Scale().y;
 		pPosMove->y = (vDir.y < 0.f) ? pColliderNoMove->Get_MinPoint().y - fDis : pColliderNoMove->Get_MaxPoint().y + fDis;
 		return true;
 	}
@@ -368,64 +306,3 @@ BOOL Monster::Hurdle_CollisionStay(GameObject* _pNoMove, GameObject* _pMove, BOO
 		return false;
 	}
 }
-
-//
-//template<typename T>
-//inline GameObject* Monster::Create(LPDIRECT3DDEVICE9 GRPDEV, _vec3 _vSrc, _vec3 _vDst, _float _fSpeed, _float _fScalemult)
-//{
-//	tagHurdleInfo* pHurdle = DBG_NEWW tagHurdleInfo(_vSrc, _vDst, _fSpeed, _fScalemult);
-//	vector<tagHurdleInfo*>& pContainer = MonsterManager::GetInstance()->Get_Hurdles();
-//
-//	bool	bDup = false;
-//
-//	for (auto it : pContainer) {
-//		if (*it == *pHurdle) {
-//			bDup = true;
-//			delete pHurdle;
-//			pHurdle = it;
-//			break;
-//		}
-//	}
-//
-//	if (!bDup)
-//		pContainer.push_back(pHurdle);
-//
-//	if ((roundf(pHurdle->fDis / pHurdle->fScale) - pHurdle->fDis) < pHurdle->RefCount)
-//		return nullptr;
-//
-//	GameObject* pObj = Monster::Create<T>(GRPDEV, (pHurdle.vDir * pHurdle->RefCount) + pHurdle->vSrc, _fScalemult);
-//
-//	pHurdle->RefCount++;
-//
-//	MONSTERINFO* pInfo = dynamic_cast<Bat*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<ScorpionEvilSoul*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<ShotGunEvilSoul*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<EvilSlime*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<Bullet_Standard*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<Fireball*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<ScorpionBullet*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<Bullet_Chain_Head*>(pObj)->Get_Info();
-//	if (pInfo == nullptr)
-//		pInfo = dynamic_cast<EvilSlimeGroundIce*>(pObj)->Get_Info();
-//	if (pInfo == nullptr) {
-//		pObj->Free();
-//		pObj = nullptr;
-//		delete pInfo;
-//		pInfo = nullptr;
-//
-//		return nullptr;
-//	}
-//
-//	pInfo->Change_State(MONSTER_STATE_MINIGAME_IDLE);
-//	pInfo->_pHurdle = pHurdle;
-//	pInfo->vDirection = pHurdle->vDir;
-//
-//	return pObj;
-//}

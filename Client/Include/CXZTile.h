@@ -58,7 +58,7 @@ private:
     _bool                   m_bDestroy;
     _bool                   m_bMiniGame;
     DWORD                   m_Alpha;
-
+    _bool                   m_bPotalOpen;
 public:
     static         CXZTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, TILE_SIDE eid, TILE_STATE eState);
 

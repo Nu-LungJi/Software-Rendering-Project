@@ -2,7 +2,7 @@
 #include "Camera.h"
 
 CameraObject::CameraObject(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), StopMove(true), FrustumPlane{}, m_eCurrScene(SCENE_TYPE::SCENE_END) {}
-CameraObject::CameraObject(const GameObject& _RHS)		: GameObject(_RHS)		{}
+CameraObject::CameraObject(const GameObject& _RHS) : GameObject(_RHS) {}
 CameraObject::~CameraObject() {}
 
 HRESULT CameraObject::Ready_GameObject() {
@@ -23,7 +23,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	FocusOn_Boss = FALSE;
 	Focusing_Timer = 0.f;
 	OriginCameraPos = { 0.f, 0.f, 0.f };
-	
+
 	Camera_Show = TRUE;
 	Camera_Move = FALSE;
 
@@ -36,13 +36,17 @@ HRESULT CameraObject::Ready_GameObject() {
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
 
-	m_vVelocity = {0.f , 0.f, 0.f};
+	m_vVelocity = { 0.f , 0.f, 0.f };
 
 	ObjectTAG = L"Camera";
 
 	OriginEye = EyeVec;
 	OriginAt = AtVec;
 
+	Enable_QuickZoom = 2;
+	QZoom_Timer = 0.f;
+	OriginCameraPos = { 0.f , 0.f, 0.f };
+	OriginCameraAt = { 0.f , 0.f, 0.f };
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
@@ -53,15 +57,22 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
 	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		Velocity_Lock = !Velocity_Lock;
+		//Velocity_Lock = !Velocity_Lock;
+		Enable_QuickZoom = FALSE;
+	}
+	if (KEY_DOWN(DIK_F8)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
+		//Velocity_Lock = !Velocity_Lock;
+		Enable_QuickZoom = TRUE;
 	}
 	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		MiniGame(_DT);
 		return 0;
 	}
-	
+
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
+
+	Camera_QuickZoom(_DT);
 
 	if (!Camera_Move) {
 		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
@@ -87,7 +98,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		_vec3 targetEye = EyeVec;
 		_vec3 targetAt = AtVec;
 
-		
+
 		if (Velocity_Lock == FALSE) {		//  커서가 움직이면 화면도 같이 움직이게 함.(FALSE = 움직이게 하기, TRUE = 고정)
 			_float moveAmount = (distance - offset) * 4;
 			if (distance > offset)
@@ -125,14 +136,14 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		FLOAT RADX = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADY = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
 		FLOAT RADZ = (FLOAT)(rand() % (2 * Shake_Strength + 1) - Shake_Strength) / 100.f;
-	
+
 		EyeVec = { EyeVec.x + RADX, EyeVec.y + RADY, EyeVec.z + RADZ };
 		AtVec = { AtVec.x + RADX, AtVec.y + RADY, AtVec.z + RADZ };
 	}
 	D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
 	GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
-	
-	if		(Shake_Time > 0.f) {
+
+	if (Shake_Time > 0.f) {
 		Shake_Time -= _DT;
 		EyeVec = OriginEye;
 		AtVec = OriginAt;
@@ -141,14 +152,14 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		Shake_Time = 0.f;
 		Original_Shake_Time = 0.f;
 	}
-	
+
 	return 0;
-	
+
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
 	Camera_Transform_Control(_DT);
 
-	if (MouseCheck && !FocusOn_Boss) {
+	if (MouseCheck) {
 		POINT       ptMouse{ WINCX >> 1, WINCY >> 1 };
 
 		ClientToScreen(hWnd, &ptMouse);
@@ -169,37 +180,37 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 	{
 		if (KEY_HOLD(DIK_W)) {
 			memcpy(&FrontVector, &CameraMatrix.m[2][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&FrontVector, &FrontVector) * _DT * CameraSpeed;
 			EyeVec += Length; AtVec += Length;
 		}
 		if (KEY_HOLD(DIK_S)) {
 			memcpy(&FrontVector, &CameraMatrix.m[2][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&FrontVector, &FrontVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
 		if (KEY_HOLD(DIK_D)) {
 			memcpy(&SideVector, &CameraMatrix.m[0][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&SideVector, &SideVector) * _DT * CameraSpeed;
 			EyeVec += Length; AtVec += Length;
 		}
 		if (KEY_HOLD(DIK_A)) {
 			memcpy(&SideVector, &CameraMatrix.m[0][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&SideVector, &SideVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
 		if (KEY_HOLD(DIK_RCONTROL)) {
 			memcpy(&UpVector, &CameraMatrix.m[1][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
 			EyeVec += Length; AtVec += Length;
 		}
 		if (KEY_HOLD(DIK_LCONTROL)) {
 			memcpy(&UpVector, &CameraMatrix.m[1][0], sizeof(_vec3));
-		
+
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
@@ -208,13 +219,13 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT){
+VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT) {
 	_matrix CameraMatrix;
 	D3DXMatrixInverse(&CameraMatrix, 0, &ViewMatrix);
 
 	LONG MouesAngle = 0;
 
-	if (Camera_Move && !FocusOn_Boss)
+	if (Camera_Move)
 	{
 		if (MouesAngle = MOUSE_MOVE(DIMS_Y)) {
 			_matrix RotationMat;
@@ -252,35 +263,35 @@ VOID CameraObject::Update_Frustum()
 {
 	_matrix matVP = ViewMatrix * ProjMatrix;
 
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].a   = matVP._14 + matVP._11;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].b   = matVP._24 + matVP._21;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].c   = matVP._34 + matVP._31;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].d   = matVP._44 + matVP._41;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].a = matVP._14 + matVP._11;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].b = matVP._24 + matVP._21;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].c = matVP._34 + matVP._31;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Left].d = matVP._44 + matVP._41;
 
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].a  = matVP._14 - matVP._11;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].b  = matVP._24 - matVP._21;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].c  = matVP._34 - matVP._31;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].d  = matVP._44 - matVP._41;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].a = matVP._14 - matVP._11;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].b = matVP._24 - matVP._21;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].c = matVP._34 - matVP._31;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Right].d = matVP._44 - matVP._41;
 
 	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].a = matVP._14 + matVP._12;
 	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].b = matVP._24 + matVP._22;
 	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].c = matVP._34 + matVP._32;
 	FrustumPlane[(uint8_t)FRUSTUMPLANE::bottom].d = matVP._44 + matVP._42;
 
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].a    = matVP._14 - matVP._12;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].b    = matVP._24 - matVP._22;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].c    = matVP._34 - matVP._32;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].d    = matVP._44 - matVP._42;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].a = matVP._14 - matVP._12;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].b = matVP._24 - matVP._22;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].c = matVP._34 - matVP._32;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Top].d = matVP._44 - matVP._42;
 
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].a   = matVP._13;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].b   = matVP._23;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].c   = matVP._33;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].d   = matVP._43;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].a = matVP._13;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].b = matVP._23;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].c = matVP._33;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Near].d = matVP._43;
 
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].a    = matVP._14 - matVP._13;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].b    = matVP._24 - matVP._23;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].c    = matVP._34 - matVP._33;
-	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].d    = matVP._44 - matVP._43;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].a = matVP._14 - matVP._13;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].b = matVP._24 - matVP._23;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].c = matVP._34 - matVP._33;
+	FrustumPlane[(uint8_t)FRUSTUMPLANE::Far].d = matVP._44 - matVP._43;
 
 	for (uint8_t i = 0; i < (uint8_t)FRUSTUMPLANE::End; ++i)
 	{
@@ -307,12 +318,12 @@ BOOL CameraObject::IsIn_Frustum(_vec3 _vPos, _float _fRadius)
 
 void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 {
-	_vec3 vLook, vDistance,vPos, vAt, vEye;
+	_vec3 vLook, vDistance, vPos, vAt, vEye;
 	_float fLength(0.f);
 	if (!StopMove)
 	{
 		// 광윤 추가 ▼
-		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
 		// 광윤 추가 ▼
 		Button_Lock = TRUE;	// 키보드 입력 무효화 ON
 
@@ -322,11 +333,11 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 		Camera_Move = true;
 		vCenter.y = 0.5;
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
-		_vec3 atCalc  = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
 
 		EyeVec = vCenter + eyeCalc;
-		AtVec  = vCenter + atCalc;
-	
+		AtVec = vCenter + atCalc;
+
 		if (player->Get_CameraMove())
 		{
 			vLook = vCenter - *playerPos;
@@ -336,14 +347,14 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 			vCenter.y = 6.f;
 			vLook = vCenter - vPlayer;
 		}
-		
+
 		fLength = D3DXVec3Length(&vLook);
 
 		D3DXVec3Normalize(&vLook, &vLook);
 		if (fLength <= 23)
 		{
 			EyeVec = vPlayer + eyeCalc + vLook * _DT * 6.f;
-			AtVec  = vPlayer + atCalc  + vLook * _DT * 6.f;
+			AtVec = vPlayer + atCalc + vLook * _DT * 6.f;
 
 			vPlayer += vLook * _DT * 6.f;
 
@@ -356,58 +367,45 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 				dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableBossTitle(TRUE);
 				return;
 			}
-		
+
 			player->Set_CameraMove(false);
 		}
 		else
 		{
 			dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Move_Pos(&vLook, 5.f, _DT);
 			EyeVec = (*playerPos) + eyeCalc;
-			AtVec =  (*playerPos) + atCalc;
+			AtVec = (*playerPos) + atCalc;
 			vPlayer = (*playerPos);
 		}
-		
+
 	}
-	
+
 
 }
 VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 	if (FocusOn_Boss) {
 		Focusing_Timer += _DT;
-		
+
 		if (Focusing_Timer < 0.15f) {
 			OriginCameraPos = EyeVec;
 			OriginCameraAt = AtVec;
 		}
 
 		if (Focusing_Timer > 1.f && Focusing_Timer < 3.f) {
-			//_vec3 CameraEyeSRC = { 61.95f, 18.55f, 77.841f };
-			//_vec3 CameraAtSRC = { 61.95f, 15.04f, 78.84f };
 			_vec3 CameraEyeDEST = { 63.6f, 18.55f, 95.105f };
 			_vec3 CameraAtDEST = { 63.6f, 15.04f, 96.105f };
-			Transform* BossTransform = static_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-			_vec3 BossPos = { BossTransform->Get_Position()->x - 0.5f, 1.f,  BossTransform->Get_Position()->z - 3.f };
-			_vec3 PlayerPos = *static_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
 
-			_vec3 PlayerToBoss = BossPos - PlayerPos;
-			_vec3 Temp = CameraEyeDEST - OriginCameraPos;
+			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			EyeVec.z = OriginCameraPos.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 
-			EyeVec.x = OriginCameraPos.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			EyeVec.z = OriginCameraPos.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-
-			AtVec.x = OriginCameraAt.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			AtVec.z = OriginCameraAt.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-
-			//EyeVec.x = OriginCameraPos.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			//EyeVec.z = OriginCameraPos.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			
-			//AtVec.x = OriginCameraAt.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			//AtVec.z = OriginCameraAt.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 		}
 	}
 }
 VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
-	FocusOn_Boss = _FOB; 
+	FocusOn_Boss = _FOB;
 	if (FocusOn_Boss) {
 		MouseCheck = FALSE;
 		Velocity_Lock = TRUE;
@@ -423,6 +421,80 @@ VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
 }
 HRESULT CameraObject::Component_Initialize() {
 	return S_OK;
+}
+VOID CameraObject::Camera_QuickZoom(const FLOAT& _DT) {
+	// 도철 전용입니다. 사용 X
+	_vec3 CameraEyeDEST		= { 63.6f, 15.55f, 95.605f };
+	_vec3 CameraAtDEST		= { 63.6f, 12.04f, 96.605f };
+	if		(Enable_QuickZoom == 2)					return;
+	else if (Enable_QuickZoom == TRUE) {
+		QZoom_Timer += _DT;
+		if (QZoom_Timer <= 0.2f) {
+			MouseCheck = FALSE;
+			Velocity_Lock = TRUE;
+			Camera_Move = TRUE;
+			Button_Lock = TRUE;
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			OriginCameraPos = (*playerPos) + eyeCalc;
+			OriginCameraAt = (*playerPos) + atCalc;
+		}
+
+		if (QZoom_Timer < 0.25f) {
+			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
+
+			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.y = OriginCameraPos.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.z = OriginCameraPos.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer)));
+
+			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.y = OriginCameraAt.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer)));
+		}
+		else if (QZoom_Timer > 0.3f) {
+			QZoom_Timer = 0.f;
+			Enable_QuickZoom = 2;
+		}
+	}
+	else if (Enable_QuickZoom == FALSE) {
+		QZoom_Timer += _DT;
+		if (QZoom_Timer < 0.2f) {
+			MouseCheck = FALSE;
+			Velocity_Lock = TRUE;
+			Camera_Move = TRUE;
+			Button_Lock = TRUE;
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			OriginCameraPos = (*playerPos) + eyeCalc;
+			OriginCameraAt = (*playerPos) + atCalc;
+		}
+		if (QZoom_Timer < 0.25f) {
+			_vec3 ActionCameraVec = OriginCameraPos - CameraEyeDEST;
+
+			EyeVec.x = CameraEyeDEST.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.y = CameraEyeDEST.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer))) + 1.5f * 4 * QZoom_Timer;
+			EyeVec.z = CameraEyeDEST.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer))) - 1.5f * 4 * QZoom_Timer;
+
+			AtVec.x = CameraAtDEST.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.y = CameraAtDEST.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer))) + 1.5f * 4 * QZoom_Timer;
+			AtVec.z = CameraAtDEST.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer))) - 1.5f * 4 * QZoom_Timer;
+		}
+		else if (QZoom_Timer > 0.3f) {
+			QZoom_Timer = 0.f;
+			Enable_QuickZoom = 2;
+
+			MouseCheck = FALSE;
+			Velocity_Lock = FALSE;
+			Camera_Move = FALSE;
+			Button_Lock = FALSE;
+		}
+	}
 }
 CameraObject* CameraObject::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	CameraObject* CAM = new CameraObject(_GRPDEV);

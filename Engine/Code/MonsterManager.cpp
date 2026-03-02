@@ -60,6 +60,7 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 		}
 		else if (!wcscmp(tInfo.szName, L"BlueEvilSlime"))			{ tInfo.name = (uint8_t)MONSTER_TYPE::EvilSlime;
 				if		(!wcscmp(tInfo.szState, L"Stand"))					tInfo.State = (uint8_t)MONSTER_ANIM::Stand;
+				else if	(!wcscmp(tInfo.szState, L"Attack"))					tInfo.State = (uint8_t)MONSTER_ANIM::Attack;
 		}
 		else if (!wcscmp(tInfo.szName, L"BlueEliteShotGunEvilSoul")){ tInfo.name = (uint8_t)MONSTER_TYPE::ShotGunEvilSoul;
 				if (!wcscmp(tInfo.szState, L"Stand"))						tInfo.State = (uint8_t)MONSTER_ANIM::Stand;
@@ -97,25 +98,6 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 	else if (!wcscmp(tInfo.szType, L"Tile"))			{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
 	}
 	else return tInfo;
-
-	//if      (!wcscmp(tInfo.szName, L"BlueEvilBat"))					tInfo.name = (uint8_t)MONSTER_TYPE::Bat;
-	//else if (!wcscmp(tInfo.szName, L"BlueScorpionEvilSoul"))		tInfo.name = (uint8_t)MONSTER_TYPE::ScorpionEvilSoul;
-	//else if (!wcscmp(tInfo.szName, L"BlueEvilSlime"))				tInfo.name = (uint8_t)MONSTER_TYPE::EvilSlime;
-	//else if (!wcscmp(tInfo.szName, L"BlueEliteShotGunEvilSoul"))	tInfo.name = (uint8_t)MONSTER_TYPE::ShotGunEvilSoul;
-	//else if (!wcscmp(tInfo.szName, L"Standard"))					tInfo.name = (uint8_t)BULLET_TYPE::Standard;
-	//else if (!wcscmp(tInfo.szName, L"ScorpionBullet"))				tInfo.name = (uint8_t)BULLET_TYPE::ScorpionBullet;
-	//else if (!wcscmp(tInfo.szName, L"Chain01"))						tInfo.name = (uint8_t)BULLET_TYPE::Chain01;
-	//else if (!wcscmp(tInfo.szName, L"Chain02"))						tInfo.name = (uint8_t)BULLET_TYPE::Chain02;
-	//else if (!wcscmp(tInfo.szName, L"ChainHead"))					tInfo.name = (uint8_t)BULLET_TYPE::ChainHead;
-	//else if (!wcscmp(tInfo.szName, L"Fireball"))					tInfo.name = (uint8_t)BULLET_TYPE::Fireball;
-	//else if (!wcscmp(tInfo.szName, L"BlueEvilSlimeGroudIceEffect")) tInfo.name = (uint8_t)BULLET_TYPE::GroundIce;
-	//else if (!wcscmp(tInfo.szName, L"Alert"))						tInfo.name = (uint8_t)MONSTER_EFFECT::ALERT;
-
-	//else if (!wcscmp(tInfo.szState, L"Stand"))                     tInfo.State = (uint8_t)MONSTER_ANIM::Stand;
-	//else if (!wcscmp(tInfo.szState, L"appear"))                    tInfo.State = (uint8_t)MONSTER_ANIM::Appear;
-	//else if (!wcscmp(tInfo.szState, L"disappear"))                 tInfo.State = (uint8_t)MONSTER_ANIM::Disappear;
-	//else if (!wcscmp(tInfo.szState, L"Attack"))                    tInfo.State = (uint8_t)MONSTER_ANIM::Attack;
-	//else if (!wcscmp(tInfo.szState, L"Death"))                     tInfo.State = (uint8_t)MONSTER_ANIM::Death;
 
 	tInfo.usResult =  ((uint16_t)tInfo.Type     << 14) |
 					 ((uint16_t)tInfo.name      << 10) |

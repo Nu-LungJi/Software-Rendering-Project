@@ -1,12 +1,12 @@
 #include "../Include/PCH.h"
 
-CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bPoolCheck(false),m_bPool(false),m_bBgm(false), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
+CLAttack::CLAttack(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_iBoomCnt(0),m_bPoolCheck(false),m_bPool(false),m_bBgm(false), m_fFrameSpeed(0.1f), m_fDeadTick(0.f),m_iDeadCnt(0),m_bSpin(false), m_fAttackTick(0.f), m_iAttackIndex(0),m_FrameTick(0.f), m_TextureIndex(0), m_bCheck(false){}
 CLAttack::CLAttack(const GameObject& _RHS) : GameObject(_RHS) {}
 CLAttack::~CLAttack() {}
 
-HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin)
+HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin, _bool bDead)
 {
-    if (FAILED(Component_Initialize())) return E_FAIL;
+    if (FAILED(Component_Initialize(eLeaft))) return E_FAIL;
     m_eLeaf = eLeaft;
     Component_Transform->Set_Pos(vPos);
     Component_Transform->Set_Scale(0.5f, 0.5f, 0.5f);
@@ -21,8 +21,7 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     switch (m_eLeaf)
     {
     case LEAF_ATTACK::LEAF_FIRST:
-        SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Leaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
-        Component_Collider->Set_Att(5.f);
+         Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
         m_iRandCnt = 5 + rand() % 2;
@@ -35,13 +34,41 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
         m_fFrameSpeed = 0.08f;
         break;
     case LEAF_ATTACK::LEAF_FOUR:   
+        m_bDead = bDead;
+        break;
+    case LEAF_ATTACK::LEAF_BOOM_CIRCLE:
+        m_bDead = bDead;
+        Component_Transform->Set_Scale(5.f, 0, 5.f);
         break;
     }
+
     return S_OK;
 }
 
 INT CLAttack::Update_GameObject(const _float& _DT)
 {    
+    if (!m_bBgm)
+    {
+
+        switch (m_eLeaf)
+        {
+        case LEAF_ATTACK::LEAF_FIRST:
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_basicattack.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+            break;
+        case LEAF_ATTACK::LEAF_SECOND:
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+            break;
+
+        case LEAF_ATTACK::LEAF_THIRD:
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+            break;
+        case LEAF_ATTACK::LEAF_FOUR:
+            break;
+        case LEAF_ATTACK::LEAF_BOOM_CIRCLE:
+            break;
+        }
+        m_bBgm = true;
+    }
     if (m_bPoolCheck)
     {
         switch (m_eLeaf)
@@ -54,14 +81,15 @@ INT CLAttack::Update_GameObject(const _float& _DT)
             break;
         case LEAF_ATTACK::LEAF_EXPLOSION:
             Component_Transform->Set_Scale(1.5f, 1.5f, 1.5f);
-            m_fFrameSpeed = 0.08f;
             break;
         }
         m_bSpin = false;
         m_iDeadCnt = 0;
         m_fAttackTick = 0;
         m_iAttackIndex = 0;
+        m_iBoomCnt = 0;
         m_bPool = true;
+        m_bBgm = false;
         m_bPoolCheck = false;
         return 1;
     }
@@ -115,17 +143,16 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD)
+    if (m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD && m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
     {
         m_bPoolCheck = true;
     }
-
+    AlphaSorting(Component_Transform->Get_Position());
 }
 
 void CLAttack::Render_GameObject()
 {
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
     GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
     GRPDEV->SetTexture(0, CHEONLOG->Get_BulletTexture(m_eLeaf)[m_TextureIndex]);
@@ -136,9 +163,13 @@ void CLAttack::Render_GameObject()
 
 }
 
-HRESULT CLAttack::Component_Initialize()
+HRESULT CLAttack::Component_Initialize(LEAF_ATTACK eLeaft)
 {
-    Component_Buffer    = ADD_COMPONENT_RECTTEX;
+    if (LEAF_ATTACK::LEAF_BOOM_CIRCLE == eLeaft)
+    {
+        Component_Buffer = ADD_COMPONENT_TILE;
+    }
+    else  Component_Buffer    = ADD_COMPONENT_RECTTEX;
     Component_Transform = ADD_COMPONENT_TRANSFORM;
     Component_Collider  = ADD_COMPONENT_COLLIDER;
 
@@ -151,16 +182,20 @@ void CLAttack::Move_Frame(const _float& _DT)
 {
     m_FrameTick += _DT;
 
-    if (m_FrameTick > m_fFrameSpeed)
+    if (m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
     {
-        ++m_TextureIndex;
-        m_FrameTick = 0.f;
+        if (m_FrameTick > m_fFrameSpeed)
+        {
+            ++m_TextureIndex;
+            m_FrameTick = 0.f;
+        }
+        if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
+        {
+            if (m_eLeaf != LEAF_ATTACK::LEAF_EXPLOSION)
+                m_TextureIndex = 0;
+        }
     }
-    if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
-    {
-        if (m_eLeaf != LEAF_ATTACK::LEAF_EXPLOSION)
-            m_TextureIndex = 0;
-    }
+ 
 }
 void CLAttack::Move_Leaf(const _float& _DT)
 {
@@ -180,6 +215,38 @@ void CLAttack::Move_Leaf(const _float& _DT)
         break;
     case LEAF_ATTACK::LEAF_EXPLOSION:
         Leaf_Explosion(_DT);
+        break;
+    case LEAF_ATTACK::LEAF_BOOM_CIRCLE:
+        if (m_bDead == FALSE)
+        {
+            if (m_FrameTick > m_fFrameSpeed)
+            {
+                ++m_TextureIndex;
+                m_FrameTick = 0.f;
+                ++m_iBoomCnt;
+            }
+            if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
+            {
+                m_TextureIndex = CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1;
+            }
+            if (m_iBoomCnt > 17)
+                m_bPoolCheck = true;
+        }
+        else if (m_bDead == TRUE)
+        {
+            ++m_TextureIndex;
+            m_FrameTick = 0.f;
+
+            if (m_TextureIndex > CHEONLOG->Get_BulletTexture(m_eLeaf).size() - 1)
+            {
+                m_TextureIndex = 0;
+
+                if (m_bDead)
+                {
+                    m_bPoolCheck = true;
+                }
+            }
+        }
         break;
     }
 }
@@ -233,13 +300,13 @@ void CLAttack::Leaf_Second(const _float& _DT)
     }
     else
     {
-        if (!m_bBgm)
-        {
-            _int iRand = rand() % 3;
-            if(iRand ==0)
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
-            m_bBgm = true;
-        }
+        //if (!m_bBgm)
+        //{
+        //    _int iRand = rand() % 3;
+        //    if(iRand ==0)
+        //    SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+        //    m_bBgm = true;
+        //}
         
         m_fSpeed = 7.f;
         Leaf_Bill(_DT);
@@ -321,7 +388,12 @@ void CLAttack::Leaf_Explosion(const _float& _DT)
     vPos = *Component_Transform->Get_Position();
 
     if (m_TextureIndex == 16)
-        EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::LEAF_EXPLOSION_CIRCLE, { vPos.x,vPos.y,vPos.z }, TRUE, { 6,0,5 }, { 0,0,0 }, 0.1f));
+    {
+        dynamic_cast<CLAttack*>(CHEONLOG->Get_PollMainBullet(LEAF_ATTACK::LEAF_BOOM_CIRCLE).back())->Set_Look({0,0,0}, {vPos.x,vPos.y,vPos.z},false,0.08f,true);
+        CollisionManager::GetInstance()->Add_ColliderObject(CHEONLOG->Get_PollMainBullet(LEAF_ATTACK::LEAF_BOOM_CIRCLE).back());
+        CHEONLOG->Get_OriginBullet(LEAF_ATTACK::LEAF_BOOM_CIRCLE).push_back(CHEONLOG->Get_PollMainBullet(LEAF_ATTACK::LEAF_BOOM_CIRCLE).back());
+        CHEONLOG->Get_PollMainBullet(LEAF_ATTACK::LEAF_BOOM_CIRCLE).pop_back();
+    }
     if (m_TextureIndex == 25)
         Component_Transform->Set_Scale(5.f, 5.f, 5.f);
 
@@ -372,10 +444,10 @@ void CLAttack::Leaf_Bill(const _float& _DT)
 
 
 
-CLAttack* CLAttack::Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin)
+CLAttack* CLAttack::Create(LPDIRECT3DDEVICE9 _GRPDEV, LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, _bool bSpin, _bool bDead)
 {
     CLAttack* CL = new CLAttack(_GRPDEV);
-    if (FAILED(CL->Ready_GameObject(eLeaft, vPos, vLook, bSpin))) {
+    if (FAILED(CL->Ready_GameObject(eLeaft, vPos, vLook, bSpin, bDead))) {
         MSG_BOX("Cannot Create CLAttack.");
         Safe_Release(CL);
         return nullptr;

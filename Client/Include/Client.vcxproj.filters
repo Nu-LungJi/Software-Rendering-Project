@@ -58,9 +58,6 @@
     <Filter Include="02. Scene\99. DebugScene">
       <UniqueIdentifier>{463a72e6-4ff4-4d4b-8a1f-42b0355fbd5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\99. Camera">
-      <UniqueIdentifier>{4e81e72d-aaba-4f6f-aadb-fd7b0e176224}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\05. Tile">
       <UniqueIdentifier>{3f5d8e79-69ba-4afe-ab89-37fd086d4597}</UniqueIdentifier>
     </Filter>
@@ -105,9 +102,6 @@
     </Filter>
     <Filter Include="02. Scene\99. MapScene">
       <UniqueIdentifier>{76ac9252-3a58-4a11-91e2-f721f733b660}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\05. ShopUI">
-      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\07. ProJectile\03.ScorpionBullet">
       <UniqueIdentifier>{64a83776-8b63-4f8c-a8e9-b5d925e51d43}</UniqueIdentifier>
@@ -249,6 +243,12 @@
     </Filter>
     <Filter Include="07. Font\Manager">
       <UniqueIdentifier>{0d508af8-e4b7-4c38-8f5a-86e3456e62bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\99. Camera">
+      <UniqueIdentifier>{4e81e72d-aaba-4f6f-aadb-fd7b0e176224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\05. ShopUI">
+      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\01. Player\02. Artifact">
       <UniqueIdentifier>{23b52e8e-4776-4af9-b9ad-2f3cfab8769d}</UniqueIdentifier>

@@ -38,7 +38,7 @@ public:		// Trigger Function
 	VOID			Speech_PopUp(wstring _Text) { Speech_Text = _Text; Enable_SpeechBubble = TRUE; }
 	VOID			Speech_PopUp_Skill(wstring _Text, int type) { Speech_Text = _Text; Enable_SpeechBubbleSkill = TRUE; ImgFrame = 1; FrameTimer = 0.f;  Effect = nullptr; skillType = type; }
 
-	VOID			Set_FadeOption(INT _OPT) { Enable_MainUIFade = _OPT; }
+	VOID			Set_FadeOption(INT _OPT, FLOAT _SPEED) { Enable_MainUIFade = _OPT; FadeSpeed = _SPEED; }
 
 	VOID			Set_EnableSpeechBubble(BOOL _ESB) {}
 
@@ -46,7 +46,7 @@ public:		// Trigger Function
 
 	VOID			Set_EnableBossTitle(INT _EBT) { Enable_BossTitle = _EBT; }
 private:
-	VOID			MainUI_FadeAction(CONST FLOAT& _DT);
+	VOID			MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED);
 	VOID			Display_BossTitle(CONST FLOAT& _DT);
 	VOID			Synchronize_BossHPBar();
 
@@ -96,6 +96,7 @@ private:
 	vector<UIEffect*>	AllUIEffect;
 	FLOAT				GlobalOPC;
 	INT					EffectFaded;
+	FLOAT				FadeSpeed;
 
 	FLOAT				MaxHP;
 	FLOAT				CurrentHP;
