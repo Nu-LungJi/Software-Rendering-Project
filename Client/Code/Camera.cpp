@@ -43,6 +43,10 @@ HRESULT CameraObject::Ready_GameObject() {
 	OriginEye = EyeVec;
 	OriginAt = AtVec;
 
+	Enable_QuickZoom = 2;
+	QZoom_Timer = 0.f;
+	OriginCameraPos = { 0.f , 0.f, 0.f };
+	OriginCameraAt = { 0.f , 0.f, 0.f };
 	return S_OK;
 }
 INT	CameraObject::Update_GameObject(const _float& _DT) {
@@ -53,7 +57,12 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
 	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		Velocity_Lock = !Velocity_Lock;
+		//Velocity_Lock = !Velocity_Lock;
+		Enable_QuickZoom = FALSE;
+	}
+	if (KEY_DOWN(DIK_F8)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
+		//Velocity_Lock = !Velocity_Lock;
+		Enable_QuickZoom = TRUE;
 	}
 	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		MiniGame(_DT);
@@ -62,6 +71,8 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
+
+	Camera_QuickZoom(_DT);
 
 	if (!Camera_Move) {
 		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
@@ -312,7 +323,7 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 	if (!StopMove)
 	{
 		// 광윤 추가 ▼
-		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
 		// 광윤 추가 ▼
 		Button_Lock = TRUE;	// 키보드 입력 무효화 ON
 
@@ -381,28 +392,15 @@ VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 		}
 
 		if (Focusing_Timer > 1.f && Focusing_Timer < 3.f) {
-			//_vec3 CameraEyeSRC = { 61.95f, 18.55f, 77.841f };
-			//_vec3 CameraAtSRC = { 61.95f, 15.04f, 78.84f };
 			_vec3 CameraEyeDEST = { 63.6f, 18.55f, 95.105f };
-			_vec3 CameraAtDEST = { 63.6f, 15.04f, 96.105f };
-			Transform* BossTransform = static_cast<Transform*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
-			_vec3 BossPos = { BossTransform->Get_Position()->x - 0.5f, 1.f,  BossTransform->Get_Position()->z - 3.f };
-			_vec3 PlayerPos = *static_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+			_vec3 CameraAtDEST	= { 63.6f, 15.04f, 96.105f };
+			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
 
-			_vec3 PlayerToBoss = BossPos - PlayerPos;
-			_vec3 Temp = CameraEyeDEST - OriginCameraPos;
+			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			EyeVec.z = OriginCameraPos.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 
-			EyeVec.x = OriginCameraPos.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			EyeVec.z = OriginCameraPos.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-
-			AtVec.x = OriginCameraAt.x + Temp.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			AtVec.z = OriginCameraAt.z + Temp.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-
-			//EyeVec.x = OriginCameraPos.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			//EyeVec.z = OriginCameraPos.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			
-			//AtVec.x = OriginCameraAt.x + PlayerToBoss.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
-			//AtVec.z = OriginCameraAt.z + PlayerToBoss.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
+			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 		}
 	}
 }
@@ -423,6 +421,80 @@ VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
 }
 HRESULT CameraObject::Component_Initialize() {
 	return S_OK;
+}
+VOID CameraObject::Camera_QuickZoom(const FLOAT& _DT) {
+	// 도철 전용입니다. 사용 X
+	_vec3 CameraEyeDEST		= { 63.6f, 14.55f, 95.605f };
+	_vec3 CameraAtDEST		= { 63.6f, 11.04f, 96.605f };
+	if		(Enable_QuickZoom == 2)					return;
+	else if (Enable_QuickZoom == TRUE) {
+		QZoom_Timer += _DT;
+		if (QZoom_Timer <= 0.2f) {
+			MouseCheck		= FALSE;
+			Velocity_Lock	= TRUE;
+			Camera_Move		= TRUE;
+			Button_Lock		= TRUE;
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			OriginCameraPos = (*playerPos) + eyeCalc;
+			OriginCameraAt = (*playerPos) + atCalc;
+		}
+		
+		if (QZoom_Timer < 0.25f) {
+			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
+
+			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.y = OriginCameraPos.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.z = OriginCameraPos.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer)));
+
+			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.y = OriginCameraAt.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer)));
+		}
+		else if (QZoom_Timer > 0.3f) {
+			QZoom_Timer = 0.f;
+			Enable_QuickZoom = 2;
+		}
+	}
+	else if (Enable_QuickZoom == FALSE) {
+		QZoom_Timer += _DT;
+		if (QZoom_Timer < 0.2f) {
+			MouseCheck = FALSE;
+			Velocity_Lock = TRUE;
+			Camera_Move = TRUE;
+			Button_Lock = TRUE;
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			OriginCameraPos = (*playerPos) + eyeCalc;
+			OriginCameraAt = (*playerPos) + atCalc;
+		}
+		if (QZoom_Timer < 0.25f) {
+			_vec3 ActionCameraVec = OriginCameraPos - CameraEyeDEST;
+
+			EyeVec.x = CameraEyeDEST.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			EyeVec.y = CameraEyeDEST.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer))) + 1.5f * 4 * QZoom_Timer;
+			EyeVec.z = CameraEyeDEST.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer))) - 1.5f * 4 * QZoom_Timer;
+
+			AtVec.x = CameraAtDEST.x + ActionCameraVec.x * (1.f - 4 * (0.25f - (QZoom_Timer)));
+			AtVec.y = CameraAtDEST.y + ActionCameraVec.y * (1.f - 4 * (0.25f - (QZoom_Timer))) + 1.5f * 4 * QZoom_Timer;
+			AtVec.z = CameraAtDEST.z + ActionCameraVec.z * (1.f - 4 * (0.25f - (QZoom_Timer))) - 1.5f * 4 * QZoom_Timer;
+		}
+		else if (QZoom_Timer > 0.3f) {
+			QZoom_Timer = 0.f;
+			Enable_QuickZoom = 2;
+
+			MouseCheck = FALSE;
+			Velocity_Lock = FALSE;
+			Camera_Move = FALSE;
+			Button_Lock = FALSE;
+		}
+	}
 }
 CameraObject* CameraObject::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	CameraObject* CAM = new CameraObject(_GRPDEV);

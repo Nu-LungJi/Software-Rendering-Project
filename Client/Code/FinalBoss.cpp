@@ -192,7 +192,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
 		}
 		// <<< RageMode >>>
-		if (Component_Collider->Get_Hp() <= 500.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
+		if (Component_Collider->Get_Hp() <= 5000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Stunning_TexList;
 			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -306,7 +306,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 		//Animation_CurrentIndex = 0;
 	}
 	else if (KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(500);
+		Component_Collider->Set_Hp(5000);
 		BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 		Animation_TexList = &Animation_Rage_Stand_TexList;
 		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;

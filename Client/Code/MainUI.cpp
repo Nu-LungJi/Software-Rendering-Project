@@ -35,6 +35,7 @@ HRESULT	MainUI::Ready_GameObject() {
 	MaxHP = 0.f; CurrentHP = 0.f;
 	Enable_BossTitle = 2;
 	BossTitleTimer = 0.f;
+	BarScale = { 1.f, 1.f, 1.f };
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -51,7 +52,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Player_CrystalModify();
 		Timer02 = 0.f;
 	}
-	MainUI_FadeAction(_DT);
+	MainUI_FadeAction(_DT, FadeSpeed);
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
 	Synchronize_BossHPBar();
 	Display_BossTitle(_DT);
@@ -73,24 +74,39 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
-	
+	if(KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_M))
+		HPBarFill->Set_Pos( HPBarFill->Get_Pos().x + 1, HPBarFill->Get_Pos().y);
+	if (KEY_HOLD(DIK_LCONTROL) && KEY_DOWN(DIK_M))
+		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x - 1, HPBarFill->Get_Pos().y);
+
+	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_N))
+		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x, HPBarFill->Get_Pos().y + 1);
+	if (KEY_HOLD(DIK_LCONTROL) && KEY_DOWN(DIK_N))
+		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x, HPBarFill->Get_Pos().y - 1);
 }
 VOID	MainUI::Render_GameObject() {
 	_matrix matWorld, matScale, matTrans;
 
 	GRPDEV->GetTransform(D3DTS_WORLD, &matWorld);
-	D3DXMatrixScaling(&matScale, BarScale.x, 0.7f, BarScale.z);
 
-	matWorld = matScale;// *matTrans;
-	BossHPSprite->SetTransform(&matWorld);
+	D3DXMatrixIdentity(&matScale);
+	D3DXMatrixIdentity(&matTrans);
+	D3DXMatrixTranslation(&matTrans, HPBarFill->POS.x + (1.f - BarScale.x) * 640.f / 4.f, HPBarFill->POS.y, 0);
+	D3DXMatrixScaling(&matScale, BarScale.x, BarScale.y, BarScale.z);
 
-	BossHPSprite->Begin(D3DXSPRITE_ALPHABLEND);
-	BossHPSprite->Draw(HPBarFill->TEXTURE, NULL, NULL, &HPBarFill->POS, D3DCOLOR_ARGB(HPBarFill->OPACITY, 255, 255, 255));
-	BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
-	BossHPSprite->End();
-	D3DXMatrixIdentity(&matWorld);
+	matWorld = matScale * matTrans;
 	BossHPSprite->SetTransform(&matWorld);
 	
+	BossHPSprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+	BossHPSprite->Draw(HPBarFill->TEXTURE, NULL, NULL, &HPBarFill->POS, D3DCOLOR_ARGB(HPBarFill->OPACITY, 255, 255, 255));
+
+	D3DXMatrixIdentity(&matWorld);
+	BossHPSprite->SetTransform(&matWorld);
+
+	BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
+
+	BossHPSprite->End();
 	Component_Sprite->Render_Sprite();
 }
 
@@ -271,21 +287,21 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
 			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
 			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
-			Effect->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01) + 10.f);
+			//Effect->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y - Timer01 * 2 * cosf(Timer01) + 10.f);
 			Font->Set_Pos( Font->Get_Pos().x, Font->Get_Pos().y - Timer01 * 2 * cosf(Timer01) );
 			
 			if (Timer01 < 1.f) {
 				BackGround->Set_Opacity(Timer01 * 255);
 				Frame->Set_Opacity(Timer01 * 255);
 				Character->Set_Opacity(Timer01 * 255);
-				Effect->Set_Opacity(Timer01 * 255);
+				//Effect->Set_Opacity(Timer01 * 255);
 				Font->Set_Color(Timer01 * 200, 255, 255, 255);
 			}
 			else {
 				BackGround->Set_Opacity(255);
 				Frame->Set_Opacity(255);
 				Character->Set_Opacity(255);
-				Effect->Set_Opacity(255);
+				//Effect->Set_Opacity(255);
 				Font->Set_Color(200, 255, 255, 255);
 			}
 		}
@@ -329,7 +345,6 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 		}
 	}
 }
-
 VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
 {
 	if (Enable_SpeechBubbleSkill) {
@@ -421,10 +436,10 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT)
 	}
 }
 
-VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT) {
+VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 	if		(Enable_MainUIFade == 2)		return;
 	else if (Enable_MainUIFade == TRUE) {
-		if (GlobalOPC > 2.f)	GlobalOPC -= _DT * 255.f / 2;
+		if (GlobalOPC > 2.f)	GlobalOPC -= _DT * 255.f / _SPEED;
 		else					GlobalOPC = 0.f;
 	
 		for (auto& FO : AllFontOBJ) 
@@ -455,7 +470,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT) {
 				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
 			}
 		}
-		if (GlobalOPC < 253.f) GlobalOPC += _DT * 255.f;
+		if (GlobalOPC < 253.f) GlobalOPC += _DT * 255.f / _SPEED;
 		else {
 			GlobalOPC = 255.f;
 			Enable_MainUIFade = 2;
@@ -574,13 +589,20 @@ VOID MainUI::Synchronize_BossHPBar() {
 	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
 		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 		CurrentHP = 1.f - ((float)(CheonLog->Get_Hp()) / (float)MaxHP);
+
+		FLOAT HPRatio = (FLOAT)(CheonLog->Get_Hp()) / (FLOAT)MaxHP;
+
+		BarScale = { HPRatio, BarScale.y, BarScale.z };
+		if (BarScale.x <= 0) BarScale.x = 0;
 	}
 	else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS && SceneManager::GetInstance()->Get_GameObject(L"Docheol") != nullptr) {
 		Collider* Docheol = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
-		CurrentHP = 1.f - ((float)(Docheol->Get_Hp()) / (float)MaxHP);
+
+		FLOAT HPRatio = (FLOAT)(Docheol->Get_Hp()) / (FLOAT)MaxHP;
+
+		BarScale = { HPRatio, BarScale.y, BarScale.z };
+		if (BarScale.x <= 0) BarScale.x = 0;
 	}
-	BarScale = { 1.f - CurrentHP, BarScale.y, BarScale.z };
-	if (BarScale.x <= 0) BarScale.x = 0;
 }
 
 HRESULT MainUI::Component_Initialize() {
@@ -623,8 +645,8 @@ HRESULT MainUI::Sprite_Initialize() {
 		TCHAR FileName2[128] = L"";
 		wsprintfW(FileName1, L"../../UI/MainUI/BubblEffect_%d.png", i);
 		wsprintfW(FileName2, L"BubblEffect_%d.png", i);
-		SpriteINFO* Effect = Component_Sprite->Get_Texture(FileName1);
 		Component_Sprite->Import_Sprite(FileName1, FileName2, 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
+		SpriteINFO* Effect = Component_Sprite->Get_Texture(FileName1);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SKILL ////////////////////////////////////////////////////////
@@ -660,11 +682,10 @@ HRESULT MainUI::Sprite_Initialize() {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// BOSSUI /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HPFrame.png", L"HPBar_Frame", 320, 40, 600, 30, FALSE, 0);
-	//Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HP.png"		, L"HPBar_Fill"	, 325, 45, 590, 28, FALSE, 250);
-	HPBarFill = new SpriteINFO(L"HPBar_Fill", 590, 28, 325, 65, FALSE, 0);
+	HPBarFill	= new SpriteINFO(L"HPBar_Fill", 590, 23, 162, 22, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Spr_Ui_Boss_HP.png", HPBarFill->WIDTH, HPBarFill->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&HPBarFill->TEXTURE);
-	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 575, FALSE, 0);
+	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 400, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Boss_TitleBar.png", BossTitleBar->WIDTH, BossTitleBar->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&BossTitleBar->TEXTURE);
 

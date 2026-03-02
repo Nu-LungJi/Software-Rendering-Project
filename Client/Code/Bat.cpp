@@ -25,7 +25,7 @@ HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 		ObjectTAG = L"Monster";
 		Component_Transform->Set_Pos(vPos);
 	}
-		
+
 	return S_OK;
 }
 INT	Bat::Update_GameObject(const _float& _DT)
@@ -40,8 +40,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	if (SUCCEEDED(Monster::Minigame_Update(_DT, &m_tInfo, MYPOS)))	
-		return 0;
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, 1.f, MYSCALE->x * 0.5f);
@@ -50,7 +49,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DEAD);
 
-	GameObject::Update_GameObject(_DT);
 	Component_Buffer->Update_Component(_DT);
 	Component_Collider->Update_Component(_DT);
 
@@ -59,9 +57,6 @@ INT	Bat::Update_GameObject(const _float& _DT)
 
 	switch (m_tInfo.eState[0])
 	{
-	//case MONSTER_STATE_APPEAR:
-	//	Bat::State_Appear(_DT);
-	//	break;
 	case MONSTER_STATE_SUMMON:
 		Bat::State_Summon(_DT);
 		break;
@@ -81,7 +76,7 @@ INT	Bat::Update_GameObject(const _float& _DT)
 		Bat::State_Dead();
 		break;
 	case MONSTER_STATE_MINIGAME_MOVE:
-		
+
 		break;
 	default:
 		break;
@@ -175,8 +170,8 @@ HRESULT Bat::Component_Initialize() {
 	Component_Collider->Set_Scale(BAT_WIDTH, 1.f, BAT_HEIGHT);
 
 	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-										(uint8_t)MONSTER_TYPE::Bat,
-										(uint8_t)MONSTER_ANIM::Stand);
+		(uint8_t)MONSTER_TYPE::Bat,
+		(uint8_t)MONSTER_ANIM::Stand);
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
 Bat* Bat::Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vPos, BOOL bMini) {
@@ -223,7 +218,7 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 			return true;
 		}
 		break;
-}
+	}
 	return FALSE;
 }
 BOOL Bat::OnCollisionExit(GameObject* _Other)
@@ -285,8 +280,8 @@ VOID Bat::State_Summon(const _float& _DT)
 VOID Bat::State_Idle()
 {
 	if (m_tInfo.pGameObj[0] == nullptr)
-		m_tInfo.pGameObj[0]=(Monster::Set_Target(L"Player"));
-	
+		m_tInfo.pGameObj[0] = (Monster::Set_Target(L"Player"));
+
 	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 	vDir.y = 0.f;
 
@@ -307,7 +302,9 @@ VOID Bat::State_Tracking(const _float& _DT)
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
 	m_tInfo.fSpeed = BAT_SPEED;
-	m_tInfo.vDirection = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
+	D3DXVec3Normalize(&m_tInfo.vDirection, &vDir);
+
 
 	if (D3DXVec3Length(&m_tInfo.vDirection) < BAT_TRACKINGDIS)
 	{
@@ -334,9 +331,9 @@ VOID Bat::State_Casting(const _float& _DT)
 	if (nullptr == m_tInfo.pGameObj[0] || m_tInfo.pGameObj[0]->Get_ObjectDead())
 		m_tInfo.Change_State(MONSTER_STATE_IDLE);
 
-	m_tInfo.fTimer[0]	+= _DT;
-	m_tInfo.fSpeed		 = 0.f;
-	
+	m_tInfo.fTimer[0] += _DT;
+	m_tInfo.fSpeed = 0.f;
+
 	if (m_tInfo.fTimer[0] >= BAT_CASTING_TIME)
 	{
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
@@ -370,7 +367,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 
-		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, BAT_CHANNELING_TIME-m_tInfo.fTimer[0]);
+		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, FALSE, BAT_CHANNELING_TIME - m_tInfo.fTimer[0]);
 		_float fScale = 2.f * SCALE(m_tInfo.pGameObj[1])->x;
 		_vec3 vEffectScale = { fScale, fScale, fScale };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
