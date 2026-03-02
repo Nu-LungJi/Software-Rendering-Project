@@ -103,9 +103,6 @@
     <Filter Include="02. Scene\99. MapScene">
       <UniqueIdentifier>{76ac9252-3a58-4a11-91e2-f721f733b660}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. UI\05. ShopUI">
-      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\07. ProJectile\03.ScorpionBullet">
       <UniqueIdentifier>{64a83776-8b63-4f8c-a8e9-b5d925e51d43}</UniqueIdentifier>
     </Filter>
@@ -249,6 +246,9 @@
     </Filter>
     <Filter Include="03. GameObject\99. Camera">
       <UniqueIdentifier>{4e81e72d-aaba-4f6f-aadb-fd7b0e176224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\05. ShopUI">
+      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
