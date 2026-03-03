@@ -43,7 +43,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Collider->Set_Att(1.f);
 	_dashstock			= 3;
 	_key				= 0;
-	_coin				= 0;
+	_coin				= 200;
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
@@ -56,6 +56,8 @@ HRESULT Player::Ready_GameObject() {
 	_hit_inv_Time		= 2.f;
 	_dash_inv_Time		= 2.f;
 	_MaxArrow			= 1.f;
+	_atkUpgrade			= 1.f;
+	_attackSpeed		= 1.5f;
 	//연출용
 	CameraMove = false;
 	//사운드용 타이머
@@ -104,6 +106,10 @@ HRESULT Player::Ready_GameObject() {
 		_artifactSlot[0] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_SpeedUp"));
 		_artifactSlot[0]->Set_ItemIdx(0);
 
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_AtkUp");
+		_artifactSlot[1] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_AtkUp"));
+		_artifactSlot[1]->Set_ItemIdx(1);
+
 		//SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"IceBow2");
 		//dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow2"))->Set_PlayerPos(Component_Transform->Get_Position());
 		//_inventory[0] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow2"));
@@ -130,7 +136,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
 	_defaultSpeed = 6.f;
+	Component_Collider->Set_Att(1);
+	_attackSpeed = 2.f;
+	Reset_MaxArrow();
 	Artifact_Effect();
+	Component_Collider->Set_Att(Component_Collider->Get_Att() * _atkUpgrade);
 
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
@@ -1621,6 +1631,92 @@ void Player::Buy_item(int itemIdx)
 			}
 		}
 		break;
+	case 4:
+		for (int idx = 0; idx < 4; idx++) {
+			if (nullptr == _artifactSlot[idx]) {
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
+				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
+				_artifactSlot[idx]->Set_ItemIdx(2);
+				return;
+			}
+		}
+		for (int idx = 0; idx < 10; idx++) {
+			if (nullptr == _inventory[idx]) {
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
+				_inventory[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
+				dynamic_cast<Artifact*>(_inventory[idx])->Set_ItemIdx(2);
+				break;
+			}
+		}
+		break;
+	case 5:
+		for (int idx = 0; idx < 4; idx++) {
+			if (nullptr == _artifactSlot[idx]) {
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Glove");
+				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Glove"));
+				_artifactSlot[idx]->Set_ItemIdx(3);
+				return;
+			}
+		}
+		for (int idx = 0; idx < 10; idx++) {
+			if (nullptr == _inventory[idx]) {
+				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Glove");
+				_inventory[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Glove"));
+				dynamic_cast<Artifact*>(_inventory[idx])->Set_ItemIdx(3);
+				break;
+			}
+		}
+		break;
+	}
+}
+void Player::Delete_item(int itemIdx)
+{
+	if (itemIdx < 4) {
+		_weaponSlot[itemIdx]->Set_Destroy();
+		_weaponSlot[itemIdx] = nullptr;
+	}
+	else if (itemIdx > 4 && itemIdx < 8) {
+		_artifactSlot[itemIdx - 4]->Set_ObjectDead(true);
+		_artifactSlot[itemIdx - 4] = nullptr;
+	}
+	else {
+		if (_inventory[itemIdx - 8]->Get_ObjectType() == GAMEOBJECT_TYPE::BOW) {
+			static_cast<Bow*>(_inventory[itemIdx - 8])->Set_Destroy();
+			_inventory[itemIdx - 8] = nullptr;
+		}
+		else {
+			_artifactSlot[itemIdx - 8]->Set_ObjectDead(true);
+			_inventory[itemIdx - 8] = nullptr;
+		}
+	}
+}
+void Player::Set_MaxArrow(float val)
+{
+	for (auto bow : _weaponSlot) {
+		if (bow == nullptr) continue;
+		if (bow->Get_Bow_Stat()->maxArrow > 1000) continue;
+		bow->Get_Bow_Stat()->maxArrow *= val;
+	}
+
+	for (auto item : _inventory) {
+		if (item == nullptr) continue;
+		if (item->Get_ObjectType() == GAMEOBJECT_TYPE::BOW) {
+			Bow* bow = static_cast<Bow*>(item);
+			if (bow->Get_Bow_Stat()->maxArrow > 1000) continue;
+			bow->Get_Bow_Stat()->maxArrow *= val;
+		}
+	}
+}
+void Player::Reset_MaxArrow()
+{
+	for (auto bow : _weaponSlot) {
+		if (nullptr == bow) continue;
+		bow->Reset_MaxArrow();
+	}
+	for(auto item : _inventory) {
+		if (nullptr == item) continue;
+		if(item->Get_ObjectType() == GAMEOBJECT_TYPE::BOW)
+		static_cast<Bow*>(item)->Reset_MaxArrow();
 	}
 }
 Player* Player::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

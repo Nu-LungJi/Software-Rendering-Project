@@ -57,6 +57,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
 	Synchronize_BossHPBar();
 	Display_BossTitle(_DT);
+
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
 

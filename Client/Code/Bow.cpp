@@ -25,8 +25,6 @@ HRESULT Bow::Ready_GameObject()
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
 	_Charging = 0;
-	_attackDelay = 0.4;
-	if (_type == BowType::WindBow) _attackDelay = 1.f;
 
 	return S_OK;
 }
@@ -48,6 +46,10 @@ INT Bow::Update_GameObject(const _float& _DT)
 		_playerAtk = player->Get_Atk();
 		_playerCritical = player->Get_Critical();
 		_playerChargingSpeed = player->Get_ChargingSpeed();
+		_playerAttackSpped = player->Get_AttackSpeed();
+
+		_attackDelay = 0.4 * (*_playerAttackSpped);
+		if (_type == BowType::WindBow) _attackDelay = 1.f * (*_playerAttackSpped);
 
 		_Stat.maxArrow *= (player->Get_AddMaxArrow());
 		_chargingTime = 2.f;
@@ -263,20 +265,25 @@ void Bow::CreateArrow(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
 	
+	if(_type == BowType::WindBow)
+		_windChargingTimer += _DT;
+
 	if (_type == BowType::WindBow && !mouseLB) {
-		_attackDelay = 1.f;
+		_attackDelay = 1.f * (*_playerAttackSpped);
 	}
 	if (_type == BowType::IceBow) {
-		_attackDelay = 0.3f;
+		if (*_playerAttackSpped == 1.f) _attackDelay = 0.3f;
+		else _attackDelay = 0.3f * (*_playerAttackSpped + 0.3f);
 	}
 
 	if (mouseLB)
 	{
-		if (_type == BowType::WindBow && _attackDelay > 0.2f) {
-			_attackDelay -= _DT * 0.4;
+		if (_type == BowType::WindBow) {
+			_attackDelay -= _windChargingTimer * 0.4;
+			_attackDelay = max(_attackDelay, 0.2f);
 		}
 	
-		if (_attackTimer > _attackDelay) {
+		if (_attackTimer > _attackDelay || _Charging > 0) {
 			_Stat.curArrow -= 1;
 
 			Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
@@ -288,6 +295,8 @@ void Bow::CreateArrow(const _float& _DT)
 			float angle = atan2f(-dir2D.y, dir2D.x);
 	
 			float radius = 1.8f;
+			if (_type == BowType::IceBow && !KEY_HOLD(DIK_SPACE))
+				radius = 1.f;
 	
 			float offsetX = cosf(angle) * radius;
 			float offsetY = sinf(angle) * radius;
@@ -355,6 +364,9 @@ void Bow::CreateArrow(const _float& _DT)
 			}
 		}
 	}
+	else {
+		_windChargingTimer = 0.f;
+	}
 
 }
 
@@ -375,7 +387,7 @@ void Bow::CreateEffect(const _float& _DT)
 	else if (_type == BowType::IceBow) radius = 1.6f;
 	else if (_type == BowType::EvilHeadBow) radius = 1.0f;
 	else if (_type == BowType::WindBow) {
-		if (_attackDelay > 0.3f) radius = 1.6f;
+		if (_attackDelay > 0.25f) radius = 1.6f;
 		else radius = 2.5f;
 	}
 
@@ -413,7 +425,7 @@ void Bow::CreateEffect(const _float& _DT)
 					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.25f);
 
 				}
-				else if (_attackDelay > 0.3f) {
+				else if (_attackDelay > 0.21f) {
 					Size = { 1.5f, 1.5f, 1.5f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
 					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.25f);
@@ -575,7 +587,7 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	std::random_device rd;
 	std::uniform_int_distribution<int> distribution(0, 100);
 
-	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk + *_playerAtk;
+	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk + _playerAtk;
 
 	if (distribution(rd) % 100 < *_playerCritical) arrowAtk *= 2;
 
@@ -603,6 +615,24 @@ Bow* Bow::Create(LPDIRECT3DDEVICE9 _GRPDEV)
 		return nullptr;
 	}
 	return BOW;
+}
+
+void Bow::Reset_MaxArrow()
+{
+	switch (_type) {
+	case BowType::FairyBow:
+		_Stat.maxArrow = 10000;
+		break;
+	case BowType::IceBow:
+		_Stat.maxArrow = 180;
+		break;
+	case BowType::EvilHeadBow:
+		_Stat.maxArrow = 150;
+		break;
+	case BowType::WindBow:
+		_Stat.maxArrow = 180;
+		break;
+	}
 }
 
 VOID Bow::Free()
