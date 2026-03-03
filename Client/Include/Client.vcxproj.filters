@@ -253,9 +253,6 @@
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\05. Tile\00. BackGround">
-      <UniqueIdentifier>{66da18aa-8d46-493a-b4ef-f5501a832303}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -526,9 +523,6 @@
     <ClInclude Include="..\Header\Artifact.h">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\BackGround.h">
-      <Filter>03. GameObject\05. Tile\00. BackGround</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -781,9 +775,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\Artifact.cpp">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\BackGround.cpp">
-      <Filter>03. GameObject\05. Tile\00. BackGround</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

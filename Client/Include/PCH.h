@@ -79,7 +79,6 @@
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
 #include "Shadow.h"
-#include "BackGround.h"
 
 #pragma endregion
 
