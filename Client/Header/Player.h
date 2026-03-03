@@ -149,8 +149,8 @@ public:
 	int		Get_Token() { return _token; }
 	void	Set_Token(INT _value) { _token = _value; }
 
-	int*	Get_Atk() { return &_atk; }
-	void	Set_Atk(int atk) { _atk = atk; }
+	int		Get_Atk() { return (int)Component_Collider->Get_Att(); }
+	void	Set_Atk(int atk) { Component_Collider->Set_Att(atk); _atk = atk; }
 
 	int*	Get_Critical() { return &_critical; }
 	void	Set_Critical(int critical) { _critical = critical; }
@@ -167,15 +167,14 @@ public:
 	float*	Get_ArrowSpeed() { return &_arrowSpeed; }
 	void	Set_ArrowSpeed(int arrowSpeed) { _arrowSpeed = arrowSpeed; }
 
-	int		Get_MaxArrow() { return (int)_weaponSlot[_equipNum]->Get_Bow_Stat()->maxArrow; }
-	void	Set_MaxArrow(int maxArrow) { _weaponSlot[_equipNum]->Get_Bow_Stat()->maxArrow = maxArrow; }
+	int		Get_MaxArrow() { if (nullptr == _weaponSlot[_equipNum]) return 0; else return (int)_weaponSlot[_equipNum]->Get_Bow_Stat()->maxArrow; }
 
 	float	Get_AddMaxArrow() { return _MaxArrow; }
 
 	float*	Get_SlowTime() { return &_slowTime; }
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
 
-	int		Get_CurArrowCount() { return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
+	int		Get_CurArrowCount() { if (nullptr == _weaponSlot[_equipNum]) return 0;  else return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
 	int		Get_Bow_ImgIDX() { return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
@@ -183,7 +182,12 @@ public:
 	bool	Get_Invincible() { return _isInvincible; }
 	void	Set_Invincible(bool value) { _isInvincible = value;  }
 
+	float*	Get_AttackSpeed() { return &_attackSpeed; }
+	VOID	Set_AttackSpeed(float val) { _attackSpeed = val; }
+
 	pState	Get_pState() { return _pState; }
+
+	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
 	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
@@ -201,6 +205,9 @@ public:
 	void		Artifact_Effect();
 	void		Chage_Item(int src, int dst);
 	void		Buy_item(int itemIdx);
+	void		Delete_item(int itemIdx);
+	void		Set_MaxArrow(float val);
+	void		Reset_MaxArrow();
 private:
 	virtual VOID Free();
 
@@ -300,6 +307,8 @@ private:
 	float			_hit_inv_Time;	// 피격시 무적 유지시간;
 	float			_dash_inv_Time;	// 대시시 무적 유지시간;
 	float			_walk_time;     // 걷는 모션시 사운드 간격 조절용 타이머
+	float			_attackSpeed;   // 공격속도
+	float			_atkUpgrade;
 
 	TCHAR FileName[128] = L"";
 	//temp

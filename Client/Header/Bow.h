@@ -65,6 +65,7 @@ public:
 	_int		Get_Charging()					{ return _Charging; }
 	_int		Get_IMG_IDX()					{ return _imgIDX; }
 	void		Refill_Arrow()					{ _Stat.curArrow = _Stat.maxArrow; }
+	void		Reset_MaxArrow();
 private:
 	virtual VOID Free();
 private:
@@ -92,8 +93,11 @@ private:
 	_float		_ChargingTime;
 	_float		_chargingTime;
 
-	int*		_playerAtk;
+	_float		_windChargingTimer;
+
+	int			_playerAtk;
 	int*		_playerCritical;
 	float*		_playerChargingSpeed;
+	float*		_playerAttackSpped;
 };
 

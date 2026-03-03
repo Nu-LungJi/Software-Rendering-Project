@@ -165,27 +165,33 @@ INT Arrow::Update_GameObject(const _float& _DT)
         case ArrowType::FairyCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             effectPos.z += 2.5f;
+            effectPos.y += 0.7f;
             Size = { 5.f, 5.f, 5.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_SPIRIT, &effectPos, 0.5f, Size, false);
             SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
             break;
         case ArrowType::IceArrow_LV1:
             Size = { 1.5f, 1.5f, 1.5f };
+            effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_BOMB, &effectPos, 0.2f, Size, false);
             break;
         case ArrowType::IceCharging:
             Size = { 2.5f, 2.5f, 2.5f };
+            effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.3f, Size, false);
             break;
         case ArrowType::EvilHead_Arrow:
+            effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
             break;
         case ArrowType::EvilHeadCharging:
+            effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_HITEFFECT, &effectPos, 0.5f, Size, false);
             SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_67_Lightning_Fire.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
             break;
         case ArrowType::Wind_Arrow:
             Size = { 1.5f, 1.5f, 1.5f };
+            effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
             // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 늦게 ㅇ나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
             //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
@@ -196,8 +202,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.z += 3.f;
             {
                 PlayerEffect* effect = nullptr;
-
-               effect = PlayerEffect::Create(GRPDEV, PLAYER_SKILL::PAREND, &effectPos, false, 0.8f, Size, false);
+                effectPos.y += 0.7f;
+                effect = PlayerEffect::Create(GRPDEV, PLAYER_SKILL::PAREND, &effectPos, false, 0.8f, Size, false);
 
                 TCHAR arrowTag[128] = L"";
                 wsprintfW(arrowTag, L"PlayerArrow_%d", _arrowCount++);

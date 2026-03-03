@@ -21,6 +21,15 @@ HRESULT	PlayerInven::Ready_GameObject() {
 
 	EquipMode = FALSE;
 
+	for (auto& TXT : ItemInfo_Text) {
+		TXT->Visible = FALSE;
+		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = FALSE;
+		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Visible = FALSE;
+
+		EquipMode = FALSE;
+		EquipObject = nullptr;
+	}
+
 	return S_OK;
 }
 INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
@@ -241,17 +250,23 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InvenFrame_Relic_Horcrux", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_quiver.png", L"DIC_InvenFrame_Relic_quiver", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Glove.png", L"DIC_InvenFrame_Relic_Glove", 0.f, 0.f, 60, 60, FALSE, 255));
 
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png",  L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InfoFrame_Relic_Horcrux", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Relic_quiver.png", L"DIC_InfoFrame_Relic_quiver", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Glove.png",  L"DIC_InfoFrame_Relic_Glove", 0.f, 0.f, 80, 80, FALSE, 255));
 
 	ItemINFO* it06 = new ItemINFO;
 	it06->ItemDesc = {
 		L"헤르메스의 신발",
-		L"아티펙트/희귀",
+		L"아티펙트/노말",
 
 		L"이동속도가 20% 증가합니다.",
 		L"",
@@ -267,6 +282,26 @@ HRESULT PlayerInven::Item_Initialize() {
 	};
 	it06->ItemPrice = 70;
 	it06->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
+
+	ItemINFO* it07 = new ItemINFO;
+	it07->ItemDesc = {
+		L"호크룩스",
+		L"아티펙트/노말",
+
+		L"공격력이 10 증가합니다.",
+		L"",
+		L"",
+
+		L"",
+
+
+		L"" ,
+
+		L"DIC_InvenFrame_Relic_Horcrux",
+		L"DIC_InfoFrame_Relic_Horcrux"
+	};
+	it07->ItemPrice = 70;
+	it07->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
@@ -286,6 +321,25 @@ HRESULT PlayerInven::Item_Initialize() {
 	};
 	it01->ItemPrice = 68;
 	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
+
+	ItemINFO* it04 = new ItemINFO;
+	it04->ItemDesc = {
+		L"얼음 정령의 활",
+		L"무기/희귀",
+
+		L"일반 공격",
+		L"일반 공격력 14 - 16",
+		L"공격 속도 2",
+
+		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
+
+		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
+
+		L"DIC_InvenFrame_IceBow",
+		L"DIC_InfoFrame_IceBow"
+	};
+	it04->ItemPrice = 68;
+	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
 	ItemINFO* it02 = new ItemINFO;
 	it02->ItemDesc = {
@@ -325,48 +379,14 @@ HRESULT PlayerInven::Item_Initialize() {
 	it03->ItemPrice = 68;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
-	ItemINFO* it04 = new ItemINFO;
-	it04->ItemDesc = {
-		L"얼음 정령의 활",
-		L"무기/희귀",
 
-		L"일반 공격",
-		L"일반 공격력 14 - 16",
-		L"공격 속도 2",
-
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
-
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
-
-		L"DIC_InvenFrame_IceBow",
-		L"DIC_InfoFrame_IceBow"
-	};
-	it04->ItemPrice = 68;
-	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-
-	ItemINFO* it05 = new ItemINFO;
-	it05->ItemDesc = { L"얼음 정령의 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"일반 공격력 14 - 16",
-		L"공격 속도 2",
-
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. 화살에 맞은 적에게 \n3초 간 빙결을 부여합니다.",
-
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
-
-		L"DIC_InvenFrame_IceBow",
-		L"DIC_InfoFrame_IceBow"
-	};
-	it05->ItemPrice = 68;
-	it05->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
 	Append_Item(it03);
 	Append_Item(it04);
 	Append_Item(it02);
 	Append_Item(it01);
 	Append_Item(it06);
+	Append_Item(it07);
 	//Append_Item(it05);
 
 	return S_OK;
@@ -555,6 +575,7 @@ HRESULT PlayerInven::Equip_Item() {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Saved_ItemList[SavedItemIndex - 1];
 			Safe_Delete(Saved_ItemList[SavedItemIndex - 1]);
+			PlayerObject->Delete_item(SavedItemIndex + 7);
 		}
 	}
 	if (FocusOn_EquipedItem) {
@@ -568,6 +589,7 @@ HRESULT PlayerInven::Equip_Item() {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select down.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
 			JunkObject = Equip_ItemList[EquipedItemIndex - 1];
 			Safe_Delete(Equip_ItemList[EquipedItemIndex - 1]);
+			PlayerObject->Delete_item(EquipedItemIndex - 1);
 		}
 	}
 
@@ -704,10 +726,11 @@ HRESULT PlayerInven::Append_Item(ItemINFO* _ITEM) {
 }
 HRESULT PlayerInven::Buy_Item(INT itemIdx)
 {
+	ItemINFO* item = nullptr;
 	switch (itemIdx) {
 	case 3:
-		ItemINFO * it06 = new ItemINFO;
-		it06->ItemDesc = {
+		item = new ItemINFO;
+		item->ItemDesc = {
 			L"얼음 정령의 활",
 			L"무기/희귀",
 
@@ -722,15 +745,55 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 			L"DIC_InvenFrame_IceBow",
 			L"DIC_InfoFrame_IceBow"
 		};
-		it06->ItemPrice = 68;
-		it06->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
-		for (int idx = 0; idx < 10; idx++) {
-			if (nullptr == Saved_ItemList[idx]) {
-				Append_Item(it06);
-				break;
-			}
-		}
+		Append_Item(item);
+		break;
+	case 4:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"맥스 퀴버",
+			L"유물/희귀",
+
+			L"",
+			L"유물/희귀",
+			L"최대 화살 개수 2배 증가",
+
+			L"",
+
+			L"",
+
+			L"DIC_InvenFrame_Relic_quiver",
+			L"DIC_InfoFrame_Relic_quiver"
+		};
+
+		item->ItemPrice = 10;
+		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
+		Append_Item(item);
+		break;
+
+	case 5:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"라이트닝 글러브",
+			L"유물/희귀",
+
+			L"",
+			L"유물/희귀",
+			L"공격속도 2배 증가",
+
+			L"",
+
+			L"",
+
+			L"DIC_InvenFrame_Relic_Glove",
+			L"DIC_InfoFrame_Relic_Glove"
+		};
+
+		item->ItemPrice = 30;
+		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
+		Append_Item(item);
 		break;
 	}
 
