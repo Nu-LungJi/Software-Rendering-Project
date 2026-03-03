@@ -110,12 +110,17 @@ public:
 private:
 	virtual VOID Free();
 
+
+	/////////// 미니게임 b 활용 변수들
 public:
 	void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
+	void		Start_MiniGame();
+	void		Exit_MiniGame();
+
 private:
 	SCENE_TYPE	m_eCurrScene;
 	_float		m_fOffset[(uint8_t)FRUSTUMPLANE::End];
 
-	Player* m_pTarget;
+	Player*		m_pTarget;
 	HRESULT		MiniGame(const _float& _DT);
 };
