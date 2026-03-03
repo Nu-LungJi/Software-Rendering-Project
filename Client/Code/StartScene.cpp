@@ -13,8 +13,8 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);

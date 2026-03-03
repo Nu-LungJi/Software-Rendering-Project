@@ -570,7 +570,7 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 
 		if		(STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_APPEAR]) {
 			Camera->Camera_Shaking(10.f, 3.f);
-			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale * 1.5f, 112.5f / 100.f * GloabalScale * 1.5f , 300.f / 100.f * GloabalScale * 1.5f };
+			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale * 1.8f, 112.5f / 100.f * GloabalScale * 1.8f , 300.f / 100.f * GloabalScale * 1.8f };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 0.3f, GlobalPosition.z };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_APPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
 			STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_APPEAR] = FALSE;
