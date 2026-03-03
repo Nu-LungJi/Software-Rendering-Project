@@ -406,12 +406,12 @@ void Bow::CreateEffect(const _float& _DT)
 			{
 			case BowType::FairyBow :
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_PULSE, &_pulsepos, 0.2f, Size, true);
-				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.25f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
 				break;
 			case BowType::IceBow:
 				Size = { 1.5f, 1.5f, 1.5f };
 				PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICEARROW_PULSE, &_pulsepos, 0.2f, Size, true);
-				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_30_Ice_Fire_.mp3", CHANNELID::SOUND_EFFECT03, 0.25f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_30_Ice_Fire_.mp3", CHANNELID::SOUND_EFFECT03, 0.2f);
 				break;
 			case BowType::EvilHeadBow:
 				Size = { 2.f, 2.2f, 2.f };
@@ -428,13 +428,13 @@ void Bow::CreateEffect(const _float& _DT)
 				else if (_attackDelay > 0.21f) {
 					Size = { 1.5f, 1.5f, 1.5f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE, &_pulsepos, 0.3f, Size, true);
-					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.25f);
+					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
 
 				}
 				else {
 					Size = { 1.f, 1.f, 1.f };
 					PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_PULSE2, &_pulsepos, 0.3f, Size, true);
-					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.25f);
+					SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_39_Fire.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
 				}
 
 

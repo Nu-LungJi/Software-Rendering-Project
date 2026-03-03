@@ -16,7 +16,7 @@ HRESULT	PlayerInven::Ready_GameObject() {
 	SavedItemIndex = 1;
 	EquipedItemIndex = 1;
 
-	FocusOn_SavedItem = TRUE;
+	FocusOn_SavedItem	= TRUE;
 	FocusOn_EquipedItem = FALSE;
 
 	EquipMode = FALSE;
@@ -43,7 +43,6 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
-
 			for (auto& TXT : ItemInfo_Text) {
 				TXT->Visible = TRUE;
 				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Visible = TRUE;

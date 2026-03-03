@@ -28,6 +28,7 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 
 	Component_Collider->Update_Component(_DT);
+
 	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	if (m_tInfo.bMiniGame)
@@ -41,22 +42,8 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
   
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = 0.5f;
-	}
-
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
-	
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 	switch (m_tInfo.eState[0])
@@ -200,7 +187,6 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 	if (Tag == L"PlayerArrow")	
 	{
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 	
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Hit.wav", CHANNELID::SOUND_EFFECT04, 0.25f);
 	}	return TRUE;
 
 
@@ -323,6 +309,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
 		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ShotGun_Monster_35_Attack.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_EFFECT04, 0.1f);
 	}
 
 
@@ -342,7 +329,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
 		{
 			SHOTGUNEVILSOUL_BULLET_TYPE* pBullet = static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1]);
-			pBullet->Get_Info()->fSpeed = pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
+			pBullet->Get_Info()->fSpeed = SHOTGUNEVILSOUL_BULLET_SPEEDMULT * pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
 		}
 	}
 }

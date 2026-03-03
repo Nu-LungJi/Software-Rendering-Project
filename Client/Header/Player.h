@@ -319,10 +319,12 @@ private:
 		BOOL			OnCollisionExit(GameObject* _Other)		override;
 
 	public:
-
+		HRESULT			MiniGameInit();
+		HRESULT			MiniGameExit();
 
 
 	private:
-		HRESULT			MiniGameInit();
 		SCENE_TYPE		m_eCurrScene;
+		_vec3			m_vBackUpPos;
+		bool			Is_Falling;
 };

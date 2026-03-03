@@ -47,9 +47,9 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 
 		GameObject::Update_GameObject(_DT);
 
-		if (m_bDocheol)
+		switch (m_eSceneID)
 		{
-
+		case SCENE_EFFECT::SCENE_BOSS:
 			m_fFrame += _DT;
 			if (m_bStop && TileManager::GetInstance()->Get_Loading())
 			{
@@ -67,7 +67,7 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				return 1;
 			}
 
-			if (m_fFrame > 0.9f)
+			if (m_fFrame > 0.008f)
 			{
 				m_fFrame = 0;
 				++m_iFrameCnt;
@@ -78,10 +78,9 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				m_bStop = false;
 				m_iFrameCnt = 0;
 			}
-		}
-		else
-		{
+			break;
 
+		case SCENE_EFFECT::SCENE_STAGE:
 			m_fFrame += _DT;
 			if (m_bStop && TileManager::GetInstance()->Get_Loading())
 			{
@@ -110,7 +109,10 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				m_bStop = false;
 				m_iFrameCnt = 0;
 			}
+			break;
+
 		}
+
 	}
 	return 0;
 }

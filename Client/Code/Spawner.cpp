@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_iCnt(0), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
@@ -10,6 +10,13 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 
 	switch (eSpawn)
 	{
+	case TILE_SPAWNER::ITEM_SPAWN1:
+		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS)
+		{
+			m_pTransform->Set_Pos(vPos);
+			m_pTransform->Set_Rotation(55.f,0.f,0.f);
+		}
+		break;
 	  case TILE_SPAWNER::CL_SPAWN:
 		m_bSpawn = true;
 		break;
@@ -102,7 +109,11 @@ VOID Spawner::Render_GameObject()
 {
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 
-	GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+	if (m_pTileInfo->Get_Spawner() == TILE_SPAWNER::ITEM_SPAWN1 && TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
+	{
+		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"EvilHeadBow_UI.png"));
+	}
+	else GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
 
 	m_pBuffer->Render_Buffer();
 
@@ -151,10 +162,42 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		Monster_Spawn4();
+		//Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
-	
+		if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
+		{
+			_vec3 vLook = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() - *m_pTransform->Get_Position();
+			_vec3 vPos  = *m_pTransform->Get_Position();
+			D3DXVec3Normalize(&vLook,&vLook);
+			m_fFrame += _DT;
+				if (!m_bSpawn)
+				{
+					if (m_fFrame > 0.1f)
+					{
+						m_fFrame = 0;
+						++m_iCnt;
+						if (m_iCnt < 7)
+						{
+							vPos += vLook * 6.f * _DT;
+							vPos.y += 0.1f;		
+						}
+						else
+						{
+							vPos += vLook * 5.f * _DT;
+							vPos.y -= 0.3f;
+						}
+						if (vPos.y <= 0)
+						{
+							vPos.y = 0;
+							m_bSpawn = true;
+						}
+							
+						m_pTransform->Set_Pos(vPos);
+					}
+				}
+				
+		}
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN2:
 		break;
@@ -241,6 +284,7 @@ void Spawner::CL_Spawn()
 	
 	if (!m_bTrigger)
 	{
+		SoundManager::GetInstance()->Stop_AllSound();
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Set_CameraMove(true);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->CheonLog_Respawn(0);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Obj(this, vPos);

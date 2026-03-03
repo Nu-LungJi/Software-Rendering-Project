@@ -649,7 +649,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     else if (Tag == L"CheonLog") {
         atk = 100.f;
         Component_Collider->Set_Hp(hp - atk);
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 300);
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 

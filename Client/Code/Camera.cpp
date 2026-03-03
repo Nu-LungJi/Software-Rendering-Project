@@ -56,18 +56,11 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = FALSE;
-	}
-	if (KEY_DOWN(DIK_F8)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = TRUE;
-	}
 	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		MiniGame(_DT);
 		return 0;
 	}
+
 
 	CheonLog_Respawn(_DT);
 	Docheol_Spawn(_DT);
@@ -75,10 +68,19 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 	Camera_QuickZoom(_DT);
 
 	if (!Camera_Move) {
-		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+		//KJJ 03. 03
+		if (PlayerObject == nullptr)
+			PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+		//KJJ 03. 03
+		if (m_eCurrScene == SCENE_TYPE::Minigame) {
+			eyeCalc = { 0.f, 8.f,-8.f };
+			atCalc = { 0.f,0.f,0.f };
+		}
 
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
@@ -101,6 +103,12 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 		if (Velocity_Lock == FALSE) {		//  커서가 움직이면 화면도 같이 움직이게 함.(FALSE = 움직이게 하기, TRUE = 고정)
 			_float moveAmount = (distance - offset) * 4;
+			
+			//KJJ 미니게임용
+			if (m_eCurrScene == SCENE_TYPE::Minigame) {
+				dir.z = 0.f;
+			}
+
 			if (distance > offset)
 			{
 				targetEye += dir * moveAmount;
@@ -513,15 +521,15 @@ HRESULT CameraObject::MiniGame(const _float& _DT)
 {
 	D3DXMatrixPerspectiveFovLH(&ProjMatrix, D3DX_PI / 3, (_float)(WINCX / WINCY), 0.1, 1000.f);
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
-	if (m_pTarget) {
-		_vec3 vPos = *POS(m_pTarget);
-		_vec3 vEyeOffset = { 0.f, 8.66f, -5.f };
+	if (PlayerObject) {
+		_vec3 vPos = *POS(PlayerObject);
+		_vec3 vEyeOffset = { 0.f, 5.f, -5.f };
 		_vec3 vAtOffset = { 0.f,0.f,0.f };
 
 		_vec3 vTargetEye = vPos + vEyeOffset;
 		_vec3 vTargetAt = vPos + vAtOffset;
 
-		_float fDis = m_pTarget->Get_MouseDistance();
+		_float fDis = PlayerObject->Get_MouseDistance();
 		_float fOffset = 2.f;
 
 		if (fDis > fOffset)
@@ -546,4 +554,13 @@ HRESULT CameraObject::MiniGame(const _float& _DT)
 		GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
 	}
 	return S_OK;
+}
+
+void	CameraObject::Start_MiniGame() {
+	m_eCurrScene = SCENE_TYPE::Minigame;
+}
+
+void CameraObject::Exit_MiniGame()
+{
+	m_eCurrScene = SCENE_TYPE::SCENE_END;
 }

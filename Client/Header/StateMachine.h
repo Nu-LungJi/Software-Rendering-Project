@@ -56,6 +56,13 @@ public:
 	virtual VOID FSM_StateUpdate(GameObject* _Owner);
 	virtual VOID FSM_StateExit(GameObject* _Owner);
 };
+class StunState : public State {
+	DECLARE_FSM_SINGLETON(StunState);
+public:
+	virtual void FSM_StateEnter(GameObject* _Owner);
+	virtual void FSM_StateUpdate(GameObject* _Owner);
+	virtual void FSM_StateExit(GameObject* _Owner);
+};
 class RageUpState : public State {
 	DECLARE_FSM_SINGLETON(RageUpState);
 public:
