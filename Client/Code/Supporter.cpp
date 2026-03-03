@@ -11,6 +11,8 @@ HRESULT	Supporter::Ready_GameObject(){
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 
+	Boss = static_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+
 	Animation_TexList = nullptr;
 	Animation_Timer = 0.f;
 	Animation_CurrentIndex = 0;
@@ -34,6 +36,8 @@ HRESULT	Supporter::Ready_GameObject(){
 	Enable_ScaleInc = FALSE;
 	Scale_Stack = 0.f;
 	Rage_Movement = FALSE;
+
+	SoundChecker = TRUE;
 
 	return S_OK;
 }
@@ -71,6 +75,12 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 	if (ObjectDead == TRUE)  return;
 	GameObject::LateUpdate_GameObject(_DT);
+	if (Supporter_Type == 1 && Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+		AlphaZValue = 1.f;
+	}
+	else if (Supporter_Type == 1){
+		AlphaZValue = -1.f;
+	}
 }
 VOID	Supporter::Render_GameObject(){
 	if (ObjectDead == TRUE)  return;
@@ -90,8 +100,13 @@ BOOL	Supporter::OnCollisionEnter(GameObject* _Other)	{
 		if (_Other->Get_ObjectTag() == L"Docheol") {
 			ObjectDead = TRUE;
 			_vec3 Scale = { 4.f, 4.f, 4.f };
-
-			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Disappear Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+			if (Component_Transform->Get_Position()->z >= static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z) {
+				PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Disappear Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+			}
+			else {
+				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Disappear Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+			}
+			
 			return FALSE;
 		}
 		if (_Other->Get_ObjectTag() == L"PlayerArrow") {
@@ -165,10 +180,21 @@ VOID Supporter::Scale_Increment(CONST FLOAT& _DT) {
 VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 	Effect_Timer += _DT;
 
-	if (Effect_Timer > 1.5f) {
+	if (Effect_Timer > 1.5f){
+		BOOL ISPLAYING = CHECK_SOUNDPLAYING(CHANNELID::SOUND_EFFECT10);
+		if (ISPLAYING == FALSE && ObjectTAG == L"Supporter1" ) {
+			PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
+		}
+		
 		_vec3 Scale = { 4.f, 4.f, 4.f };
 		_vec3 Pos = { Component_Transform->Get_Position()->x,  Component_Transform->Get_Position()->y + 2.f,  Component_Transform->Get_Position()->z + 2.f };
-		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+		if (Pos.z >= static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+		}
+		else {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+		}
+		
 
 		for (INT IDX = 0; IDX < 6; IDX++) {
 			wstring FBTag = ObjectTAG + L"_FireBall" + to_wstring(FBNumbering++);
@@ -198,6 +224,11 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 	if		(Rage_Movement) {
 		Effect_Timer += _DT;
+		BOOL ISPLAYING = CHECK_SOUNDPLAYING(CHANNELID::SOUND_EFFECT10);
+		if (ISPLAYING == FALSE && ObjectTAG == L"Supporter_Bullet1" && SoundChecker) {
+			PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
+			SoundChecker = FALSE;
+		}
 		if (Direction.x != 0.f || Direction.z != 0.f)
 			D3DXVec3Normalize(&Direction, &Direction);
 		Component_Transform->Set_Pos(
@@ -208,6 +239,7 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 		if (Effect_Timer >= 1.5f) {
 			_vec3 Scale = { 5.f, 5.f, 5.f };
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Boss Sup Effect", Component_Transform->Get_Position(), Scale, 0.5f);
+
 			Animation_TexList = &Animation_NonAnimTexList;
 			Animation_CurrentIndex = 0;
 			Animation_Interval = 0.07f;
@@ -216,12 +248,15 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 			Rage_Movement = FALSE;
 			Spiral_FireBall = TRUE;
 			Effect_Timer = 0.f;
+			SoundChecker = TRUE;
 		}
 	}
 	else if (Spiral_FireBall) {
 		Effect_Timer += _DT;
 		if (Effect_Timer <= 2.0f) {
 			if (BFBVec.size() == 0) {
+				if(ObjectTAG == L"Supporter_Bullet1")
+					PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
 				for (INT IDX = 0; IDX < 3; ++IDX) {
 					wstring FBallTAG = L"Sup FireBall" + to_wstring(IDX);
 					BFBVec.push_back(BossFireBall::Create(GRPDEV));
@@ -266,7 +301,9 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 				dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(*Component_Transform->Get_Position());
 				dynamic_cast<Transform*>(BFBVec[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(5.f / 2.5f, 1.5f / 2.5f, 2.f / 2.5f);
 			}
-
+			if (SoundManager::GetInstance()->IsPlaying(CHANNELID::SOUND_EFFECT10) == FALSE && ObjectTAG == L"Supporter_Bullet1") {
+				PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
+			}
 			Spiral_FireBall = FALSE;
 			ObjectDead = TRUE;
 			Effect_Timer = 0.f;

@@ -56,14 +56,6 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = FALSE;
-	}
-	if (KEY_DOWN(DIK_F8)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = TRUE;
-	}
 	if (m_eCurrScene == SCENE_TYPE::Minigame) {
 		MiniGame(_DT);
 		return 0;

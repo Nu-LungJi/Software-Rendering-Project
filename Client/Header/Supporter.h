@@ -57,6 +57,8 @@ private:
 	INT							Animation_CurrentIndex;
 	INT							Animation_PreviousIndex;
 
+	FinalBoss* Boss;
+
 	FLOAT	Effect_Timer;
 
 	INT		Supporter_Type;
@@ -77,6 +79,7 @@ private:
 	BOOL	Spiral_FireBall;
 	vector<GameObject*> BFBVec;
 
+	BOOL	SoundChecker;
 private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;
