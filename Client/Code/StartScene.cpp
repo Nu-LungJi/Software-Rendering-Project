@@ -26,8 +26,9 @@ HRESULT   StartScene::Ready_Scene() {
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
     pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
 
-    pMiniGame = nullptr;
-    pMiniGame = MiniGameScene::Create(GRPDEV, this);
+    //이거 스타트씬이랑 하니까 프레임 드랍 너무 심하게나서 우선 주석 칠게요
+    //pMiniGame = nullptr;
+    //pMiniGame = MiniGameScene::Create(GRPDEV, this);
 
     //Load Tile
 	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
@@ -209,7 +210,7 @@ StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
     return LS;
 }
 void StartScene::Free() {
-    if (pMiniGame != nullptr)   Safe_Release(pMiniGame);
+    //if (pMiniGame != nullptr)   Safe_Release(pMiniGame);
     Safe_Release(pLoading);
     Scene::Free();
 }
