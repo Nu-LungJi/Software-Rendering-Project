@@ -44,7 +44,8 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
   
-     Show_Item();
+    if(TileManager::GetInstance()->Get_Stage()==TILE_STAGE::TILE_STAGE4)
+        Show_Item();
 
     return 0;
 }

@@ -7,7 +7,7 @@ SoundManager::~SoundManager() { Free(); }
 
 HRESULT SoundManager::Ready_SoundManager() {
 	System_Create(&SoundSystem);
-	SoundSystem->init(32, FMOD_INIT_NORMAL, NULL);
+	SoundSystem->init(64, FMOD_INIT_NORMAL, NULL);
 
 	SoundSystem->createChannelGroup("BGM",		&ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
 	SoundSystem->createChannelGroup("BGM",		&ChannelGroup[(int)CHANNELID::SOUND_BGM02]);
@@ -31,6 +31,7 @@ VOID SoundManager::Update_SoundManager() {
 
  
 }
+
 HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume)
 {
 	Sound* SoundObject = nullptr;
@@ -52,12 +53,11 @@ HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundCh
 		SoundMap.insert({ _FilePath, SoundObject });
 		SoundSystem->playSound(SoundObject, ChannelGroup[(int)_SoundChannel], FALSE, &SoundChannel[(LONG)_SoundChannel]);
 
-
 	}
 	else {
 		SoundSystem->playSound(iter->second, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
 	}
-	SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
+	ChannelGroup[(LONG)_SoundChannel]->setVolume(Volume);
 	return S_OK;
 
 
@@ -81,10 +81,10 @@ HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel
   if (iter == SoundMap.end()) {
     SoundSystem->createStream(RootPath.c_str(), FMOD_LOOP_NORMAL | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
     SoundMap.insert({ _FilePath, SoundObject });
-    SoundSystem->playSound(SoundObject, NULL, FALSE, &SoundChannel[(LONG)_SoundChannel]);
+    SoundSystem->playSound(SoundObject, ChannelGroup[(int)_SoundChannel], FALSE, &SoundChannel[(LONG)_SoundChannel]);
   }
   else {
-    SoundSystem->playSound(iter->second, NULL, FALSE, &pSound);
+    SoundSystem->playSound(iter->second, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
   }
 
   SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
@@ -102,9 +102,11 @@ HRESULT SoundManager::Stop_AllSound() {
 }
 BOOL SoundManager::IsPlaying(CHANNELID _SoundChannel) {
   bool PlayingCheck = FALSE;
+
   SoundChannel[(LONG)_SoundChannel]->isPlaying(&PlayingCheck);
   return PlayingCheck;
 }
+
 VOID SoundManager::Free() {
   for (auto& Sound : SoundMap) {
     Sound.second->release();

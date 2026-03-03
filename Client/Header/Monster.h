@@ -170,8 +170,8 @@
 
 #define SHOTGUNEVILSOUL_CHANNELING_TIME			1.f		//	°ø°Ý ÆÐÅÏ À¯Áö ½Ã°£(ÈÄµô)		CHANNELING	-> IDLE
 #define SHOTGUNEVILSOUL_BULLET_TYPE				Fireball
-#define SHOTGUNEVILSOUL_BULLET_SCALEMULT		1.f
-#define SHOTGUNEVILSOUL_BULLET_SPEEDMULT		1.f
+#define SHOTGUNEVILSOUL_BULLET_SCALEMULT		2.f
+#define SHOTGUNEVILSOUL_BULLET_SPEEDMULT		2.f
 #define SHOTGUNEVILSOUL_BULLET_NUM				6			//	ÃÑ¾Ë °¹¼ö
 #define SHOTGUNEVILSOUL_SPREAD					60.f		//	ºÐ»ê ¹üÀ§
 
@@ -367,7 +367,7 @@ private:
 	static	Player*			m_pPlayer;
 
 public:
-	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
+	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END, Scene* pScene = nullptr);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
 	static void Release_Hurdle(MONSTERINFO* _Info);
 
 

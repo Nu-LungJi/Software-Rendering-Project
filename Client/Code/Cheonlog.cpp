@@ -123,12 +123,15 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 {
 	if (m_eStatu == CL_DEAD && m_iFrameCnt >= m_vecCheonlogTexture[m_eStatu].size() - 1)
 	{
+
 		_vec3 vPos = *Component_Transform->Get_Position();
-		vPos.y += 3.f;
-		vPos.z += 5.f;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_POTAL, vPos, FALSE));
-		
+	
 		dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+		
+		Spawner* pObj = Spawner::Create(GRPDEV,TILE_SIDE::TILE_FRONT,TILE_SPAWNER::ITEM_SPAWN1,vPos);
+		pObj->Set_ObjectTag(L"SpawnITem");
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_ITEM, vPos, FALSE));
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
 		Set_ObjectDead(TRUE);
 	}
 	if (Component_Collider->Get_Hp() <= 0)
@@ -693,7 +696,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 3;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x,6,vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
-		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
 
 		++m_iSkillDelay;
 		break;
@@ -747,7 +750,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 8;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, TRUE));
-		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT06, 0.2f);
 		++m_iSkillDelay;
 
 		// 광윤 추가 ▼
@@ -767,7 +770,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 			D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 			vPos += vLook * 6;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
-			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT05, 0.2f);
 		}
 		
 	}
@@ -793,7 +796,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 			vPos += vLookReset * 4;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
 			vLookReset = { 0,0,0 };
-			if (i == 11) SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Pattern_Range_01_04.wav", CHANNELID::SOUND_EFFECT01, 0.3f);
+			if (i == 11) SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Pattern_Range_01_04.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
 			vPos = vOrigin;
 		}
 		

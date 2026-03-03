@@ -44,7 +44,7 @@ public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid = true);
 
-    BOOL			OnCollisionEnter(GameObject* _Other)	override;
+    BOOL			OnCollisionStay(GameObject* _Other)	override;
     bool           m_bGrid;
 
 private:
@@ -53,13 +53,14 @@ private:
     bool    Pooling();
 
 private:
-    GameObject* m_pTarget = nullptr;
-    CameraObject* m_pCam = nullptr;
-    bool            m_bTrigger = false;
-    bool            IsIn_Cam = true;
-    _float          m_fTimer = 0.f;
-    IDirect3DTexture9* m_pTexture;
-    int             m_iFalling;
+    GameObject*         m_pTarget = nullptr;
+    CameraObject*       m_pCam = nullptr;
+    bool                m_bTrigger = false;
+    bool                IsIn_Cam = true;
+    _float              m_fTimer = 0.f;
+    _float*             m_pTimer;
+    IDirect3DTexture9*  m_pTexture;
+    int                 m_iFalling;
 };
 
 class CubeFunction

@@ -13,17 +13,22 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
     SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
+
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
     pLoading = CLoading::Create(GRPDEV, CLoading::LOADING_STAGE);
+
+    //이거 스타트씬이랑 하니까 프레임 드랍 너무 심하게나서 우선 주석 칠게요
+    //pMiniGame = nullptr;
+    //pMiniGame = MiniGameScene::Create(GRPDEV, this);
 
     //Load Tile
 	HANDLE	hFile = CreateFile(L"../../Data/Cheonglock.dat", // 파일 이름이 포함된 경로
@@ -120,6 +125,7 @@ HRESULT   StartScene::Ready_Scene() {
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 
+
     if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_TAB) == TRUE) {
         int  a = 0;
     }
@@ -144,6 +150,10 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->LateUpdate_CollisionManager();
     CollisionManager::GetInstance()->Render_CollisionManager();
 
+    if (KEY_DOWN(DIK_P)) {
+        pMiniGame->Start_MiniGame();
+        return;
+    }
 }
 VOID StartScene::Render_Scene() {
 
@@ -164,6 +174,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
+
     //Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
 
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
@@ -181,7 +192,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
 
     Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
     Add_GameObjectToScene<Augment>          (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
-    Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Shop");
+    //Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Shop");
  
     //Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
@@ -202,6 +213,7 @@ StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
     return LS;
 }
 void StartScene::Free() {
+    //if (pMiniGame != nullptr)   Safe_Release(pMiniGame);
     Safe_Release(pLoading);
     Scene::Free();
 }

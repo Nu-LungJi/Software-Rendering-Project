@@ -31,10 +31,6 @@ private:
     TileInfo* m_pTileInfo;
     Transform* m_pTransform;
     Buffer* m_pBuffer;
-
-    void                        Imgui_Setting();
-    void                        Imgui();
-    void                        Imgui_ButtonStyle();
 private:
     
 

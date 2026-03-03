@@ -14,7 +14,7 @@ INT	Shadow::Update_GameObject(const _float& _DT)
 	Component_Buffer->Update_Component(_DT);
 
 	if (m_tInfo.pGameObj[0] == nullptr) {
-		Monster::Set_Target(L"Player", m_tInfo.pGameObj[0]);
+		m_tInfo.pGameObj[0] = Monster::Get_Player();
 		_float fScale = SCALE(m_tInfo.pGameObj[0])->x;
 		Component_Transform->Set_Scale(fScale, fScale, fScale);
 	}
@@ -22,7 +22,7 @@ INT	Shadow::Update_GameObject(const _float& _DT)
 	if (m_tInfo.pGameObj[0])
 	{
 		*MYPOS = *POS(m_tInfo.pGameObj[0]);
-		MYPOS->y = 0.001f;
+		MYPOS->z -= SCALE(m_tInfo.pGameObj[0])->y * 0.5f;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
