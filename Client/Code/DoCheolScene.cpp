@@ -23,7 +23,7 @@ HRESULT   DoCheolScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
 
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
     if (FAILED(Ready_Enviroment_Layer()))           return E_FAIL;
