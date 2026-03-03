@@ -19,12 +19,12 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q)) {
+	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_F)) {
 		isActive = true;
 	}
 
 	if (isActive) {
-		//PlayerObject->Set_PlayerStop(FALSE);
+		PlayerObject->Set_PlayerStop(TRUE);
 		Perk_Text[2]->Text = L"가호 선택";
 		Perk_Text[2]->Visible = TRUE;
 
@@ -45,8 +45,10 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 		}
 
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			PlayerObject->Set_PlayerStop(FALSE);
 			if (iType != INIT) {
 				Add_PlayerStatus(iType);
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Menu_ChooseApostle_Select.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 				isActive = FALSE;
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
 				//PlayerObject->Set_PlayerStop(FALSE);
