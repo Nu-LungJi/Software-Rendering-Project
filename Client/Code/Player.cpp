@@ -129,6 +129,11 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
+	if (m_eCurrScene == SCENE_TYPE::Minigame)
+	{
+		pPos.y = 1.25f;
+	}
+
 	_defaultSpeed = 6.f;
 	Artifact_Effect();
 
@@ -1477,7 +1482,14 @@ HRESULT Player::MiniGameInit()
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
+	m_vBackUpPos = *Component_Transform->Get_Position();
 
+	return S_OK;
+}
+HRESULT Player::MiniGameExit()
+{
+	Component_Transform->Set_Pos(m_vBackUpPos);
+	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {

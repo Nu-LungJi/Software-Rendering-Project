@@ -190,9 +190,6 @@
     <Filter Include="03. GameObject\02. Monster\01. Boss\02. CheonLog">
       <UniqueIdentifier>{94438416-989b-47fd-af80-797b0bf860de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\09. Hurdle">
-      <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\02. ScorpionEvilSoul">
       <UniqueIdentifier>{9cb39ed9-d361-4a69-b06c-890759bbd692}</UniqueIdentifier>
     </Filter>
@@ -252,6 +249,12 @@
     </Filter>
     <Filter Include="03. GameObject\01. Player\02. Artifact">
       <UniqueIdentifier>{23b52e8e-4776-4af9-b9ad-2f3cfab8769d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\10. Hurdle">
+      <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\05. Tile\00. BackGround">
+      <UniqueIdentifier>{66da18aa-8d46-493a-b4ef-f5501a832303}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -518,10 +521,13 @@
       <Filter>07. Font\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h">
-      <Filter>03. GameObject\09. Hurdle</Filter>
+      <Filter>03. GameObject\10. Hurdle</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Artifact.h">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\BackGround.h">
+      <Filter>03. GameObject\05. Tile\00. BackGround</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -771,10 +777,13 @@
       <Filter>07. Font\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
-      <Filter>03. GameObject\09. Hurdle</Filter>
+      <Filter>03. GameObject\10. Hurdle</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Artifact.cpp">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\BackGround.cpp">
+      <Filter>03. GameObject\05. Tile\00. BackGround</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,20 +1,24 @@
 #include "../Include/PCH.h"
 
-MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV) {}
+MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_pMainScene(nullptr) {}
 MiniGameScene::~MiniGameScene() {}
 HRESULT	MiniGameScene::Ready_Scene() {
+
 	Scene::Ready_Scene();
-	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
-	UIManager::GetInstance()->Ready_UIManager(GRPDEV);
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Effect");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/CubeFloorTile");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-	MonsterManager::GetInstance();
-	if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
-	if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
+	if (m_pMainScene == nullptr)
+	{
+		ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
+		UIManager::GetInstance()->Ready_UIManager(GRPDEV);
+		ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/Effect");
+		ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource/CubeFloorTile");
+		MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+		KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
+	}
+	
+	if (FAILED(Ready_Enviroment_Layer()))			return E_FAIL;
+	if (FAILED(Ready_GameLogic_Layer()))			return E_FAIL;
 	if (FAILED(Ready_UserInterface_Layer()))		return E_FAIL;
-	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
+
 	return S_OK;
 }
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
@@ -29,9 +33,36 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	CollisionManager::GetInstance()->Render_CollisionManager();
 }
 VOID MiniGameScene::Render_Scene() {}
+HRESULT MiniGameScene::Start_MiniGame(LPDIRECT3DDEVICE9 GRPDEV, Scene* pCurrScene)
+{
+	if (nullptr == pCurrScene)
+		return E_POINTER;
+
+	MiniGameScene* pScene = DBG_NEWW MiniGameScene(GRPDEV);
+
+	Monster::Set_Camera(static_cast<CameraObject*>(pCurrScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Get_GameObject(L"Camera")));
+
+	if (Monster::Get_Camera() == nullptr)
+		return E_POINTER;
+
+	Monster::Set_Player(static_cast<Player*>(pCurrScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Get_GameObject(L"Player")));
+
+	if (Monster::Get_Player == nullptr)
+		return E_POINTER;
+
+	Monster::Get_Player()->MiniGameInit();
+	
+	SceneManager::GetInstance()->Set_CurrentScene(pScene);
+
+	return pScene->Ready_Scene();
+}
+HRESULT MiniGameScene::End_MiniGame()
+{
+	Monster::Get_Player()->MiniGameExit();
+	return	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
+}
 HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 
-	//Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
 	LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(Monster::Create<Shadow>(GRPDEV));
 
 	MonsterManager::GetInstance()->Ready_Origin_Buffer();
@@ -62,82 +93,52 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer() {
-	Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 
-	Monster::Set_Camera(static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera")));
-	Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
-	Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
+	if (nullptr == Monster::Get_Camera()) {
+		Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
+		Monster::Set_Camera(static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera")));
+	}
+	if (nullptr == Monster::Get_Player()) {
+		Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
+		Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
+	}
 
+	for (float i = 20; i < 200; i += 5)
+	{
+		int		iCount	= RANDOM::Get_int(1, 5);
+		bool	bDir	= (RANDOM::Get_int(0,9) < 5);
+		_vec3	vSrc	= { i, 1.f, 10.f * bDir };
+		_vec3	vDst	= { i, 1.f, 10.f * (!bDir)};
+		_float	fSpeed	= RANDOM::Get_float(1.f, 6.f);
 
-	// 랜덤으로 2중 for 문 돌려서 소환할 예정
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 10.f,1.f,0.f }, { 10.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 10.f,1.f,0.f }, { 10.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 10.f,1.f,0.f }, { 10.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+		uint8_t Type	= RANDOM::Get_int((uint8_t)MONSTER_TYPE::Bat, (uint8_t)MONSTER_TYPE::Random -1);
 
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 15.f,1.f,0.f }, { 15.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 15.f,1.f,0.f }, { 15.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 15.f,1.f,0.f }, { 15.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+		//if (iCount == 1)
+		//	if (RANDOM::Get_float(0.f, 10.f) < 5.f) {
+		//		Monster::Add_Monster_to_Scene(Monster::Create<Bullet_Chain_Head>(GRPDEV, vSrc, vDst, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+		//		continue;
+		//	}
 
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 20.f,1.f,0.f }, { 20.f,1.f,10.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 20.f,1.f,0.f }, { 20.f,1.f,10.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, { 25.f,1.f,10.f }, { 25.f,1.f,0.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 30.f,1.f,10.f }, { 30.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 30.f,1.f,10.f }, { 30.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 30.f,1.f,10.f }, { 30.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 35.f,1.f,10.f }, { 35.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 35.f,1.f,10.f }, { 35.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 35.f,1.f,10.f }, { 35.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 40.f,1.f,0.f }, { 40.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 40.f,1.f,0.f }, { 40.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 40.f,1.f,10.f }, { 40.f,1.f,0.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 40.f,1.f,10.f }, { 40.f,1.f,0.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 45.f,1.f,0.f }, { 45.f,1.f,10.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 45.f,1.f,0.f }, { 45.f,1.f,10.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 45.f,1.f,0.f }, { 45.f,1.f,10.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, { 50.f,1.f,5.f }, { 50.f,1.f,5.f }, 6.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 55.f,1.f,10.f }, { 55.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 55.f,1.f,10.f }, { 55.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, { 65.f,1.f,0.f }, { 60.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 70.f,1.f,10.f }, { 70.f,1.f,0.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 70.f,1.f,10.f }, { 70.f,1.f,0.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 70.f,1.f,10.f }, { 70.f,1.f,0.f }, 5.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 75.f,1.f,0.f }, { 75.f,1.f,10.f }, 6.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 75.f,1.f,0.f }, { 75.f,1.f,10.f }, 6.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 75.f,1.f,0.f }, { 75.f,1.f,10.f }, 6.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 75.f,1.f,0.f }, { 75.f,1.f,10.f }, 6.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 80.f,1.f,0.f }, { 80.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 80.f,1.f,0.f }, { 80.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 85.f,1.f,10.f }, { 85.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 85.f,1.f,10.f }, { 85.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 85.f,1.f,10.f }, { 85.f,1.f,0.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 90.f,1.f,0.f }, { 90.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 90.f,1.f,0.f }, { 90.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 90.f,1.f,0.f }, { 90.f,1.f,10.f }, 4.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-	Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, { 95.f,1.f,0.f }, { 95.f,1.f,10.f }, 3.f, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-
-
-	//Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV,{15.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//m_pCamera->Set_Target(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Monster"));
-
-	//Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV,{3.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,{0.f,0.f,3.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV,{3.f,0.f,0.f},3.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//Monster::Add_Monster_to_Scene(CubeFloorTile::Create(GRPDEV), L"Cube", GAMEOBJECT_TYPE::OBJECT_END);
-	//Monster::Add_Monster_to_Scene(Hurdle::Create(GRPDEV, { 20.f,0.f,0.f }, { 0.f,0.f,0.f }), L"Hurdle");
+		for (int j = 0; j < iCount; ++j)
+		{
+			switch (Type)
+			{
+			default:
+			case (uint8_t)Engine::MONSTER_TYPE::Bat:
+				Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::ScorpionEvilSoul:
+				Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::ShotGunEvilSoul:
+				Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::EvilSlime:
+				Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+				break;
+			}
+		}
+	}
 
 	return S_OK;
 }

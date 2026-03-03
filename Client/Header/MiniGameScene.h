@@ -18,6 +18,9 @@ public:
 	virtual VOID		LateUpdate_Scene(CONST FLOAT& _DT);
 	virtual VOID		Render_Scene();
 
+	static HRESULT		Start_MiniGame(LPDIRECT3DDEVICE9 GRPDEV, Scene* pCurrScene);
+	HRESULT				End_MiniGame();
+
 private:
 	HRESULT		Ready_Enviroment_Layer();
 	HRESULT		Ready_GameLogic_Layer();
@@ -28,5 +31,6 @@ public:
 
 private:
 	virtual void Free();
+	Scene* m_pMainScene;
 
 };

@@ -160,6 +160,7 @@
     </ClInclude>
     <ClInclude Include="..\Header\Arrow.h" />
     <ClInclude Include="..\Header\Artifact.h" />
+    <ClInclude Include="..\Header\BackGround.h" />
     <ClInclude Include="..\Header\BossEffect.h" />
     <ClInclude Include="..\Header\BossUI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -405,6 +406,7 @@
     </ClCompile>
     <ClCompile Include="..\Code\Arrow.cpp" />
     <ClCompile Include="..\Code\Artifact.cpp" />
+    <ClCompile Include="..\Code\BackGround.cpp" />
     <ClCompile Include="..\Code\BossEffect.cpp" />
     <ClCompile Include="..\Code\BossUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

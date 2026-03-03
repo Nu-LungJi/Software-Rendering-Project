@@ -22,7 +22,7 @@ INT	Shadow::Update_GameObject(const _float& _DT)
 	if (m_tInfo.pGameObj[0])
 	{
 		*MYPOS = *POS(m_tInfo.pGameObj[0]);
-		MYPOS->y = 0.001f;
+		MYPOS->z -= SCALE(m_tInfo.pGameObj[0])->y * 0.5f;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
