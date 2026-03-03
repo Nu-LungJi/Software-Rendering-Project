@@ -8,17 +8,17 @@ HRESULT   DoCheolScene::Ready_Scene() {
 
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
     
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Appear");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Stand");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/NoneAnimation");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RageUp");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/RightSwing");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Charge");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/FullSwing");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlam");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Death");
-	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlamShake");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/TwoHandSlamShake");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Supporter");
 
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss/Effect");
 
@@ -152,8 +152,9 @@ HRESULT DoCheolScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>	(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>		(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Player");
 	dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos({63.929,0.5f,90.981f});
-    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
-	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+
+    //Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
     return S_OK;
 }
 HRESULT DoCheolScene::Ready_UserInterface_Layer() {

@@ -9,25 +9,27 @@ HRESULT SoundManager::Ready_SoundManager() {
 	System_Create(&SoundSystem);
 	SoundSystem->init(64, FMOD_INIT_NORMAL, NULL);
 
-	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
-	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM02]);
-	SoundSystem->createChannelGroup("BGM", &ChannelGroup[(int)CHANNELID::SOUND_BGM03]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT01]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT02]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT03]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT04]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT05]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT06]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT07]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT08]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT09]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT10]);
-	SoundSystem->createChannelGroup("Effect", &ChannelGroup[(int)CHANNELID::SOUND_EFFECT11]);
+	SoundSystem->createChannelGroup("BGM",		&ChannelGroup[(int)CHANNELID::SOUND_BGM01]);
+	SoundSystem->createChannelGroup("BGM",		&ChannelGroup[(int)CHANNELID::SOUND_BGM02]);
+	SoundSystem->createChannelGroup("BGM",		&ChannelGroup[(int)CHANNELID::SOUND_BGM03]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT01]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT02]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT03]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT04]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT05]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT06]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT07]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT08]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT09]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT10]);
+	SoundSystem->createChannelGroup("Effect",	&ChannelGroup[(int)CHANNELID::SOUND_EFFECT11]);
 
 	return S_OK;
 }
 VOID SoundManager::Update_SoundManager() {
   SoundSystem->update();
+
+ 
 }
 
 HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume)
@@ -45,13 +47,12 @@ HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundCh
 	auto iter = find_if(SoundMap.begin(), SoundMap.end(), CTag_Finder(_FilePath));
 
 	Channel* pSound = nullptr;
-	
+
 	if (iter == SoundMap.end()) {
 		SoundSystem->createSound(RootPath.c_str(), FMOD_LOOP_OFF | FMOD_2D | FMOD_IGNORETAGS, nullptr, &SoundObject);
 		SoundMap.insert({ _FilePath, SoundObject });
 		SoundSystem->playSound(SoundObject, ChannelGroup[(int)_SoundChannel], FALSE, &SoundChannel[(LONG)_SoundChannel]);
-	
-		
+
 	}
 	else {
 		SoundSystem->playSound(iter->second, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
@@ -99,7 +100,7 @@ HRESULT SoundManager::Stop_AllSound() {
   }
   return S_OK;
 }
-HRESULT SoundManager::IsPlaying(CHANNELID _SoundChannel) {
+BOOL SoundManager::IsPlaying(CHANNELID _SoundChannel) {
   bool PlayingCheck = FALSE;
 
   SoundChannel[(LONG)_SoundChannel]->isPlaying(&PlayingCheck);

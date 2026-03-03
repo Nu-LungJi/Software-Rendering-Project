@@ -5,6 +5,7 @@
 
 IMPLEMENT_SINGLETON(AppearState)
 IMPLEMENT_SINGLETON(DeadState)
+IMPLEMENT_SINGLETON(StunState)
 IMPLEMENT_SINGLETON(RageUpState)
 IMPLEMENT_SINGLETON(RSwingState)
 IMPLEMENT_SINGLETON(FSwingState)
@@ -62,8 +63,6 @@ VOID AppearState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(TRUE);
-
-	PLAY_SOUND_ONCE(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_EFFECT04);
 }
 VOID AppearState::FSM_StateUpdate(GameObject* _Owner) {
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
@@ -98,26 +97,28 @@ VOID DeadState::FSM_StateExit(GameObject* _Owner) {
 	_Owner->Set_ObjectDead(TRUE);
 }
 
-VOID RageUpState::FSM_StateEnter(GameObject* _Owner) {
+VOID StunState::FSM_StateEnter(GameObject* _Owner) {
+	PLAY_SOUND_ONCE(L"Docheol/Stun_Sound.wav", CHANNELID::SOUND_EFFECT08, 2.5f);
+
 	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter1");
 	Supporter* SPT1 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter1"));
 	SPT1->Set_StartAngle(360.f);
 	SPT1->Set_TickAngle(0.25f);
-	SPT1->Set_StartPos({ 64.115f - 18.3f, 1.5f, 109.03f });
+	SPT1->Set_StartPos({ 64.115f - 18.3f, 0.5f, 109.03f });
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter2");
 	Supporter* SPT2 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter2"));
 	SPT2->Set_StartAngle(160.f);
 	SPT2->Set_TickAngle(0.25f);
-	SPT2->Set_StartPos({ 64.115f + 21.3f, 1.5f, 100.03f });
+	SPT2->Set_StartPos({ 64.115f + 21.3f, 0.5f, 100.03f });
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Supporter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_SUPPORTER, L"Supporter3");
 	Supporter* SPT3 = dynamic_cast<Supporter*>(SceneManager::GetInstance()->Get_GameObject(L"Supporter3"));
 	SPT3->Set_StartAngle(230.f);
 	SPT3->Set_TickAngle(0.25f);
-	SPT3->Set_StartPos({ 64.115f + 5.f, 1.5f, 82.03f });
+	SPT3->Set_StartPos({ 64.115f + 5.f, 0.5f, 82.03f });
 }
-VOID RageUpState::FSM_StateUpdate(GameObject* _Owner) {
+VOID StunState::FSM_StateUpdate(GameObject* _Owner) {
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		float Circlepow = 7.f;
@@ -127,6 +128,16 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner) {
 					  (*dynamic_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))).Get_Position()->z - 5.f
 		};
 		PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::FSWING_CIRCLE_EFFET, L"FSwing Circle Effect", &CirclePos, CircleScale, 0.4f);
+	}
+}
+VOID StunState::FSM_StateExit(GameObject* _Owner) {}
+
+VOID RageUpState::FSM_StateEnter(GameObject* _Owner) {
+	
+}
+VOID RageUpState::FSM_StateUpdate(GameObject* _Owner) {
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 8  && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 8) {
+		PLAY_SOUND_ONCE(L"Docheol/RageUp_Sound.wav", CHANNELID::SOUND_EFFECT09, 2.f);
 	}
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 10 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 10) {
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Camera_Shaking(80, 2.f);
@@ -140,6 +151,7 @@ VOID RageUpState::FSM_StateUpdate(GameObject* _Owner) {
 		dynamic_cast<BossEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"SMALL_FLAMEL"))->Set_EffectRotation(0.f, -60.f, 10.f);
 	}
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 11 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 11) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/Appear_Roar.wav", CHANNELID::SOUND_EFFECT08, 2.f);
 		LPDIRECT3DDEVICE9 GRPDEV = GraphicDevice::GetInstance()->Get_Device();
 		Transform* BossTR = dynamic_cast<Transform*>((_Owner)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		_vec3 GlobalPosition = { BossTR->Get_Position()->x - 1.f, BossTR->Get_Position()->y - 1.f,  BossTR->Get_Position()->z - 7.5f };
@@ -162,17 +174,20 @@ VOID RageUpState::FSM_StateExit(GameObject* _Owner) {}
 VOID RSwingState::FSM_StateEnter(GameObject* _Owner) {}
 VOID RSwingState::FSM_StateUpdate(GameObject* _Owner) {
 
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 0 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 2 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 2) {
 		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_Sound.wav", CHANNELID::SOUND_EFFECT07, 1.5f);
 		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
 	}
 	// RSWING - CREATE PROJECTILE 
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
-		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableCreateFireBall(TRUE);
-	}
-	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
-		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+		
 	}
 	// RSWING - PUNCH FLAME EFFECT
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
@@ -185,7 +200,6 @@ VOID RSwingState::FSM_StateUpdate(GameObject* _Owner) {
 		};
 		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RSWING_EFFECT, L"Punch Flame Effect", &Pos, Scale, 0.35f);
 	}
-	
 }
 VOID RSwingState::FSM_StateExit(GameObject* _Owner) {}
 
@@ -364,8 +378,11 @@ VOID NormalSlamState::FSM_StateUpdate(GameObject* _Owner) {
 		_vec3 PlayerPos = { PL->Get_Position()->x, PL->Get_Position()->y, PL->Get_Position()->z - 1.5f };
 		dynamic_cast<FinalBoss*>(_Owner)->Set_PlayerPosition({ PL->Get_Position()->x, PL->Get_Position()->y + 1.f, PL->Get_Position()->z + 0.01f });
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableGroundExp(TRUE);
-
-		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		if (PlayerPos.z > static_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		}
+		else { PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f); }
+		
 		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Explosion Warning")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
 			->Set_Rotation(85.f, 0.f, 0.f);
 	}
@@ -405,7 +422,13 @@ VOID MeteorSlamState::FSM_StateUpdate(GameObject* _Owner) {
 		dynamic_cast<FinalBoss*>(_Owner)->Set_PlayerPosition({ PL->Get_Position()->x, PL->Get_Position()->y + 1.f, PL->Get_Position()->z + 0.01f });
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableQuadGroundExp(TRUE);
 
-		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		PLAY_SOUND_ONCE(L"Docheol/Slam_Bump.wav", CHANNELID::SOUND_EFFECT10);
+		if (PlayerPos.z > static_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		}
+		else {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		}
 		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Explosion Warning")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
 			->Set_Rotation(85.f, 0.f, 0.f);
 	}
@@ -473,6 +496,24 @@ VOID Rage_StandState::FSM_StateExit(GameObject* _Owner) {}
 
 VOID Rage_RSwingState::FSM_StateEnter(GameObject* _Owner) {}
 VOID Rage_RSwingState::FSM_StateUpdate(GameObject* _Owner) {
+	if		(dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 0 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 0) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 1 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 1) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 2 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 2) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 5 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 5) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 6 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 6) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
+	else if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 7 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 7) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Docheol/RSwing_FireBall.wav", CHANNELID::SOUND_EFFECT09, 1.f);
+	}
 	// RSWING - CREATE PROJECTILE 
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 3 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 3) {
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableCreateFireBall(2);
@@ -502,8 +543,13 @@ VOID Rage_NormalSlamState::FSM_StateUpdate(GameObject* _Owner) {
 		_vec3 PlayerPos = { PL->Get_Position()->x, PL->Get_Position()->y, PL->Get_Position()->z - 1.5f };
 		dynamic_cast<FinalBoss*>(_Owner)->Set_PlayerPosition({ PL->Get_Position()->x, PL->Get_Position()->y + 1.f, PL->Get_Position()->z + 0.01f });
 		dynamic_cast<FinalBoss*>(_Owner)->Set_EnableGroundExp(2);
-
-		PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		if (PlayerPos.z > static_cast<Transform*>(_Owner->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		}
+		else {
+			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::DANGER_AREA_EFFECT, L"Explosion Warning", &PlayerPos, PlayerScale, 0.45f);
+		}
+		
 		dynamic_cast<Transform*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::BOSS, L"Explosion Warning")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))
 			->Set_Rotation(85.f, 0.f, 0.f);
 	}
@@ -556,10 +602,7 @@ VOID Rage_ChargeState::FSM_StateEnter(GameObject* _Owner) {
 	_vec3 FlameScale = { 1.f * FlamePow, 1.f * FlamePow, 1.f * FlamePow };
 	PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_SLAM_FLAME_EFFECT, L"Charge Flame", &FlamePos, FlameScale, 0.5f);
 }
-VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner) {
-
-
-}
+VOID Rage_ChargeState::FSM_StateUpdate(GameObject* _Owner) {}
 VOID Rage_ChargeState::FSM_StateExit(GameObject* _Owner) {}
 
 VOID Rage_SupporterState::FSM_StateEnter(GameObject* _Owner) {

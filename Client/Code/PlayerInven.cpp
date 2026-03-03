@@ -16,7 +16,7 @@ HRESULT	PlayerInven::Ready_GameObject() {
 	SavedItemIndex = 1;
 	EquipedItemIndex = 1;
 
-	FocusOn_SavedItem = TRUE;
+	FocusOn_SavedItem	= TRUE;
 	FocusOn_EquipedItem = FALSE;
 
 	EquipMode = FALSE;
@@ -78,7 +78,7 @@ VOID	PlayerInven::Render_GameObject() {
 }
 
 HRESULT PlayerInven::Component_Initialize() {
-	UIManager::GetInstance()->Set_Active(true);
+	UIManager::GetInstance()->Set_Active(FALSE);
 	Component_Sprite = ADD_COMPONENT_SPRITE;
 
 	return S_OK;

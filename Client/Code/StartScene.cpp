@@ -114,7 +114,7 @@ HRESULT   StartScene::Ready_Scene() {
 
 	}
 	TileManager::GetInstance()->Set_StageCnt();
-	MSG_BOX("로드 성공");
+	//MSG_BOX("로드 성공");
 	CloseHandle(hFile);
 
 
@@ -174,6 +174,9 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
+
+    //Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
+
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
     //Add_GameObjectToScene<Fireball>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
     //Add_GameObjectToScene<NPC>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC     , L"NPC_Tif"      );
