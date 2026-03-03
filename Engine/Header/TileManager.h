@@ -66,6 +66,8 @@ public:
     void                    Set_Stage() { m_eStage = m_eCurrent; }
     void                    Set_CurStage(TILE_STAGE es) { m_eCurrent = es; }
 
+    _bool                   Get_PotalBgmStart() { return m_bBgm; }
+    void                    Set_PotalBgmStart(_bool Bgm) { m_bBgm = Bgm; }
     TILE_STAGE              Get_CurrentStage() { return m_eCurrent; };
     TILE_STAGE              Get_Stage() { return m_eStage; };
     TILEMODE_CHANGE         Get_Mode() { return m_eMode; }
@@ -87,6 +89,7 @@ private:
     _bool                   m_bCheck;
     _bool                   m_EndLoading;
     _bool                   m_bZeroMonster;
+    _bool                   m_bBgm;
     TILE_STAGE              m_eCurrent;
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;

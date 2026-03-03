@@ -55,7 +55,8 @@ INT	Tile::Update_GameObject(const _float& _DT) {
 }
 VOID Tile::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	if (KEY_DOWN(DIK_F8))
+	if ((KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_S) & 0x8000))
 	{
 		TileManager::GetInstance()->Save_Tile(hWnd);
 	}
@@ -169,7 +170,7 @@ void Tile::Imgui_Setting()
 	//		}
 	//	}
 	//}
-	if (TILE_SIDE::TILE_OTHER != m_eTile) vRotation.x = 45.f;
+	if (TILE_SIDE::TILE_OTHER != m_eTile) vRotation.x = 55.f;
 	else vRotation.x = 0;
 	if (!ImGui::CollapsingHeader("Setting"))
 		return;
@@ -339,7 +340,7 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
 	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_RANDOM","SPAWN_UI","SPAWN_END"};
-	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "END" };
+	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "TILE_ROADRUN","END" };
 
 	static const char* cSelect_Tile      = nullptr;
 	static const char* cSelect_State     = nullptr;
@@ -978,7 +979,7 @@ void Tile::Check_TilePoint()
 
 		if (vMouseCheck.x < 1)
 			vMouseCheck.x = 1;
-
+		
 		if (vMouseCheck.z < 1)
 			vMouseCheck.z = 1;
 

@@ -17,7 +17,7 @@ public:
 	HRESULT						Ready_Effect( _vec3* vPos, _bool bDocheol);
 	
 	void						Set_Docheol() { m_bDocheol = true; }
-	void					    Set_Pos(_vec3 vPos, _bool bRe, _float fFrame, SCENE_EFFECT eid = SCENE_EFFECT::SCENE_STAGE) { m_vPos = vPos; m_bRestart = bRe; m_fFrame = fFrame; m_eSceneID = eid; }
+	void					    Set_Pos(_vec3 vPos, _bool bRe, _float fFrame, _bool Bgm,SCENE_EFFECT eid = SCENE_EFFECT::SCENE_STAGE) { m_bBgm = Bgm, m_vPos = vPos; m_bRestart = bRe; m_fFrame = fFrame; m_eSceneID = eid; }
 	void						Set_FrameCnt() { ++m_iFrameCnt; }
 
 public:
@@ -33,6 +33,7 @@ private:
 	_bool						     m_bRestart;
 	_bool							 m_bDocheol;
 
+	_bool							 m_bBgm;
 	SCENE_EFFECT					 m_eSceneID;
 
 	ID3DXSprite*					 m_pDrawSprite;

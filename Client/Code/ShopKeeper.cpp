@@ -27,6 +27,7 @@ INT	ShopKeeper::Update_GameObject(const _float& _DT) {
 
 	if (bQuest)
 	{
+		SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
 		TileManager::GetInstance()->Set_Trigger(TileManager::GetInstance()->Get_CurrentStage(), TILEMODE_CHANGE::MODE_TILE, TILE_STATE::STATE_POTALEFFECT);
 		bQuest = false;
 	}
