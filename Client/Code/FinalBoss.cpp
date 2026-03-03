@@ -9,7 +9,7 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
-	PlayerObject = static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+	PlayerObject	= static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 	PlayerTransform = static_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 	PlayerPos = { 0.f, 0.f, 0.f };
 
@@ -23,10 +23,10 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	Component_Collider->Set_Hp(10000.f);
 	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
-	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
-	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;	// 다른 행동 간섭 방지
-	BossMode[(LONG)BOSSMODE::MODE_RAGE] = FALSE;	// 폭주화 단계
-	BossMode[(LONG)BOSSMODE::MODE_DEATH] = FALSE;	// 사망 단계
+	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE]		= FALSE;
+	BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;		// 다른 행동 간섭 방지
+	BossMode[(LONG)BOSSMODE::MODE_RAGE]				= FALSE;	// 폭주화 단계
+	BossMode[(LONG)BOSSMODE::MODE_DEATH]			= FALSE;	// 사망 단계
 
 	Animation_Timer = 0.f;
 	Animation_Interval = 0.07f;
@@ -62,12 +62,6 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
 	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap, TRUE, sizeof(BBTrap));
-
-	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
-	_vec3 planeDir = { 0.f, 1.f, 0.f };
-
-	_float angle = acosf(D3DXVec3Dot(D3DXVec3Normalize(&cameraDir, &cameraDir), D3DXVec3Normalize(&planeDir, &planeDir)));
-	_float _cameraAngle = angle / D3DX_PI * 180.f;
 
 	Component_Transform->Rotation(ROT_X, 80.f);
 

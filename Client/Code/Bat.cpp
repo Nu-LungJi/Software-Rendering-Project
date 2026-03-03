@@ -327,6 +327,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 		pBullet->Set_Dir(vDir);
 		pBullet->Get_Info()->fSpeed *= BAT_BULLET_SPEEDMULT;
 
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Bat_1 (1).wav", CHANNELID::SOUND_EFFECT06, 0.1f);
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 		m_tInfo.pGameObj[1] == nullptr;

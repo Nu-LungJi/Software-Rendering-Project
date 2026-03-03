@@ -238,7 +238,6 @@ BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 	default:
 		Tag = _Other->Get_ObjectTag();
 		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Hit.wav", CHANNELID::SOUND_EFFECT08, 0.05f);
 		return TRUE;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_APPEAR:
@@ -388,9 +387,8 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 			pBullet->Set_ObjectTag(L"MonsterBullet");
 			pBullet->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_STATIC_OBJECT)->Add_GameObject(pBullet);
-
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit_Attack_02.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
-
+		  SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
+			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
 	}
 	else
@@ -409,6 +407,8 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 			static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i])->Get_Info()->bTrigger[0] = true;
 			m_tInfo.pGameObj[i] = nullptr;
 		}
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Slime_Ice.wav", CHANNELID::SOUND_EFFECT08, 0.2f);
+
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
 
 		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
@@ -471,7 +471,6 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			D3DXVec3Normalize(&pSlime->Get_Info()->vDirection, &vDst);
 
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.8f);
 		}
 
 		m_tInfo.bTrigger[2] = false;
