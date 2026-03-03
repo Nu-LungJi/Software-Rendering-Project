@@ -317,4 +317,5 @@ private:
 	private:
 		SCENE_TYPE		m_eCurrScene;
 		_vec3			m_vBackUpPos;
+		bool			Is_Falling;
 };

@@ -1,14 +1,15 @@
 #include "CubeFloorTile.h"
 #include "../Include/PCH.h"
 
-CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTexture(nullptr) {}
+CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTexture(nullptr), m_pTimer(nullptr) {}
 CubeFloorTile::CubeFloorTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CubeFloorTile::~CubeFloorTile() {}
 
 HRESULT CubeFloorTile::Ready_GameObject() {
 
 	if (FAILED(Component_Initialize())) return E_FAIL;
-
+	
+	m_pTimer = static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Get_Timer();
 	return S_OK;
 }
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
@@ -35,9 +36,9 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	Pooling();
 
-	if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 20.f))
+	if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 30.f))
 		m_iFalling = 4;
-	else if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 9.f))
+	else if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 10.f))
 		m_iFalling = 1;
 
 	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
@@ -142,9 +143,12 @@ CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, 
 
 	return pCubeFloorTile;
 }
-BOOL CubeFloorTile::OnCollisionEnter(GameObject* _Other)
+BOOL CubeFloorTile::OnCollisionStay(GameObject* _Other)
 {
-	return false;
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Player")
+		Monster::Hurdle_CollisionStay(this, _Other, 0, 1, 0);
+	return 0;
 }
 VOID CubeFloorTile::Free() {
 
@@ -154,31 +158,36 @@ VOID CubeFloorTile::Free() {
 
 bool CubeFloorTile::Pooling()
 {
-	if (m_pCam == nullptr)return false;
-	bool bVisible = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), fabsf(m_pTransform->Get_Scale()->x + 0.5f));
+	//if (m_pCam == nullptr)return false;
+	//bool bVisible = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), fabsf(m_pTransform->Get_Scale()->x + 0.5f));
+	//if (bVisible && !IsIn_Cam)		CollisionManager::GetInstance()->Add_ColliderObject(this);
+	//else if (!bVisible && IsIn_Cam)	CollisionManager::GetInstance()->Delete_ColliderObject(this);
 
-	if (bVisible && !IsIn_Cam)		CollisionManager::GetInstance()->Add_ColliderObject(this);
-	else if (!bVisible && IsIn_Cam)	CollisionManager::GetInstance()->Delete_ColliderObject(this);
+	//IsIn_Cam = bVisible;
 
+	_vec3* vPos = m_pTransform->Get_Position();
+	_vec3 vTargetPos;
+	if (m_pTarget == nullptr) 
+		return false;
+	
+	vTargetPos = *POS(m_pTarget);
+	_vec3 vDir = *vPos - vTargetPos;
 
-	IsIn_Cam = bVisible;
+	bool bVisible = fabsf(vDir.x) < (m_pTransform->Get_Scale()->x * 15.f);  //D3DXVec3LengthSq(&vDir) < 100;
 
 	if (!bVisible)
 	{
-		_vec3* vPos = m_pTransform->Get_Position();
-		_vec3 vDir = *vPos - *m_pCam->Get_AtVec();
-
 		_float fTileSize = m_pTransform->Get_Scale()->x * 2.f;
 		_float fDiffX = fTileSize * MINIGAMETILEX;
 		//_float fDiffZ = fTileSize * MINIGAMETILEZ;
 
 		bool bMoved = false;
 
-		if (vDir.x < -fDiffX * 0.5f) {
+		if (vDir.x < -0.f) {
 			vPos->x += fDiffX;
 			bMoved = true;
 		}
-		else if (vDir.x > fDiffX * 0.5f) {
+		else if (vDir.x > 0.f) {
 			vPos->x -= fDiffX;
 			bMoved = true;
 		}

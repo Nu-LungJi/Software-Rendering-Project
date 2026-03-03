@@ -367,7 +367,7 @@ private:
 	static	Player*			m_pPlayer;
 
 public:
-	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
+	static VOID Add_Monster_to_Scene(GameObject* pMonster,wstring _TAG ,GAMEOBJECT_TYPE eType = GAMEOBJECT_TYPE::OBJECT_END, Scene* pScene = nullptr);					// push GameObject ptr to LAYER_DYNAMIC_OBJECT & CollisionMgr
 	static void Release_Hurdle(MONSTERINFO* _Info);
 
 

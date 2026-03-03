@@ -114,14 +114,13 @@ HRESULT Player::Ready_GameObject() {
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
 
-	return MiniGameInit();
+	return S_OK;
 }
 
 INT	Player::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 
 	_vec3 pPos = *Component_Transform->Get_Position();
-	pPos.y = 0.5f;
 	Component_Transform->Set_Pos(pPos);
 
 	if (_isStop)
@@ -129,10 +128,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
-	if (m_eCurrScene == SCENE_TYPE::Minigame)
-	{
-		pPos.y = 1.25f;
-	}
+	if (m_eCurrScene != SCENE_TYPE::Minigame)
+		pPos.y = 0.5f;
 
 	_defaultSpeed = 6.f;
 	Artifact_Effect();
@@ -240,8 +237,20 @@ INT	Player::Update_GameObject(const _float& _DT) {
 VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
-	if (m_eCurrScene == SCENE_TYPE::Minigame) 
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		Is_Falling =true;
+		for (auto it : CollisionList)
+		{
+			if (it->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_TERRAIN) {
+				Is_Falling = false;
+			}
+		}
+		if (Is_Falling) {
+			_vec3 vDown = { 0.f,-1.f,0.f };
+			Component_Transform->Move_Pos(&vDown, 10.f, _DT);
+		}
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
+	}
 
 	CheonLog_Spawn();
 
@@ -1474,14 +1483,9 @@ BOOL Player::OnCollisionExit(GameObject* _Other)
 }
 HRESULT Player::MiniGameInit()
 {
-	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		m_eCurrScene = SCENE_TYPE::SCENE_END;
-		return S_OK;
-	}
-
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
-	Component_Transform->Set_Pos(25.f, 0.f, 0.f);
+	Component_Transform->Set_Pos(25.f, 2.f, 2.f);
 	m_vBackUpPos = *Component_Transform->Get_Position();
 
 	return S_OK;

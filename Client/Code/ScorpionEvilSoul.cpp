@@ -40,9 +40,11 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	Component_Collider->Update_Component(_DT);
 
 	if (ObjectTYPE == GAMEOBJECT_TYPE::OBJECT_HURDLE) {
-		//MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Stand);
-		Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
+		MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Stand);
+		Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 	}
+
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
