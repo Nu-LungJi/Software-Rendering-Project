@@ -210,13 +210,13 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Crash_Player();
         break;
     case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
-       // Tile_Destory(_DT);
+        Tile_Destory(_DT);
         break;
     case TILE_STATE::STATE_POTAL:
         Tile_Potal(_DT);
         break;
     case TILE_STATE::STATE_POTALEFFECT:
-     //  Tile_Potal_Effect(_DT);
+       Tile_Potal_Effect(_DT);
         break;
     case TILE_STATE::STATE_TRIGGER:
         Tile_Trigger();
@@ -224,10 +224,9 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
     case TILE_STATE::STATE_POTALGASI:
         break;
     case TILE_STATE::STATE_POTALGASI_EFFECT:
-        //Tile_Gasi_Destory();
         break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
-       // Tile_Gasi_Destory(_DT);
+        Tile_Gasi_Destory(_DT);
         break;
     case TILE_STATE::STATE_UNDERTILE:
         if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
