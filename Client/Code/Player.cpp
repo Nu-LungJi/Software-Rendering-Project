@@ -136,7 +136,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-		SoundManager::GetInstance()->Play_Sound_Once(L"Player/gta-v-wasted-death-sound.mp3", CHANNELID::SOUND_EFFECT01, 0.25f);
+    SoundManager::GetInstance()->Stop_AllSound();
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Death_Sound.mp3", CHANNELID::SOUND_EFFECT01, 1.0f);
 	}
 
 	if(!_isInvincible) _alphaRatio = 1.f;
