@@ -340,7 +340,7 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
             _vec3 vPos = m_pTileInfo->Get_NextPos();
             if(!m_bEffect&& !m_bPotalOpen)
             { 
-              SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+              SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
               m_bPotalOpen = TRUE;
             }
             dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
