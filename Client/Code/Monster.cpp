@@ -125,12 +125,18 @@ HRESULT Monster::Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer
 	return S_OK;
 }
 
-VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType)
+VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType, Scene* pScene)
 {
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);
 
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	if (nullptr == pScene) {
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	}
+	else {
+		pScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	}
+
 	if (pMonster->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
 		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }

@@ -19,12 +19,12 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_Q)) {
+	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_F)) {
 		isActive = true;
 	}
 
 	if (isActive) {
-		//PlayerObject->Set_PlayerStop(FALSE);
+		PlayerObject->Set_PlayerStop(TRUE);
 		Perk_Text[2]->Text = L"가호 선택";
 		Perk_Text[2]->Visible = TRUE;
 
@@ -45,8 +45,10 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 		}
 
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			PlayerObject->Set_PlayerStop(FALSE);
 			if (iType != INIT) {
 				Add_PlayerStatus(iType);
+				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Menu_ChooseApostle_Select.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 				isActive = FALSE;
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
 				//PlayerObject->Set_PlayerStop(FALSE);
@@ -167,12 +169,18 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 
 VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {  
-	if (_PerkType == FIRST)
+	if (_PerkType == FIRST){
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 200);
-	if(_PerkType == SECOND)
+		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_01.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
+	}
+	if (_PerkType == SECOND) {
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 200);
-  if (_PerkType == THIRD)
+		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_02.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
+	}
+  if (_PerkType == THIRD){
 		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 200);
+		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_03.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
+	}
 }
 
 VOID Augment::FadeOut(FLOAT Frame)

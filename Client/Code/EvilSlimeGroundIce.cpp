@@ -10,19 +10,10 @@ HRESULT EvilSlimeGroundIce::Ready_GameObject() {
 
 	m_tInfo.Change_State(MONSTER_STATE::MONSTER_STATE_SUMMON);
 
-	//MYPOS->z + 0.001f;
-	//m_tInfo.pGameObj[1] = Monster::Create<Alert>(GRPDEV, { MYPOS->x, 0.002f, MYPOS->z });
-	//Alert* pAlert = static_cast<Alert*>(m_tInfo.pGameObj[1]);
-	//pAlert->Get_Info()->pGameObj[0] = m_tInfo.pGameObj[0];
-	//pAlert->Get_Info()->pGameObj[1] = this;
-	//pAlert->Get_Info()->fTimer[1] = m_tInfo.fTimer[1];
-	//Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1], L"MonsterEffect", GAMEOBJECT_TYPE::MONSTER_EFFECT);
-
 	return	S_OK;
 }
 INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 
-	Component_Collider->Update_Component(_DT);
 
 	m_tInfo.fTimer[0] += _DT;
 
@@ -32,6 +23,10 @@ INT	EvilSlimeGroundIce::Update_GameObject(const _float& _DT) {
 		Component_Collider->Set_Hp(1.f);
 		Component_Collider->Set_Att(1.f);
 		Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->z * 0.5f);
+
+		// KJJ 03.03 Fix
+		Component_Collider->Update_Component(_DT);
+		CollisionManager::GetInstance()->Add_ColliderObject(this);
 	}
 
 	switch (m_tInfo.eState[0])

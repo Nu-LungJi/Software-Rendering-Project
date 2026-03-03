@@ -39,6 +39,7 @@ public:
 	VOID			Set_Dir(_float x, _float y, _float z)	{ m_tInfo.vDirection = { x,y,z }; }
 	_vec3*			Get_Dir()								{ return &m_tInfo.vDirection; }
 
+	MONBULLETINFO*	Get_Info()							{ return &m_tInfo; }
 private:
 	MONBULLETINFO	m_tInfo;
 	_float			fDis;

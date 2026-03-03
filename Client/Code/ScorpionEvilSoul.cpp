@@ -11,6 +11,7 @@ HRESULT ScorpionEvilSoul::Ready_GameObject() {
 	Component_Collider->Set_Hp(SCORPIONEVILSOUL_HP);
 
 	m_tInfo.vDirection = { -1.f,0.f,0.f };
+
 	return S_OK;
 }
 HRESULT ScorpionEvilSoul::Ready_GameObject(_vec3 vPos, BOOL bMini) {
@@ -38,6 +39,13 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 
 	Component_Collider->Update_Component(_DT);
 
+	if (ObjectTYPE == GAMEOBJECT_TYPE::OBJECT_HURDLE) {
+		MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Stand);
+		Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
+	}
+
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
+
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
 		GameObject::Update_GameObject(_DT);
@@ -50,19 +58,6 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	}
 
 	MYPOS->y = 0.5f; 
-
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = 0.5f;
-	}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
@@ -77,9 +72,6 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	{
 	default:
 		break;
-	//case MONSTER_STATE_SUMMON:
-	//	ScorpionEvilSoul::State_Summon(_DT);
-	//	break;
 	case MONSTER_STATE_APPEAR:
 		ScorpionEvilSoul::State_Appear(_DT);
 		break;
@@ -178,8 +170,9 @@ VOID ScorpionEvilSoul::LateUpdate_GameObject(const _float& _DT) {
 	case MONSTER_STATE_DEAD:
 		break;
 	}
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f)) {
-		AlphaSorting(Component_Transform->Get_Position());
+
+	if (Monster::Minigame_LateUpdate(_DT, &m_tInfo) ||
+		(static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f))) {
 		Monster::Flip_Horizontal(Component_Transform, &m_tInfo.vDirection, BAT_HORIZONTALFLIP_BUFFER);
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -242,9 +235,17 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 	m_tInfo.eState[0]	= MONSTER_STATE_APPEAR;
 	m_tInfo.vDirection	= { 1.f,0.f,0.f };
 
-	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-										(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-										(uint8_t)MONSTER_ANIM::Appear);
+	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+				(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
+				(uint8_t)MONSTER_ANIM::Appear);
+	}
+	else {
+		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+			(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
+			(uint8_t)MONSTER_ANIM::Stand);
+	}
+
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
@@ -296,7 +297,8 @@ BOOL ScorpionEvilSoul::OnCollisionExit(GameObject* _Other)
 	return FALSE;
 }
 VOID ScorpionEvilSoul::Free() {
-	CollisionManager::GetInstance()->Delete_ColliderObject(this);
+	
+	Monster::Release_Hurdle(&m_tInfo);
 	GameObject::Free();
 }
 

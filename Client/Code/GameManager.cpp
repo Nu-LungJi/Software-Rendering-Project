@@ -8,7 +8,7 @@ HRESULT GameManager::Ready_GameManager() {
 	if (FAILED(Ready_DefaultSetting()))					return E_FAIL;
 	if (FAILED(Ready_SceneSetting()))					return E_FAIL;
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 	DamageFontManager::GetInstance()->Ready_DamageFontManager();
@@ -58,6 +58,7 @@ HRESULT GameManager::Ready_SceneSetting() {
 	//Scene* EnterScene = DebugScene::Create(GRPDEV);
 	Scene* EnterScene = MapScene::Create(GRPDEV);
 	//Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
+	//Scene* EnterScene	= MiniGameScene::Create(GRPDEV);
 
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {

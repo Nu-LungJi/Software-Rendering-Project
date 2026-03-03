@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 class CLoading;
+class MiniGameScene;
 class StartScene : public Scene {
 protected:
 	explicit StartScene(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -19,6 +20,7 @@ private:
 
 private:
 	CLoading* pLoading;
+	MiniGameScene* pMiniGame;
 public:
 	static   StartScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
