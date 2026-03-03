@@ -210,13 +210,13 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Crash_Player();
         break;
     case TILE_STATE::STATE_DESTORY: //플레이어 또는 몬스터 총알에 닿았을떄
-        Tile_Destory(_DT);
+       // Tile_Destory(_DT);
         break;
     case TILE_STATE::STATE_POTAL:
         Tile_Potal(_DT);
         break;
     case TILE_STATE::STATE_POTALEFFECT:
-        Tile_Potal_Effect(_DT);
+     //  Tile_Potal_Effect(_DT);
         break;
     case TILE_STATE::STATE_TRIGGER:
         Tile_Trigger();
@@ -227,7 +227,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         //Tile_Gasi_Destory();
         break;
     case TILE_STATE::STATE_POTALGASI_BREAK:
-         Tile_Gasi_Destory(_DT);
+       // Tile_Gasi_Destory(_DT);
         break;
     case TILE_STATE::STATE_UNDERTILE:
         if (KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
@@ -309,7 +309,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
         Set_ObjectDead(TRUE);
         ++m_fFrame;
-        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_BGM01, 0.1f);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
 
     }
 
@@ -331,21 +331,23 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 void CXZTile::Tile_Potal(CONST FLOAT& _DT)
 {
     Transform* pTransform = Crash_Player();
-    if (Crash_Player() != nullptr)
+    if (Crash_Player() != nullptr && TileManager::GetInstance()->Get_Loading())
     {
 
         _vec3 vPos = m_pTileInfo->Get_NextPos();
          if (!m_bEffect)
         {
             _vec3 vPos = m_pTileInfo->Get_NextPos();
-            if(!m_bEffect&& !m_bPotalOpen)
-            { 
-              SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
-              m_bPotalOpen = TRUE;
+            if (TileManager::GetInstance()->Get_PotalBgmStart())
+            {
+                SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+                TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
             }
-            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0);
+           
+            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0,false);
             m_bEffect = true;
         }
+         
         m_bEffect = false;
         m_fFrame += _DT;
 
@@ -394,6 +396,8 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
         // 애니메이션 터트린후 프레임 ++
         // 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
+
+        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
         m_bStopFrame = true;
         m_pTileInfo->Set_OnlyAnimation(false);
     }

@@ -453,7 +453,7 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			_vec3 vDst = { MYPOS->x + ((MYSCALE->x * RANDOM::Get_float(MYPOS->x, -MYPOS->x,this))),
 							MYSCALE->y,
 							MYPOS->z + ((MYSCALE->y * RANDOM::Get_float(MYPOS->z, -MYPOS->z,this)))};
-
+			TileManager::GetInstance()->Set_StageAddCount();
 			m_tInfo.pGameObj[i] = Monster::Create<EvilSlime>(GRPDEV, *MYPOS);
 
 			*SCALE(m_tInfo.pGameObj[i]) = *MYSCALE * 0.5f;
@@ -470,9 +470,11 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			vDst -= *MYPOS;
 			D3DXVec3Normalize(&pSlime->Get_Info()->vDirection, &vDst);
 
+		
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.6f);
 		}
-
+		TileManager::GetInstance()->Set_StageArray();
 		m_tInfo.bTrigger[2] = false;
 		m_tInfo.pGameObj[0] = m_tInfo.pGameObj[1] = m_tInfo.pGameObj[2] = m_tInfo.pGameObj[3] = nullptr;
 		ObjectDead = true;

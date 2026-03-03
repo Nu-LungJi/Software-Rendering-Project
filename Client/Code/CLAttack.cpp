@@ -53,14 +53,12 @@ INT CLAttack::Update_GameObject(const _float& _DT)
         switch (m_eLeaf)
         {
         case LEAF_ATTACK::LEAF_FIRST:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_basicattack.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_basicattack.wav", CHANNELID::SOUND_EFFECT07, 0.1f);
             break;
         case LEAF_ATTACK::LEAF_SECOND:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
-            break;
+             break;
 
         case LEAF_ATTACK::LEAF_THIRD:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
             break;
         case LEAF_ATTACK::LEAF_FOUR:
             break;
@@ -342,7 +340,7 @@ void CLAttack::Leaf_Third(const _float& _DT)
         {
             _int iRand = rand() % 3;
             if (iRand == 0)
-                SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+                SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.1f);
             m_bBgm = true;
         }
 
@@ -364,8 +362,6 @@ void CLAttack::Leaf_Four(const _float& _DT)
         m_bPoolCheck = true;
     }
     
-    if (m_bPoolCheck == TRUE)
-        return;
 
     matWorld = *Component_Transform->Get_World();
     GRPDEV->GetTransform(D3DTS_VIEW, &matView);
@@ -380,6 +376,8 @@ void CLAttack::Leaf_Four(const _float& _DT)
 
     Component_Transform->Set_World(&matWorld);
     Component_Transform->Set_Pos({ matWorld._41 , 0.1f, matWorld._43 });
+    if (m_bPoolCheck == TRUE)
+        return;
 }
 void CLAttack::Leaf_Explosion(const _float& _DT)
 {
