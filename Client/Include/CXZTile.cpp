@@ -307,7 +307,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
         Set_ObjectDead(TRUE);
         ++m_fFrame;
-        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
 
     }
 
@@ -318,7 +318,7 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
         if (!m_pTileInfo->Get_OnlyAnimation())
         {
             EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::STONE, 8, Pos, Scale * 2, Rot));
-            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01, 0.3f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Destructible_RockWall_Hit_02.wav", CHANNELID::SOUND_EFFECT01, 0.2f);
         }
 
         ++m_fFrame;
@@ -348,12 +348,15 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
                 _vec3 vPos = m_pTileInfo->Get_NextPos();
                 if (TileManager::GetInstance()->Get_PotalBgmStart())
                 {
-                    SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
-                    TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
+                  
+                     SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+                      TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
                 }
 
                 dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0, false);
                 m_bEffect = true;
+
+         
             }
 
             m_bEffect = false;
@@ -404,7 +407,7 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
         // 현재 이미지 개수보다 크지 않을때 까지 이펙트 터트리고 카운트
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
 
-        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.3f);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.2f);
         m_bStopFrame = true;
         m_pTileInfo->Set_OnlyAnimation(false);
     }
@@ -500,11 +503,11 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
             Scale = *m_pTransform->Get_Scale();
             Rot = *m_pTransform->Get_Rotation();
             EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, { 0,0,0 }, true));
-
         }
         if (m_fFrame > m_pTileInfo->Get_TileTextureName().size() - 3)
         {
-            Set_ObjectDead(TRUE);
+          SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Bomb.mp3", CHANNELID::SOUND_EFFECT06, 0.4f);
+          Set_ObjectDead(TRUE);
         }
 
     }

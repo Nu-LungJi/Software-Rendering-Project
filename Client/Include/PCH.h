@@ -79,6 +79,7 @@
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
 #include "Shadow.h"
+#include "SkyBox.h"
 
 #pragma endregion
 

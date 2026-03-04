@@ -128,6 +128,7 @@ public:
 
     void    Set_Maxtile(_uint _Num) { m_uiMaxTile = _Num; }
     HRESULT Ready_Static_Batch(LPDIRECT3DDEVICE9 _GRPDEV);
+    void    Release_Static_Batich();
     void    Render_Static_Batch(LPDIRECT3DDEVICE9 GRPDEV, LPDIRECT3DTEXTURE9 Texture);
 
     void    Update_Tile(_uint _Num, Transform* TransCom);

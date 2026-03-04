@@ -56,10 +56,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-	if (m_eCurrScene == SCENE_TYPE::Minigame) {
-		MiniGame(_DT);
-		return 0;
-	}
+	// KJJ 삭제
 
 
 	CheonLog_Respawn(_DT);
@@ -78,8 +75,24 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 		//KJJ 03. 03
 		if (m_eCurrScene == SCENE_TYPE::Minigame) {
-			eyeCalc = { 0.f, 8.f,-8.f };
+			_vec3 vGravity = Monster::Get_Gravity();
+
 			atCalc = { 0.f,0.f,0.f };
+
+			if (vGravity.y == -1.f) {
+				eyeCalc = { 0.f, 10.f, -10.f };
+			}
+			else if (vGravity.z == 1.f) {
+				eyeCalc = { 10.f, 0.f, -10.f };
+			}
+			else if (vGravity.y == 1.f) {
+				eyeCalc = { 0.f,-10.f,-10.f };
+			}
+
+			UpVec = -vGravity;
+		}
+		else {
+			UpVec = { 0.f,1.f,0.f };
 		}
 
 		EyeVec = (*playerPos) + eyeCalc;
@@ -104,11 +117,6 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		if (Velocity_Lock == FALSE) {		//  커서가 움직이면 화면도 같이 움직이게 함.(FALSE = 움직이게 하기, TRUE = 고정)
 			_float moveAmount = (distance - offset) * 4;
 			
-			//KJJ 미니게임용
-			if (m_eCurrScene == SCENE_TYPE::Minigame) {
-				dir.z = 0.f;
-			}
-
 			if (distance > offset)
 			{
 				targetEye += dir * moveAmount;
@@ -165,7 +173,11 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
-	Camera_Transform_Control(_DT);
+
+	//KJJ 03 03
+	if (m_eCurrScene != SCENE_TYPE::Minigame) {
+		Camera_Transform_Control(_DT);
+	}
 
 	if (MouseCheck) {
 		POINT       ptMouse{ WINCX >> 1, WINCY >> 1 };
@@ -524,9 +536,13 @@ HRESULT CameraObject::MiniGame(const _float& _DT)
 
 void	CameraObject::Start_MiniGame() {
 	m_eCurrScene = SCENE_TYPE::Minigame;
+	Button_Lock = true;
+	Velocity_Lock = true;
 }
 
 void CameraObject::Exit_MiniGame()
 {
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
+	Button_Lock = false;
+	Velocity_Lock = false;
 }

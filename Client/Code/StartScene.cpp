@@ -146,9 +146,8 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->Render_CollisionManager();
 
     if (KEY_DOWN(DIK_P)) {
-        
-        pMiniGame = MiniGameScene::Create(GRPDEV,this);
-        SceneManager::GetInstance()->Scene_Transition(pMiniGame);
+        pMiniGame = MiniGameScene::Create(GRPDEV, this);
+        pMiniGame->Start_MiniGame();
         return;
     }
 }

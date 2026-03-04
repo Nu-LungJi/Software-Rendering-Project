@@ -297,7 +297,22 @@ HRESULT MonsterManager::Ready_Static_Batch(LPDIRECT3DDEVICE9 _GRPDEV)
 	m_pTileIB->Unlock();
 
 	return S_OK;
-}	
+}
+void MonsterManager::Release_Static_Batich()
+{
+	if (m_pTileIB != nullptr) {
+		m_pTileIB->Release();
+		m_pTileIB = nullptr;
+	}
+
+	if (m_pTileVB != nullptr) {
+		m_pTileVB->Release();
+		m_pTileVB = nullptr;
+	}
+
+	m_vecTiles.clear();
+}
+
 
 void MonsterManager::Render_Static_Batch(LPDIRECT3DDEVICE9 GRPDEV, LPDIRECT3DTEXTURE9 Texture)
 {
