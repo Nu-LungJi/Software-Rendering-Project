@@ -473,7 +473,7 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 
 		
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.6f);
+      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		}
 		TileManager::GetInstance()->Set_StageArray();
 		m_tInfo.bTrigger[2] = false;

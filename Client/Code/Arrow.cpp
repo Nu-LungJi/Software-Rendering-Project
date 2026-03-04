@@ -194,7 +194,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::WIND_HITEFFECT, &effectPos, 0.5f, Size, false);
             // TODO:이펙트는 정상적으로 잘 나오나, 소리가 이상하게 늦게 ㅇ나옴. 이펙트가 정상적으로 끝나는지 확인해야 할 듯.
-            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
+            //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
             break;
         case ArrowType::WindCharging:
             Size = { 7.f, 7.f, 7.f };
@@ -459,7 +459,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     if (_arrowLength > _atomicRange * 0.5 && _speed == 0.f && !_isReady) {
         _vec3 Size = { 4.f, 4.f, 4.f };
         PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ATOMIC_READY, Component_Transform->Get_Position() , 0.5f, Size, false);
-        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
         ObjectDead = true;
     }
         

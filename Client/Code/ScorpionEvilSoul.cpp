@@ -78,6 +78,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	case MONSTER_STATE_DISAPPEAR:
 		if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
 		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 			ObjectDead = true;
 		}
 		break;
@@ -448,12 +449,12 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 		m_tInfo.pGameObj[1]->Set_ObjectTag(L"ScorpionBullet");
 
 		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::BULLET_STANDARD_CHARGE, *MYPOS, SCORPIONEVILSOUL_CHANNELING_TIME);
-		SoundManager::GetInstance()->Play_Sound(L"Monster/Boomerang.mp3", CHANNELID::SOUND_EFFECT08, 0.3f);
 		//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(m_tInfo.pGameObj[1]);
 	}
 
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CHANNELING_TIME)
 	{
+		SoundManager::GetInstance()->Stop_Sound(CHANNELID::SOUND_EFFECT08);
 		_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 		D3DXVec3Normalize(&vDir, &vDir);
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Dir(vDir);
@@ -471,6 +472,5 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpionEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	ObjectDead = true;
 }

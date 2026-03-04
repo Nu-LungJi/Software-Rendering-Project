@@ -342,6 +342,7 @@ VOID ShotGunEvilSoul::State_Dead()
 		if (m_tInfo.pGameObj[i] != nullptr)
 			m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 	}
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	TileManager::GetInstance()->Set_StageArray();
 
 	ObjectDead = true;
