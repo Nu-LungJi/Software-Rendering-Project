@@ -419,11 +419,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
             }
             break;
         case ArrowType::IceCharging:
-            if (_effectDelay > 0.1f) {
+            if (_effectDelay > 0.05f) {
                 Size = { 1.f, 1.f, 1.f };
-                PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
+                //PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
+                //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
             }
             break;
@@ -644,7 +644,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     if (Tag == L"Monster") {
         atk = 1.f;
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
 
         return TRUE;
@@ -654,7 +654,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - (int)Component_Collider->Get_Att());
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
 
         return TRUE;
@@ -663,7 +663,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
 
         return TRUE;

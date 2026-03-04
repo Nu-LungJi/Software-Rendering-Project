@@ -254,8 +254,8 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
     PlayerInven* playerInven = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"));
     if (KeyManager::GetInstance()->Get_KeyState(DIK_E))
     {
-        //if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
-        //    return false;
+        if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
+            return false;
 
         REPLAY_UI_EFFECT(L"COIN_EFFECT");
         
