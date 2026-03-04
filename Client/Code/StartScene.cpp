@@ -9,13 +9,13 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-    //MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
     SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);

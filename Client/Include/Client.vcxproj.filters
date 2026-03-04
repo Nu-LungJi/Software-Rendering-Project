@@ -253,6 +253,9 @@
     <Filter Include="04. UI\EndingCredit">
       <UniqueIdentifier>{25bf7cb3-d5e6-411d-9715-73543dc361c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. UI\99. IntroUI">
+      <UniqueIdentifier>{9557cbfb-f95b-45a3-9246-1f893149f381}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -357,9 +360,6 @@
     <ClInclude Include="..\Header\TileDestoryEffect.h">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\PlayerInven.h">
-      <Filter>04. UI\02. InventoryUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\Bullet_Standard.h">
       <Filter>03. GameObject\07. ProJectile\01.Bullet_Standard</Filter>
     </ClInclude>
@@ -375,32 +375,17 @@
     <ClInclude Include="..\Header\Arrow.h">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\NPCTalk.h">
-      <Filter>04. UI\03. NPCTalk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\ShopUI.h">
-      <Filter>04. UI\04. ShopUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\ScorpionBullet.h">
       <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\EvilSlime.h">
       <Filter>03. GameObject\02. Monster\02. Monster\04. EvilSlime</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\FieldApostle.h">
-      <Filter>04. UI\05. AugmentUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\SpeechBubble.h">
-      <Filter>04. UI\06. SpeechBubble</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\Spawner.h">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DoCheolScene.h">
       <Filter>02. Scene\02. DocheolScene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Augment.h">
-      <Filter>04. UI\05. AugmentUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
@@ -472,9 +457,6 @@
     <ClInclude Include="..\Header\StageBlackOut.h">
       <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\BossUI.h">
-      <Filter>04. UI\06. BossUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\CLcrystal.h">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClInclude>
@@ -490,12 +472,6 @@
     <ClInclude Include="..\Header\Frog_Bullet.h">
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\DamageFont.h">
-      <Filter>06. Font</Filter>
-    </ClInclude>
-    <ClInclude Include="DamageFontManager.h">
-      <Filter>06. Font\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\10. Hurdle</Filter>
     </ClInclude>
@@ -507,6 +483,36 @@
     </ClInclude>
     <ClInclude Include="..\Header\EndingCredit.h">
       <Filter>04. UI\EndingCredit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\SpeechBubble.h">
+      <Filter>04. UI\SpeechBubble</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\ShopUI.h">
+      <Filter>04. UI\05. ShopUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\PlayerInven.h">
+      <Filter>04. UI\03. InventoryUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\NPCTalk.h">
+      <Filter>04. UI\04. NPCTalk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainUI.h">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\FieldApostle.h">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Augment.h">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\DamageFont.h">
+      <Filter>07. Font</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageFontManager.h">
+      <Filter>07. Font\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\IntroUI.h">
+      <Filter>04. UI\99. IntroUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -606,15 +612,6 @@
     <ClCompile Include="..\Code\Arrow.cpp">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\NPCTalk.cpp">
-      <Filter>04. UI\03. NPCTalk</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\PlayerInven.cpp">
-      <Filter>04. UI\02. InventoryUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\ShopUI.cpp">
-      <Filter>04. UI\04. ShopUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\ScorpionBullet.cpp">
       <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
     </ClCompile>
@@ -625,12 +622,6 @@
       <Filter>03. GameObject\02. Monster\02. Monster\04. EvilSlime</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp" />
-    <ClCompile Include="..\Code\FieldApostle.cpp">
-      <Filter>04. UI\05. AugmentUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\SpeechBubble.cpp">
-      <Filter>04. UI\06. SpeechBubble</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Spawner.cpp">
       <Filter>03. GameObject\05. Tile</Filter>
     </ClCompile>
@@ -639,9 +630,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp">
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Augment.cpp">
-      <Filter>04. UI\05. AugmentUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\FinalBoss.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
@@ -710,9 +698,6 @@
     <ClCompile Include="..\Code\StageBlackOut.cpp">
       <Filter>03. GameObject\06. Effect\05.BlackOut</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\BossUI.cpp">
-      <Filter>04. UI\06. BossUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\CLcrystal.cpp">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClCompile>
@@ -728,12 +713,6 @@
     <ClCompile Include="..\Code\Frog_Bullet.cpp">
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\DamageFont.cpp">
-      <Filter>06. Font</Filter>
-    </ClCompile>
-    <ClCompile Include="DamageFontManager.cpp">
-      <Filter>06. Font\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
       <Filter>03. GameObject\10. Hurdle</Filter>
     </ClCompile>
@@ -745,6 +724,36 @@
     </ClCompile>
     <ClCompile Include="..\Code\EndingCredit.cpp">
       <Filter>04. UI\EndingCredit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SpeechBubble.cpp">
+      <Filter>04. UI\SpeechBubble</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ShopUI.cpp">
+      <Filter>04. UI\05. ShopUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\PlayerInven.cpp">
+      <Filter>04. UI\03. InventoryUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\NPCTalk.cpp">
+      <Filter>04. UI\04. NPCTalk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainUI.cpp">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FieldApostle.cpp">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Augment.cpp">
+      <Filter>04. UI\AugmentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DamageFont.cpp">
+      <Filter>07. Font</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageFontManager.cpp">
+      <Filter>07. Font\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\IntroUI.cpp">
+      <Filter>04. UI\99. IntroUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
