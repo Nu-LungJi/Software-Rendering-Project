@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_iCnt(0), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_bTest(false), m_iCnt(0), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
@@ -158,13 +158,13 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::NPC2:
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		//Monster_Spawn();
+		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		//Monster_Spawn2();
+		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		//Monster_Spawn3();
+		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
 		Monster_Spawn4();
@@ -230,7 +230,7 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	    CL_Spawn();
 		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
-		//Boss();
+		Boss();
 		break;
 	case TILE_SPAWNER::RANDOM_SPAWNER:
 		Defense_Spawn(_DT);
@@ -408,7 +408,7 @@ Transform* Spawner::Crash_Player()
 
 void Spawner::Boss()
 {
-	if (!m_bSpawn)
+	if (!m_bTest)
 	{
 		_vec3 vPos;
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
@@ -418,7 +418,7 @@ void Spawner::Boss()
 		vPos = *m_pTransform->Get_Position();
 		Transform* DCTransform = dynamic_cast<Transform*>(Docheol->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		DCTransform->Set_Pos(DCTransform->Get_Position()->x + vPos.x, DCTransform->Get_Position()->y + vPos.y, DCTransform->Get_Position()->z + vPos.z);
-		m_bSpawn = true;
+		m_bTest = true;
 	}
 }
 
