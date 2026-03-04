@@ -519,41 +519,7 @@ VOID CameraObject::Free() {
 
 HRESULT CameraObject::MiniGame(const _float& _DT)
 {
-	D3DXMatrixPerspectiveFovLH(&ProjMatrix, D3DX_PI / 3, (_float)(WINCX / WINCY), 0.1, 1000.f);
-	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
-	if (PlayerObject) {
-		_vec3 vPos = *POS(PlayerObject);
-		_vec3 vEyeOffset = { 0.f, 5.f, -5.f };
-		_vec3 vAtOffset = { 0.f,0.f,0.f };
-
-		_vec3 vTargetEye = vPos + vEyeOffset;
-		_vec3 vTargetAt = vPos + vAtOffset;
-
-		_float fDis = PlayerObject->Get_MouseDistance();
-		_float fOffset = 2.f;
-
-		if (fDis > fOffset)
-		{
-			_vec3 vMouseDir = m_pTarget->Get_MouseDir();
-			_float fMouseAmount = (fDis - fOffset) * 4.f;
-			vTargetEye += vMouseDir * fMouseAmount;
-			vTargetAt += vMouseDir * fMouseAmount;
-		}
-
-		_float	fStiff = 40.f;
-		_float	fDamping = 12.649f;
-
-		_vec3 vEyeToTarget = vTargetEye - EyeVec;
-		_vec3 vEyeAccel = (vEyeToTarget * fStiff) - (m_vVelocity * fDamping);
-		m_vVelocity += vEyeAccel * _DT;
-		EyeVec += m_vVelocity * _DT;
-
-		AtVec = EyeVec + (vTargetAt - vTargetEye);
-
-		D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
-		GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
-	}
-	return S_OK;
+	return 1;
 }
 
 void	CameraObject::Start_MiniGame() {

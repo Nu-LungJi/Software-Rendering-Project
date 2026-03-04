@@ -43,7 +43,7 @@ private:
     _int                    m_iCnt;
     _int                    m_StageCnt[3];
     _int                    m_iKeyCnt;
-
+    _int                    m_iWave;
     ID3DXSprite*            Sprite;
     SpriteObject*           m_pSprite;
     vector<wstring>         m_vecKeyList;

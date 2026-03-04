@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-MiniGameCounter::MiniGameCounter(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_bEnd(false), m_fDefense(0.f), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+MiniGameCounter::MiniGameCounter(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_iWave(1),m_bEnd(false), m_fDefense(0.f), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 MiniGameCounter::MiniGameCounter(const GameObject& _RHS) : GameObject(_RHS) {}
 MiniGameCounter::~MiniGameCounter() {}
 
@@ -13,12 +13,12 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 	
 	m_iCnt = 0;
 	m_iKeyCnt = 0;
-	m_StageCnt[0] = 5;
-	m_StageCnt[1] = 10;
-	m_StageCnt[2] = 15;
+	m_StageCnt[0] = 50;
+	m_StageCnt[1] = 100;
+	m_StageCnt[2] = 150;
 
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"WAVE :", { 423.14f, 10.f }, 30, L"STAGE_NAME", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 495.52f, 10.f }, 30, L"STAGE_COUNT", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"1", { 495.52f, 10.f }, 30, L"STAGE_COUNT", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
 
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"남은 마리 수 : ", { 766.537f, 10.f }, 30, L"MONSTER_NUMBER", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 878.10f, 10.f }, 30, L"MONSTER_NAME", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255));
@@ -56,14 +56,18 @@ INT	MiniGameCounter::Update_GameObject(const _float& _DT) {
 	}
 	
 	if (m_StageCnt[m_iCnt] <= 0)
+	{
+		++m_iWave;
 		++m_iCnt;
+	}
 
 	if (m_iCnt > 2)
 		m_iCnt = 2;
 	if (m_StageCnt[m_iCnt] <= 0)
 		m_StageCnt[m_iCnt] = 0;
-
-	UIManager::GetInstance()->Find_FontObject(L"STAGE_COUNT")->Set_Text(to_wstring(m_iCnt));
+	if (m_iWave >= 3)
+		m_iWave = 3;
+	UIManager::GetInstance()->Find_FontObject(L"STAGE_COUNT")->Set_Text(to_wstring(m_iWave));
 	UIManager::GetInstance()->Find_FontObject(L"MONSTER_NAME")->Set_Text(to_wstring(m_StageCnt[m_iCnt]));
 	RenderManager::GetInstance()->Add_RenderGroup(RENDERID::RENDER_UI, this);
 

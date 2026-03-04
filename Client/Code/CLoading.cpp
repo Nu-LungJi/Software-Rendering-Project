@@ -11,12 +11,11 @@ CLoading::~CLoading()
 {
 }
 
-HRESULT CLoading::Ready_Loading(LOADINGID eID, wstring Path)
+HRESULT CLoading::Ready_Loading(LOADINGID eID)
 {
     InitializeCriticalSection(&m_Crt);
 
     m_eLoadingID = eID;
-    m_pPath = Path;
 
     m_hThread = (HANDLE)_beginthreadex(NULL, // 보안 속성(핸들의 상속 여부, NULL인 경우 상속에서 제외)
         0,  // 디폴트 스탯 사이즈(1 바이트)
@@ -48,14 +47,15 @@ _uint CLoading::Loading_Stage()
     return 0;
 }
 
-_uint CLoading::Loading_Resource()
+_uint CLoading::Loading_MiniGame()
 {
-    ResourceManager::GetInstance()->GlobalImport_Texture(m_pGraphicDev,  m_pPath);
-    m_bFinish = true;
-  
-    return 0;
 
+    
+    m_bFinish = true;
+
+    return 0;
 }
+
 
 unsigned int CLoading::Thread_Main(void* pArg)
 {
@@ -71,11 +71,11 @@ unsigned int CLoading::Thread_Main(void* pArg)
         iFlag = pLoading->Loading_Stage();
         break;
 
-    case LOADING_BOSS:
+    case LOADING_MINIGAME:
+        iFlag = pLoading->Loading_MiniGame();
         break;
 
     case LOADING_RESOURCE:
-        iFlag = pLoading->Loading_Resource();
         break;
     }
 
@@ -86,11 +86,11 @@ unsigned int CLoading::Thread_Main(void* pArg)
     return iFlag;       // 0 리턴 시, _endthreadex가 자동 호출
 }
 
-CLoading* CLoading::Create(LPDIRECT3DDEVICE9 pGraphicDev, LOADINGID eID, wstring Path)
+CLoading* CLoading::Create(LPDIRECT3DDEVICE9 pGraphicDev, LOADINGID eID)
 {
     CLoading* pLoading = new CLoading(pGraphicDev);
 
-    if (FAILED(pLoading->Ready_Loading(eID, Path)))
+    if (FAILED(pLoading->Ready_Loading(eID)))
     {
         Safe_Release(pLoading);
 

@@ -1,7 +1,7 @@
 #include "CXZTile.h"
 #include "../Include/PCH.h"
 
-CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_iCheck(0),m_bEffect(false), m_bDestroy(false), m_fAlpha(0.f), m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
+CXZTile::CXZTile(LPDIRECT3DDEVICE9 _GRPDEV) :m_iCheck(0),m_bEffect(false), m_bEndPotal(true), m_bDestroy(false), m_fAlpha(0.f), m_fCount(0.f), m_fHeightSpeed(0.f), m_fHeight(0), m_CubeBuffer(nullptr), GameObject(_GRPDEV), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) { ZeroMemory(&m_Material, sizeof(D3DMATERIAL9)); }
 CXZTile::CXZTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CXZTile::~CXZTile() {}
 
@@ -63,7 +63,7 @@ INT   CXZTile::Update_GameObject(const _float& _DT) {
             m_fAlpha = 0.f;
     }
 
-
+     
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_TILE, this);
     return 0;
 
@@ -102,7 +102,11 @@ VOID CXZTile::Render_GameObject()
         GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
         break;
     case TILE_STATE::STATE_POTALEFFECT:
-        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
+        if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS && !m_pTileInfo->Get_OnlyAnimation())
+        {
+            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+        }
+        else if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE1 || m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
         {
             GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
             break;
@@ -117,13 +121,7 @@ VOID CXZTile::Render_GameObject()
         GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
         break;
     case TILE_STATE::STATE_POTALGASI:
-        if (!m_pTileInfo->Get_PotalOpen())
-        {
-
-            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
-
-        }
-        else return;
+           GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
         break;
     case TILE_STATE::STATE_POTALGASI_EFFECT:
 
@@ -222,6 +220,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
         Tile_Trigger();
         break;
     case TILE_STATE::STATE_POTALGASI:
+        Tile_Docheol(_DT);
         break;
     case TILE_STATE::STATE_POTALGASI_EFFECT:
         break;
@@ -330,28 +329,38 @@ void CXZTile::Tile_Destory(CONST FLOAT& _DT)
 void CXZTile::Tile_Potal(CONST FLOAT& _DT)
 {
     Transform* pTransform = Crash_Player();
-    if (Crash_Player() != nullptr && TileManager::GetInstance()->Get_Loading())
-    {
+    
 
-        _vec3 vPos = m_pTileInfo->Get_NextPos();
-         if (!m_bEffect)
+    if (Crash_Player() != nullptr && TileManager::GetInstance()->Get_Loading() && m_bEndPotal)
+    {
+        if (m_pTileInfo->Get_NextStage() == TILE_STAGE::STAGE_ROLARUN)
+        {
+            TileManager::GetInstance()->Set_MiniGame(TRUE);
+            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 25.f, 2.f, 2. }, false, 0, false);
+            TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
+            m_bEndPotal = false;
+        }
+        else
         {
             _vec3 vPos = m_pTileInfo->Get_NextPos();
-            if (TileManager::GetInstance()->Get_PotalBgmStart())
+            if (!m_bEffect)
             {
-                SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
-                TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
+                _vec3 vPos = m_pTileInfo->Get_NextPos();
+                if (TileManager::GetInstance()->Get_PotalBgmStart())
+                {
+                    SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Door.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
+                    TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
+                }
+
+                dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0, false);
+                m_bEffect = true;
             }
-           
-            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0,false);
-            m_bEffect = true;
+
+            m_bEffect = false;
+            m_fFrame += _DT;
+
+            TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
         }
-         
-        m_bEffect = false;
-        m_fFrame += _DT;
-
-        TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
-
     }
 
 }
@@ -375,10 +384,9 @@ void CXZTile::Tile_Potal_Effect(CONST FLOAT& _DT)
 }
 void CXZTile::Tile_Trigger()
 {
-    if (Crash_Player() != nullptr)
+    if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS && Crash_Player() != nullptr)
     {
-        if ((int)m_pTileInfo->Get_TileStage() > (int)TILE_FIRSTBOSS)
-            TileManager::GetInstance()->Change_Stage(m_pTileInfo->Get_TileStage());
+        TileManager::GetInstance()->Set_BreakDari(TRUE);
     }
 }
 void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
@@ -499,6 +507,26 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
             Set_ObjectDead(TRUE);
         }
 
+    }
+}
+void CXZTile::Tile_Docheol(const FLOAT& _DT)
+{
+    if (TileManager::GetInstance()->Get_BreakDari())
+    {
+
+        m_fFrame += _DT;
+        _vec3 vPos = *m_pTransform->Get_Position();
+        if (m_fFrame > m_fHeightSpeed)
+        {
+            m_fHeightSpeed = 0.001f;
+            m_fFrame = 0;
+            m_fTime += _DT * 1;
+            vPos.y -= m_fTime;
+
+            m_pTransform->Set_Pos(vPos);
+            if (vPos.y < -20.f)
+                Set_ObjectDead(TRUE);
+        }
     }
 }
 Transform* CXZTile::Crash_Player()
