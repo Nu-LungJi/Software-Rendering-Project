@@ -196,6 +196,8 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 						m_pTransform->Set_Pos(vPos);
 					}
 				}
+
+
 				
 		}
 		break;

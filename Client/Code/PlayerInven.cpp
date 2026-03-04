@@ -41,6 +41,20 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
+			// 인벤 하이라이트
+			for (int i = 1; i <= 8; i++) {
+				wstring Frame = L"EQP_HighLight" + to_wstring(i);
+				Component_Sprite->Get_Texture(Frame)->Set_Visible(FALSE);
+			}
+			for (int i = 2; i <= 10; i++) {
+				wstring Frame = L"INV_HighLight" + to_wstring(i);
+				Component_Sprite->Get_Texture(Frame)->Set_Visible(FALSE);
+			}
+			Component_Sprite->Get_Texture(L"INV_HighLight1")->Set_Visible(TRUE);
+		}
+
+
+		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
 			for (auto& TXT : ItemInfo_Text) {
@@ -68,10 +82,13 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		}
 	}
 	
-	Selecting_SavedItem();
-	Selecting_EquipItem();
-	Display_ItemInfo();
-	Equip_Item();
+	if (UIManager::GetInstance()->Get_Active() == TRUE) {
+		Selecting_SavedItem();
+		Selecting_EquipItem();
+		Display_ItemInfo();
+		Equip_Item();
+	}
+
 
 	return 0;
 }
