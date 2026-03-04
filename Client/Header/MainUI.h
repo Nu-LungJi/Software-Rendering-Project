@@ -30,8 +30,7 @@ public:		// Trigger Function
 	VOID			Player_MoneyModify();
 	VOID			Player_CrystalModify();
 	VOID			Player_UseSkill();
-	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis);
-	VOID			PopUp_ItemInfo(wstring ItemTag, FLOAT _DT);
+	VOID			PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis) { Enable_Interaction = _Vis; Interaction_Text = _Text; }
 	VOID			PopUp_Speech_Bubble(wstring _Text, FLOAT _DT);
 	VOID			PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type);
 
@@ -47,7 +46,15 @@ public:		// Trigger Function
 	VOID			Set_EnableBossTitle(INT _EBT)		{ Enable_BossTitle = _EBT; }
 	VOID			Set_EnableDisplayHPBar(BOOL _EDB)	{ Enable_DisplayHPBar = _EDB; }
 	VOID			Set_EnableFade(BOOL _EDB)			{ Enable_FadeFilter = _EDB; }
+
+	VOID			PopUp_ItemInfo(ItemINFO* Item, SpriteINFO* SPR, FLOAT _DT);
+	VOID			Set_EnableItemPopUP(BOOL _POP) { Enable_ItemPopUp = _POP; }
+	VOID			Set_PopUpItem(ItemINFO* _IT) { PopUpItem = _IT; }
+	VOID			Set_PopUpSprite(SpriteINFO* _SPR) { PopUpSprite = _SPR; }
+
+	vector<FontObject*> Get_AllFontObject() { return AllFontOBJ; }
 private:
+	VOID			Display_InteractionUI();
 	VOID			MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED);
 	VOID			Display_BossTitle(CONST FLOAT& _DT);
 	VOID			Display_BossHPBar(CONST FLOAT& _DT);
@@ -71,9 +78,8 @@ private:
 
 	BOOL	Enable_SpeechBubble;
 	wstring Speech_Text;
-
-	BOOL	ItemInfo;
-	wstring ItemTag;
+	INT		Enable_Interaction;
+	wstring Interaction_Text;
 
 	INT		Current_KeyCount;
 	INT		Current_CoinCount;
@@ -85,7 +91,11 @@ private:
 
 	FLOAT	MainUIOpacity;
 
-	INT		Enable_MainUIFade;
+	INT				Enable_MainUIFade;
+	BOOL			Enable_ItemPopUp;
+	FLOAT			ItemPopUp_Timer;
+	ItemINFO*		PopUpItem;
+	SpriteINFO*		PopUpSprite;
   
 	GUIVar				GuiVar;				// GUI용 변수
 	wstring				ArrowCountText;		// 화살 카운트

@@ -9,13 +9,13 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-    MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
+    //MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 
     SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
     SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
@@ -150,10 +150,10 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->LateUpdate_CollisionManager();
     CollisionManager::GetInstance()->Render_CollisionManager();
 
-    if (KEY_DOWN(DIK_P)) {
-        pMiniGame->Start_MiniGame();
-        return;
-    }
+    //if (KEY_DOWN(DIK_P)) {
+    //    pMiniGame->Start_MiniGame();
+    //    return;
+    //}
 }
 VOID StartScene::Render_Scene() {
 
@@ -192,9 +192,10 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
 
     Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
     Add_GameObjectToScene<Augment>          (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
-    //Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Shop");
+    Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Shop");
  
-    //Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
+    Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
+    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 

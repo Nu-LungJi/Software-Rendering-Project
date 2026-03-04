@@ -20,26 +20,20 @@ INT      ShopUI::Update_GameObject(CONST FLOAT& _DT) {
 
     if (!isActive)
     {
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_Title")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATKType")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATK")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_Add")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_DESC")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_ExDESC")->Visible = FALSE;
-        UIManager::GetInstance()->Find_FontObject(L"ITEM_PRICE")->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Title")    ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Class")    ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATKType")  ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ATK")      ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_Add")      ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_DESC")     ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_ExDESC")   ->Visible = FALSE;
+        UIManager::GetInstance()->Find_FontObject(L"ITEM_PRICE")    ->Visible = FALSE;
     }
 
-    if (isActive) {
-        Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]);
+    if (isActive)   { Display_ShopItemInfo(Item_Index[m_iCurrentItemIndex]); }
+    else            { Display_ShopItemInfo(nullptr); }
 
-    }
-    else {
-        Display_ShopItemInfo(nullptr);
-    }
-
-    if (!isActive)
-    {
+    if (!isActive) {
         for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
         for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
     }
@@ -53,17 +47,16 @@ VOID   ShopUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
 }
 VOID   ShopUI::Render_GameObject() {
-    if (isActive)
-    {
+    if (isActive) {
         Component_Sprite->Render_Sprite();
     }
 
 }
 
 HRESULT   ShopUI::Component_Initialize() {
-    Component_Sprite = ADD_COMPONENT_SPRITE;
+    Component_Sprite    = ADD_COMPONENT_SPRITE;
     Component_Transform = ADD_COMPONENT_TRANSFORM;
-    Component_Collider = ADD_COMPONENT_COLLIDER;
+    Component_Collider  = ADD_COMPONENT_COLLIDER;
 
     m_iCurrentItemIndex = 0;
 
@@ -108,62 +101,108 @@ HRESULT	ShopUI::Text_Initialize() {
 
 HRESULT ShopUI::Item_Initialize() {
     ItemINFO* pItem1 = new ItemINFO;
-    pItem1->ItemDesc = { L"사도의 가호",L"소모품",L"",L"",L"",
-                                            L"사도의 가호를 하나 충전합니다.",
-                                            L"", L"20" };
+    pItem1->ItemDesc = { 
+        L"사도의 가호",
+        L"소모품",L"",L"",L"",
+        L"사도의 가호를 하나 충전합니다.",
+        L"", L"" };
     pItem1->ItemPrice = 20;
     pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem1);
 
     ItemINFO* pItem2 = new ItemINFO;
-    pItem2->ItemDesc = { L"생명력", L"소모품", L"",L"",L"",
-                                             L"잃은 체력을 한 칸 회복합니다.",
-                                             L"", L"15" };
+    pItem2->ItemDesc = { 
+        L"생명력", 
+        L"소모품", L"",L"",L"",
+        L"잃은 체력을 한 칸 회복합니다.",
+        L"", L"" };
     pItem2->ItemPrice = 15;
     pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem2);
 
     ItemINFO* pItem3 = new ItemINFO;
-    pItem3->ItemDesc = { L"화살 충전", L"소모품",L"",L"",L"",
-                                            L"현재 사용중인 활의 화살을 전부 충전합니다.",
-                                            L"", L"15" };
+    pItem3->ItemDesc = {
+        L"화살 충전", 
+        L"소모품",L"",L"",L"",
+        L"현재 사용중인 활의 화살을 전부 충전합니다.",
+        L"", L"" };
     pItem3->ItemPrice = 15;
     pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
     Item_Index.push_back(pItem3);
 
     ItemINFO* pItem4 = new ItemINFO;
-    pItem4->ItemDesc = { L"빙결의 활", L"무기/희귀", L"일반 공격",
-                                            L"일반 공격력 24 ~ 26", L"공격 속도 2.5",
-                                            L"적에게 피해를 입힐 경우 \n적이 빙결 상태에 빠집니다.",
-                                            L"얼어붙어라..", L"80" };
+    pItem4->ItemDesc = { 
+        L"빙결의 활", 
+        L"무기/희귀",
+
+        L"일반 공격",
+        L"일반 공격력 24 ~ 26", 
+        L"공격 속도 2.5",
+
+        L"적에게 피해를 입힐 경우 \n적이 빙결 상태에 빠집니다.",
+        L"얼어붙어라..", 
+        
+        L"DIC_InvenFrame_IceBow",
+        L"DIC_InfoFrame_IceBow"
+    };
 
     pItem4->ItemPrice = 80;
     pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem4);
 
     ItemINFO* pItem5 = new ItemINFO;
-    pItem5->ItemDesc = { L"오동나무 활",L"무기/희귀",L"일반 공격",
-                                            L"일반 공격력 24 ~ 26",L"공격 속도 2.5",
-                                            L"가장 기본적인 활입니다.", L"이 활... 오동나무네?",
-                                            L"0" };
+    pItem5->ItemDesc = { 
+        L"오동나무 활",
+        L"무기/희귀",
+        
+        L"일반 공격",
+        L"일반 공격력 24 ~ 26",
+        L"공격 속도 2.5",
+
+        L"가장 기본적인 활입니다.", 
+        L"이 활... 오동나무네?",
+
+        L"DIC_InvenFrame_GreenBow",
+        L"DIC_InfoFrame_GreenBow"
+    };
     pItem5->ItemPrice = 0;
     pItem5->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
     Item_Index.push_back(pItem5);
 
     ItemINFO* pItem6 = new ItemINFO;
-    pItem6->ItemDesc = { L"어둠의 활",L"무기/희귀",L"일반 공격",
-                                            L"일반 공격력 30 ~ 36",L"공격 속도 2.3",
-                                            L"어둠의 힘을 담아 화살을 발사합니다.",L"어둠의 힘을 담아..",
-                                            L"75" };
+    pItem6->ItemDesc = { 
+        L"어둠의 활",
+        L"무기/희귀",
+
+        L"일반 공격",
+        L"일반 공격력 30 ~ 36",
+        L"공격 속도 2.3",
+        
+        L"어둠의 힘을 담아 화살을 발사합니다.",
+        L"어둠의 힘을 담아..",
+
+        L"DIC_InvenFrame_DarkBow",
+        L"DIC_InfoFrame_DarkBow" 
+    };
     pItem6->ItemPrice = 75;
     pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem6);
 
     ItemINFO* pItem7 = new ItemINFO;
-    pItem7->ItemDesc = { L"자연의 활",L"무기/희귀",L"일반 공격",
-                                         L"일반 공격력 30 ~ 36", L"공격 속도 2.6",
-                                         L"자연의 힘을 담아 화살을 발사합니다.", L"자연의 힘을 담아..",
-                                         L"90" };
+    pItem7->ItemDesc = { 
+        L"자연의 활",
+        L"무기/희귀",
+        
+        L"일반 공격",
+        L"일반 공격력 30 ~ 36", 
+        L"공격 속도 2.6",
+                                         
+        L"자연의 힘을 담아 화살을 발사합니다.", 
+        L"자연의 힘을 담아..",
+                                        
+        L"DIC_InvenFrame_MichaelBow",
+        L"DIC_InfoFrame_MichaelBow" 
+    };
     pItem7->ItemPrice = 90;
     pItem7->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
     Item_Index.push_back(pItem7);
@@ -270,30 +309,9 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
     return false;
 }
 
-BOOL ShopUI::Get_Collision_Enter(GameObject* _Other) {
-    return FALSE;
-}
-
-BOOL ShopUI::Get_Collision_Stay(GameObject* _Other)
-{
-    return FALSE;
-}
-
-BOOL ShopUI::Get_Collision_Exit(GameObject* _Other)
-{
-    return 0;
-}
-
-ShopUI* ShopUI::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
-    ShopUI* SUI = new ShopUI(_GRPDEV);
-    if (FAILED(SUI->Ready_GameObject()))
-    {
-        MSG_BOX("Cannot Create ShopUI");
-        Safe_Release(SUI);
-        return nullptr;
-    }
-    return SUI;
-}
+BOOL ShopUI::Get_Collision_Enter(GameObject* _Other)    { return FALSE; }
+BOOL ShopUI::Get_Collision_Stay(GameObject* _Other)     { return FALSE; }
+BOOL ShopUI::Get_Collision_Exit(GameObject* _Other)     { return FALSE; }
 
 VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
 {
@@ -314,11 +332,20 @@ VOID ShopUI::Display_ShopItemInfo(ItemINFO* _pItem)
         ItemInfo_Text[4]->Text = _pItem->ItemDesc[4];
         ItemInfo_Text[5]->Text = _pItem->ItemDesc[5];
         ItemInfo_Text[6]->Text = _pItem->ItemDesc[6];
-        ItemInfo_Text[7]->Text = _pItem->ItemDesc[7];
+        ItemInfo_Text[7]->Text = to_wstring(_pItem->ItemPrice);
     }
 
 }
-
+ShopUI* ShopUI::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+    ShopUI* SUI = new ShopUI(_GRPDEV);
+    if (FAILED(SUI->Ready_GameObject()))
+    {
+        MSG_BOX("Cannot Create ShopUI");
+        Safe_Release(SUI);
+        return nullptr;
+    }
+    return SUI;
+}
 VOID	ShopUI::Free() {
 
     for (auto& II : Item_Index)

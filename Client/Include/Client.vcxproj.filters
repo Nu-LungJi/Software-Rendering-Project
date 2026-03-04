@@ -70,12 +70,6 @@
     <Filter Include="03. GameObject\07. ProJectile">
       <UniqueIdentifier>{439bbeef-a25b-49de-a227-87dae46c6b96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. UI\01. MainUI">
-      <UniqueIdentifier>{c5ddb37a-c839-4e15-9417-7076814467ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\AugmentUI">
-      <UniqueIdentifier>{cdda3270-297f-43a4-a689-5010dc732961}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\07. ProJectile\01.Bullet_Standard">
       <UniqueIdentifier>{6d5c5c90-b9d5-4949-9253-46ad779bac99}</UniqueIdentifier>
     </Filter>
@@ -90,12 +84,6 @@
     </Filter>
     <Filter Include="03. GameObject\01. Player\01. Arrow">
       <UniqueIdentifier>{876f658b-2647-4f66-9e4e-b05122adf8d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\02. MainUI">
-      <UniqueIdentifier>{6dda267f-0b5a-42fe-86aa-cfd14ceff1a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\04. NPCTalk">
-      <UniqueIdentifier>{d4b94dac-8b9e-4ebb-ae55-e178ec4c4624}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. Scene\01. MainScene">
       <UniqueIdentifier>{cf46baff-be85-4afa-b63b-eb461dffd27c}</UniqueIdentifier>
@@ -112,9 +100,6 @@
     <Filter Include="03. GameObject\02. Monster\02. Monster\04. EvilSlime">
       <UniqueIdentifier>{0b780999-08fa-451f-9e14-a7d3b1c136f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. UI\SpeechBubble">
-      <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\08. BossMonster">
       <UniqueIdentifier>{ee57f866-6323-42e5-9cb1-5197f307d10f}</UniqueIdentifier>
     </Filter>
@@ -129,9 +114,6 @@
     </Filter>
     <Filter Include="02. Scene\02. DocheolScene">
       <UniqueIdentifier>{e7b56a2d-1555-4e8c-9652-a748c6efddaa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\03. InventoryUI">
-      <UniqueIdentifier>{9a0e251d-3851-4318-b454-5525a5729ca9}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\08. BossMonster\02. FinalBoss\Supporter">
       <UniqueIdentifier>{30667666-39cc-42e0-b5ff-f65cdef8fcc2}</UniqueIdentifier>
@@ -184,9 +166,6 @@
     <Filter Include="03. GameObject\09. Particle">
       <UniqueIdentifier>{b4c0c682-6f72-45b9-84a9-f6b34312bda5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. UI\06. BossUI">
-      <UniqueIdentifier>{fc9f92f2-60b9-4c63-9fc8-7271ee9b4f51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\02. Monster\01. Boss\02. CheonLog">
       <UniqueIdentifier>{94438416-989b-47fd-af80-797b0bf860de}</UniqueIdentifier>
     </Filter>
@@ -235,23 +214,41 @@
     <Filter Include="03. GameObject\07. ProJectile\06. Frog_Bullet">
       <UniqueIdentifier>{95fae50b-956d-4a79-a86f-bfed3b244d9e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="07. Font">
-      <UniqueIdentifier>{788fe5ad-1fe2-427d-9297-1a8705adc142}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="07. Font\Manager">
-      <UniqueIdentifier>{0d508af8-e4b7-4c38-8f5a-86e3456e62bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\99. Camera">
       <UniqueIdentifier>{4e81e72d-aaba-4f6f-aadb-fd7b0e176224}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\05. ShopUI">
-      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\01. Player\02. Artifact">
       <UniqueIdentifier>{23b52e8e-4776-4af9-b9ad-2f3cfab8769d}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\01. MainUI">
+      <UniqueIdentifier>{6dda267f-0b5a-42fe-86aa-cfd14ceff1a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\02. InventoryUI">
+      <UniqueIdentifier>{9a0e251d-3851-4318-b454-5525a5729ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\03. NPCTalk">
+      <UniqueIdentifier>{d4b94dac-8b9e-4ebb-ae55-e178ec4c4624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\04. ShopUI">
+      <UniqueIdentifier>{6a5b2160-4d00-44e4-af69-b26e327508f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\05. AugmentUI">
+      <UniqueIdentifier>{cdda3270-297f-43a4-a689-5010dc732961}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\06. SpeechBubble">
+      <UniqueIdentifier>{9aae2f71-39a1-4a86-a57c-6ad0d8bad953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Font">
+      <UniqueIdentifier>{788fe5ad-1fe2-427d-9297-1a8705adc142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Font\Manager">
+      <UniqueIdentifier>{0d508af8-e4b7-4c38-8f5a-86e3456e62bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UI\99. IntroUI">
+      <UniqueIdentifier>{1184e6e2-7d66-4260-b67e-437fef4ad933}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -358,7 +355,7 @@
       <Filter>03. GameObject\05. Tile</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\PlayerInven.h">
-      <Filter>04. UI\03. InventoryUI</Filter>
+      <Filter>04. UI\02. InventoryUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Bullet_Standard.h">
       <Filter>03. GameObject\07. ProJectile\01.Bullet_Standard</Filter>
@@ -375,14 +372,11 @@
     <ClInclude Include="..\Header\Arrow.h">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\MainUI.h">
-      <Filter>04. UI\02. MainUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\NPCTalk.h">
-      <Filter>04. UI\04. NPCTalk</Filter>
+      <Filter>04. UI\03. NPCTalk</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\ShopUI.h">
-      <Filter>04. UI\05. ShopUI</Filter>
+      <Filter>04. UI\04. ShopUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\ScorpionBullet.h">
       <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
@@ -391,10 +385,10 @@
       <Filter>03. GameObject\02. Monster\02. Monster\04. EvilSlime</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\FieldApostle.h">
-      <Filter>04. UI\AugmentUI</Filter>
+      <Filter>04. UI\05. AugmentUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\SpeechBubble.h">
-      <Filter>04. UI\SpeechBubble</Filter>
+      <Filter>04. UI\06. SpeechBubble</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Spawner.h">
       <Filter>03. GameObject\05. Tile</Filter>
@@ -403,7 +397,7 @@
       <Filter>02. Scene\02. DocheolScene</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Augment.h">
-      <Filter>04. UI\AugmentUI</Filter>
+      <Filter>04. UI\05. AugmentUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
@@ -413,21 +407,6 @@
     </ClInclude>
     <ClInclude Include="..\Header\StateMachine.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Object_Explain.h">
-      <Filter>04. UI\03. InventoryUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainMenu.h">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainMenuButton.h">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainMenuLogo.h">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\MainUI.h">
-      <Filter>04. UI\02. MainUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Supporter.h">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
@@ -493,9 +472,6 @@
     <ClInclude Include="..\Header\CLoading.h">
       <Filter>99. Loading</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\BossUI.h">
-      <Filter>04. UI\06. BossUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\CLcrystal.h">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClInclude>
@@ -512,10 +488,10 @@
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\DamageFont.h">
-      <Filter>07. Font</Filter>
+      <Filter>06. Font</Filter>
     </ClInclude>
     <ClInclude Include="DamageFontManager.h">
-      <Filter>07. Font\Manager</Filter>
+      <Filter>06. Font\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Hurdle.h">
       <Filter>03. GameObject\10. Hurdle</Filter>
@@ -523,6 +499,13 @@
     <ClInclude Include="..\Header\Artifact.h">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\IntroUI.h">
+      <Filter>04. UI\99. IntroUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainUI.h">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MainUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -621,17 +604,14 @@
     <ClCompile Include="..\Code\Arrow.cpp">
       <Filter>03. GameObject\01. Player\01. Arrow</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\MainUI.cpp">
-      <Filter>04. UI\02. MainUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\NPCTalk.cpp">
-      <Filter>04. UI\04. NPCTalk</Filter>
+      <Filter>04. UI\03. NPCTalk</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\PlayerInven.cpp">
-      <Filter>04. UI\03. InventoryUI</Filter>
+      <Filter>04. UI\02. InventoryUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ShopUI.cpp">
-      <Filter>04. UI\05. ShopUI</Filter>
+      <Filter>04. UI\04. ShopUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ScorpionBullet.cpp">
       <Filter>03. GameObject\07. ProJectile\03.ScorpionBullet</Filter>
@@ -644,10 +624,10 @@
     </ClCompile>
     <ClCompile Include="..\Code\MonsterEffect.cpp" />
     <ClCompile Include="..\Code\FieldApostle.cpp">
-      <Filter>04. UI\AugmentUI</Filter>
+      <Filter>04. UI\05. AugmentUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\SpeechBubble.cpp">
-      <Filter>04. UI\SpeechBubble</Filter>
+      <Filter>04. UI\06. SpeechBubble</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Spawner.cpp">
       <Filter>03. GameObject\05. Tile</Filter>
@@ -659,7 +639,7 @@
       <Filter>03. GameObject\06. Effect\02. MonsterEffect\00. MonsterEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Augment.cpp">
-      <Filter>04. UI\AugmentUI</Filter>
+      <Filter>04. UI\05. AugmentUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\FinalBoss.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss</Filter>
@@ -669,21 +649,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\StateMachine.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\StateMachine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Object_Explain.cpp">
-      <Filter>04. UI\03. InventoryUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainMenu.cpp">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainMenuButton.cpp">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainMenuLogo.cpp">
-      <Filter>04. UI\01. MainUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\MainUI.cpp">
-      <Filter>04. UI\02. MainUI</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Supporter.cpp">
       <Filter>03. GameObject\08. BossMonster\02. FinalBoss\Supporter</Filter>
@@ -746,9 +711,6 @@
     <ClCompile Include="..\Code\CLoading.cpp">
       <Filter>99. Loading</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\BossUI.cpp">
-      <Filter>04. UI\06. BossUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\CLcrystal.cpp">
       <Filter>03. GameObject\05. Tile\Cheonglog\CheonglogEffect</Filter>
     </ClCompile>
@@ -765,10 +727,10 @@
       <Filter>03. GameObject\07. ProJectile\06. Frog_Bullet</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\DamageFont.cpp">
-      <Filter>07. Font</Filter>
+      <Filter>06. Font</Filter>
     </ClCompile>
     <ClCompile Include="DamageFontManager.cpp">
-      <Filter>07. Font\Manager</Filter>
+      <Filter>06. Font\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Hurdle.cpp">
       <Filter>03. GameObject\10. Hurdle</Filter>
@@ -776,6 +738,13 @@
     <ClCompile Include="..\Code\Artifact.cpp">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\IntroUI.cpp">
+      <Filter>04. UI\99. IntroUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainUI.cpp">
+      <Filter>04. UI\01. MainUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

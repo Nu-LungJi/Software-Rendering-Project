@@ -64,6 +64,12 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 	Display_ItemInfo();
 	Equip_Item();
 
+	if (KEY_DOWN(DIK_U)) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpItem(Equip_ItemList[0]);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpSprite(Component_Sprite->Get_Texture(Equip_ItemList[0]->ItemDesc[Equip_ItemList[0]->INVFRAME]));
+	}
+
 	return 0;
 }
 VOID	PlayerInven::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -202,7 +208,6 @@ HRESULT PlayerInven::Sprite_Initialize() {
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_Q.png", L"Inven_KEY_Q", 1000.f, 435.f, 20, 20, TRUE, 255);
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_E.png", L"Inven_KEY_E", 1110.f, 435.f, 20, 20, TRUE, 255);
 		}
-
 	}
 	/////////////////////////////////////////////////////////////// INFORMATION //////////////////////////////////////////////////////////////
 	{
@@ -240,16 +245,17 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InvenFrame_GreenBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
-	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
+	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png",L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
 
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png",  L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png",  L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
 
 	ItemINFO* it06 = new ItemINFO;
 	it06->ItemDesc = {
+		L"" ,
 		L"Çì¸£¸Þ½ºÀÇ ½Å¹ß",
 		L"¾ÆÆ¼ÆåÆ®/Èñ±Í",
 
@@ -261,15 +267,16 @@ HRESULT PlayerInven::Item_Initialize() {
 
 
 		L"" ,
-
 		L"DIC_InvenFrame_Relic_Item1",
 		L"DIC_InfoFrame_Relic_Item1"
 	};
 	it06->ItemPrice = 70;
+	it06->TEXTURE = Component_Sprite->Get_Texture(it06->ItemDesc[it06->INFFRAME])->TEXTURE;
 	it06->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it01 = new ItemINFO;
 	it01->ItemDesc = {
+		L"",
 		L"¿Àµ¿³ª¹« È°",
 		L"¹«±â/Èñ±Í",
 
@@ -285,10 +292,12 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_MichaelBow"
 	};
 	it01->ItemPrice = 68;
+	it01->TEXTURE = Component_Sprite->Get_Texture(it01->ItemDesc[it01->INFFRAME])->TEXTURE;
 	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
 	ItemINFO* it02 = new ItemINFO;
 	it02->ItemDesc = {
+		L"",
 		L"Ç³¼öÀÇ È°",
 		L"¹«±â/Èñ±Í",
 
@@ -304,10 +313,12 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_DarkBow"
 	};
 	it02->ItemPrice = 68;
+	it02->TEXTURE = Component_Sprite->Get_Texture(it02->ItemDesc[it02->INFFRAME])->TEXTURE;
 	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
+		L"",
 		L"Ç³¼öÀÇ È°",
 		L"¹«±â/Èñ±Í",
 
@@ -323,10 +334,12 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_GreenBow"
 	};
 	it03->ItemPrice = 68;
+	it03->TEXTURE = Component_Sprite->Get_Texture(it03->ItemDesc[it03->INFFRAME])->TEXTURE;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
 	ItemINFO* it04 = new ItemINFO;
 	it04->ItemDesc = {
+		L"",
 		L"¾óÀ½ Á¤·ÉÀÇ È°",
 		L"¹«±â/Èñ±Í",
 
@@ -342,10 +355,13 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_IceBow"
 	};
 	it04->ItemPrice = 68;
+	it04->TEXTURE = Component_Sprite->Get_Texture(it04->ItemDesc[it04->INFFRAME])->TEXTURE;
 	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
 	ItemINFO* it05 = new ItemINFO;
-	it05->ItemDesc = { L"¾óÀ½ Á¤·ÉÀÇ È°",
+	it05->ItemDesc = { 
+		L"",
+		L"¾óÀ½ Á¤·ÉÀÇ È°",
 		L"¹«±â/Èñ±Í",
 
 		L"ÀÏ¹Ý °ø°Ý",
@@ -360,6 +376,7 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_IceBow"
 	};
 	it05->ItemPrice = 68;
+	it05->TEXTURE = Component_Sprite->Get_Texture(it05->ItemDesc[it05->INFFRAME])->TEXTURE;
 	it05->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
 	Append_Item(it03);
@@ -580,10 +597,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[7])->TEXTURE;
+		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[8])->TEXTURE;
 	}
 	if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && FocusOn_EquipedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[9])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[1];
