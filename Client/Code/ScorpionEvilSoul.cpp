@@ -471,7 +471,7 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 		
 		//CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 

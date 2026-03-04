@@ -162,6 +162,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
         _vec3 effectPos = *Component_Transform->Get_Position();
 
         switch (_type) {
+        case ArrowType::FairyArrow:
+            Size = { 1.5f, 1.5f, 1.5f };
+            effectPos.y += 0.7f;
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ARROW_HITEFFECT, &effectPos, 0.2f, Size, false);
+            break;
         case ArrowType::FairyCharging:
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::FAIRY_HITEFFECT, &effectPos, 0.5f, Size, false);
             effectPos.z += 2.5f;
@@ -414,11 +419,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
             }
             break;
         case ArrowType::IceCharging:
-            if (_effectDelay > 0.1f) {
+            if (_effectDelay > 0.05f) {
                 Size = { 1.f, 1.f, 1.f };
-                PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
+                //PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
+                //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
             }
             break;
@@ -434,7 +439,6 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 Search_Target_Object(20.f);
                 _vec3 Size = { 5.f, 10.f, 5.f };
                 Size *= (*_playerArrowSize);
-                _targetPos = nullptr;
                 if (_targetPos != nullptr) {
                     effectPos = *_targetPos;
                 }
@@ -446,7 +450,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 
                 if (_target != nullptr) {
                     int targetHp = static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
-                    static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(targetHp - Component_Collider->Get_Att() * 3.f);
+                    static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(targetHp - 42.f);
+                    DamageFontManager::GetInstance()->Add_DamageFont(_target, 42.f);
                 }
             }
             break;
@@ -638,29 +643,28 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 
     if (Tag == L"Monster") {
         atk = 1.f;
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
-
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
+        Component_Collider->Set_Hp(hp - atk);
 
         return TRUE;
     }
 
     else if (Tag == L"CheonLog") {
-        atk = 100.f;
+        atk = 1.f;
+        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - (int)Component_Collider->Get_Att());
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(hp - atk);
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - 300);
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
-       DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
 
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
-        atk = 20.f;
+        atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-        if (_type == ArrowType::EvilHeadCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
+        if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
+        Component_Collider->Set_Hp(hp - atk);
 
         return TRUE;
     }
@@ -686,7 +690,7 @@ void Arrow::Search_Target(float length)
 
 void Arrow::Search_Target_Object(float length)
 {
-    _target = SceneManager::GetInstance()->Get_CurrentScene()->Search_Target_Object(Component_Transform->Get_Position(), length, L"Monster");
+    _target = SceneManager::GetInstance()->Get_CurrentScene()->Search_Target_Object(Component_Transform->Get_Position(), length);
     if(_target != nullptr)
         _targetPos = static_cast<Transform*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 }

@@ -118,6 +118,7 @@
 #include "StageBlackOut.h"
 #include "DamageFont.h"
 #include "Artifact.h"
+#include "EndingCredit.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"

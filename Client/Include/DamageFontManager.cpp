@@ -79,5 +79,11 @@ VOID DamageFontManager::Free()
 {
 	Safe_Release(GRPDEV);
 
+	//for (int i = 0; i < FontList.size(); i++) {
+	//	for (int j = 0; j < FontList[j].size(); j++) {
+	//		FontList[i][j]
+	//	}
+	//}
+
 	return VOID();
 }

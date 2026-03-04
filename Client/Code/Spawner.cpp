@@ -209,8 +209,7 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 						dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
 						Set_ObjectDead(TRUE);
 					}
-				}
-				
+        }
 		}
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN2:

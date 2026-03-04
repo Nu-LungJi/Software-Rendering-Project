@@ -253,6 +253,9 @@
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. UI\EndingCredit">
+      <UniqueIdentifier>{25bf7cb3-d5e6-411d-9715-73543dc361c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -526,6 +529,9 @@
     <ClInclude Include="..\Header\SkyBox.h">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\EndingCredit.h">
+      <Filter>04. UI\EndingCredit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -781,6 +787,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\SkyBox.cpp">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\EndingCredit.cpp">
+      <Filter>04. UI\EndingCredit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
