@@ -92,6 +92,7 @@
 #include "DropItemEffect.h"
 
 #pragma endregion
+#include "IntroUI.h"
 #include "Player.h"
 #include "MainUI.h"
 #include "NPCTalk.h"

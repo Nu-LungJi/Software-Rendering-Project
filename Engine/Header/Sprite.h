@@ -24,6 +24,7 @@ struct ENGINE_DLL SpriteINFO {
 	VOID	Set_Scale(FLOAT _X, FLOAT _Y)	{ WIDTH = _X, HEIGHT = _Y; }
 	D3DXVECTOR2	Get_Scale() { return { (FLOAT)WIDTH, (FLOAT)HEIGHT }; }
 	VOID	Set_Opacity(FLOAT _V) { OPACITY = _V; }
+	INT		Get_Opacity() { return OPACITY; }
 	VOID	Decrease_Opacity(FLOAT _V) { 
 		if (OPACITY > 0)	
 			OPACITY -= _V;
@@ -36,6 +37,7 @@ struct ENGINE_DLL SpriteINFO {
 	}
 
 	VOID	Set_Visible(BOOL  _B) { VISIBLE = _B; }
+	BOOL	Get_Vislble() { return VISIBLE; }
 };
 
 struct ENGINE_DLL ItemINFO {

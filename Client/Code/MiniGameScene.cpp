@@ -83,7 +83,7 @@ VOID MiniGameScene::Render_Scene() {}
 
 HRESULT MiniGameScene::Start_MiniGame()
 {
-	if (m_pMainScene == nullptr) {
+ 	if (m_pMainScene == nullptr) {
 		m_pMainScene = SceneManager::GetInstance()->Get_CurrentScene();
 	}
 
