@@ -526,6 +526,9 @@
     <ClInclude Include="..\Header\Artifact.h">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\SkyBox.h">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClInclude>
     <ClInclude Include="..\Header\EndingCredit.h">
       <Filter>04. UI\EndingCredit</Filter>
     </ClInclude>
@@ -781,6 +784,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Artifact.cpp">
       <Filter>03. GameObject\01. Player\02. Artifact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SkyBox.cpp">
+      <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\EndingCredit.cpp">
       <Filter>04. UI\EndingCredit</Filter>

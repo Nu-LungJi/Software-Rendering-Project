@@ -79,6 +79,7 @@
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
 #include "Shadow.h"
+#include "SkyBox.h"
 
 #pragma endregion
 
@@ -127,6 +128,7 @@
 #include "DoCheolScene.h"
 #include "MiniGameScene.h"
 
+#include "TempScene.h"
 #include "CLoading.h"
 //////////////////////////////////////////// Manager
 

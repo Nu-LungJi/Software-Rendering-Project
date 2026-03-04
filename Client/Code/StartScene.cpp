@@ -124,12 +124,7 @@ HRESULT   StartScene::Ready_Scene() {
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
-
-
-    if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_TAB) == TRUE) {
-        int  a = 0;
-    }
-
+    
     if (!TileManager::GetInstance()->Get_Loading())
     {
         if (pLoading->Get_Finish())
@@ -151,6 +146,7 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->Render_CollisionManager();
 
     if (KEY_DOWN(DIK_P)) {
+        pMiniGame = MiniGameScene::Create(GRPDEV, this);
         pMiniGame->Start_MiniGame();
         return;
     }

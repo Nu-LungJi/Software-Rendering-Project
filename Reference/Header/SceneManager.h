@@ -27,11 +27,13 @@ public:
 	GameObject*		Get_GameObject(CONST TCHAR* _TAG);
 	void			Set_CurrentScene(Scene* scene) { CurrentScene = scene; }
 
+	void			Set_MiniGameScene(Scene* scene) { LoadScene = scene; }
+	Scene*			Get_MiniGameScene() { return LoadScene; }
 	// ½ºÅ³¿ë
 	void Set_TimeSlow(bool isTimeSlow) { CurrentScene->Set_TimeSlow(isTimeSlow); }
 private:
 	Scene*			CurrentScene;
-
+	Scene* LoadScene;
 public:
 	virtual			VOID	Free();
 };

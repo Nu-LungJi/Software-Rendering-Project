@@ -34,6 +34,11 @@ public:
 public:
 	virtual void Free();
 
+private:
+	Player* m_pPlayer = nullptr;
+
 	Scene* m_pMainScene;
 	_float m_fTimer = 0.f;
+
+	vector<GameObject*> m_vecHurdles[3];
 };

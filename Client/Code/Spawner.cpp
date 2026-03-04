@@ -24,7 +24,7 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 		  
 		for (int i = 0; i < 3; ++i)
 		{
-			  if (TileManager::GetInstance()->Get_Defense().size() > 500)
+			  if (TileManager::GetInstance()->Get_Defense().size() > 1000)
 				  break;
 			  _int iRand = rand() % 5;
 			  GameObject* pObj=nullptr;
@@ -87,14 +87,19 @@ VOID Spawner::LateUpdate_GameObject(const _float& _DT) {
 
 		switch (i)
 		{
+
+		case 0:
+			m_SpawnCnt = 1;
+			m_SpawnDelay = 3;
+			break;
 		case 1:
 			m_SpawnCnt = 2;
-			m_SpawnDelay = 1;
+			m_SpawnDelay = 2;
 
 			break;
 		case 2:
 			m_SpawnCnt = 3;
-			m_SpawnDelay = 0.2;
+			m_SpawnDelay = 1;
 
 			break;
 		}
@@ -153,16 +158,16 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::NPC2:
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN1:
-		Monster_Spawn();
+		//Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
-		Monster_Spawn2();
+		//Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
-		Monster_Spawn3();
+		//Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
-		//Monster_Spawn4();
+		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 		if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
@@ -196,9 +201,15 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 						m_pTransform->Set_Pos(vPos);
 					}
 				}
+				else {
 
-
-				
+					if (Crash_Player() != nullptr && KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z))
+					{
+						dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
+						dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
+						Set_ObjectDead(TRUE);
+					}
+        }
 		}
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN2:
@@ -219,7 +230,7 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	    CL_Spawn();
 		break;
 	case TILE_SPAWNER::BOSS_SPAWN:
-		Boss();
+		//Boss();
 		break;
 	case TILE_SPAWNER::RANDOM_SPAWNER:
 		Defense_Spawn(_DT);
@@ -243,6 +254,7 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos,1.5f),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
@@ -253,7 +265,7 @@ void Spawner::Monster_Spawn2()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
-
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.3f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
@@ -264,6 +276,7 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
