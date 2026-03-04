@@ -44,12 +44,15 @@ public:		// Trigger Function
 
 	VOID			Set_BossMaxHP(FLOAT _HP) { MaxHP = _HP; }
 
-	VOID			Set_EnableBossTitle(INT _EBT) { Enable_BossTitle = _EBT; }
+	VOID			Set_EnableBossTitle(INT _EBT)		{ Enable_BossTitle = _EBT; }
+	VOID			Set_EnableDisplayHPBar(BOOL _EDB)	{ Enable_DisplayHPBar = _EDB; }
+	VOID			Set_EnableFade(BOOL _EDB)			{ Enable_FadeFilter = _EDB; }
 private:
 	VOID			MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED);
 	VOID			Display_BossTitle(CONST FLOAT& _DT);
+	VOID			Display_BossHPBar(CONST FLOAT& _DT);
+	VOID			Display_FadeFilter(CONST FLOAT& _DT);
 	VOID			Synchronize_BossHPBar();
-
 public:
 	HRESULT Component_Initialize();
 	HRESULT Sprite_Initialize();
@@ -94,13 +97,15 @@ private:
 	vector<FontObject*> AllFontOBJ;
 	vector<SpriteINFO*> AllSpriteOBJ;
 	vector<UIEffect*>	AllUIEffect;
-	FLOAT				GlobalOPC;
+	FLOAT				GlobalOPC;	
 	INT					EffectFaded;
 	FLOAT				FadeSpeed;
 
 	FLOAT				MaxHP;
 	FLOAT				CurrentHP;
 
+	INT					Enable_DisplayHPBar;
+	FLOAT				HPOPC;
 	_vec3				BarScale;
 	SpriteINFO*			HPBarFill;
 	SpriteINFO*			BossTitleBar;
@@ -111,12 +116,17 @@ private:
 	FontObject*			Title_Name;
 	FontObject*			Title_Tag;
 //////////////////////////////////////////////
-	// 스킬용 애니메이션
+////////////////////////////////////////////// 스킬용 애니메이션
 	INT				ImgFrame;
 	FLOAT			FrameTimer;
 	SpriteINFO*		Effect;
 	BOOL			Enable_SpeechBubbleSkill;
 	INT				skillType;
+//////////////////////////////////////////////
+////////////////////////////////////////////// 인트로, 엔딩
+	INT				Enable_FadeFilter;
+	FLOAT			FadeOPC;
+//////////////////////////////////////////////
 private:
 	virtual	VOID		Free();
 };

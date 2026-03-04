@@ -36,6 +36,7 @@ struct ENGINE_DLL SpriteINFO {
 	}
 
 	VOID	Set_Visible(BOOL  _B) { VISIBLE = _B; }
+	BOOL	Get_Vislble() { return VISIBLE; }
 };
 
 struct ENGINE_DLL ItemINFO {

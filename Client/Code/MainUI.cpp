@@ -36,6 +36,12 @@ HRESULT	MainUI::Ready_GameObject() {
 	Enable_BossTitle = 2;
 	BossTitleTimer = 0.f;
 	BarScale = { 1.f, 1.f, 1.f };
+	Enable_DisplayHPBar = 2;
+	HPOPC = 0.f;
+
+	Enable_FadeFilter = 2;
+	FadeOPC = 0.f;
+
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -57,6 +63,8 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	PopUp_ItemInfo(L"Relic_Item3", _DT);
 	Synchronize_BossHPBar();
 	Display_BossTitle(_DT);
+	Display_BossHPBar(_DT);
+	Display_FadeFilter(_DT);
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
 
@@ -66,19 +74,14 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(true);
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
-	
-	// GUI
-	//BowIMG_List[Cur_BowIMGIDX]->Set_Pos(GuiVar.POSX, GuiVar.POSY);
-	//BowIMG_List[Cur_BowIMGIDX]->Set_Scale(GuiVar.WIDTHX, GuiVar.WIDTHY);
-	//Imgui();
 
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
-	if(KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_M))
-		HPBarFill->Set_Pos( HPBarFill->Get_Pos().x + 1, HPBarFill->Get_Pos().y);
+	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_M))
+		Enable_FadeFilter = TRUE;
 	if (KEY_HOLD(DIK_LCONTROL) && KEY_DOWN(DIK_M))
-		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x - 1, HPBarFill->Get_Pos().y);
+		Enable_FadeFilter = FALSE;
 
 	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_N))
 		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x, HPBarFill->Get_Pos().y + 1);
@@ -471,15 +474,6 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE) {
 			Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE = TRUE;
 			HPBarFill->VISIBLE = TRUE;
-
-			if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
-			}
-			else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
-			}
 		}
 		if (GlobalOPC < 253.f) GlobalOPC += _DT * 255.f / _SPEED;
 		else {
@@ -556,7 +550,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 	}														
 }
 
-VOID MainUI::Display_BossTitle(const FLOAT& _DT) {
+VOID MainUI::Display_BossTitle(CONST FLOAT& _DT) {
 	if (Enable_BossTitle == TRUE) {
 		if (BossTitleTimer < 254.f) {
 			BossTitleTimer += _DT * 255;
@@ -595,7 +589,63 @@ VOID MainUI::Display_BossTitle(const FLOAT& _DT) {
 		}
 	}
 }
+VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
+	if		(Enable_DisplayHPBar == 2) return;
+	else if (Enable_DisplayHPBar == TRUE) {		// 쓸일 없음
+		if	(HPOPC < 253.f)	{ HPOPC += _DT * 255.f / 2.f; }
+		else				{ HPOPC = 255.f; Enable_DisplayHPBar = 2;}
 
+		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
+		}
+		else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
+		}
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color((INT)HPOPC, 255, 255, 255);
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color((INT)HPOPC, 255, 255, 255);
+	}
+	else if (Enable_DisplayHPBar == FALSE) {
+		if	(HPOPC > 2.f)	{ HPOPC -= _DT * 255.f / 2.f; }
+		else				{ 
+			HPOPC = 255.f; Enable_DisplayHPBar = 2; 
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"");
+
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color(0, 255, 255, 255);
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color(0, 255, 255, 255);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity(0);
+			HPBarFill->Set_Opacity(0);
+
+			return;
+		}
+		Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity((INT)HPOPC);
+		HPBarFill->Set_Opacity((INT)HPOPC);
+
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color((INT)HPOPC, 255, 255, 255);
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color((INT)HPOPC, 255, 255, 255);
+	}
+}
+VOID MainUI::Display_FadeFilter(CONST FLOAT& _DT) {
+	if		(Enable_FadeFilter == 2) return;
+	SpriteINFO* Filter = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter");
+	if (Enable_FadeFilter == TRUE) {		// FADE IN - 어두워지게
+		if (Filter->Get_Vislble() == FALSE) {
+			Filter->Set_Visible(TRUE);
+		}
+		if (FadeOPC < 253.f) { FadeOPC += _DT * 255.f; Filter->Set_Opacity(FadeOPC); }
+		else					{ Filter->Set_Opacity(255.f); Enable_FadeFilter = 2; return;	}
+	}
+	else if (Enable_FadeFilter == FALSE) {		// FADE OUT - 밝아지게
+		if (FadeOPC > 2.f)	{ FadeOPC -= _DT * 255.f; Filter->Set_Opacity(FadeOPC);}
+		else					{ 
+			Filter->Set_Opacity(0.f);
+			Filter->Set_Visible(FALSE);
+			Enable_FadeFilter = 2; 
+			return;	}
+	}
+}
 VOID MainUI::Synchronize_BossHPBar() {
 	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
 		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
@@ -701,6 +751,12 @@ HRESULT MainUI::Sprite_Initialize() {
 	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 400, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Boss_TitleBar.png", BossTitleBar->WIDTH, BossTitleBar->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&BossTitleBar->TEXTURE);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// FILTER /////////////////////////////////////////////////////
+	SpriteINFO* FilterOBJ = new SpriteINFO(L"FadeFilter", 1280, 720, 0, 0, FALSE, 0);
+	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Filter_Fade.png", FilterOBJ->WIDTH, FilterOBJ->HEIGHT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&FilterOBJ->TEXTURE);
+	UIManager::GetInstance()->Add_FilterObjects(FilterOBJ);
 
 	return S_OK;
 }

@@ -813,6 +813,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	{
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 4.f);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(FALSE);
 
 
 		m_bStartPattern = true; m_eCheck = IDEL;

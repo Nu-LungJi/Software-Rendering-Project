@@ -332,6 +332,7 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 	{
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(TRUE);
 		// 광윤 추가 ▼
 		Button_Lock = TRUE;	// 키보드 입력 무효화 ON
 

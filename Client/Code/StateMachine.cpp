@@ -76,6 +76,7 @@ VOID AppearState::FSM_StateExit(GameObject* _Owner) {
 	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, FALSE);
 	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 1.f);
+	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(TRUE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Speech_PopUp(L"조심해요 연! 굉장히 위험한 \n사념체에요, 빠르게 처치하죠!");
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_FocusOnBoss(FALSE);
 }
@@ -84,6 +85,7 @@ VOID DeadState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<FinalBoss*>(_Owner)->Set_ModeState(BOSSMODE::MODE_INVALIDATE, TRUE);
 	static_cast<FinalBoss*>(_Owner)->Set_Animation_Interval(0.25f);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_EnableQuickZoom(TRUE);
+	
 }
 VOID DeadState::FSM_StateUpdate(GameObject* _Owner) {
 	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 6 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 6) {
@@ -91,10 +93,12 @@ VOID DeadState::FSM_StateUpdate(GameObject* _Owner) {
 	}
 	if (static_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 12 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 12) {
 		static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_EnableQuickZoom(FALSE);
+		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(FALSE);
 	}
 }
 VOID DeadState::FSM_StateExit(GameObject* _Owner) {
 	_Owner->Set_ObjectDead(TRUE);
+	
 }
 
 VOID StunState::FSM_StateEnter(GameObject* _Owner) {
