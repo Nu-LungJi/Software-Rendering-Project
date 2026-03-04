@@ -41,6 +41,14 @@ INT	ShopKeeper::Update_GameObject(const _float& _DT) {
 }
 VOID ShopKeeper::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
+
+	if (Timer_Shop > 0.2f) {
+		Shop_AnimIDX = Shop_AnimIDX % 8 + 1;
+		Timer_Shop = 0.f;
+	}
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHER1)
+		ObjectDead = true;
+
 }
 VOID ShopKeeper::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -89,7 +97,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	//Speech_BubbleUI = dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_GameObject(L"Speech_Bubble"));
 
 	if (_Other->Get_ObjectTag() == L"Player") {
-		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"¥Î»≠«œ±‚ - ªÛ¡° ¡÷¿Œ", TRUE);
+		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"ÔøΩÔøΩ»≠ÔøΩœ±ÔøΩ - ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ", TRUE);
 		//Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}

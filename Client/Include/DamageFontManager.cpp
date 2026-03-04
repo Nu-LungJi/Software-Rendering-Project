@@ -16,7 +16,7 @@ HRESULT DamageFontManager::Ready_DamageFontManager()
 	FontList.resize(71);
 
 	for (int k = 0; k <= 70; k++) {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 40; i++) {
 			_vec3 destPos = { 0.f, 0.f, 0.f };
 	
 			FontObject* FO = UIManager::GetInstance()->Add_FontSprite(GRPDEV, to_wstring(0), { 0.f, 0.f }, k + 30,
@@ -78,6 +78,12 @@ FontObject* DamageFontManager::Get_Fo(int size)
 VOID DamageFontManager::Free()
 {
 	Safe_Release(GRPDEV);
+
+	//for (int i = 0; i < FontList.size(); i++) {
+	//	for (int j = 0; j < FontList[j].size(); j++) {
+	//		FontList[i][j]
+	//	}
+	//}
 
 	return VOID();
 }

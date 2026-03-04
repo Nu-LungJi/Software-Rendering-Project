@@ -19,7 +19,6 @@ private:
 	HRESULT      Ready_UserInterface_Layer();
 
 private:
-	CLoading* pLoading;
 	MiniGameScene* pMiniGame;
 public:
 	static   StartScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);

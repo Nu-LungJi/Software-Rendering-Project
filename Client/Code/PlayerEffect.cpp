@@ -97,7 +97,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 
 		_matrix matSize;
 		D3DXMatrixIdentity(&matSize);
-		D3DXMatrixScaling(&matSize, _effectSize.x, _effectSize.y, _effectSize.z);
+		D3DXMatrixScaling(&matSize, 0.f, 0.f, 0.f);
 
 		_matrix matBillboard;
 		D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
@@ -296,7 +296,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		else matWorld = matSize * matRotX;
 
 		matWorld._41 = (*_playerPos).x;
-		matWorld._42 = (*_playerPos).y + 0.7f;
+		matWorld._42 = (*_playerPos).y;
 		matWorld._43 = (*_playerPos).z;
 
 		if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC || SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) {
@@ -336,7 +336,7 @@ VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 			CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 				Get_GameObject(L"Camera"));
 			Camera->Camera_Shaking(10.f, 0.5f);
-			SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+			//SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 		}
 	}
 		

@@ -50,6 +50,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 				Add_PlayerStatus(iType);
 				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Menu_ChooseApostle_Select.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 				isActive = FALSE;
+				ClearAllEffects();
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
 				//PlayerObject->Set_PlayerStop(FALSE);
 
@@ -138,7 +139,7 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 	switch (_PerkType)
 	{
 		case FIRST:
-			PlayerObject->Set_Atk(*PlayerObject->Get_Atk() * 1.5f);
+			PlayerObject->Set_Atk(PlayerObject->Get_Atk() * 1.5f);
       break;
 		case SECOND:
 			PlayerObject->Set_ArrowSpeed(*PlayerObject->Get_ArrowSpeed() * 1.2f);
@@ -170,15 +171,15 @@ VOID Augment::Display_PerkInfo(ItemINFO* _pPerk)
 VOID Augment::Perk_Selected_Effect(INT _PerkType)
 {  
 	if (_PerkType == FIRST){
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 1.0f, 200);
-		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_01.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect1", 285.f, 233.f, 175, 150, 2.0f, 200);
+		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_01.wav", CHANNELID::SOUND_EFFECT08, 0.4f);		
 	}
 	if (_PerkType == SECOND) {
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 1.0f, 200);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect2", 545.f, 233.f, 175, 150, 2.0f, 200);
 		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_02.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
 	}
   if (_PerkType == THIRD){
-		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 1.0f, 200);
+		PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::AUGMENT_EFFECT, L"Perk_Effect3", 785.f, 233.f, 175, 150, 2.0f, 200);
 		SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Bless_Choice_03.wav", CHANNELID::SOUND_EFFECT08, 0.4f);
 	}
 }
@@ -222,6 +223,15 @@ Augment* Augment::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	}
 	return MUI;
 }
+
+VOID Augment::ClearAllEffects() {
+	for (int i = 1; i <= 3; ++i) {
+		wstring animName = L"Perk_Effect" + to_wstring(i);
+		GameObject* pEffect = EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, animName);
+		if (pEffect) pEffect->Set_ObjectDead(TRUE);
+	}
+}
+
 VOID  Augment::Free() {
 	for (auto& PI : Perk_Info)
 	{

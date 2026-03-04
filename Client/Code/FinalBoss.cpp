@@ -73,6 +73,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	FSM->Update_GameObject(_DT);
 
 	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= -50.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Ready_SmoothCamera(TRUE);
 		Enable_BossAppearStaging = TRUE;

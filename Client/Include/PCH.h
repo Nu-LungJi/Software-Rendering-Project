@@ -79,6 +79,7 @@
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
 #include "Shadow.h"
+#include "SkyBox.h"
 
 #pragma endregion
 
@@ -118,6 +119,7 @@
 #include "StageBlackOut.h"
 #include "DamageFont.h"
 #include "Artifact.h"
+#include "EndingCredit.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
@@ -125,9 +127,9 @@
 #include "MapScene.h"
 
 #include "DoCheolScene.h"
-#include "MiniGameScene.h"
+#include "MiniGameScene.h""
+#include "TempScene.h"
 
-#include "CLoading.h"
 //////////////////////////////////////////// Manager
 
 #include "GUIManager.h"

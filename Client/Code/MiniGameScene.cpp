@@ -1,10 +1,11 @@
 #include "../Include/PCH.h"
 
-MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_pMainScene(nullptr), m_fTimer(0.f) {}
+MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV),m_bEffect(false), m_pMainScene(nullptr), m_fTimer(0.f) {}
 MiniGameScene::~MiniGameScene() {}
 
 HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 
+	Monster::Set_Gravity({ 0.f, -1.f, 0.f });
 	Scene::Ready_Scene();
 	m_pMainScene = pScene;
 
@@ -26,29 +27,57 @@ HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 
 	return S_OK;
 }
-
+ 
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
-	m_fTimer += _DT;
+	m_fTimer += _DT * 0.3f;
 	
 
 	if (KEY_DOWN(DIK_P)) {
-		POS(Monster::Get_Player())->y = 1.5f;
-	}
 
+		if (!m_bEffect)
+		{
+			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({60.671,0.5f,43.405}, false, 0, false);
+			TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+			m_bEffect = true;
+		}
+	}
+	if (!TileManager::GetInstance()->Get_Loading())
+	{
+		TileManager::GetInstance()->Set_Stage();
+		TileManager::GetInstance()->Stage_Update(0.1);
+		TileManager::GetInstance()->Set_EndLoading(TRUE);
+		TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
+		End_MiniGame();
+		return 1;
+	}
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
 VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	Scene::LateUpdate_Scene(_DT);
-	TileManager::GetInstance()->LateUpdate_Tile(_DT);
+	//TileManager::GetInstance()->LateUpdate_Tile(_DT);
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 
-	if (POS(Monster::Get_Player())->y < -2.f) {
-		if(m_pMainScene != nullptr)
-			End_MiniGame();
+	if (POS(m_pPlayer)->x > 49.f) {
+		m_pPlayer->Set_IsFalling(true);
+		Monster::Set_Gravity({ 0.f,0.f,1.f });
+		for (auto it : m_vecHurdles[0]) {
+			it->Set_ObjectDead(true);
+			it = nullptr;
+		}
 	}
+	if (POS(m_pPlayer)->y > 49.f) {
+		m_pPlayer->Set_IsFalling(true);
+		Monster::Set_Gravity({ 0.f,1.f,0.f });
+		for (auto it : m_vecHurdles[1]) {
+			it->Set_ObjectDead(true);
+			it = nullptr;
+		}
+	}
+	m_pPlayer->Fall(_DT);
+
 }
 VOID MiniGameScene::Render_Scene() {}
 
@@ -65,19 +94,17 @@ HRESULT MiniGameScene::Start_MiniGame()
 		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pCamera);
 		pCamera->AddRef();
 
-		Player* pPlayer = static_cast<Player*>(m_pMainScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Get_GameObject(L"Player"));
-		Monster::Set_Player(pPlayer);
-		pPlayer->MiniGameInit();
-		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pPlayer);
-		pPlayer->AddRef();
+		m_pPlayer = static_cast<Player*>(m_pMainScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Get_GameObject(L"Player"));
+		Monster::Set_Player(m_pPlayer);
+		m_pPlayer->MiniGameInit();
+		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(m_pPlayer);
+		m_pPlayer->AddRef();
 
 		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(Monster::Create<Shadow>(GRPDEV));
-
+		
 		Layer* pUiLayer = m_pMainScene->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE);
-		for (auto pUI : *(pUiLayer->Get_GameObjectList())) {
-			LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Add_GameObject(pUI);
-			pUI->AddRef();
-		}
+		LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE] = pUiLayer;
+		pUiLayer->AddRef();
 	}
 	else {
 		if (nullptr == Monster::Get_Camera()) {
@@ -87,6 +114,7 @@ HRESULT MiniGameScene::Start_MiniGame()
 		if (nullptr == Monster::Get_Player()) {
 			Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
 			Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
+			m_pPlayer = Monster::Get_Player();
 		}
 	}
 
@@ -99,7 +127,8 @@ HRESULT MiniGameScene::Start_MiniGame()
 		}
 	}
 
-	SceneManager::GetInstance()->Set_CurrentScene(this);
+	//이거 스타트씬에서 할게요
+	//SceneManager::GetInstance()->Set_CurrentScene(this);
 
 	return S_OK;
 }
@@ -111,16 +140,17 @@ HRESULT MiniGameScene::End_MiniGame()
 	if (nullptr != Monster::Get_Camera())
 		Monster::Get_Camera()->Exit_MiniGame();
 
-	for (auto pLayer : LayerList)
+	for (auto& pLayer : LayerList)
 	{
-		for (auto pObj : *pLayer->Get_GameObjectList()) {
+
+		for (auto& pObj : *pLayer->Get_GameObjectList()) {
 			CollisionManager::GetInstance()->Delete_ColliderObject(pObj);
 		}
 	}
 
-
-	SceneManager::GetInstance()->Set_CurrentScene(m_pMainScene);
-	//SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
+	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
+	MonsterManager::GetInstance()->Release_Static_Batich();
+	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
 	return S_OK;
 }
 
@@ -140,7 +170,7 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 			pTile->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_TERRAIN);
 			pTile->Set_ObjectTag(L"Cube");
 			pTile->Set_TileNumber(x + z * MINIGAMETILEX);
-
+			pTile->Set_OriginPos(*POS(pTile));
 			pTile->Get_TransCom()->Set_Scale(vScale.x, vScale.y, vScale.z);
 			Monster::Staic_Obj(GRPDEV, pTile->Get_TransCom());
 
@@ -151,11 +181,14 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 	if (FAILED(MonsterManager::GetInstance()->Ready_Static_Batch(GRPDEV)))
 		return E_FAIL;
 
+	SkyBox* pSkybox = SkyBox::Create(GRPDEV);
+	LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pSkybox);
+
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer() {
 
-	for (float i = 20; i < 200; i += 5)
+	for (float i = 20; i < 50; i += 5)
 	{
 		int		iCount	= RANDOM::Get_int(1, 5);
 		bool	bDir	= (RANDOM::Get_int(0,9) < 5);
@@ -165,33 +198,67 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer() {
 
 		uint8_t Type	= RANDOM::Get_int((uint8_t)MONSTER_TYPE::Bat, (uint8_t)MONSTER_TYPE::Random -1);
 
-		//if (iCount == 1)
-		//	if (RANDOM::Get_float(0.f, 10.f) < 5.f) {
-		//		Monster::Add_Monster_to_Scene(Monster::Create<Bullet_Chain_Head>(GRPDEV, vSrc, vDst, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE);
-		//		continue;
-		//	}
-
 		for (int j = 0; j < iCount; ++j)
 		{
+			GameObject* pHurdle = nullptr;
 			switch (Type)
 			{
 			default:
 			case (uint8_t)Engine::MONSTER_TYPE::Bat:
-				Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				pHurdle = Monster::Create<Bat>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
 				break;
 			case (uint8_t)Engine::MONSTER_TYPE::ScorpionEvilSoul:
-				Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				pHurdle = Monster::Create<ScorpionEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this); 
 				break;
 			case (uint8_t)Engine::MONSTER_TYPE::ShotGunEvilSoul:
-				Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				pHurdle = Monster::Create<ShotGunEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
 				break;
 			case (uint8_t)Engine::MONSTER_TYPE::EvilSlime:
-				Monster::Add_Monster_to_Scene(Monster::Create<EvilSlime>(GRPDEV, vSrc, vDst, fSpeed, 2.f), L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				pHurdle = Monster::Create<EvilSlime>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
 				break;
 			}
+			m_vecHurdles[0].push_back(pHurdle);
 		}
 	}
+	for (float i = 20; i < 50; i += 5)
+	{
+		int		iCount = RANDOM::Get_int(1, 5);
+		bool	bDir = (RANDOM::Get_int(0, 9) < 5);
+		_vec3	vSrc = { 45.f + (10.f * bDir)	, i ,8.f };
+		_vec3	vDst = { 45.f + (10.f * (!bDir)), i ,8.f };
+		_float	fSpeed = RANDOM::Get_float(1.f, 6.f);
 
+		uint8_t Type = RANDOM::Get_int((uint8_t)MONSTER_TYPE::Bat, (uint8_t)MONSTER_TYPE::Random - 1);
+
+		for (int j = 0; j < iCount; ++j) {
+			GameObject* pHurdle = nullptr;
+			switch (Type)
+			{
+			default:
+			case (uint8_t)Engine::MONSTER_TYPE::Bat:
+				pHurdle = Monster::Create<Bat>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::ScorpionEvilSoul:
+				pHurdle = Monster::Create<ScorpionEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::ShotGunEvilSoul:
+				pHurdle = Monster::Create<ShotGunEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				break;
+			case (uint8_t)Engine::MONSTER_TYPE::EvilSlime:
+				pHurdle = Monster::Create<EvilSlime>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
+				break;
+			}
+			m_vecHurdles[1].push_back(pHurdle);
+		}
+	}
 	return S_OK;
 }
 
@@ -205,7 +272,6 @@ MiniGameScene* MiniGameScene::Create(LPDIRECT3DDEVICE9 _GRPDEV, Scene* pCurrScen
 	return LS;
 }
 void MiniGameScene::Free() {
-
 	Scene::Free();
 }
 

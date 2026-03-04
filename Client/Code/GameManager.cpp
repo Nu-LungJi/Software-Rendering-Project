@@ -16,6 +16,7 @@ HRESULT GameManager::Ready_GameManager() {
 	return S_OK;
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
+	
 	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
@@ -59,7 +60,6 @@ HRESULT GameManager::Ready_SceneSetting() {
 	//Scene* EnterScene = MapScene::Create(GRPDEV);
 	//Scene* EnterScene	= DoCheolScene::Create(GRPDEV);
 	//Scene* EnterScene	= MiniGameScene::Create(GRPDEV);
-
 	if (EnterScene == nullptr)	return E_FAIL;
 	if (FAILED(SceneManager::GetInstance()->Scene_Transition(EnterScene))) {
 		MSG_BOX("Cannot Setting LogoScene.");

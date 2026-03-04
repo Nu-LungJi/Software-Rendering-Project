@@ -416,7 +416,7 @@ void Tile::Imgui_ModeChanger()
 			if (ImGui::BeginCombo("##Choice", cSelect_Stage))
 			{
 				for (_int i = 0; i < IM_ARRAYSIZE(cTileStage); i++)
-				{
+				{	
 					_bool bSelect = (cSelect_Stage == cTileStage[i]);
 					if (ImGui::Selectable(cTileStage[i], bSelect))
 					{
@@ -585,7 +585,8 @@ void Tile::Imgui_ModeChanger()
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[6])) m_eNextStage = TILE_STAGE::TILE_DOCHER2;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[7])) m_eNextStage = TILE_STAGE::TILE_DOCHERBOSS;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[8])) m_eNextStage = TILE_STAGE::TILE_DEFENSE;
-					else if (!strcmp(cSelect_NextStage, cTileNextStage[9])) m_eNextStage = TILE_STAGE::STAGE_END;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[9])) m_eNextStage = TILE_STAGE::STAGE_ROLARUN;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[10])) m_eNextStage = TILE_STAGE::STAGE_END;
 				}
 				if (bSelect)
 					ImGui::SetItemDefaultFocus();

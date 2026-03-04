@@ -16,6 +16,7 @@ HRESULT StageBlackOut::Ready_Effect(_vec3* vPos, _bool bDocheol) {
 	m_iFrameCnt = 0;
 	m_bDocheol = bDocheol;
 	m_bStop = false;
+	Set_ObjectTag(L"BlackOut");
 	m_bRestart = true;
 	return S_OK;
 }
@@ -56,6 +57,8 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				++m_iFrameCnt;
 
 				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
+				SoundManager::GetInstance()->Stop_AllSound();
+				SoundManager::GetInstance()->Play_Sound_Once(L"DoCheol/BackGround_Sound.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
 				m_bStop = false;
 			}
 
@@ -90,9 +93,9 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				m_bStop = false;
 			}
 
-			if (m_iFrameCnt == 20)
+			if (m_iFrameCnt == 21)
 				TileManager::GetInstance()->Set_EndLoading(false);
-			if (m_iFrameCnt == 20 && !TileManager::GetInstance()->Get_Loading())
+			if (m_iFrameCnt == 21 && !TileManager::GetInstance()->Get_Loading())
 			{
 				m_bStop = true;
 				return 1;

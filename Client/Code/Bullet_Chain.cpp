@@ -46,6 +46,7 @@ INT	Bullet_Chain::Update_GameObject(const _float& _DT)
 		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
+		SoundManager::GetInstance()->Play_Sound(L"Monster/Scorpion_Chain.mp3", CHANNELID::SOUND_EFFECT08, 0.3f);
 
 		ObjectDead = true;
 	}

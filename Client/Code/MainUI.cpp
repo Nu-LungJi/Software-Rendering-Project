@@ -70,6 +70,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	Display_BossTitle(_DT);
 	Display_BossHPBar(_DT);
 	Display_FadeFilter(_DT);
+
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
 

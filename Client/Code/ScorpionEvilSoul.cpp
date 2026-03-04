@@ -57,9 +57,10 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = 0.5f; 
-
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x * 0.5f, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
@@ -78,6 +79,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	case MONSTER_STATE_DISAPPEAR:
 		if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
 		{
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 			ObjectDead = true;
 		}
 		break;
@@ -235,17 +237,9 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 	m_tInfo.eState[0]	= MONSTER_STATE_APPEAR;
 	m_tInfo.vDirection	= { 1.f,0.f,0.f };
 
-	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-				(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-				(uint8_t)MONSTER_ANIM::Appear);
-	}
-	else {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-			(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-			(uint8_t)MONSTER_ANIM::Stand);
-	}
-
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+		(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
+		(uint8_t)MONSTER_ANIM::Stand);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
@@ -272,10 +266,22 @@ ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	}return TRUE;
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		if (Tag == L"PlayerArrow") {
+			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
+				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+				return TRUE;
+			}
+		}
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case EVILSLIME_FISSION:
+		return 0;
+	}
 
 	return FALSE;
 }
@@ -287,8 +293,13 @@ BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x),(!vGravity.y),(!vGravity.z));
+		}
 	}
 	return FALSE;
 }
@@ -322,6 +333,7 @@ VOID ScorpionEvilSoul::State_Summon(const _float& _DT)
 		m_tInfo.pGameObj[0] = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_SUMMONS01, vPos, FALSE, MONSTER_SUMMON01_PLAYTIME);
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, m_tInfo.pGameObj[0]);
 		PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_SUMMONS02, vPos, MONSTER_SUMMON02_PLAYTIME);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Scorpion_Chain.wav", CHANNELID::SOUND_EFFECT04, 0.4f);
 	}
 
 	if (m_tInfo.bTrigger[0])
@@ -452,13 +464,14 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 
 	if (m_tInfo.fTimer[0] >= SCORPIONEVILSOUL_CHANNELING_TIME)
 	{
+		SoundManager::GetInstance()->Stop_Sound(CHANNELID::SOUND_EFFECT08);
 		_vec3 vDir = *POS(m_tInfo.pGameObj[0]) - *MYPOS;
 		D3DXVec3Normalize(&vDir, &vDir);
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Set_Dir(vDir);
 		
 		//CollisionManager::GetInstance()->Add_ColliderObject(m_tInfo.pGameObj[1]);
 
-		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 
 		static_cast<ScorpionBullet*>(m_tInfo.pGameObj[1])->Get_Info()->fSpeed = SCORPIONBULLET_SPEED;
 
@@ -469,6 +482,5 @@ VOID ScorpionEvilSoul::State_Channeling(const _float& _DT)
 VOID ScorpionEvilSoul::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 	ObjectDead = true;
 }
