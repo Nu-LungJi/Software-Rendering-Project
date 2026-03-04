@@ -27,6 +27,8 @@ public:
     void                    Tile_Gasi_Destory(CONST FLOAT& _DT);
     void                    Tile_Move_Effect(CONST FLOAT& _DT, TILE_STAGE eid);
     void                    Tile_Boom(CONST FLOAT& _DT);
+    void                    Tile_Height_Speed(_float fH) { m_fHeightSpeed =fH; }
+    void                    Tile_Docheol(CONST FLOAT& _DT);
     void                    Set_Destory()   { m_bDestroy = true; }
     Transform*              Crash_Player();
     Transform*              Crash_Arrow();
@@ -53,6 +55,7 @@ private:
 
     _int                    m_iCheck;
 
+    _bool                   m_bEndPotal;
     _bool                   m_bEffect;
     _bool                   m_bStopFrame;
     _bool                   m_bDestroy;

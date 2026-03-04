@@ -795,6 +795,27 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
+	case 6:
+		item = new ItemINFO;
+		item->ItemDesc = {
+		   L"풍수의 활",
+		   L"무기/희귀",
+
+		   L"일반 공격",
+		   L"이동 속도 + 20%",
+		   L"공격 속도 2.5",
+
+		   L"그냥 빨라집니다.",
+
+		   L"",
+
+		   L"DIC_InvenFrame_DarkBow",
+		   L"DIC_InfoFrame_DarkBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		Append_Item(item);
+		break;
 	}
 
 	return S_OK;

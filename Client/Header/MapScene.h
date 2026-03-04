@@ -19,6 +19,8 @@ private:
 
 private:
 	CLoading* pLoading;
+	CLoading* pMiniGameLoading;
+	MiniGameScene* pMiniGame;
 public:
 	static	MapScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	

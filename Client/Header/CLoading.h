@@ -5,7 +5,7 @@
 class CLoading : public Base
 {
 public:
-	enum LOADINGID { LOADING_STAGE, LOADING_BOSS, LOADING_RESOURCE, LOADING_END };
+	enum LOADINGID { LOADING_STAGE, LOADING_MINIGAME, LOADING_RESOURCE, LOADING_END };
 
 public:
 	explicit CLoading(LPDIRECT3DDEVICE9 pGraphicDev);
@@ -15,13 +15,12 @@ public:
 	const _tchar* Get_String() { return m_szLoading; }
 	LOADINGID		Get_LoadingID() { return m_eLoadingID; }
 	_bool			Get_Finish() { return m_bFinish; }
-
 	CRITICAL_SECTION* Get_Crt() { return &m_Crt; }
 
 public:
-	HRESULT		Ready_Loading(LOADINGID eID, wstring Path);
+	HRESULT		Ready_Loading(LOADINGID eID);
 	_uint		Loading_Stage();
-	_uint		Loading_Resource();
+	_uint		Loading_MiniGame();
 
 public:
 	static unsigned int CALLBACK Thread_Main(void* pArg);
@@ -40,7 +39,7 @@ private:
 	wstring				m_pPath;
 
 public:
-	static CLoading* Create(LPDIRECT3DDEVICE9 pGraphicDev, LOADINGID eID, wstring Path = L"");
+	static CLoading* Create(LPDIRECT3DDEVICE9 pGraphicDev, LOADINGID eID);
 
 private:
 	virtual void	Free();

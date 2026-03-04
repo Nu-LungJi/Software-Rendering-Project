@@ -127,6 +127,7 @@
 #include "DoCheolScene.h"
 #include "MiniGameScene.h"
 
+#include "TempScene.h"
 #include "CLoading.h"
 //////////////////////////////////////////// Manager
 

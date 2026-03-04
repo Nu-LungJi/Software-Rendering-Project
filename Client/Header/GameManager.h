@@ -21,6 +21,7 @@ private:
 	GraphicDevice*				DEVCLASS;
 	LPDIRECT3DDEVICE9			GRPDEV;
 
+	MiniGameScene* pMiniGame;
 public:
 	static	GameManager*		Create();
 	virtual	VOID				Free();

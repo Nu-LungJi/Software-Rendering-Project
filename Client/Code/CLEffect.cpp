@@ -478,7 +478,7 @@ HRESULT	CLEffect::Component_Initialize(CL_EFFECT eEffect) {
 	{
 		Component_Colider = ADD_COMPONENT_COLLIDER;
 		Component_Colider->Set_CenterPos(Component_Transform);
-		Component_Colider->Set_Scale(10.f, 5.f, 5.f);
+		Component_Colider->Set_Scale(8.f, 5.f, 2.f);
 	}
 	
 	D3DXCreateSprite(GRPDEV, &m_pSprite);
@@ -494,6 +494,9 @@ CLEffect* CLEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 v
 	return EFT;
 }
 void CLEffect::Free() {
+	for (auto& iter : m_vecTextureList)
+		Safe_Release(iter);
+
 	Safe_Release(m_pSprite);
 	GameObject::Free();
 }
