@@ -50,12 +50,12 @@ _vec3* Scene::Search_Target(_vec3* myPos, _float radius, const TCHAR* _TAG)
     }
     return TargetPos;
 }
-GameObject* Scene::Search_Target_Object(_vec3* myPos, _float radius, const TCHAR* _TAG)
+GameObject* Scene::Search_Target_Object(_vec3* myPos, _float radius)
 {
     GameObject* target = nullptr;
 
     auto LYR = LayerList[(LONG)LAYER_TYPE::LAYER_DYNAMIC_OBJECT];
-    target = LYR->Search_Target_Object(myPos, radius, _TAG);
+    target = LYR->Search_Target_Object(myPos, radius);
 
     return target;
 }

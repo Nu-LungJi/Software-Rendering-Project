@@ -85,15 +85,15 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 	if (UIManager::GetInstance()->Get_Active() == TRUE) {
 		Selecting_SavedItem();
 		Selecting_EquipItem();
-		Display_ItemInfo();
 		Equip_Item();
+		
 	}
 
 
 	return 0;
 }
 VOID	PlayerInven::LateUpdate_GameObject(CONST FLOAT& _DT) {
-
+	Display_ItemInfo();
 }
 VOID	PlayerInven::Render_GameObject() {
 	if (UIManager::GetInstance()->Get_Active() == TRUE) {
@@ -277,7 +277,7 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InfoFrame_Relic_Horcrux", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Relic_quiver.png", L"DIC_InfoFrame_Relic_quiver", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_quiver.png", L"DIC_InfoFrame_Relic_quiver", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Glove.png",  L"DIC_InfoFrame_Relic_Glove", 0.f, 0.f, 80, 80, FALSE, 255));
 
 	ItemINFO* it06 = new ItemINFO;
@@ -320,67 +320,10 @@ HRESULT PlayerInven::Item_Initialize() {
 	it07->ItemPrice = 70;
 	it07->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
-	ItemINFO* it01 = new ItemINFO;
-	it01->ItemDesc = {
-		L"오동나무 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"일반 공격력 24 ~ 26",
-		L"공격 속도 2.5",
-
-		L"치명타 확률이 +3% 증가합니다.",
-
-		L"" ,
-
-		L"DIC_InvenFrame_MichaelBow",
-		L"DIC_InfoFrame_MichaelBow"
-	};
-	it01->ItemPrice = 68;
-	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
-	ItemINFO* it04 = new ItemINFO;
-	it04->ItemDesc = {
-		L"얼음 정령의 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"일반 공격력 14 - 16",
-		L"공격 속도 2",
-
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
-
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
-
-		L"DIC_InvenFrame_IceBow",
-		L"DIC_InfoFrame_IceBow"
-	};
-	it04->ItemPrice = 68;
-	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-
-	ItemINFO* it02 = new ItemINFO;
-	it02->ItemDesc = {
-		L"풍수의 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"이동 속도 + 20%",
-		L"공격 속도 2.5",
-
-		L"그냥 빨라집니다.",
-
-		L"",
-
-		L"DIC_InvenFrame_DarkBow",
-		L"DIC_InfoFrame_DarkBow"
-	};
-	it02->ItemPrice = 68;
-	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
-		L"풍수의 활",
-		L"무기/희귀",
+		L"선현궁",
+		L"무기/노말",
 
 		L"일반 공격",
 		L"이동 속도 + 20%",
@@ -399,12 +342,8 @@ HRESULT PlayerInven::Item_Initialize() {
 
 
 	Append_Item(it03);
-	Append_Item(it04);
-	Append_Item(it02);
-	Append_Item(it01);
 	Append_Item(it06);
 	Append_Item(it07);
-	//Append_Item(it05);
 
 	return S_OK;
 }
@@ -812,7 +751,50 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
+	case 6 :
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"풍수의 활",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"이동 속도 + 20%",
+			L"공격 속도 2.5",
+
+			L"그냥 빨라집니다.",
+
+			L"",
+
+			L"DIC_InvenFrame_DarkBow",
+			L"DIC_InfoFrame_DarkBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		Append_Item(item);
+		break;
+	case 7:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"파르쿠나스",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"일반 공격력 24 ~ 26",
+			L"공격 속도 2.5",
+
+			L"치명타 확률이 +3% 증가합니다.",
+
+			L"" ,
+
+			L"DIC_InvenFrame_MichaelBow",
+			L"DIC_InfoFrame_MichaelBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		Append_Item(item);
+		break;
 	}
+
 
 	return S_OK;
 }

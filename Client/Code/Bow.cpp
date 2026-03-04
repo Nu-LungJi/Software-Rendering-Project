@@ -21,6 +21,7 @@ HRESULT Bow::Ready_GameObject()
 	_cameraAngle = _cameraAngle / D3DX_PI * 180.f;
 
 	_alphaRatio = 0.f;
+	_attackTimer = 10.f;
 
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
@@ -171,8 +172,10 @@ INT Bow::Update_GameObject(const _float& _DT)
 
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 	}
-	else
+	else {
+		_attackTimer = 10.f;
 		_alphaRatio = 0.f;
+	}
 
 	AlphaSorting(Component_Transform->Get_Position());
 	

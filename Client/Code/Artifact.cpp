@@ -45,7 +45,7 @@ VOID Artifact::Artifact_Effect()
 	Player* PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 	switch (itemIdx) {
 	case 0 :
-		PlayerObject->Set_DefaultSpeed(1.5f);
+		PlayerObject->Set_DefaultSpeed(1.2f);
 		break;
 	case 1:
 		PlayerObject->Set_Atk(11);

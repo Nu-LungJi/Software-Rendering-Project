@@ -24,7 +24,7 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 		  
 		for (int i = 0; i < 3; ++i)
 		{
-			  if (TileManager::GetInstance()->Get_Defense().size() > 2000)
+			  if (TileManager::GetInstance()->Get_Defense().size() > 500)
 				  break;
 			  _int iRand = rand() % 5;
 			  GameObject* pObj=nullptr;
