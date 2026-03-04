@@ -49,7 +49,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
 		MYPOS->y = MYSCALE->y * 0.5f;
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x* 0.5f, MYSCALE->x * 0.5f);
 
 
 	if (Component_Collider->Get_Hp() <= 0.f)
@@ -229,8 +229,12 @@ BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 	{
 	default:
 		Tag = _Other->Get_ObjectTag();
-		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 
-		return TRUE;
+		if (Tag == L"PlayerArrow") {
+			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
+				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+				return TRUE;
+			}
+		}
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_DEAD:
@@ -252,6 +256,9 @@ BOOL EvilSlime::OnCollisionStay(GameObject* _Other)
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
 		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+				return false;
+			}
 			_vec3 vGravity = Monster::Get_Gravity();
 			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
 		}

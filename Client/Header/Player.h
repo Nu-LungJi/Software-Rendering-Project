@@ -324,10 +324,12 @@ private:
 		void			Set_IsFalling(bool b) { Is_Falling = b;}
 		bool			Get_IsFalling() { return Is_Falling; }
 		void			Fall(const _float& _DT);
+		bool			Is_Invincible() { return _invincibleTimer > 0.f; }
 
 	private:
 		SCENE_TYPE		m_eCurrScene;
 		_vec3			m_vBackUpPos;
+		_vec3			m_vBackupScale;
 		bool			Is_Falling;
 
 };

@@ -616,6 +616,20 @@ void Player::DASH_STATE(const _float& _DT)
 	_vec3		upDir, rightDir;
 	upDir = { 0.f, 0.f, 1.f };
 	rightDir = { 1.f, 0.f, 0.f };
+
+	//KJJ 03 04
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		if (Monster::Get_Gravity().z > 0.f) {
+			rightDir = { 0.f,1.f,0.f };
+			upDir = { -1.f,0.f,0.f };
+		}
+		else if (Monster::Get_Gravity().y > 0.f) {
+			rightDir = { -1.f,0.f,0.f };
+			upDir = { 0.f,0.f,1.f };
+		}
+	}
+
+
 	D3DXVec3Normalize(&upDir, &upDir);
 	D3DXVec3Normalize(&rightDir, &rightDir);
 
@@ -1521,6 +1535,8 @@ HRESULT Player::MiniGameInit()
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
 	Is_Falling = true;
 	m_vBackUpPos = *Component_Transform->Get_Position();
+	m_vBackupScale = Component_Collider->Get_Scale();
+	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);
 	Monster::Set_Gravity({ 0.f,-1.f,0.f });
 
 	return S_OK;
@@ -1528,6 +1544,7 @@ HRESULT Player::MiniGameInit()
 HRESULT Player::MiniGameExit()
 {
 	Component_Transform->Set_Pos(m_vBackUpPos);
+	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
 }
