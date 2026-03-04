@@ -321,10 +321,13 @@ private:
 	public:
 		HRESULT			MiniGameInit();
 		HRESULT			MiniGameExit();
-
+		void			Set_IsFalling(bool b) { Is_Falling = b;}
+		bool			Get_IsFalling() { return Is_Falling; }
+		void			Fall(const _float& _DT);
 
 	private:
 		SCENE_TYPE		m_eCurrScene;
 		_vec3			m_vBackUpPos;
 		bool			Is_Falling;
+
 };

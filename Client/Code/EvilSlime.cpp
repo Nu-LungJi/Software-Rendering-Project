@@ -44,18 +44,10 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
+
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
 		MYPOS->y = MYSCALE->y * 0.5f;
-	}
 
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 

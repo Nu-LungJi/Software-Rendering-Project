@@ -57,8 +57,9 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = 0.5f; 
-
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
 	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
@@ -235,17 +236,9 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 	m_tInfo.eState[0]	= MONSTER_STATE_APPEAR;
 	m_tInfo.vDirection	= { 1.f,0.f,0.f };
 
-	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-				(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-				(uint8_t)MONSTER_ANIM::Appear);
-	}
-	else {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-			(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-			(uint8_t)MONSTER_ANIM::Stand);
-	}
-
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+		(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
+		(uint8_t)MONSTER_ANIM::Stand);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
