@@ -66,6 +66,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		pBulletinfo->pGameObj[0] = m_tInfo.pGameObj[0];
 
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+		SoundManager::GetInstance()->Play_Sound(L"Monster/Scorpion_Chain.mp3", CHANNELID::SOUND_EFFECT08, 0.3f);
 
 		m_tInfo.pGameObj[1] = nullptr;
 	}
