@@ -1518,7 +1518,8 @@ HRESULT Player::MiniGameInit()
 {
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Component_Transform->Set_Scale(1.25f, 1.25f, 1.25f);
-	Component_Transform->Set_Pos(5.f, 5.f, 5.f);
+	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
+	Is_Falling = true;
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	Monster::Set_Gravity({ 0.f,-1.f,0.f });
 

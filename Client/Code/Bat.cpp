@@ -206,8 +206,10 @@ BOOL Bat::OnCollisionStay(GameObject* _Other)
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
+		}
 		break;
 	case MONSTER_STATE_TRACKING:
 		if (Tag != L"Monster_Bullet") {
