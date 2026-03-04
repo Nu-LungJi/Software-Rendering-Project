@@ -2,10 +2,10 @@
 #include "Scene.h"
 class CLoading;
 class MiniGameScene;
-class StartScene : public Scene {
+class LoadingScene : public Scene {
 protected:
-	explicit StartScene(LPDIRECT3DDEVICE9 _GRPDEV);
-	virtual ~StartScene();
+	explicit LoadingScene(LPDIRECT3DDEVICE9 _GRPDEV);
+	virtual ~LoadingScene();
 
 public:
 	virtual   HRESULT      Ready_Scene();
@@ -19,9 +19,9 @@ private:
 	HRESULT      Ready_UserInterface_Layer();
 
 private:
-	MiniGameScene* pMiniGame;
+	CLoading* pLoading;
 public:
-	static   StartScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+	static   LoadingScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	virtual void Free();
 };

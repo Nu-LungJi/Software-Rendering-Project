@@ -141,7 +141,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD && m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
+    if (CHEONLOG == nullptr || m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD && m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
     {
         m_bPoolCheck = true;
     }
@@ -150,6 +150,8 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
 
 void CLAttack::Render_GameObject()
 {
+    if (CHEONLOG == nullptr)
+        return;
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 

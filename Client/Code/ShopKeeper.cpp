@@ -43,6 +43,8 @@ VOID ShopKeeper::LateUpdate_GameObject(const _float& _DT) {
 		Shop_AnimIDX = Shop_AnimIDX % 8 + 1;
 		Timer_Shop = 0.f;
 	}
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHER1)
+		ObjectDead = true;
 }
 VOID ShopKeeper::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

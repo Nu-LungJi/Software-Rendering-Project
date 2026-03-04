@@ -204,8 +204,6 @@ void CLEffect::Move_Potal(const _float& _DT)
 			{
 				CollisionManager::GetInstance()->Delete_ColliderObject(this);
 				SoundManager::GetInstance()->Stop_AllSound();
-				SoundManager::GetInstance()->Play_Sound(L"BackGround_Sound.wav", CHANNELID::SOUND_BGM02, 0.3f);
-
 				dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({57.726f,0.5f,16.321f}, false, 0, false,SCENE_EFFECT::SCENE_BOSS);
 				TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
 				Set_ObjectDead(m_bDead);

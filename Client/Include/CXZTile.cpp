@@ -121,7 +121,13 @@ VOID CXZTile::Render_GameObject()
         GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
         break;
     case TILE_STATE::STATE_POTALGASI:
-           GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+        if (!m_pTileInfo->Get_PotalOpen() && m_pTileInfo->Get_TileStage() != TILE_STAGE::TILE_DOCHERBOSS)
+        {
+            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+        }
+        else if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_DOCHERBOSS)
+            GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+        else return;
         break;
     case TILE_STATE::STATE_POTALGASI_EFFECT:
 
@@ -337,7 +343,6 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
         {
             TileManager::GetInstance()->Set_MiniGame(TRUE);
             dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 25.f, 2.f, 2. }, false, 0, false);
-            TileManager::GetInstance()->Set_CurStage(m_pTileInfo->Get_NextStage());
             m_bEndPotal = false;
         }
         else
@@ -514,9 +519,8 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
 }
 void CXZTile::Tile_Docheol(const FLOAT& _DT)
 {
-    if (TileManager::GetInstance()->Get_BreakDari())
+    if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHERBOSS && TileManager::GetInstance()->Get_BreakDari())
     {
-
         m_fFrame += _DT;
         _vec3 vPos = *m_pTransform->Get_Position();
         if (m_fFrame > m_fHeightSpeed)

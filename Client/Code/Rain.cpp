@@ -10,6 +10,9 @@ HRESULT Rain::Ready_GameObject() {
 	return S_OK;
 }
 INT	Rain::Update_GameObject(const _float& _DT) {
+	if (Get_ObjectDead())
+		return -1;
+	
 	GameObject::Update_GameObject(_DT);
 	_vec3		vPos;
 
@@ -26,7 +29,8 @@ INT	Rain::Update_GameObject(const _float& _DT) {
 }
 VOID Rain::LateUpdate_GameObject(const _float& _DT) {
 	//GameObject::LateUpdate_GameObject(_DT);
-
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHER1)
+		Set_ObjectDead(TRUE);
 }
 VOID Rain::Render_GameObject() {
 	Component_Buffer->PreRedner_Particle();

@@ -33,11 +33,11 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
 
-	Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
-	Animation_TexList		= &Animation_Normal_Stand_TexList;
+	//Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
+	//Animation_TexList		= &Animation_Normal_Stand_TexList;
 
-	//Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
-	//Animation_TexList = &Animation_NonAnim_TexList;
+	Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_TexList = &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 
@@ -73,7 +73,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	FSM->Update_GameObject(_DT);
 
-	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= 100.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= 30.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Set_FocusOnBoss(TRUE);
 		Enable_BossAppearStaging = TRUE;
