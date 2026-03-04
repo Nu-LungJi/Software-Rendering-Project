@@ -44,20 +44,12 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = MYSCALE->y * 0.5f;
-	}
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
+
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x* 0.5f, MYSCALE->x * 0.5f);
 
 
 	if (Component_Collider->Get_Hp() <= 0.f)
@@ -237,8 +229,12 @@ BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 	{
 	default:
 		Tag = _Other->Get_ObjectTag();
-		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 
-		return TRUE;
+		if (Tag == L"PlayerArrow") {
+			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
+				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+				return TRUE;
+			}
+		}
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_DEAD:
@@ -259,8 +255,13 @@ BOOL EvilSlime::OnCollisionStay(GameObject* _Other)
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
+		}
 	}
 	return FALSE;
 }
@@ -387,8 +388,7 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 			pBullet->Set_ObjectTag(L"MonsterBullet");
 			pBullet->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_STATIC_OBJECT)->Add_GameObject(pBullet);
-		  SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
 		}
 	}
 	else

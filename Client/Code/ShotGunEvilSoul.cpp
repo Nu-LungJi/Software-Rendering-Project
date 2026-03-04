@@ -42,7 +42,12 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
   
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
+
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x* 0.5f, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
@@ -184,10 +189,22 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")	
+	switch (m_tInfo.eState[0])
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 	
-	}	return TRUE;
+	default:
+		if (Tag == L"PlayerArrow") {
+			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
+				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+				return TRUE;
+			}
+		}
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case EVILSLIME_FISSION:
+		return 0;
+	}
 
 
 	return FALSE;
@@ -201,8 +218,13 @@ BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
+		}
 	}
 	return FALSE;
 }

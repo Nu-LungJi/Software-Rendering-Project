@@ -3,6 +3,8 @@
 
 class CameraObject;
 
+enum class POOLINGMODE :uint8_t { X = 0, Y, Z, End };
+
 class CubeFloorTile :
     public GameObject
 {
@@ -52,6 +54,11 @@ private:
 
     bool    Pooling();
 
+public:
+    void        Set_OriginPos(_vec3 _vPos) { m_vOriginPos = _vPos; }
+    void        Move_to_OriginPos() { m_pTransform->Set_Pos(m_vOriginPos); }
+    POOLINGMODE Get_PoolingMode() { return m_ePoolingMode; }
+
 private:
     GameObject*         m_pTarget = nullptr;
     CameraObject*       m_pCam = nullptr;
@@ -61,6 +68,8 @@ private:
     _float*             m_pTimer;
     IDirect3DTexture9*  m_pTexture;
     int                 m_iFalling;
+    _vec3               m_vOriginPos;
+    POOLINGMODE         m_ePoolingMode = POOLINGMODE::X;
 };
 
 class CubeFunction

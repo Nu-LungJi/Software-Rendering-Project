@@ -57,9 +57,10 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	MYPOS->y = 0.5f; 
-
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x * 0.5f, MYSCALE->x * 0.5f);
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.Change_State(MONSTER_STATE_DISAPPEAR);
@@ -236,17 +237,9 @@ HRESULT ScorpionEvilSoul::Component_Initialize() {
 	m_tInfo.eState[0]	= MONSTER_STATE_APPEAR;
 	m_tInfo.vDirection	= { 1.f,0.f,0.f };
 
-	if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-				(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-				(uint8_t)MONSTER_ANIM::Appear);
-	}
-	else {
-		m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
-			(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
-			(uint8_t)MONSTER_ANIM::Stand);
-	}
-
+	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Monster,
+		(uint8_t)MONSTER_TYPE::ScorpionEvilSoul,
+		(uint8_t)MONSTER_ANIM::Stand);
 
 	return Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo);
 }
@@ -273,10 +266,22 @@ ScorpionEvilSoul* ScorpionEvilSoul::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL ScorpionEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-	}return TRUE;
+	switch (m_tInfo.eState[0])
+	{
+	default:
+		if (Tag == L"PlayerArrow") {
+			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
+				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+				return TRUE;
+			}
+		}
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case EVILSLIME_FISSION:
+		return 0;
+	}
 
 	return FALSE;
 }
@@ -288,8 +293,13 @@ BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x),(!vGravity.y),(!vGravity.z));
+		}
 	}
 	return FALSE;
 }

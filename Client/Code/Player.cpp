@@ -8,6 +8,8 @@ Player::~Player()													{}
 HRESULT Player::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
+	ObjectTAG = L"Player";
+
 	//Temp
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
@@ -249,17 +251,6 @@ VOID Player::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 
 	if (m_eCurrScene == SCENE_TYPE::Minigame) {
-		Is_Falling =true;
-		for (auto it : CollisionList)
-		{
-			if (it->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_TERRAIN) {
-				Is_Falling = false;
-			}
-		}
-		if (Is_Falling) {
-			_vec3 vDown = { 0.f,-1.f,0.f };
-			Component_Transform->Move_Pos(&vDown, 10.f, _DT);
-		}
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 	}
 
@@ -360,9 +351,23 @@ void Player::IDLE_STATE(const _float& _DT)
 	{
 		_vec3		upDir, rightDir;
 		upDir = { 0.f, 0.f, 1.f };
-		rightDir = { 1.f, 0.f, 0.f };
+		rightDir = { 1.f, 0.f, 0.f };		
+		
+		//KJJ 03 04
+		if (m_eCurrScene == SCENE_TYPE::Minigame) {
+			if (Monster::Get_Gravity().z > 0.f) {
+				rightDir = { 0.f,1.f,0.f };
+				upDir = { -1.f,0.f,0.f };
+			}
+			else if (Monster::Get_Gravity().y > 0.f) {
+				rightDir = { -1.f,0.f,0.f };
+				upDir = { 0.f,0.f,1.f };
+			}
+		}
+
 		D3DXVec3Normalize(&upDir, &upDir);
 		D3DXVec3Normalize(&rightDir, &rightDir);
+
 
 		if (_speed == 0.f)
 		{
@@ -611,6 +616,20 @@ void Player::DASH_STATE(const _float& _DT)
 	_vec3		upDir, rightDir;
 	upDir = { 0.f, 0.f, 1.f };
 	rightDir = { 1.f, 0.f, 0.f };
+
+	//KJJ 03 04
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		if (Monster::Get_Gravity().z > 0.f) {
+			rightDir = { 0.f,1.f,0.f };
+			upDir = { -1.f,0.f,0.f };
+		}
+		else if (Monster::Get_Gravity().y > 0.f) {
+			rightDir = { -1.f,0.f,0.f };
+			upDir = { 0.f,0.f,1.f };
+		}
+	}
+
+
 	D3DXVec3Normalize(&upDir, &upDir);
 	D3DXVec3Normalize(&rightDir, &rightDir);
 
@@ -1486,6 +1505,23 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 }
 BOOL Player::OnCollisionStay(GameObject* _Other)
 {
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		CubeFloorTile* pCube = dynamic_cast<CubeFloorTile*>(_Other);
+		if(pCube != nullptr){
+			switch (pCube->Get_PoolingMode())
+			{
+			case POOLINGMODE::X:
+				Is_Falling = (Monster::Get_Gravity().y != 0.f);
+				break;
+			case POOLINGMODE::Y:
+				Is_Falling = (Monster::Get_Gravity().z != 0.f);
+				break;
+			case POOLINGMODE::Z:
+				Is_Falling = (Monster::Get_Gravity().y != 0.f);
+				break;
+			}
+		}
+	}
 	return 0;
 }
 BOOL Player::OnCollisionExit(GameObject* _Other)
@@ -1495,17 +1531,29 @@ BOOL Player::OnCollisionExit(GameObject* _Other)
 HRESULT Player::MiniGameInit()
 {
 	m_eCurrScene = SCENE_TYPE::Minigame;
-	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
-	Component_Transform->Set_Pos(25.f, 2.f, 2.f);
+	Component_Transform->Set_Scale(1.25f, 1.25f, 1.25f);
+	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
+	Is_Falling = true;
 	m_vBackUpPos = *Component_Transform->Get_Position();
+	m_vBackupScale = Component_Collider->Get_Scale();
+	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);
+	Monster::Set_Gravity({ 0.f,-1.f,0.f });
 
 	return S_OK;
 }
 HRESULT Player::MiniGameExit()
 {
 	Component_Transform->Set_Pos(m_vBackUpPos);
+	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
+}
+void Player::Fall(const _float& _DT)
+{
+	if (Is_Falling) {
+		_vec3 vDir = Monster::Get_Gravity();
+		Component_Transform->Move_Pos(&vDir, 10.f, _DT);
+	}
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {
 
