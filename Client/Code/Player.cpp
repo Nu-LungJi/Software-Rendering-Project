@@ -1553,7 +1553,6 @@ HRESULT Player::MiniGameInit()
 
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
-	m_fBackUpHp = Component_Collider->Get_Hp();
 	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);
 	Monster::Set_Gravity({ 0.f,-1.f,0.f });
 
@@ -1563,7 +1562,6 @@ HRESULT Player::MiniGameExit()
 {
 	Component_Transform->Set_Pos(m_vBackUpPos);
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
-	Component_Collider->Set_Hp(m_fBackUpHp);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
 }

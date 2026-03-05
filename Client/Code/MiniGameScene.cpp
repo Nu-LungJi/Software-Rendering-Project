@@ -62,11 +62,10 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 			it = nullptr;
 		}
 	}
-	if (POS(m_pPlayer)->z > 35.f) {
-		End_MiniGame();
-	}
 	m_pPlayer->Fall(_DT);
-	if (Monster::Get_Gravity().y == -1.f)
+	if (POS(m_pPlayer)->z > 35.f)
+		End_MiniGame();
+	else if (Monster::Get_Gravity().y == -1.f)
 		if (POS(m_pPlayer)->x < -3.f)	
 			End_MiniGame();
 	else if (Monster::Get_Gravity().z == 1.f) 
@@ -132,26 +131,25 @@ HRESULT MiniGameScene::Start_MiniGame()
 
 HRESULT MiniGameScene::End_MiniGame()
 {
-	if(nullptr!= Monster::Get_Player())
-		Monster::Get_Player()->MiniGameExit(); 
+	if (nullptr != Monster::Get_Player())
+		Monster::Get_Player()->MiniGameExit();
 	if (nullptr != Monster::Get_Camera())
 		Monster::Get_Camera()->Exit_MiniGame();
 
 	for (auto pLayer : LayerList)
 	{
 		for (auto pObj : *pLayer->Get_GameObjectList()) {
-		for (auto& pObj : *pLayer->Get_GameObjectList()) {
-			CollisionManager::GetInstance()->Delete_ColliderObject(pObj);
+			for (auto& pObj : *pLayer->Get_GameObjectList()) {
+				CollisionManager::GetInstance()->Delete_ColliderObject(pObj);
+			}
 		}
 	}
-
 	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
 	MonsterManager::GetInstance()->Release_Static_Batich();
 
 	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
-	return S_OK;
+	return S_OK;	
 }
-
 HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 
 	MonsterManager::GetInstance()->Ready_Origin_Buffer();
