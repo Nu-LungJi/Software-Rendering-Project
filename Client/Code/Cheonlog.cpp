@@ -159,6 +159,7 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 			}
 			m_vecOrignBullet[i].clear();
 		}
+
 		//for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 		//{
 		//	for (auto& iter : m_vecPoolBullet[i])

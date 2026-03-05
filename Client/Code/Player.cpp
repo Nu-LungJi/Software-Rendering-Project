@@ -77,7 +77,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  20.213, 0.5f, 19.661f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 19.661f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
@@ -1481,30 +1481,33 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 		wstring Tag = _Other->Get_ObjectTag();
 		MainUI* mainUI;
 		if (Tag == L"Hurdle") {
-			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-			mainUI->Player_LostHP();
 
 			return TRUE;
 		}
 	}
-		//return 0;
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
 	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
+			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
 
-		return TRUE;
+			return TRUE;
+		}
+		return false;
 	}
 	else if(Tag == L"Monster")
 	{
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
 
 		return TRUE;
+		}
+		return false;
 	}
 
 	return FALSE;
@@ -1551,7 +1554,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
-	Component_Transform->Set_Pos(60.671, 0.5f, 43.405);
+	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
@@ -1563,7 +1566,7 @@ void Player::Fall(const _float& _DT)
 
 	if (Is_Falling) {
 		_vec3 vDir = Monster::Get_Gravity();
-		Component_Transform->Move_Pos(&vDir, 8.f, _DT);
+		Component_Transform->Move_Pos(&vDir, 10.f, _DT);
 	}
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {

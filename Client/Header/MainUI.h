@@ -52,6 +52,8 @@ public:		// Trigger Function
 	VOID			Set_PopUpItem(ItemINFO* _IT) { PopUpItem = _IT; }
 	VOID			Set_PopUpSprite(SpriteINFO* _SPR) { PopUpSprite = _SPR; }
 
+	VOID			Set_BossClearUI(BOOL _BCU) { Enable_BossClearUI = _BCU; }
+
 	vector<FontObject*> Get_AllFontObject() { return AllFontOBJ; }
 private:
 	VOID			Display_InteractionUI();
@@ -60,6 +62,7 @@ private:
 	VOID			Display_BossHPBar(CONST FLOAT& _DT);
 	VOID			Display_FadeFilter(CONST FLOAT& _DT);
 	VOID			Synchronize_BossHPBar();
+	VOID			Display_ClearBossUI(CONST FLOAT& _DT);
 public:
 	HRESULT Component_Initialize();
 	HRESULT Sprite_Initialize();
@@ -90,6 +93,10 @@ private:
 	FLOAT	Timer01, Timer02, Timer03;
 
 	FLOAT	MainUIOpacity;
+
+	BOOL	Enable_BossClearUI;
+	FLOAT	BossClearTimer;
+	BOOL	BossClear[10];
 
 	INT				Enable_MainUIFade;
 	BOOL			Enable_ItemPopUp;

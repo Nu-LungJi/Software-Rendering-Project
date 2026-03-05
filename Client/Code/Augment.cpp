@@ -130,7 +130,7 @@ HRESULT Augment::Perk_Initialize()
   Perk_Info.push_back(pPerk2);
 
 	ItemINFO* pPerk3 = new ItemINFO;
-	pPerk3->ItemDesc = { L"정확한 초점",L"차지 공격력이 15% 강화됩니다." };
+	pPerk3->ItemDesc = { L"정확한 초점",L"치명타 확률이 50% 증가됩니다." };
   Perk_Info.push_back(pPerk3);
 
 	return S_OK;
@@ -147,7 +147,7 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 			PlayerObject->Set_AttackSpeed(1.5f);
       break;
 		case THIRD:
-			PlayerObject->Set_Speed(PlayerObject->Get_Speed() * 1.25f);
+			PlayerObject->Set_Speed(*PlayerObject->Get_Critical() * 1.25f);
       break;
 	}
 	return S_OK;

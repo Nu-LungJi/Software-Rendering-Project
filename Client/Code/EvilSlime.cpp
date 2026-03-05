@@ -462,6 +462,13 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			EvilSlime* pSlime = static_cast<EvilSlime*>(m_tInfo.pGameObj[i]);
 
 			pSlime->Get_Info()->Change_State(EVILSLIME_FISSION);
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
+
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
 
 			*pSlime->Get_FissionDst() = vDst;
 
