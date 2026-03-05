@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
+enum MINIGAME{CLEAR,BACKGROUND, NAME_END};
 class MiniGameCounter :
     public GameObject
 {
@@ -21,9 +21,15 @@ public:
     Transform*              Crash_Player();
 
 
+    void                        Imgui_Setting();
+    void                        Imgui();
+    void                        Imgui_ButtonStyle();
+
     void        Set_Count() { --m_StageCnt[m_iCnt]; }
     _int        Get_Stage() { return m_iCnt;}
+    
     _bool        Get_End() { return m_bEnd; }
+    void         Set_EndWave() { m_bEndWave = true; }
 private:
     HRESULT			Component_Initialize();
     HRESULT         Make_TextureList(wstring _FileName);
@@ -37,13 +43,19 @@ private:
     _float                  m_fFrame;
     _float                  m_fTime;
     _float                  m_fDefense;
+    
     _bool                   m_bStopFrame;
     _bool                   m_bEnd;
     _bool                   m_bDead;
+    _bool                   m_bEndWave;
+    _bool                   m_bAugment;
+
     _int                    m_iCnt;
-    _int                    m_StageCnt[3];
+    _int                    m_StageCnt[6];
     _int                    m_iKeyCnt;
     _int                    m_iWave;
+    _int                    m_iMaxWave;
+    _int                    m_iLast;
     ID3DXSprite*            Sprite;
     SpriteObject*           m_pSprite;
     vector<wstring>         m_vecKeyList;

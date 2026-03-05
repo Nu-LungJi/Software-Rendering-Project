@@ -777,6 +777,7 @@ void Tile::Set_AnimationCount(_int* icnt)
 
 	else if (!_tcscmp(m_pTileName, L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.dds")) *icnt = 8;
 	else if (!_tcscmp(m_pTileName, L"SupplyBigCat%d.dds")) *icnt = 10;
+	else if (!_tcscmp(m_pTileName, L"Spr_Object_Explosionjar_Stage01_0%d.dds")) *icnt = 33;
 }
 HRESULT Tile::Load_Image(const _tchar* pName, TILE_STATE eid)
 {
@@ -1035,7 +1036,7 @@ void Tile::Check_TilePoint()
 								->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 					
 						}
-						else if (m_eTileState == STATE_ANIMATION || m_eTileState == STATE_DESTORY || m_eTileState == STATE_POTALEFFECT)
+						else if (m_eTileState == STATE_ANIMATION || m_eTileState == STATE_DESTORY || m_eTileState == STATE_POTALEFFECT || m_eTileState == STATE_BOOM)
 						{
 							_int i(0);
 							Set_AnimationCount(&i);

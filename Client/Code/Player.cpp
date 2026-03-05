@@ -13,7 +13,7 @@ HRESULT Player::Ready_GameObject() {
 	//Temp
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
-
+	
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 10);
@@ -40,7 +40,6 @@ HRESULT Player::Ready_GameObject() {
 	_partnerTimer		= 0.f;
 	_Skill2				= false;
 	_auguEffect			= nullptr;
-
 	// UI
 	Component_Collider->Set_Hp(50.f);
 	Component_Collider->Set_Att(1.f);
@@ -79,7 +78,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 19.661f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
@@ -762,6 +761,12 @@ void Player::DASH_STATE(const _float& _DT)
 void Player::ATTACK_STATE(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
+	//KJJ 03 05
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		mouseLB = false;
+	}
+
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -1018,7 +1023,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_isInvincible = true;
 		_partnerTimer = 1.f;	
 	}
-  else if (mouseLB) {
+    else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
 		_attackDelay = 2.0f;
 		_frame = 1;
@@ -1508,25 +1513,37 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	if (m_eCurrScene == SCENE_TYPE::Minigame)
-		return 0;
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		wstring Tag = _Other->Get_ObjectTag();
+		MainUI* mainUI;
+		if (Tag == L"Hurdle") {
+
+			return TRUE;
+		}
+	}
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
 	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
+			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
 
-		return TRUE;
+			return TRUE;
+		}
+		return false;
 	}
 	else if(Tag == L"Monster")
 	{
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
 
 		return TRUE;
+		}
+		return false;
 	}
 
 	return FALSE;
@@ -1561,7 +1578,9 @@ HRESULT Player::MiniGameInit()
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Component_Transform->Set_Scale(1.25f, 1.25f, 1.25f);
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
+
 	Is_Falling = true;
+
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
 	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);
@@ -1571,13 +1590,16 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
-	Component_Transform->Set_Pos(m_vBackUpPos);
+	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
 }
 void Player::Fall(const _float& _DT)
 {
+	if (m_eCurrScene != SCENE_TYPE::Minigame)
+		return;
+
 	if (Is_Falling) {
 		_vec3 vDir = Monster::Get_Gravity();
 		Component_Transform->Move_Pos(&vDir, 10.f, _DT);

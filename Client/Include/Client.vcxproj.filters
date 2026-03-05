@@ -250,11 +250,17 @@
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\05. Tile\02. Decor">
+      <UniqueIdentifier>{0584ba8f-4c3a-4661-a181-767822882f40}</UniqueIdentifier>
+    </Filter>
     <Filter Include="04. UI\EndingCredit">
       <UniqueIdentifier>{25bf7cb3-d5e6-411d-9715-73543dc361c3}</UniqueIdentifier>
     </Filter>
     <Filter Include="04. UI\99. IntroUI">
       <UniqueIdentifier>{9557cbfb-f95b-45a3-9246-1f893149f381}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\02. Monster\02. Monster\06. Tesseract">
+      <UniqueIdentifier>{f2b03ead-23ed-4a04-9470-8f4fc1c9025a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -514,6 +520,10 @@
     <ClInclude Include="..\Header\IntroUI.h">
       <Filter>04. UI\99. IntroUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h" />
+    <ClInclude Include="..\Header\Tesseract.h">
+      <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -754,6 +764,10 @@
     </ClCompile>
     <ClCompile Include="..\Code\IntroUI.cpp">
       <Filter>04. UI\99. IntroUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
+    <ClCompile Include="..\Code\Tesseract.cpp">
+      <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

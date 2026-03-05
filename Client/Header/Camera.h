@@ -123,6 +123,8 @@ public:
 	void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
 	void		Start_MiniGame();
 	void		Exit_MiniGame();
+	void		CameraRotTime(float _DT) { m_fDuration = _DT; }
+	void		Set_EventTrigger(int* pInt) { m_pEventTrigger = pInt; }
 
 private:
 	SCENE_TYPE	m_eCurrScene;
@@ -130,4 +132,12 @@ private:
 
 	Player*		m_pTarget;
 	HRESULT		MiniGame(const _float& _DT);
+	int*		m_pEventTrigger = nullptr;
+	_float		m_fElapsedTime;
+	_float		m_fDuration = 1.5f;
+	_vec3		m_vCurrEye,		m_vCurrUp;
+	_vec3		m_vStartEye,	m_vTargetEye;
+	_vec3		m_vStartUp,		m_vTargetUp;
+	bool		Is_Changing;
+
 };

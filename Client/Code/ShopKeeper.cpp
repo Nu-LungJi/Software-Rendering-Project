@@ -97,7 +97,7 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	//Speech_BubbleUI = dynamic_cast<SpeechBubble*>(SceneManager::GetInstance()->Get_GameObject(L"Speech_Bubble"));
 
 	if (_Other->Get_ObjectTag() == L"Player") {
-		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"ï¿½ï¿½È­ï¿½Ï±ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½", TRUE);
+		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"´ëÈ­ÇÏ±â - »óÁ¡ ÁÖÀÎ", TRUE);
 		//Speech_BubbleUI->Set_Active(TRUE);
 		return TRUE;
 	}

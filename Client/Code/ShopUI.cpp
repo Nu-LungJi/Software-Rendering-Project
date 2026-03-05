@@ -206,6 +206,7 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get_Symbol.wav", CHANNELID::SOUND_EFFECT07, 0.4f);                    
                 }
                 return;
             case TILE_SPAWNER::ITEM_SPAWN2:
@@ -214,6 +215,7 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get_Health.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
                 }
                 return;
             case TILE_SPAWNER::ITEM_SPAWN3:
@@ -222,6 +224,8 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get_Ammo.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
+
                 }
                 return;
             case TILE_SPAWNER::ITEM_SPAWN4:
@@ -230,6 +234,7 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get item.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
                 }
                 return;
             case TILE_SPAWNER::ITEM_SPAWN5:
@@ -238,6 +243,7 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get item.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
                 }
                 return;
             case TILE_SPAWNER::ITEM_SPAWN6:
@@ -246,6 +252,7 @@ void ShopUI::Show_Item()
                 {
                     Safe_Release(*iter);
                     iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).erase(iter);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get item.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
                 }
                 return;
             }

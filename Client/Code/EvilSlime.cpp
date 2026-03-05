@@ -256,7 +256,7 @@ BOOL EvilSlime::OnCollisionStay(GameObject* _Other)
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
 		if (Tag == L"Player") {
-			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+			if (static_cast<Player*>(_Other)->Get_Invincible()) {
 				return false;
 			}
 			_vec3 vGravity = Monster::Get_Gravity();
@@ -462,6 +462,13 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			EvilSlime* pSlime = static_cast<EvilSlime*>(m_tInfo.pGameObj[i]);
 
 			pSlime->Get_Info()->Change_State(EVILSLIME_FISSION);
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
+
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
 
 			*pSlime->Get_FissionDst() = vDst;
 

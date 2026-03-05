@@ -171,6 +171,7 @@ BOOL NPCTalk::Shadow_Fade(CONST FLOAT& _DT) {
 		}
 		else if (TalkTimer > 1.f && TalkTimer < 2.f) {
 			NameBar	->Set_Visible(FALSE);
+			Name	->Set_Visible(FALSE);
 			Square	->Set_Visible(FALSE);
 			Talk	->Set_Visible(FALSE);
 		}
@@ -205,8 +206,8 @@ HRESULT  NPCTalk::Effect_Initialize() {
 	return S_OK;
 }
 HRESULT  NPCTalk::Text_Initialize() {
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 643, 502.f }, 28, L"Personal Name", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 640, 560.f }, 20, L"TALK", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(0, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 643, 502.f }, 28, L"Personal Name", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 640, 560.f }, 20, L"TALK", L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
 	return S_OK;
 }
 

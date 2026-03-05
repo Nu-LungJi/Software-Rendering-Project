@@ -10,20 +10,16 @@ HRESULT	Augment::Ready_GameObject() {
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
 	if (FAILED(Perk_Initialize()))			return E_FAIL;
-	
+	fDelay = 0;
+	bdelay = false;
 	PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
-	
+	isActive = true;
 	return S_OK;
 }
 INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
-	if (KEY_DOWN(DIK_LCONTROL) && KEY_DOWN(DIK_F)) {
-		isActive = true;
-	}
-
-	if (isActive) {
 		PlayerObject->Set_PlayerStop(TRUE);
 		Perk_Text[2]->Text = L"가호 선택";
 		Perk_Text[2]->Visible = TRUE;
@@ -44,20 +40,26 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 			m_iPrevHoverType = iType;
 		}
 
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+		fDelay += _DT;
+		
+		if (fDelay > 2.f)
+			bdelay = true;
+
+		if (bdelay &&GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 			PlayerObject->Set_PlayerStop(FALSE);
 			if (iType != INIT) {
 				Add_PlayerStatus(iType);
 				SoundManager::GetInstance()->Play_Sound_Once(L"UI/Apostle/UI_Menu_ChooseApostle_Select.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
-				isActive = FALSE;
+				dynamic_cast<MiniGameCounter*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"DefenseUI"))->Set_EndWave();
+				Set_ObjectDead(TRUE);
 				ClearAllEffects();
 				for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
 				//PlayerObject->Set_PlayerStop(FALSE);
 
 				return 0;
 			}
+		
 		}
-	}
 
 	if (!isActive) {
 		for (auto& Txt : Perk_Text) Txt->Visible = FALSE;
@@ -69,7 +71,7 @@ VOID	Augment::LateUpdate_GameObject(CONST FLOAT& _DT) {
 
 }
 VOID	Augment::Render_GameObject() {
-	if(isActive)
+
 		Component_Sprite->Render_Sprite();	
 }
 
@@ -128,7 +130,7 @@ HRESULT Augment::Perk_Initialize()
   Perk_Info.push_back(pPerk2);
 
 	ItemINFO* pPerk3 = new ItemINFO;
-	pPerk3->ItemDesc = { L"정확한 초점",L"차지 공격력이 15% 강화됩니다." };
+	pPerk3->ItemDesc = { L"정확한 초점",L"치명타 확률이 50% 증가됩니다." };
   Perk_Info.push_back(pPerk3);
 
 	return S_OK;
@@ -139,13 +141,13 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 	switch (_PerkType)
 	{
 		case FIRST:
-			PlayerObject->Set_Atk(PlayerObject->Get_Atk() * 1.5f);
+			PlayerObject->Set_DefaultAttackSpeed(1.f);
       break;
 		case SECOND:
-			PlayerObject->Set_ArrowSpeed(*PlayerObject->Get_ArrowSpeed() * 1.2f);
+			PlayerObject->Set_AttackSpeed(1.5f);
       break;
 		case THIRD:
-			PlayerObject->Set_Speed(PlayerObject->Get_Speed() * 1.25f);
+			PlayerObject->Set_Speed(*PlayerObject->Get_Critical() * 1.25f);
       break;
 	}
 	return S_OK;

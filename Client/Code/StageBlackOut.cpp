@@ -89,7 +89,6 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 			{
 				++m_iFrameCnt;
 
-				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
 				m_bStop = false;
 			}
 
@@ -97,6 +96,7 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 				TileManager::GetInstance()->Set_EndLoading(false);
 			if (m_iFrameCnt == 21 && !TileManager::GetInstance()->Get_Loading())
 			{
+				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
 				m_bStop = true;
 				return 1;
 			}

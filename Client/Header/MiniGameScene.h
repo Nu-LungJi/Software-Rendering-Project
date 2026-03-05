@@ -7,6 +7,8 @@
 #define MINIGAMETILEY	1
 #define MINIGAMETILEZ	5
 
+class Tesseract;
+
 class MiniGameScene : public Scene {
 protected:
 	explicit MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -33,6 +35,7 @@ public:
 
 public:
 	virtual void Free();
+	Tesseract* Get_Chaser() { return m_pChaser; }
 
 private:
 	Player* m_pPlayer = nullptr;
@@ -41,4 +44,7 @@ private:
 	_float m_fTimer = 0.f;
 
 	vector<GameObject*> m_vecHurdles[3];
+	Tesseract* m_pChaser;
+
+	int	m_iEventTrigger = 0;
 };

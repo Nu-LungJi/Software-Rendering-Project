@@ -21,9 +21,6 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 		m_bTrigger = true;
 	}
 
-	m_pBuffer->Update_Component(_DT);
-	//m_pCollider->Update_Component(_DT);
-
 	return 0;
 }
 VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
@@ -36,11 +33,26 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	Pooling();
 
-	//if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 30.f))
-	//	m_iFalling = 4;
-	//else if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 10.f))
-	//	m_iFalling = 1;
-
+	switch (m_ePoolingMode)
+	{
+	case POOLINGMODE::X:
+		if (POS(m_pTarget)->x - 5.f > m_pTransform->Get_Position()->x) {
+			m_iFalling = 1;
+		}
+		break;
+	case POOLINGMODE::Y:
+		if (POS(m_pTarget)->y -5.f > m_pTransform->Get_Position()->y) {
+			m_iFalling = 1;
+		}
+		break;
+	case POOLINGMODE::Z:
+		if (POS(m_pTarget)->z -5.f > m_pTransform->Get_Position()->z) {
+			m_iFalling = 1;
+		}
+		break;
+	default:
+		break;
+	}
 	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -52,7 +64,7 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	if (m_iFalling == 1) {
 		m_fTimer += _DT;
-		_vec3 vDir = { 0.f, -1.f, 0.f };
+		_vec3 vDir = Monster::Get_Gravity();
 		m_pTransform->Move_Pos(&vDir, 10, _DT);
 
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
@@ -75,7 +87,7 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 			vPos->z = 10.f;
 		}
 		else if (m_ePoolingMode == POOLINGMODE::Z) {
-			vPos->y = 51.f;
+			vPos->y = 60.f;
 		}
 
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
@@ -189,7 +201,7 @@ bool CubeFloorTile::Pooling()
 	_float fLimitX = 50.f;
 	_float fLimitY = 50.f;
 	_float fThresholdX = fLimitX + (fSize * 2.5f);
-	_float fThresholdY = fLimitY + (fSize * 4.5f);
+	_float fThresholdY = fLimitY + (fSize * 2.5f);
 	_float fEdgeZ = MINIGAMETILEZ * vScale->z * 2.f;
 
 	bool bMoved = false;
@@ -201,9 +213,9 @@ bool CubeFloorTile::Pooling()
 
 			if (fNextPosX >= fThresholdX) {
 				m_ePoolingMode = POOLINGMODE::Y;
-				vPos->x = fLimitX + (iRow - 2) * fSize + vScale->x;
-				vPos->y = (iCol-2) * fSize;
-				vPos->z = fEdgeZ;
+				vPos->x = fLimitX + (iRow - 2) * fSize;
+				vPos->y = (float)(iCol - 2.5f) * fSize;
+				vPos->z = 10.f;
 			}
 			else {
 				vPos->x = fNextPosX;
@@ -219,7 +231,7 @@ bool CubeFloorTile::Pooling()
 			if (fNextPosY >= fThresholdY) {
 				m_ePoolingMode = POOLINGMODE::Z;
 				vPos->x = fLimitX + (iRow - 2) * fSize;
-				vPos->y = 51.f;
+				vPos->y = 60.f;
 				vPos->z = (iCol- 5) * fSize;
 			}
 			else {
@@ -229,22 +241,16 @@ bool CubeFloorTile::Pooling()
 		}
 	}
 	else if (m_ePoolingMode == POOLINGMODE::Z) {
-		if (fabsf(vTargetPos.z - vPos->z) > fHalf) {
-			if (vDir.z < 0.f) {
-				vPos->z -= fFullLoop;
-			}
-			else {
+		if (vPos->z - fHalf > m_pTransform->Get_Position()->z) {
 				vPos->z += fFullLoop;
-			}
-			bMoved = true;
+				bMoved = true;
 		}
 	}
 
 	if (bMoved) {
 		MonsterManager::GetInstance()->Update_Tile((_uint)m_iTileNumber, m_pTransform);
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
+		m_iFalling = 4;
 	}
-
-	m_iFalling = 4;
 	return IsIn_Cam;
 }

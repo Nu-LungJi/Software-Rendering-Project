@@ -41,17 +41,21 @@ HRESULT	MainUI::Ready_GameObject() {
 	Enable_DisplayHPBar = 2;
 	HPOPC = 0.f;
 
+	memset(BossClear, TRUE, sizeof(BossClear));
+
 	Enable_FadeFilter = 2;
-	FadeOPC = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter")->OPACITY;
+	FadeOPC = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter")->OPACITY;
 
 	PopUpItem = nullptr;
+	Enable_BossClearUI = FALSE;
+	BossClearTimer = 0.f;
 
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
-	
+
 	PopUp_Speech_Bubble(Speech_Text, _DT);
 	PopUp_Speech_Bubble_Skill(Speech_Text, _DT, skillType);
   
@@ -66,10 +70,13 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	PopUp_ItemInfo(PopUpItem, PopUpSprite, _DT);
 	MainUI_FadeAction(_DT, FadeSpeed);
 	Synchronize_BossHPBar();
+
 	Display_InteractionUI();
+
 	Display_BossTitle(_DT);
 	Display_BossHPBar(_DT);
 	Display_FadeFilter(_DT);
+	Display_ClearBossUI(_DT);
 
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
@@ -77,11 +84,13 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();
 	if (cur_Equip_BowIDX == -1) return 0;
 	if (Cur_BowIMGIDX != cur_Equip_BowIDX) {
-		BowIMG_List[Cur_BowIMGIDX]->Set_Visible(false);
-		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(true);
+		BowIMG_List[Cur_BowIMGIDX]->Set_Visible(FALSE);
+		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(FALSE);
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
-
+	if (KEY_DOWN(DIK_J)) {
+		Set_BossClearUI(TRUE);
+	}
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -565,16 +574,25 @@ VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
 }
 VOID MainUI::Display_FadeFilter(CONST FLOAT& _DT) {
 	if		(Enable_FadeFilter == 2) return;
-	SpriteINFO* Filter = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter");
+	SpriteINFO* Filter = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter");
 	if (Enable_FadeFilter == TRUE) {		// FADE IN - 어두워지게
 		if (Filter->Get_Vislble() == FALSE) {
 			Filter->Set_Visible(TRUE);
 		}
-		if (FadeOPC < 253.f) { FadeOPC += _DT * 255.f; Filter->Set_Opacity(FadeOPC); }
-		else					{ Filter->Set_Opacity(255.f); Enable_FadeFilter = 2; return;	}
+		if (FadeOPC < 253.f) { 
+			FadeOPC += _DT * 255.f; 
+			Filter->Set_Opacity(FadeOPC); 
+		}
+		else					{ 
+			Filter->Set_Opacity(255.f); 
+			Enable_FadeFilter = 2; 
+			return;	}
 	}
 	else if (Enable_FadeFilter == FALSE) {		// FADE OUT - 밝아지게
-		if (FadeOPC > 2.f)	{ FadeOPC -= _DT * 255.f; Filter->Set_Opacity(FadeOPC);}
+		FadeOPC = Filter->OPACITY;
+		if (FadeOPC > 2.f)	{ 
+			FadeOPC -= _DT * 255.f / 2; Filter->Set_Opacity(FadeOPC);
+		}
 		else					{ 
 			Filter->Set_Opacity(0.f);
 			Filter->Set_Visible(FALSE);
@@ -599,6 +617,77 @@ VOID MainUI::Synchronize_BossHPBar() {
 
 		BarScale = { HPRatio, BarScale.y, BarScale.z };
 		if (BarScale.x <= 0) BarScale.x = 0;
+	}
+}
+
+VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
+	if (Enable_BossClearUI) {
+		BossClearTimer += _DT;
+		FLOAT Delay = 0.f, BackGroundOPC = 180.f;
+		SpriteINFO* FadeBG = Component_Sprite->Get_Texture(L"BossClearBG");
+		if (BossClearTimer > Delay  && BossClearTimer < Delay + 6.f) {
+			if (BossClearTimer <= 5.f) {
+				SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM03, 0.5f - BossClearTimer / 10);
+			}
+			else {}
+		}
+		if (BossClearTimer > Delay && BossClearTimer < Delay + 1.5f) {
+			FadeBG->Set_Opacity(BackGroundOPC * (BossClearTimer - Delay) / 1.5f);
+		}
+		else if (BossClearTimer > (Delay + 4.3f) && BossClearTimer < (Delay + 5.3f)) {
+			FadeBG->Set_Opacity(BackGroundOPC + (255 - BackGroundOPC) * (BossClearTimer - (Delay + 4.3f)));
+		}
+		else if (BossClearTimer > (Delay + 5.3f) && BossClearTimer < (Delay + 5.8f)) {
+			if (BossClear[4]) {
+				dynamic_cast<EndingCredit*>(SceneManager::GetInstance()->Get_GameObject(L"EndingCredit"))->Set_CreditStart(TRUE);
+				UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(FALSE);
+				UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(FALSE);
+				UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(FALSE);
+				UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(FALSE);
+				UIManager::GetInstance()->Find_GlobalFontObject(L"Destroyed")->Set_Visible(FALSE);
+				BossClear[4] = FALSE;
+			}
+			
+			FadeBG->Set_Opacity(255 - 254 * 2 * (BossClearTimer - (Delay + 5.3f)));
+		}
+		if		(BossClearTimer > Delay && BossClear[0]) {
+			dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Replay_Effect();
+			BossClear[0] = FALSE;
+		}
+		else if (BossClearTimer > Delay + 0.5f && BossClear[1]) {
+			dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Replay_Effect();
+			BossClear[1] = FALSE;
+		}
+		else if (BossClearTimer > Delay + 1.0f && BossClear[2]) {
+			dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Replay_Effect();
+			BossClear[2] = FALSE;
+		}
+		else if (BossClearTimer > Delay + 2.0f && BossClear[3]) {
+			dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Replay_Effect();
+			BossClear[3] = FALSE;
+		}
+		else if (BossClearTimer > Delay + 2.3f && BossClearTimer < Delay + 2.8f) {
+			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(254 * 2 * (BossClearTimer - (Delay + 2.3f)), 255, 255, 255);
+		}
+		else if (BossClearTimer > Delay + 3.8f && BossClearTimer < Delay + 4.3f) {
+			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(255 - 254 * 2 * (BossClearTimer - (Delay + 3.8f)), 255, 255, 255);
+		}
+
+		if (BossClear[9]) {
+			PLAY_SOUND_ONCE(L"Docheol/UI_Stage clear.wav", CHANNELID::SOUND_EFFECT10);
+
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(TRUE);
+
+			BossClear[9] = FALSE;
+		}
+		else if (BossClearTimer > Delay + 6.f) {
+			memset(BossClear, TRUE, sizeof(BossClear));
+			BossClearTimer = 0.f;
+			Enable_BossClearUI = FALSE;
+		}
 	}
 }
 
@@ -688,8 +777,9 @@ HRESULT MainUI::Sprite_Initialize() {
 	SpriteINFO* FilterOBJ = new SpriteINFO(L"FadeFilter", 1280, 720, 0, 0, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Filter_Fade.png", FilterOBJ->WIDTH, FilterOBJ->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&FilterOBJ->TEXTURE);
-	UIManager::GetInstance()->Add_FilterObjects(FilterOBJ);
-
+	UIManager::GetInstance()->Add_GlobalObject(FilterOBJ);
+	FilterOBJ = Component_Sprite->Import_Sprite(L"../../UI/Filter_Fade.png", L"BossClearBG", 0, 0, 1280, 720, TRUE, 0);
+	UIManager::GetInstance()->Add_GlobalObject(FilterOBJ);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
@@ -714,9 +804,28 @@ HRESULT MainUI::Effect_Initialize() {
 	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::COIN_EFFECT, L"COIN_EFFECT", 20.f, 142.f, 15, 15, 1.f, 255);
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// SKILL //////////////////////////////////////////////////
-	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::TOKEN_EFFECT, L"TOKEN_EFFECT1", 70.f,  630.f, 100, 100, 0.6f, 255);
-	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::TOKEN_EFFECT, L"TOKEN_EFFECT2", 104.f, 630.f, 100, 100, 0.6f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::TOKEN_EFFECT,L"TOKEN_EFFECT1", 70.f,  630.f, 100, 100, 0.6f, 255);
+	PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::TOKEN_EFFECT,L"TOKEN_EFFECT2", 104.f, 630.f, 100, 100, 0.6f, 255);
 	/////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::CLEAR_MARK,  L"CLEAR_MARK"	, WINCX / 2 - 350 / 2, WINCY / 2 - 475 / 2 + 20	, 350, 475, 0.75f, 100);
+	//PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::CLEAR_BREAK, L"CLEAR_BREAK"	, WINCX / 2 - 256 / 2, WINCY / 2 - 400 / 2 + 15	, 256, 400, 0.75f, 255);
+	//PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::CLEAR_CHARGE,L"CLEAR_CHARGE", WINCX / 2 - 256 / 2, WINCY / 2 - 256 / 2 - 40	, 256, 256, 0.75f, 255);
+	//PLAY_UI_EFFECT_ONCE(MAIN_UI_EFFECT::CLEAR_LINE,  L"CLEAR_LINE"	, WINCX / 2 - 512 / 2, WINCY / 2 - 116 / 2 - 48 , 512, 116, 0.75f, 255);
+
+	EffectManager::GetInstance()->Add_GlobalEffect(UIEffect::Create(GRPDEV, L"CLEAR_BREAK", MAIN_UI_EFFECT::CLEAR_BREAK,
+		{ WINCX / 2 - 256 / 2, WINCY / 2 - 400 / 2 + 15, 0.f }, { 256, 400, 0.f }, 255, FALSE, 1.25f));
+	EffectManager::GetInstance()->Add_GlobalEffect(UIEffect::Create(GRPDEV, L"CLEAR_CHARGE", MAIN_UI_EFFECT::CLEAR_CHARGE,  
+		{ WINCX / 2 - 256 / 2,  WINCY / 2 - 256 / 2 - 40, 0.f }, { 256, 256, 0.f }, 255, FALSE, 1.00f));
+	EffectManager::GetInstance()->Add_GlobalEffect(UIEffect::Create(GRPDEV, L"CLEAR_MARK", MAIN_UI_EFFECT::CLEAR_MARK,
+		{ WINCX / 2 - 350 / 2, WINCY / 2 - 475 / 2 + 20, 0.f }, { 350, 475, 0.f }, 255, FALSE, 1.00f));
+	EffectManager::GetInstance()->Add_GlobalEffect(UIEffect::Create(GRPDEV, L"CLEAR_LINE", MAIN_UI_EFFECT::CLEAR_LINE,
+		{ WINCX / 2 - 512 / 2, WINCY / 2 - 116 / 2 - 48, 0.f }, { 512, 116, 0.f }, 255, FALSE, 0.75f));
+
+	dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(FALSE);
+	dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(FALSE);
+	dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(FALSE);
+	dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(FALSE);
 
 	return S_OK;
 }
@@ -727,7 +836,7 @@ HRESULT MainUI::Text_Initialize() {
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"0", { 52.f, 178.f }, 16, L"CrystalCountText",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// WEAPON ///////////////////////////////////////////////////////
-	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText",			L"Bastard",			D3DCOLOR_ARGB(200, 255, 255, 255));
+	FO_ArrowCount = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", {1220.f, 687.f}, 16, L"ArrowCountText",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255));
 	AllFontOBJ.push_back(FO_ArrowCount);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
@@ -740,10 +849,12 @@ HRESULT MainUI::Text_Initialize() {
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text",					L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.091,	5.f }, 15, L"Boss_Name",		L"배달의민족 도현", D3DCOLOR_ARGB(0, 255, 255, 255), 700));
-	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 616.967f, 25.f }, 13, L"Boss_Tag",			L"Caviar Dreams",	D3DCOLOR_ARGB(0, 160, 160, 160)));
-	Title_Name = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 30.f, 270.f }, 65, L"Boss_Title_Name",	TEXT("Yoon\u00AE 대한"),		D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
-	Title_Tag = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 45.f, 370.f }, 32, L"Boss_Title_Tag",	TEXT("Yoon\u00AE 민국 Bold"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.091,	5.f }, 15, L"Boss_Name",		L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 700));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 616.967f, 25.f }, 13, L"Boss_Tag",			L"08서울한강체 L",	D3DCOLOR_ARGB(0, 160, 160, 160)));
+	Title_Name = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 30.f, 270.f }, 65, L"Boss_Title_Name",				L"08서울한강체 L",		D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	Title_Tag = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 45.f, 370.f }, 32, L"Boss_Title_Tag",				L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"근원 파괴", { 643.f, 298.f }, 40, L"Destroyed",						L"08서울한강체 L", D3DCOLOR_ARGB(0, 255, 255, 255));
+	UIManager::GetInstance()->Add_GlobalObject(UIManager::GetInstance()->Find_FontObject(L"Destroyed"), L"Destroyed");
 
 	return S_OK;
 }

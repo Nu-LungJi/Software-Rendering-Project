@@ -289,10 +289,13 @@ private:
 	float			_invincibleTimer;	//	무적 타이머
 	float			_alphaDelayTimer;	//	깜박임 타이머
 	float			_arrowTimer;
+
 	int				_atomicCount;
 	int				_atomicTotal;
 	int				_atomicReady;
+
 	float			_defaultAttackSpeed;
+
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
@@ -328,12 +331,12 @@ private:
 		void			Set_IsFalling(bool b) { Is_Falling = b;}
 		bool			Get_IsFalling() { return Is_Falling; }
 		void			Fall(const _float& _DT);
-		bool			Is_Invincible() { return _invincibleTimer > 0.f; }
 
 	private:
 		SCENE_TYPE		m_eCurrScene;
 		_vec3			m_vBackUpPos;
 		_vec3			m_vBackupScale;
 		bool			Is_Falling;
+		_float			m_fBackUpHp;
 
 };

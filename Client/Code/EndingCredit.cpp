@@ -44,6 +44,10 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 	Player* PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
 	if (KEY_DOWN(DIK_M)) {
+		UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(TRUE);
+		UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(TRUE);
+		UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(TRUE);
+		UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(TRUE);
 		m_bCreditStart ? m_bCreditStart = FALSE : m_bCreditStart = TRUE;
 		m_bCreditStart ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 	}

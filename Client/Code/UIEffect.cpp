@@ -14,7 +14,12 @@ HRESULT   UIEffect::Ready_Effect(MAIN_UI_EFFECT _EFTTYPE, wstring _TAG, D3DXVECT
 	else if (_EFTTYPE == MAIN_UI_EFFECT::DASHSTOCK_EFFECT)  { Make_TextureList(L"MainUI/DashStock"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
 	else if (_EFTTYPE == MAIN_UI_EFFECT::HP_EFFECT)			{ Make_TextureList(L"MainUI/HP_Lost"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
 	else if (_EFTTYPE == MAIN_UI_EFFECT::TOKEN_EFFECT)		{ Make_TextureList(L"MainUI/Token_Lost"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
-  else if (_EFTTYPE == MAIN_UI_EFFECT::AUGMENT_EFFECT)		{ Make_TextureList(L"Augments/Flash"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::AUGMENT_EFFECT)	{ Make_TextureList(L"Augments/Flash"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+
+	else if (_EFTTYPE == MAIN_UI_EFFECT::CLEAR_BREAK)		{ Make_TextureList(L"Effect/Effect_ClearBreak"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::CLEAR_CHARGE)		{ Make_TextureList(L"Effect/Effect_ClearCharge"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::CLEAR_LINE)		{ Make_TextureList(L"Effect/Effect_ClearLine"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
+	else if (_EFTTYPE == MAIN_UI_EFFECT::CLEAR_MARK)		{ Make_TextureList(L"Effect/Effect_ClearMark"	, L"", _UIPOS.x, _UIPOS.y, _UISCALE.x, _UISCALE.y, TRUE, _OPAC); }
 
 	PlayTime	= _PlayTime;
 	Repeatable	= _Repeatable;
@@ -60,10 +65,10 @@ INT	 UIEffect::Update_GameObject(const _float& _DT) {
 VOID UIEffect::LateUpdate_GameObject(const _float& _DT) {
 	if (ObjectDead)	return;
 	if (FrameTick > PlayTime / ENDFRAME) {
-		if (TextureIndex++ >= ENDFRAME - 2) {
+		if (TextureIndex++ >= ENDFRAME - 1) {
 			if (Repeatable) { TextureIndex = 0; }
 			else {
-				TextureIndex = ENDFRAME - 2;
+				TextureIndex = ENDFRAME - 1;
 				//ObjectDead = TRUE;
 			}
 		}
@@ -102,7 +107,7 @@ HRESULT	  UIEffect::Make_TextureList(wstring _PATH, wstring _KEY, FLOAT _POSX, F
 			break;
 		}
 	}
-	ENDFRAME = TextureList.size() + 1;
+	ENDFRAME = TextureList.size();
 	return S_OK;
 }
 UIEffect* UIEffect::Create(LPDIRECT3DDEVICE9 _GRPDEV, wstring _TAG, MAIN_UI_EFFECT _SKILLTYPE, D3DXVECTOR3 _UIPOS, D3DXVECTOR3 _SCALE, INT _OPACITY, BOOL _Repeatable, FLOAT _PlayTime) {
@@ -118,6 +123,9 @@ VOID UIEffect::Replay_Effect(wstring _TAG) {
 	UIEffect* Effect = dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, _TAG));
 	if (Effect == nullptr)	return;
 	Effect->TextureIndex = 0;
+}
+VOID UIEffect::Replay_Effect() {
+	this->TextureIndex = 0;
 }
 VOID	  UIEffect::Free() {
 	GameObject::Free();
