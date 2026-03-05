@@ -649,6 +649,8 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] = 0.f;
 
 			ObjectDead = TRUE;
+
+			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossClearUI(TRUE);
 		}
 	
 		//////////////////////////////////////////////////// SOUNDPLAY ////////////////////////////////////////////////////
