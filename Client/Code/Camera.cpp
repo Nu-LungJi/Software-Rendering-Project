@@ -11,7 +11,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
 	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.3f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.3f, 1.35f * 1.3f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
-	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 100.f;
+	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
@@ -76,20 +76,40 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		//KJJ 03. 03
 		if (m_eCurrScene == SCENE_TYPE::Minigame) {
 			_vec3 vGravity = Monster::Get_Gravity();
-
+			_vec3 vNewTargetEye = m_vTargetEye;
 			atCalc = { 0.f,0.f,0.f };
 
-			if (vGravity.y == -1.f) {
-				eyeCalc = { 0.f, 10.f, -10.f };
-			}
-			else if (vGravity.z == 1.f) {
-				eyeCalc = { 10.f, 0.f, -10.f };
-			}
-			else if (vGravity.y == 1.f) {
-				eyeCalc = { 0.f,-10.f,-10.f };
+			if		(vGravity.y == -1.f)	{ vNewTargetEye = { 0.f, 10.f, -10.f }; }
+			else if (vGravity.z == 1.f)		{ vNewTargetEye = { 10.f, 0.f, -10.f }; }
+			else							{ vNewTargetEye = { 0.f,-10.f,-10.f }; }
+
+			if (m_vTargetEye != vNewTargetEye) {
+				m_vStartEye		= m_vCurrEye;
+				m_vStartUp		= m_vCurrUp;
+				m_vTargetEye	= vNewTargetEye;
+				m_vTargetUp		= -vGravity;
+				m_fElapsedTime	= 0.f;
+				Is_Changing		= true;
 			}
 
-			UpVec = -vGravity;
+			if (Is_Changing) {
+				m_fElapsedTime += _DT;
+				float fRatio	= m_fElapsedTime / m_fDuration;
+
+				if (fRatio >= 1.f) {
+					fRatio = 1.f;
+					m_vCurrEye	= m_vTargetEye;
+					m_vCurrUp	= m_vTargetUp;
+					Is_Changing = false;
+				}
+				else {
+					D3DXVec3Lerp(&m_vCurrEye, &m_vStartEye, &m_vTargetEye, fRatio);
+					D3DXVec3Lerp(&m_vCurrUp, &m_vStartUp, &m_vTargetUp, fRatio);
+				}
+			}
+
+			eyeCalc = m_vCurrEye;
+			UpVec = m_vCurrUp;
 		}
 		else {
 			UpVec = { 0.f,1.f,0.f };

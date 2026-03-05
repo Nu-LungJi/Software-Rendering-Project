@@ -41,4 +41,5 @@ private:
 	_float m_fTimer = 0.f;
 
 	vector<GameObject*> m_vecHurdles[3];
+	FireDevilBowChargeEffect* m_pChaser;
 };

@@ -729,6 +729,12 @@ void Player::DASH_STATE(const _float& _DT)
 void Player::ATTACK_STATE(const _float& _DT)
 {
 	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
+	//KJJ 03 05
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		mouseLB = false;
+	}
+
 	_attackDelay += _DT;
 
 	_vec3		upDir, rightDir;
@@ -1471,7 +1477,16 @@ void Player::Calc_Near()
 }
 BOOL Player::OnCollisionEnter(GameObject* _Other)
 {
-	if (m_eCurrScene == SCENE_TYPE::Minigame)
+	if (m_eCurrScene == SCENE_TYPE::Minigame) {
+		wstring Tag = _Other->Get_ObjectTag();
+		MainUI* mainUI;
+		if (Tag == L"Hurdle") {
+			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
+
+			return TRUE;
+		}
+	}
 		return 0;
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
@@ -1524,7 +1539,9 @@ HRESULT Player::MiniGameInit()
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Component_Transform->Set_Scale(1.25f, 1.25f, 1.25f);
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
+
 	Is_Falling = true;
+
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
 	Component_Collider->Set_Scale(0.7f, 0.7f, 0.7f);
@@ -1541,9 +1558,12 @@ HRESULT Player::MiniGameExit()
 }
 void Player::Fall(const _float& _DT)
 {
+	if (m_eCurrScene != SCENE_TYPE::Minigame)
+		return;
+
 	if (Is_Falling) {
 		_vec3 vDir = Monster::Get_Gravity();
-		Component_Transform->Move_Pos(&vDir, 10.f, _DT);
+		Component_Transform->Move_Pos(&vDir, 8.f, _DT);
 	}
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {

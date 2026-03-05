@@ -294,7 +294,7 @@ BOOL ScorpionEvilSoul::OnCollisionStay(GameObject* _Other) {
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
 		if (Tag == L"Player") {
-			if (static_cast<Player*>(_Other)->Is_Invincible()) {
+			if (static_cast<Player*>(_Other)->Get_Invincible()) {
 				return false;
 			}
 			_vec3 vGravity = Monster::Get_Gravity();

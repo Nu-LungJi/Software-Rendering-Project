@@ -80,6 +80,7 @@
 #include "Hurdle.h"
 #include "Shadow.h"
 #include "SkyBox.h"
+#include "FireDevilBowChargeEffect.h"
 
 #pragma endregion
 

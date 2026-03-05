@@ -50,7 +50,7 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 	if (ObjectDead)
 		return -1;
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	//KJJ 03 05 Delete
 	return 0;
 }
 VOID Fireball::LateUpdate_GameObject(const _float& _DT) {
