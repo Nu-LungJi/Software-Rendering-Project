@@ -675,10 +675,10 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 		if (BossClear[9]) {
 			PLAY_SOUND_ONCE(L"Docheol/UI_Stage clear.wav", CHANNELID::SOUND_EFFECT10);
 
-			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(FALSE);
-			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(FALSE);
-			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(FALSE);
-			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(FALSE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(TRUE);
+			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(TRUE);
 
 			BossClear[9] = FALSE;
 		}

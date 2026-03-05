@@ -9,7 +9,7 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
@@ -215,7 +215,8 @@ HRESULT   StartScene::Ready_Scene() {
 	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	  TileManager::GetInstance()->Set_StageCnt();
+	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
+	TileManager::GetInstance()->Set_Stage();
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -300,7 +301,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  
     Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
-    Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
+    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 
