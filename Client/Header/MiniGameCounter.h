@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
+enum MINIGAME{CLEAR,BACKGROUND, NAME_END};
 class MiniGameCounter :
     public GameObject
 {
@@ -20,6 +20,10 @@ public:
     void                    Frame_Move(CONST FLOAT& _DT);
     Transform*              Crash_Player();
 
+
+    void                        Imgui_Setting();
+    void                        Imgui();
+    void                        Imgui_ButtonStyle();
 
     void        Set_Count() { --m_StageCnt[m_iCnt]; }
     _int        Get_Stage() { return m_iCnt;}
@@ -47,7 +51,7 @@ private:
     _bool                   m_bAugment;
 
     _int                    m_iCnt;
-    _int                    m_StageCnt[3];
+    _int                    m_StageCnt[6];
     _int                    m_iKeyCnt;
     _int                    m_iWave;
     _int                    m_iMaxWave;

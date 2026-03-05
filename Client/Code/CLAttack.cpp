@@ -21,7 +21,8 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     switch (m_eLeaf)
     {
     case LEAF_ATTACK::LEAF_FIRST:
-         Component_Collider->Set_Att(9.f);
+        m_fSpeed = 9.f;
+         Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
         m_iRandCnt = 5 + rand() % 2;
@@ -260,8 +261,8 @@ void CLAttack::Leaf_First(const _float& _DT)
 
     D3DXMatrixScaling(&matScale, 0.7f, 0.2f, 0.4f);
 
-    fAngle = atan2f(m_vLook.z, m_vLook.x); // x ±âÁØÀ¸·Î z°¡ ¾ó¸¶³ª µ¹¾Æ°¡ÀÖ´ÂÁö
-    D3DXMatrixRotationZ(&RotZ, fAngle);    //±×°É·Î z¸¸ µ¹¸®±â
+    fAngle = atan2f(m_vLook.z, m_vLook.x); // x ê¸°ì¤€ìœ¼ë¡œ zê°€ ì–¼ë§ˆë‚˜ ëŒì•„ê°€ìˆëŠ”ì§€
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //ê·¸ê±¸ë¡œ zë§Œ ëŒë¦¬ê¸°
 
     matWorld = matScale * RotZ * matBill; 
     m_vLook.y = 0.f;
@@ -428,8 +429,8 @@ void CLAttack::Leaf_Bill(const _float& _DT)
 
     D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
 
-    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x ±âÁØÀ¸·Î z°¡ ¾ó¸¶³ª µ¹¾Æ°¡ÀÖ´ÂÁö
-    D3DXMatrixRotationZ(&RotZ, fAngle);    //±×°É·Î z¸¸ µ¹¸®±â
+    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x ê¸°ì¤€ìœ¼ë¡œ zê°€ ì–¼ë§ˆë‚˜ ëŒì•„ê°€ìˆëŠ”ì§€
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //ê·¸ê±¸ë¡œ zë§Œ ëŒë¦¬ê¸°
 
     matWorld = matScale * RotZ * matBill;
     m_vLook.y = 0;

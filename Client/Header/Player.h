@@ -188,7 +188,7 @@ public:
 	pState	Get_pState() { return _pState; }
 
 	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
-	
+	VOID   Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
 	void			CheonLog_Spawn();
@@ -286,9 +286,11 @@ private:
 	float			_invincibleTimer;	//	무적 타이머
 	float			_alphaDelayTimer;	//	깜박임 타이머
 	float			_arrowTimer;
+	float			_defaultAttackSpeed;
 	int				_atomicCount;
 	int				_atomicTotal;
 	int				_atomicReady;
+	
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
