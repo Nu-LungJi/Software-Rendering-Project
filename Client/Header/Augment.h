@@ -42,7 +42,7 @@ private:
 private:	
 	FLOAT Screen_Timer;
 	FLOAT Anim_Timer;
-
+	FLOAT fDelay;
 	FLOAT TargetX;
 
 	vector<SpriteINFO*>	Anim_PerkSelect;
@@ -64,7 +64,7 @@ private:
   INT m_iPrevHoverType;
 
 	BOOL isActive;
-	
+	BOOL bdelay;
 	vector<EffectINFO*> PerkEffectList;
 
 private:
