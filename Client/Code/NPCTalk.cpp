@@ -10,11 +10,11 @@ HRESULT		NPCTalk::Ready_GameObject() {
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
 	if (FAILED(Effect_Initialize()))		return E_FAIL;
 	if (FAILED(Text_Initialize()))			return E_FAIL;
+	TalkTimer = 0.f;
+	ContextPassing = (INT)NOT_TALKING;
 
-	Timer01 = 0.f;
-	ContextPassing = 0;
-
-	ShadowCast = FALSE;
+	Enable_Interaction = FALSE;
+	AcceptedQuest = FALSE, CompletedQuest = FALSE;
 
 	BackGround = Component_Sprite->Get_Texture(L"NPCTalk_BackGround");
 	GRD_Top = Component_Sprite->Get_Texture(L"FrameGradation_Top");
@@ -32,6 +32,8 @@ HRESULT		NPCTalk::Ready_GameObject() {
 	Name = UIManager::GetInstance()->Find_FontObject(L"Personal Name");
 	Talk = UIManager::GetInstance()->Find_FontObject(L"TALK");
 
+	FOBJVec = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Get_AllFontObject();
+
 	return S_OK;
 }
 INT			NPCTalk::Update_GameObject(CONST FLOAT& _DT) {
@@ -48,14 +50,13 @@ VOID		NPCTalk::Render_GameObject() {
 }
 
 BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
-	if (!ShadowCast) {
+	if		(!Enable_Interaction) {
+		FadeState = 0;
 		PlayerObject->Set_PlayerStop(TRUE);
-		Timer01 += _DT;
-		Shadow_FadeIn(Timer01);
+		static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(TRUE);
 	}
-	
-	if (_NPCC == NPC_CHARACTER::NPC_TIF) {
-		if (KEY_DOWN(DIK_E) && ShadowCast) { ContextPassing++; }
+	if		(_NPCC == NPC_CHARACTER::NPC_TIF) {
+		if (KEY_DOWN(DIK_E) && Enable_Interaction) { ContextPassing++; }
 		
 		if (ContextPassing == 0){
 			Name->Text = L"시간의 사도";
@@ -73,83 +74,115 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 			ContextPassing = 999;
 		}
 	}
-	else if(_NPCC==NPC_CHARACTER::NPC_SHOP){
-		if (KEY_DOWN(DIK_E) && ShadowCast) { ContextPassing++; }
+	else if (_NPCC == NPC_CHARACTER::NPC_SHOP) {
+		if (ContextPassing == (INT)NOT_TALKING) {
+			Name->Text = L"상점 주인";
+			Talk->Text = L"어서 오세요 연님! 무엇을 도와드릴까요?";
+			ContextPassing = (INT)TALKING_ACTIVE;
+		}
+		if (ContextPassing == (INT)QUIT_TALK) {
+			FadeState = 1;
+			PlayerObject->Set_PlayerStop(FALSE);
+			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(FALSE);
+			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Ready_SmoothCamera(FALSE);
 
-		if (ContextPassing == 0) {
-			Name->Text = L"상점 주인";
-			Talk->Text = L"어서오세요! 처음 뵙네요!";
+			ContextPassing = (INT)QUEST_END;
 		}
-		else if (ContextPassing == 1) {
+		if (ContextPassing == (INT)QUEST_TALK01) {
 			Name->Text = L"상점 주인";
-			Talk->Text = L"없는 것 빼곤 다 있으니 천천히 골라보세요!";
+			Talk->Text = L"실은 방금 막 들어온 긴급 의뢰가 하나 있어요. 북쪽 숲 근처 농가에서 몬스터 무리가 나타나서  \n식량 창고를 털어갔대요. 마을 사람들에겐 일 년 농사가 걸린 아주 중요한 문제거든요";
 		}
-		else if (ContextPassing == 2) {
+		if (ContextPassing == (INT)QUEST_TALK02) {
 			Name->Text = L"연";
-			Talk->Text = L"...";
+			Talk->Text = L"에린 씨가 부탁한다면 거절할 수가 없네요.";
 		}
-		else if (ContextPassing == 3) {
-			ContextPassing = 999;
+		if (ContextPassing == (INT)QUEST_TALK03) {
+			Name->Text = L"상점 주인";
+			Talk->Text = L"이번 건은 마을 촌장님이 특별히 사비까지 털어서 보상 경험치를 올렸으니까요. \n섭섭지 않게 챙겨드릴게요!";
+		}
+		if (ContextPassing == (INT)QUEST_TALK_ACCEPT) {
+			Name->Text = L"연";
+			Talk->Text = L"좋습니다. 보상만 확실하다면 물불 안 가리는 게 모험가죠! \n걱정 말고 기다리세요!";
+			dynamic_cast<ShopKeeper*>(SceneManager::GetInstance()->Get_GameObject(L"ShopNPC"))->Set_QuestState(QUESTSTATE::ACCEPTED);
+		}
+		if (ContextPassing == (INT)QUEST_TALK_DENY) {
+			Name->Text = L"연";
+			Talk->Text = L"제안은 감사하지만, 지금은 다른 급한 용무가 있어서요. \n준비를 좀 더 갖춘 뒤에 다시 찾아오겠습니다....!";
+		}
+		if (KEY_DOWN(DIK_E)) {
+			if (ContextPassing == (INT)QUEST_TALK01) { ContextPassing = (INT)QUEST_TALK02; }
+			if (ContextPassing == (INT)QUEST_TALK02) { ContextPassing = (INT)QUEST_TALK03; }
+			if (ContextPassing == (INT)QUEST_TALK_ACCEPT) { ContextPassing = (INT)QUIT_TALK; }
+			if (ContextPassing == (INT)QUEST_TALK_DENY) { ContextPassing = (INT)QUIT_TALK; }
+		}
+		if (KEY_DOWN(DIK_1)) {
+			if (ContextPassing == (INT)TALKING_ACTIVE) { ContextPassing = (INT)QUEST_TALK01; }
+			if (ContextPassing == (INT)QUEST_TALK03) { ContextPassing = (INT)QUEST_TALK_ACCEPT; }
+		}
+		if (KEY_DOWN(DIK_2)) {
+			if (ContextPassing == (INT)TALKING_ACTIVE) { ContextPassing = (INT)QUIT_TALK; }
+			if (ContextPassing == (INT)QUEST_TALK03) { ContextPassing = (INT)QUEST_TALK_DENY; }
 		}
 	}
-	if (ShadowCast && ContextPassing == 999) {
-		Timer01 += _DT;
-		if (Shadow_FadeOut(Timer01)) {
-			ShadowCast = FALSE;
-			ContextPassing = 0;
-			UIManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(200, 255, 255, 255);
-			UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Color(200, 255, 255, 255);
-			PlayerObject->Set_PlayerStop(FALSE);
+	return Shadow_Fade(_DT);
+}	
+
+BOOL NPCTalk::Shadow_Fade(CONST FLOAT& _DT) {
+	if		(FadeState == 2)		return FALSE;
+	if		(FadeState == 0) {			//	FADE IN
+		TalkTimer += _DT;
+		if (TalkTimer < 1.f) {
+			for (auto& FOBJ : FOBJVec)
+				FOBJ->Set_Color(255 - TalkTimer * 255 * 2, 255, 255, 255);
+
+			BackGround->Set_Opacity(TalkTimer * 150);
+			GRD_Top->Set_Opacity(TalkTimer * 255);
+			GRD_Bottom->Set_Opacity(TalkTimer * 255);
+			Sprite_Yeon->Set_Opacity(TalkTimer * 255);
+			Sprite_Shop->Set_Opacity(TalkTimer * 255);
+		}
+		else if (TalkTimer > 1.f && TalkTimer < 2.f) {
+			NameBar->Set_Visible(TRUE);
+			Square->Set_Visible(TRUE);
+			Talk->Set_Visible(TRUE);
+			Name->Set_Color(255 * (TalkTimer - 1), 255, 255, 255);
+			Talk->Set_Color(150 * (TalkTimer - 1), 255, 255, 255);
+		}
+		else if (TalkTimer > 2.f) {
+			Enable_Interaction = TRUE;
+			TalkTimer = 0.f;
+			FadeState = 2;
+			return FALSE;
+		}
+	}
+	else if (FadeState == 1) {		// FADE OUT
+		TalkTimer += _DT;
+		if (TalkTimer < 1.f) {
+			for (auto& FOBJ : FOBJVec) {
+				FOBJ->Set_Color(TalkTimer * 255 * 2, 255, 255, 255);
+			}
+			BackGround	->Set_Opacity(150 - (TalkTimer * 150));
+			GRD_Top		->Set_Opacity(255 - (TalkTimer * 255));
+			GRD_Bottom	->Set_Opacity(255 - (TalkTimer * 255));
+			Sprite_Yeon	->Set_Opacity(255 - (TalkTimer * 255));
+			Sprite_Shop	->Set_Opacity(255 - (TalkTimer * 255));
+			Name		->Set_Color(255 - 255 * (TalkTimer), 255, 255, 255);
+			Talk		->Set_Color(150 - 150 * (TalkTimer), 255, 255, 255);
+		}
+		else if (TalkTimer > 1.f && TalkTimer < 2.f) {
+			NameBar	->Set_Visible(FALSE);
+			Square	->Set_Visible(FALSE);
+			Talk	->Set_Visible(FALSE);
+		}
+		else if (TalkTimer > 2.f) {
+			Enable_Interaction = FALSE;
+			TalkTimer = 0.f;
+			FadeState = 2;
+			ContextPassing = (INT)NOT_TALKING;
 			return TRUE;
 		}
 	}
 }
-
-BOOL NPCTalk::Shadow_FadeIn(FLOAT _Timer) {
-	if (_Timer < 1.f) {
-		BackGround->Set_Opacity(_Timer * 150);
-		GRD_Top->Set_Opacity(_Timer * 255);
-		GRD_Bottom->Set_Opacity(_Timer * 255);
-		Sprite_Yeon->Set_Opacity(_Timer * 255);
-		//Sprite_Tif->Set_Opacity(_Timer * 255);
-		Sprite_Shop->Set_Opacity(_Timer * 255);
-	}
-	else if (_Timer > 1.f && _Timer < 2.f) {
-		NameBar->Set_Visible(TRUE);
-		Square->Set_Visible(TRUE);
-		Name->Set_Color(255 * (_Timer - 1), 255, 255, 255);
-		Talk->Set_Color(150 * (_Timer - 1), 255, 255, 255);
-	}
-	else if (_Timer > 2.f) {
-		Timer01 = 0.f;
-		ShadowCast = TRUE;
-		return TRUE;
-	}
-	return FALSE;
-}
-BOOL NPCTalk::Shadow_FadeOut(FLOAT _Timer) {
-	if (_Timer < 1.f) {
-		BackGround->Set_Opacity(150 - (_Timer * 150));
-		GRD_Top->Set_Opacity(255 - (_Timer * 255));
-		GRD_Bottom->Set_Opacity(255 - (_Timer * 255));
-		Sprite_Yeon->Set_Opacity(255 - (_Timer * 255));
-		//Sprite_Tif->Set_Opacity(255 - (_Timer * 255));
-		Sprite_Shop->Set_Opacity(255-(_Timer * 255));
-		Name->Set_Color(255 - 255 * (_Timer), 255, 255, 255);
-		Talk->Set_Color(150 - 150 * (_Timer), 255, 255, 255);
-	}
-	else if (_Timer > 1.f && _Timer < 2.f) {
-		NameBar->Set_Visible(FALSE);
-		Square->Set_Visible(FALSE);
-	}
-	else if (_Timer > 2.f) {
-		Timer01 = 0.f;
-		ShadowCast = FALSE;
-		return TRUE;
-	}
-	return FALSE;
-}
-
 HRESULT  NPCTalk::Component_Initialize() {
 	Component_Sprite = ADD_COMPONENT_SPRITE;
 	return S_OK;

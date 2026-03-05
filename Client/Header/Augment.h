@@ -27,6 +27,7 @@ public:
 	VOID Display_PerkInfo(ItemINFO* _pItem);
 	VOID Perk_Selected_Effect(INT _PerkType);
 	VOID FadeOut(FLOAT Frame);
+	VOID ClearAllEffects();
 public:
 	INT IsMouseOnPerk();
 

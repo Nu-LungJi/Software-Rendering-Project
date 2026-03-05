@@ -50,6 +50,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 				m_tInfo.pGameObj[1] = nullptr;
 			}
 			m_tInfo.bTrigger[1] = true;
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Scorpion_Chain.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		}
 	}
 
@@ -61,6 +62,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 		if (m_tInfo.bTrigger[0])
 		{
 			ObjectDead = m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe;
+			//SoundManager::GetInstance()->Stop_Sound(CHANNELID::SOUND_EFFECT08);
 		}
 		else
 		{
@@ -88,7 +90,7 @@ VOID ScorpionBullet::LateUpdate_GameObject(const _float& _DT) {
 
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
-	}
+}
 VOID ScorpionBullet::Render_GameObject() {
 
 	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

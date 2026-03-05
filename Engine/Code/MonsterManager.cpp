@@ -317,7 +317,10 @@ void MonsterManager::Release_Static_Batich()
 		m_pTileVB = nullptr;
 	}
 
-	m_vecTiles.clear();
+	//추가
+	for (auto& iter : m_vecTiles)
+		Safe_Release(iter);
+		m_vecTiles.clear();
 }
 
 

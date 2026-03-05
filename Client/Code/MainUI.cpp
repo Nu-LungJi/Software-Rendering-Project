@@ -18,7 +18,9 @@ HRESULT	MainUI::Ready_GameObject() {
 	Speech_Text = L"";
 	ArrowCountText = L"";
 	Timer01 = 0.f; Timer02 = 0.f; Timer03 = 0.f;
-	
+	Enable_Interaction = 2;
+	Interaction_Text = L"";
+
 	MainUIOpacity = 0.f;
 	
 	Current_KeyCount		= 0;
@@ -36,6 +38,14 @@ HRESULT	MainUI::Ready_GameObject() {
 	Enable_BossTitle = 2;
 	BossTitleTimer = 0.f;
 	BarScale = { 1.f, 1.f, 1.f };
+	Enable_DisplayHPBar = 2;
+	HPOPC = 0.f;
+
+	Enable_FadeFilter = 2;
+	FadeOPC = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter")->OPACITY;
+
+	PopUpItem = nullptr;
+
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -47,16 +57,19 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
   
 	//PopUp_Speech_Bubble(ItemTag, _DT);
 	Timer02 += _DT; 
-	if(Timer02 > 0.1f){
+	if(Timer02 > 0.04f){
 		Player_KeyModify();
 		Player_MoneyModify();
 		Player_CrystalModify();
 		Timer02 = 0.f;
 	}
+	PopUp_ItemInfo(PopUpItem, PopUpSprite, _DT);
 	MainUI_FadeAction(_DT, FadeSpeed);
-	PopUp_ItemInfo(L"Relic_Item3", _DT);
 	Synchronize_BossHPBar();
+	Display_InteractionUI();
 	Display_BossTitle(_DT);
+	Display_BossHPBar(_DT);
+	Display_FadeFilter(_DT);
 
 	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
 	FO_ArrowCount->Set_Text(ArrowCountText);
@@ -67,24 +80,11 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(true);
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
-	
-	// GUI
-	//BowIMG_List[Cur_BowIMGIDX]->Set_Pos(GuiVar.POSX, GuiVar.POSY);
-	//BowIMG_List[Cur_BowIMGIDX]->Set_Scale(GuiVar.WIDTHX, GuiVar.WIDTHY);
-	//Imgui();
 
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
-	if(KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_M))
-		HPBarFill->Set_Pos( HPBarFill->Get_Pos().x + 1, HPBarFill->Get_Pos().y);
-	if (KEY_HOLD(DIK_LCONTROL) && KEY_DOWN(DIK_M))
-		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x - 1, HPBarFill->Get_Pos().y);
-
-	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_N))
-		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x, HPBarFill->Get_Pos().y + 1);
-	if (KEY_HOLD(DIK_LCONTROL) && KEY_DOWN(DIK_N))
-		HPBarFill->Set_Pos(HPBarFill->Get_Pos().x, HPBarFill->Get_Pos().y - 1);
+	GameObject::LateUpdate_GameObject(_DT);
 }
 VOID	MainUI::Render_GameObject() {
 	_matrix matWorld, matScale, matTrans;
@@ -188,95 +188,7 @@ VOID MainUI::Player_UseSkill() {
 		//Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 	}
 }
-VOID MainUI::PopUp_Interaction_Notice(CONST TCHAR* _Text, BOOL _Vis) {
-	SpriteINFO* KeyBoard = Component_Sprite->Get_Texture(L"KEY_E");
-	SpriteINFO* InterBG = Component_Sprite->Get_Texture(L"Interaction_BG");
-	FontObject* FO = UIManager::GetInstance()->Find_FontObject(L"Interaction_Text");
-	FO->Text = _Text;
 
-	if (_Vis) {
-		KeyBoard->Set_Visible(TRUE);
-		InterBG->Set_Visible(TRUE);
-		FO->Set_Color(200, 255, 255, 255);
-	} 
-	else {
-		KeyBoard->Set_Visible(FALSE);
-		InterBG->Set_Visible(FALSE);
-		FO->Set_Color(0, 255, 255, 255);
-	}
-	
-}
-VOID MainUI::PopUp_ItemInfo(wstring ItemTag, FLOAT _DT) {
-	if (ItemInfo) {
-		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"ItemNoticeBG");
-		SpriteINFO* ITEM = Component_Sprite->Get_Texture(ItemTag);
-
-		ItemINFO* iINFO = UIManager::GetInstance()->Find_Item(ItemTag);
-		
-		FontObject* InfoFont = UIManager::GetInstance()->Find_FontObject(L"ItemInfo");
-		FontObject* ClassFont = UIManager::GetInstance()->Find_FontObject(L"ItemClass");
-
-		InfoFont->Set_Text(iINFO->ItemDesc[1]);
-		ClassFont->Set_Text(iINFO->ItemDesc[2]);
-
-		if (Timer03 <= 1) {
-			Timer03 += _DT;
-			if (BackGround->Get_Pos().x >= 1000.f) {
-				BackGround->Set_Pos(BackGround->Get_Pos().x - 20.f, BackGround->Get_Pos().y);
-				ITEM->Set_Pos(ITEM->Get_Pos().x - 20.f, ITEM->Get_Pos().y);
-			}if (InfoFont->Get_Pos().x >= 1130.f) {
-				InfoFont->Set_Pos(InfoFont->Get_Pos().x - 20.f, InfoFont->Get_Pos().y);
-				ClassFont->Set_Pos(ClassFont->Get_Pos().x - 20.f, ClassFont->Get_Pos().y);
-			}
-			
-			
-			if (Timer03 < 0.33f) {
-				BackGround->Set_Opacity(200 * Timer03 * 3);
-				ITEM->Set_Opacity(200 * Timer03 * 3);
-				InfoFont->Set_Color(200 * Timer03 * 3, 255, 255, 255);
-				ClassFont->Set_Color(200 * Timer03 * 3, 255, 255, 255);
-			}
-			else {
-				BackGround->Set_Opacity(200);
-				ITEM->Set_Opacity(200);
-				InfoFont->Set_Color(200, 255, 255, 255);
-				ClassFont->Set_Color(200, 255, 255, 255);
-			}
-		}
-		else if (Timer03 >= 1.f && Timer03 < 3.f) {
-			Timer03 += _DT;
-		}
-		else if (Timer03 >= 3.f && Timer03 < 4.f) {
-			Timer03 += _DT;
-			if (Timer03 < 4.f) {
-				BackGround->Set_Opacity(200 - (200 * (Timer03 - 3)));
-				ITEM->Set_Opacity((200 - (200 * (Timer03 - 3))));
-				InfoFont->Set_Color((200 - (200 * (Timer03 - 3))), 255, 255, 255);
-				ClassFont->Set_Color(200 - (200 * (Timer03 - 3)), 255, 255, 255);
-			}
-			else {
-				BackGround->Set_Opacity(0);
-				ITEM->Set_Opacity(0);
-				InfoFont->Set_Color(0, 255, 255, 255);
-				ClassFont->Set_Color(0, 255, 255, 255);
-			}
-		}
-		else if (Timer03 >= 4.f) {
-			BackGround->Set_Pos(1300.f, 320.f);
-			ITEM->Set_Pos(1300.f, 290.f);
-			InfoFont->Set_Pos(1430.f, InfoFont->Get_Pos().y);
-			ClassFont->Set_Pos(1430.f, ClassFont->Get_Pos().y);
-
-			BackGround->Set_Opacity(0);
-			ITEM->Set_Opacity(0);
-			InfoFont->Set_Color(0, 255, 255, 255);
-			ClassFont->Set_Color(0, 255, 255, 255);
-
-			Timer03 = 0.f;
-			ItemInfo = FALSE;
-		}
-	}
-}
 VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 	if (Enable_SpeechBubble) {
 		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"SpeechBubble_BG");
@@ -448,11 +360,37 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type)
 	}
 }
 
+VOID MainUI::Display_InteractionUI() {
+	if (Enable_Interaction == 2) return;
+
+	SpriteINFO* KeyBoard = Component_Sprite->Get_Texture(L"KEY_E");
+	SpriteINFO* InterBG = Component_Sprite->Get_Texture(L"Interaction_BG");
+	FontObject* FO = UIManager::GetInstance()->Find_FontObject(L"Interaction_Text");
+
+	FO->Set_Text(Interaction_Text.c_str());
+	if (Enable_Interaction == TRUE) {
+		KeyBoard->Set_Visible(TRUE);
+		InterBG->Set_Visible(TRUE);
+
+		FO->Set_Visible(TRUE);
+
+		Enable_Interaction = 2;
+	}
+	else if (Enable_Interaction == FALSE) {
+		KeyBoard->Set_Visible(FALSE);
+		InterBG->Set_Visible(FALSE);
+
+		FO->Set_Visible(FALSE);
+
+		Enable_Interaction = 2;
+	}
+}
+
 VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 	if		(Enable_MainUIFade == 2)		return;
 	else if (Enable_MainUIFade == TRUE) {
 		if (GlobalOPC > 2.f)	GlobalOPC -= _DT * 255.f / _SPEED;
-		else					GlobalOPC = 0.f;
+		else					GlobalOPC = 0;
 	
 		for (auto& FO : AllFontOBJ) 
 			FO->TextColor = D3DCOLOR_ARGB((INT)GlobalOPC, 255, 255, 255);
@@ -463,7 +401,6 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		if (EffectFaded == FALSE) {
 			for (auto& AUE : AllUIEffect) {
 				AUE->Set_EffectFadeOption(TRUE);
-				
 			}
 			EffectFaded = TRUE;
 		}
@@ -472,19 +409,10 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE) {
 			Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE = TRUE;
 			HPBarFill->VISIBLE = TRUE;
-
-			if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
-			}
-			else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
-				UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
-			}
 		}
 		if (GlobalOPC < 253.f) GlobalOPC += _DT * 255.f / _SPEED;
 		else {
-			GlobalOPC = 255.f;
+			GlobalOPC = 255;
 			Enable_MainUIFade = 2;
 		}
 		for (auto& FO : AllFontOBJ) {
@@ -557,7 +485,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 	}														
 }
 
-VOID MainUI::Display_BossTitle(const FLOAT& _DT) {
+VOID MainUI::Display_BossTitle(CONST FLOAT& _DT) {
 	if (Enable_BossTitle == TRUE) {
 		if (BossTitleTimer < 254.f) {
 			BossTitleTimer += _DT * 255;
@@ -596,7 +524,63 @@ VOID MainUI::Display_BossTitle(const FLOAT& _DT) {
 		}
 	}
 }
+VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
+	if		(Enable_DisplayHPBar == 2) return;
+	else if (Enable_DisplayHPBar == TRUE) {		// 쓸일 없음
+		if	(HPOPC < 253.f)	{ HPOPC += _DT * 255.f / 2.f; }
+		else				{ HPOPC = 255.f; Enable_DisplayHPBar = 2;}
 
+		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
+		}
+		else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
+		}
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color((INT)HPOPC, 255, 255, 255);
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color((INT)HPOPC, 255, 255, 255);
+	}
+	else if (Enable_DisplayHPBar == FALSE) {
+		if	(HPOPC > 2.f)	{ HPOPC -= _DT * 255.f / 2.f; }
+		else				{ 
+			HPOPC = 255.f; Enable_DisplayHPBar = 2; 
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"");
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"");
+
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color(0, 255, 255, 255);
+			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color(0, 255, 255, 255);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity(0);
+			HPBarFill->Set_Opacity(0);
+
+			return;
+		}
+		Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity((INT)HPOPC);
+		HPBarFill->Set_Opacity((INT)HPOPC);
+
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color((INT)HPOPC, 255, 255, 255);
+		UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color((INT)HPOPC, 255, 255, 255);
+	}
+}
+VOID MainUI::Display_FadeFilter(CONST FLOAT& _DT) {
+	if		(Enable_FadeFilter == 2) return;
+	SpriteINFO* Filter = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter");
+	if (Enable_FadeFilter == TRUE) {		// FADE IN - 어두워지게
+		if (Filter->Get_Vislble() == FALSE) {
+			Filter->Set_Visible(TRUE);
+		}
+		if (FadeOPC < 253.f) { FadeOPC += _DT * 255.f; Filter->Set_Opacity(FadeOPC); }
+		else					{ Filter->Set_Opacity(255.f); Enable_FadeFilter = 2; return;	}
+	}
+	else if (Enable_FadeFilter == FALSE) {		// FADE OUT - 밝아지게
+		if (FadeOPC > 2.f)	{ FadeOPC -= _DT * 255.f; Filter->Set_Opacity(FadeOPC);}
+		else					{ 
+			Filter->Set_Opacity(0.f);
+			Filter->Set_Visible(FALSE);
+			Enable_FadeFilter = 2; 
+			return;	}
+	}
+}
 VOID MainUI::Synchronize_BossHPBar() {
 	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
 		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
@@ -674,12 +658,8 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token2", 137.f, 669.f, 33.f, 29.f, TRUE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// INTERACT /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png", L"KEY_E", 720.f, 590.f, 35, 35, TRUE, 255);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Interaction_BG.png", L"Interaction_BG", 720.f, 590.f, 215, 35, TRUE, 155);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png", L"KEY_E", 720.f, 590.f, 35, 35, FALSE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Interaction_BG.png", L"Interaction_BG", 700.f, 590.f, 215, 35, FALSE, 155);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// WEAPON /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png", L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
@@ -702,6 +682,17 @@ HRESULT MainUI::Sprite_Initialize() {
 	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 400, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Boss_TitleBar.png", BossTitleBar->WIDTH, BossTitleBar->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&BossTitleBar->TEXTURE);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// FILTER /////////////////////////////////////////////////////
+	SpriteINFO* FilterOBJ = new SpriteINFO(L"FadeFilter", 1280, 720, 0, 0, FALSE, 0);
+	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Filter_Fade.png", FilterOBJ->WIDTH, FilterOBJ->HEIGHT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&FilterOBJ->TEXTURE);
+	UIManager::GetInstance()->Add_FilterObjects(FilterOBJ);
+
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
 
 	return S_OK;
 }
@@ -739,7 +730,7 @@ HRESULT MainUI::Text_Initialize() {
 	AllFontOBJ.push_back(FO_ArrowCount);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// INTERACTION ////////////////////////////////////////////////////
-	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 810.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
+	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 760.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
@@ -750,12 +741,83 @@ HRESULT MainUI::Text_Initialize() {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.091,	5.f }, 15, L"Boss_Name",		L"배달의민족 도현", D3DCOLOR_ARGB(0, 255, 255, 255), 700));
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 616.967f, 25.f }, 13, L"Boss_Tag",			L"Caviar Dreams",	D3DCOLOR_ARGB(0, 160, 160, 160)));
-	Title_Name = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 30.f, 270.f }, 65, L"Boss_Title_Name",	TEXT("Yoon\u00AE 대한"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
-	Title_Tag = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 45.f, 370.f }, 32, L"Boss_Title_Tag", TEXT("Yoon\u00AE 민국 Bold"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	Title_Name = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 30.f, 270.f }, 65, L"Boss_Title_Name",	TEXT("Yoon\u00AE 대한"),		D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
+	Title_Tag = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 45.f, 370.f }, 32, L"Boss_Title_Tag",	TEXT("Yoon\u00AE 민국 Bold"), D3DCOLOR_ARGB(0, 255, 255, 255), 600, TRUE, DT_LEFT);
 
 	return S_OK;
 }
+VOID MainUI::PopUp_ItemInfo(ItemINFO* Item, SpriteINFO* SPR, FLOAT _DT) {
+	if (Enable_ItemPopUp) {
+		SpriteINFO* BackGround = Component_Sprite->Get_Texture(L"ItemNoticeBG");
+		BackGround->Set_Visible(TRUE);
+		SpriteINFO* ITEM = SPR;
 
+		ITEM->Set_Visible(TRUE);
+
+		FontObject* InfoFont = UIManager::GetInstance()->Find_FontObject(L"ItemInfo");
+		FontObject* ClassFont = UIManager::GetInstance()->Find_FontObject(L"ItemClass");
+
+		InfoFont->Set_Text(Item->ItemDesc[1]);
+		ClassFont->Set_Text(Item->ItemDesc[2]);
+
+		if (ItemPopUp_Timer <= 1) {
+			ItemPopUp_Timer += _DT;
+			if (BackGround->Get_Pos().x >= 1000.f) {
+				BackGround->Set_Pos(BackGround->Get_Pos().x - 20.f, BackGround->Get_Pos().y);
+				ITEM->Set_Pos(ITEM->Get_Pos().x - 20.f, ITEM->Get_Pos().y);
+			}if (InfoFont->Get_Pos().x >= 1130.f) {
+				InfoFont->Set_Pos(InfoFont->Get_Pos().x - 20.f, InfoFont->Get_Pos().y);
+				ClassFont->Set_Pos(ClassFont->Get_Pos().x - 20.f, ClassFont->Get_Pos().y);
+			}
+
+
+			if (ItemPopUp_Timer < 0.33f) {
+				BackGround->Set_Opacity(200 * ItemPopUp_Timer * 3);
+				ITEM->Set_Opacity(200 * ItemPopUp_Timer * 3);
+				InfoFont->Set_Color(200 * ItemPopUp_Timer * 3, 255, 255, 255);
+				ClassFont->Set_Color(200 * ItemPopUp_Timer * 3, 255, 255, 255);
+			}
+			else {
+				BackGround->Set_Opacity(200);
+				ITEM->Set_Opacity(200);
+				InfoFont->Set_Color(200, 255, 255, 255);
+				ClassFont->Set_Color(200, 255, 255, 255);
+			}
+		}
+		else if (ItemPopUp_Timer >= 1.f && ItemPopUp_Timer < 3.f) {
+			ItemPopUp_Timer += _DT;
+		}
+		else if (ItemPopUp_Timer >= 3.f && ItemPopUp_Timer < 4.f) {
+			ItemPopUp_Timer += _DT;
+			if (ItemPopUp_Timer < 4.f) {
+				BackGround->Set_Opacity(200 - (200 * (ItemPopUp_Timer - 3)));
+				ITEM->Set_Opacity((200 - (200 * (ItemPopUp_Timer - 3))));
+				InfoFont->Set_Color((200 - (200 * (ItemPopUp_Timer - 3))), 255, 255, 255);
+				ClassFont->Set_Color(200 - (200 * (ItemPopUp_Timer - 3)), 255, 255, 255);
+			}
+			else {
+				BackGround->Set_Opacity(0);
+				ITEM->Set_Opacity(0);
+				InfoFont->Set_Color(0, 255, 255, 255);
+				ClassFont->Set_Color(0, 255, 255, 255);
+			}
+		}
+		else if (ItemPopUp_Timer >= 4.f) {
+			BackGround->Set_Pos(1300.f, 320.f);
+			ITEM->Set_Pos(1300.f, 290.f);
+			InfoFont->Set_Pos(1430.f, InfoFont->Get_Pos().y);
+			ClassFont->Set_Pos(1430.f, ClassFont->Get_Pos().y);
+
+			BackGround->Set_Opacity(0);
+			ITEM->Set_Opacity(0);
+			InfoFont->Set_Color(0, 255, 255, 255);
+			ClassFont->Set_Color(0, 255, 255, 255);
+
+			ItemPopUp_Timer = 0.f;
+			Enable_ItemPopUp = FALSE;
+		}
+	}
+}
 MainUI* MainUI::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	MainUI* MUI = new MainUI(_GRPDEV);
 	if (FAILED(MUI->Ready_GameObject())) {

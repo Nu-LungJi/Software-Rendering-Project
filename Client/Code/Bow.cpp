@@ -21,6 +21,7 @@ HRESULT Bow::Ready_GameObject()
 	_cameraAngle = _cameraAngle / D3DX_PI * 180.f;
 
 	_alphaRatio = 0.f;
+	_attackTimer = 10.f;
 
 	Component_Transform->Set_Scale({ 1.f, 1.f, 1.f });
 
@@ -136,14 +137,14 @@ INT Bow::Update_GameObject(const _float& _DT)
 					
 					switch (_type) {
 					case BowType::FairyBow :
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 0.9f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
 						break;
 					case BowType::IceBow:
 						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 1.1f, Size, true);
 						break;
 					case BowType::EvilHeadBow:
 						Size = { 1.5f, 1.5f, 1.5f };
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 1.1f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGE, &_pulsepos, 0.6f, Size, true);
 						break;
 					case BowType::WindBow:
 						Size = { 1.f, 1.f, 1.f };
@@ -167,12 +168,17 @@ INT Bow::Update_GameObject(const _float& _DT)
 		else {
 			CreateArrow(_DT);
 			CreateEffect(_DT);
+			_ChargingTime = 0.f;
+			_Charge = 0;
+			_Charging = 0;
 		}
 
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 	}
-	else
+	else {
+		_attackTimer = 10.f;
 		_alphaRatio = 0.f;
+	}
 
 	AlphaSorting(Component_Transform->Get_Position());
 	
@@ -509,7 +515,7 @@ void Bow::CreateChargingEffect(const _float& _DT)
 			switch (_type)
 			{
 			case BowType::FairyBow:
-        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Fairy_Bow/Weapon_55_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::FAIRY_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::IceBow:
@@ -517,7 +523,7 @@ void Bow::CreateChargingEffect(const _float& _DT)
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::EvilHeadBow:
-        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_51_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Weapon_51_Charge.wav", CHANNELID::SOUND_EFFECT03, 0.15f);
 				PLAY_PLAYER_EFFECT(PLAYER_SKILL::EVIL_CHARGING, &_pulsepos, 0.3f, Size, true);
 				break;
 			case BowType::WindBow:

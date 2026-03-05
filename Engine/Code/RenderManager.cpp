@@ -91,6 +91,8 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 	if (pBlackOut != nullptr)
 		pBlackOut->Render_GameObject();
 
+	UIManager::GetInstance()->Render_FilterObjects();
+
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {

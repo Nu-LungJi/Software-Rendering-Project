@@ -358,6 +358,7 @@ VOID Bat::State_Channeling(const _float& _DT)
 VOID Bat::State_Dead()
 {
 	MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x * 2.f, MONSTER_DEATH_PLAYTTIME);
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;

@@ -65,7 +65,6 @@ private:
 	Texture*						Component_Texture;
 	Collider*						Component_Colider;
 
-	IDirect3DBaseTexture9*	      m_pSpriteTexture;
 	ID3DXSprite*					 m_pSprite;
 	vector<IDirect3DBaseTexture9*> m_vecTextureList;
 	

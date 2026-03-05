@@ -32,7 +32,7 @@ private:
 public:
 	void Set_TimeSlow(bool isSlow) { _isTimeSlow = isSlow;}
 	_vec3* Search_Target(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
-	GameObject* Search_Target_Object(_vec3* myPos, _float radius, CONST TCHAR* _TAG);
+	GameObject* Search_Target_Object(_vec3* myPos, _float radius);
 private:
 	bool _isTimeSlow;
 };
