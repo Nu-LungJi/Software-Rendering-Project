@@ -33,8 +33,10 @@ INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
 	m_fTimer += _DT;
 	
-	Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
-
+	if (m_fTimer > 2.f) {
+		Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
+		m_fTimer = 0.f;
+	}
 	if (KEY_DOWN(DIK_P)) {
 
 		if (!m_bEffect)
@@ -69,18 +71,27 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 			it->Set_ObjectDead(true);
 			it = nullptr;
 			m_iEventTrigger = 1;
+			m_fTimer = 0.f;
 		}
 	}
-	if ((POS(m_pPlayer)->y > 49.f) && (m_iEventTrigger == 1)) {
+	else if (POS(m_pPlayer)->y > 10.f && m_iEventTrigger == 1) {
+		m_iEventTrigger = 2;
+	}
+	else if ((POS(m_pPlayer)->y > 49.f) && (m_iEventTrigger == 3)) {
 		m_pPlayer->Set_IsFalling(true);
 		Monster::Set_Gravity({ 0.f,1.f,0.f });
 		for (auto it : m_vecHurdles[1]) {
 			it->Set_ObjectDead(true);
 			it = nullptr;
-			m_iEventTrigger = 2;
+			m_iEventTrigger = 4;
 		}
 	}
+	else if ((POS(m_pPlayer)->z > 15.f) && (m_iEventTrigger == 4)) {
+		m_iEventTrigger = 5;
+	}
+
 	m_pPlayer->Fall(_DT);
+
 	if (POS(m_pPlayer)->z > 35.f)
 		End_MiniGame();
 	else if (Monster::Get_Gravity().y == -1.f)
@@ -106,6 +117,7 @@ HRESULT MiniGameScene::Start_MiniGame()
 		CameraObject* pCamera = static_cast<CameraObject*>(m_pMainScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Get_GameObject(L"Camera"));
 		Monster::Set_Camera(pCamera);
 		pCamera->Start_MiniGame();
+		pCamera->Set_EventTrigger(&m_iEventTrigger);
 		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pCamera);
 		pCamera->AddRef();
 
@@ -143,6 +155,7 @@ HRESULT MiniGameScene::Start_MiniGame()
 	}
 
 	//이거 스타트씬에서 할게요
+	// 디버그 키 진입 하고싶을때 킬것
 	//SceneManager::GetInstance()->Set_CurrentScene(this);
 
 	return S_OK;
@@ -198,16 +211,13 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 	SkyBox* pSkybox = SkyBox::Create(GRPDEV);
 	LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pSkybox);
 
-	Tesseract* pTesseract = Tesseract::Create(GRPDEV);
-	//LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pTesseract);
-	Monster::Add_Monster_to_Scene(pTesseract, L"Chaser", GAMEOBJECT_TYPE::OBJECT_MONSTER, this);
+	m_pChaser = Tesseract::Create(GRPDEV);
+	m_pChaser->Set_SceneEventTrigger(&m_iEventTrigger);
+	Monster::Add_Monster_to_Scene(m_pChaser, L"Chaser", GAMEOBJECT_TYPE::OBJECT_MONSTER, this);
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer() {
 
-	m_pChaser = nullptr;
-	m_pChaser = static_cast<FireDevilBowChargeEffect*>(Monster::Create<FireDevilBowChargeEffect>(GRPDEV, { -5.f, -2.f, 0.f },{55.f,-2.f,0.f},3.f, 2.f));
-	Monster::Add_Monster_to_Scene(m_pChaser, L"Chaser", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET, this);
 	for (float i = 20; i < 50; i += 5)
 	{
 		int		iCount	= RANDOM::Get_int(1, 5);

@@ -1481,8 +1481,6 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 		wstring Tag = _Other->Get_ObjectTag();
 		MainUI* mainUI;
 		if (Tag == L"Hurdle") {
-			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-			mainUI->Player_LostHP();
 
 			return TRUE;
 		}

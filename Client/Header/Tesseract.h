@@ -25,6 +25,7 @@ public:
 
     
 private:
+    virtual  void            Free();
     HRESULT			Component_Initialize();
 
     LPDIRECT3DVERTEXBUFFER9 m_fVertexBuffer = nullptr;
@@ -35,11 +36,12 @@ private:
     IDirect3DTexture9* m_pTexture = nullptr;
     Transform*      m_pTransform = nullptr;
     Collider*       m_pCollider = nullptr;
+
 public:
     static         Tesseract* Create(LPDIRECT3DDEVICE9 pGraphicDev);
+    void    Set_SceneEventTrigger(int* pint) { m_pSceneEvent = pint; }
 
 private:
-    virtual  void            Free();
-
+    int* m_pSceneEvent = nullptr;
 };
 
