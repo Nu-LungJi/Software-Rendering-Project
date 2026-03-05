@@ -1503,17 +1503,23 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
+			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
 
-		return TRUE;
+			return TRUE;
+		}
+		return false;
 	}
 	else if(Tag == L"Monster")
 	{
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
 
 		return TRUE;
+		}
+		return false;
 	}
 
 	return FALSE;

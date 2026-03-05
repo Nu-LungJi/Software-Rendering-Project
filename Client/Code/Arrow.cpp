@@ -639,7 +639,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     if (Tag == L"Monster") {
         atk = 1.f;
         if (_type == ArrowType::EvilHeadCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+        Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
 
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
 
