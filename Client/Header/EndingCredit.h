@@ -19,6 +19,10 @@ public:
 	HRESULT Sprite_Initialize();
 	HRESULT	Update_Ready();
 
+	// ±¤À± Ãß°¡ ¡å
+	VOID	Set_CreditStart(BOOL _Value)	{ m_bCreditStart = TRUE; }
+	BOOL	Get_CreditStart()				{ return m_bCreditStart; }
+
 private:
 	SpriteObject* Component_Sprite;
 	vector<SpriteINFO*> TextureList;

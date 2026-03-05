@@ -20,6 +20,8 @@ INT EffectManager::Update_EffectManager(CONST FLOAT& _DT) {
 		EE->Update_GameObject(_DT);
 	}for (auto& UE : Container_UIEffect) {
 		UE->Update_GameObject(_DT);
+	}for (auto& UE : Global_Effect) {
+		UE->Update_GameObject(_DT);
 	}
 	if(nullptr != Scene_Effect)	Scene_Effect->Update_GameObject(_DT);
 	return 0;
@@ -72,6 +74,15 @@ VOID EffectManager::LateUpdate_EffectManager(CONST FLOAT& _DT) {
 		}
 		else { ++iter; }
 	}
+	for (auto iter = Global_Effect.begin(); iter != Global_Effect.end(); ) {
+		(*iter)->LateUpdate_GameObject(_DT);
+		if ((*iter)->Get_ObjectDead() == TRUE) {
+			Safe_Release((*iter));
+			iter = Global_Effect.erase(iter);
+			continue;
+		}
+		else { ++iter; }
+	}
 	if (nullptr != Scene_Effect)	Scene_Effect->LateUpdate_GameObject(_DT);
 }
 VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDER _RENDER) {
@@ -105,6 +116,31 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDE
 
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+}
+
+VOID EffectManager::Add_GlobalEffect(GameObject* _Effect) {
+	Global_Effect.push_back(_Effect);
+}
+VOID EffectManager::Render_GlobalEffect(LPDIRECT3DDEVICE9 _GRPDEV) {
+	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	_GRPDEV->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	for (auto& GB : Global_Effect) 
+		GB->Render_GameObject();
+	
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
+	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+}
+GameObject* EffectManager::Find_GlobalEffect(wstring _Tag) {
+	for (auto& GOBJ : Global_Effect) {
+		if (GOBJ->Get_ObjectTag() == _Tag.c_str()) return GOBJ;
+	}
+	return nullptr;
 }
 
 HRESULT EffectManager::Append_Effect(EFFECT_OWNER _Owner, GameObject* _Effect, INT _FB) {

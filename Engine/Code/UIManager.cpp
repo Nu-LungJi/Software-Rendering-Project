@@ -83,22 +83,34 @@ VOID UIManager::Render_FontObjects() {
 
     DXSprite->End();
 }
-VOID UIManager::Render_FilterObjects() {
+VOID UIManager::Render_GlobalObject() {
     DXSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-    for (auto& FOBJ : FilterList) {
-        if (FOBJ.second->VISIBLE == TRUE) {
-            RECT RT = { FOBJ.second->Get_Pos().x, FOBJ.second->Get_Pos().y, FOBJ.second->Get_Pos().x + FOBJ.second->Get_Scale().x, FOBJ.second->Get_Pos().y + FOBJ.second->Get_Scale().y };
-            DXSprite->Draw(FOBJ.second->TEXTURE, &RT, NULL, NULL, D3DCOLOR_ARGB(FOBJ.second->OPACITY, 255, 255, 255));
+    for (auto& SOBJ : GlobalSpriteList) {
+        if (SOBJ.second->VISIBLE == TRUE) {
+            RECT RT = { SOBJ.second->Get_Pos().x, SOBJ.second->Get_Pos().y, SOBJ.second->Get_Pos().x + SOBJ.second->Get_Scale().x, SOBJ.second->Get_Pos().y + SOBJ.second->Get_Scale().y };
+            DXSprite->Draw(SOBJ.second->TEXTURE, &RT, NULL, NULL, D3DCOLOR_ARGB(SOBJ.second->OPACITY, 255, 255, 255));
+        }
+    }
+    for (auto& FOBJ : GlobalFontList) {
+        if (FOBJ.second->Visible == TRUE) {
+            RECT RT = { FOBJ.second->Position.x, FOBJ.second->Position.y, FOBJ.second->Position.x + 1, FOBJ.second->Position.y + 1 };
+            FOBJ.second->DXFont->DrawTextW(DXSprite, FOBJ.second->Text.c_str(), -1, &RT, FOBJ.second->FORMAT | DT_NOCLIP, FOBJ.second->TextColor);
         }
     }
     DXSprite->End();
 }
-SpriteINFO* UIManager::Find_FilterObjects(wstring _Tag) {
-    for (auto& FOBJ : FilterList) {
+SpriteINFO* UIManager::Find_GlobalObject(wstring _Tag) {
+    for (auto& FOBJ : GlobalSpriteList) {
         if (FOBJ.second->KEY == _Tag.c_str())
             return FOBJ.second;
    }
+}
+FontObject* UIManager::Find_GlobalFontObject(wstring _Tag) {
+    for (auto& FOBJ : GlobalFontList) {
+        if (FOBJ.second->FontTag == _Tag.c_str())
+            return FOBJ.second;
+    }
 }
 VOID UIManager::Free() {
     for (auto& Item : ItemList)
@@ -112,7 +124,7 @@ VOID UIManager::Free() {
         Safe_Release(FO.second->DXFont);
         Safe_Delete(FO.second);
     }
-    for (auto& FOBJ : FilterList) {
+    for (auto& FOBJ : GlobalSpriteList) {
         Safe_Delete(FOBJ.second);
     }
         

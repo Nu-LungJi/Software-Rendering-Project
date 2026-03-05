@@ -15,7 +15,9 @@ HRESULT		IntroUI::Ready_GameObject(){
 	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
 	dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(TRUE);
 
-	Filter = UIManager::GetInstance()->Find_FilterObjects(L"FadeFilter");
+	SoundManager::GetInstance()->Play_Sound(L"UI/Intro/Intro_BGM.wav", CHANNELID::SOUND_BGM01, 0.5f);
+
+	Filter = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter");
 	Filter->Set_Opacity(255);
 	Filter->Set_Visible(TRUE);
 
@@ -28,6 +30,7 @@ HRESULT		IntroUI::Ready_GameObject(){
 INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
+
 
 	if (Enable_FadeIn == TRUE && Filter->OPACITY > 2) {
 		Filter->Set_Opacity(Filter->OPACITY - 2);
@@ -59,19 +62,24 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 	}
 	if (Enable_GameStart) {
 		FadeTimer += _DT;
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, 0.5f - FadeTimer / 10);
 		if (FadeTimer > 5.f) {
 			Enable_GameStart = FALSE;
 			ObjectDead = TRUE;
-			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
+
 			dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);
 			dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(FALSE);
+
 			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Delete_FontObject(StartBTN);
+
+			static_cast<StartScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Set_BGMPlayer(TRUE);
 		}
 	}
+	
 	
 	return 0;
 }
