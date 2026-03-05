@@ -33,7 +33,6 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
     FontInfo.Quality = DEFAULT_QUALITY;
     FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
-
     lstrcpyW(FontInfo.FaceName, FO->FontType.c_str());
 
     if (FAILED(D3DXCreateFontIndirectW(_GRPDEV, &FontInfo, &FO->DXFont))) {
@@ -84,7 +83,23 @@ VOID UIManager::Render_FontObjects() {
 
     DXSprite->End();
 }
+VOID UIManager::Render_FilterObjects() {
+    DXSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
+    for (auto& FOBJ : FilterList) {
+        if (FOBJ.second->VISIBLE == TRUE) {
+            RECT RT = { FOBJ.second->Get_Pos().x, FOBJ.second->Get_Pos().y, FOBJ.second->Get_Pos().x + FOBJ.second->Get_Scale().x, FOBJ.second->Get_Pos().y + FOBJ.second->Get_Scale().y };
+            DXSprite->Draw(FOBJ.second->TEXTURE, &RT, NULL, NULL, D3DCOLOR_ARGB(FOBJ.second->OPACITY, 255, 255, 255));
+        }
+    }
+    DXSprite->End();
+}
+SpriteINFO* UIManager::Find_FilterObjects(wstring _Tag) {
+    for (auto& FOBJ : FilterList) {
+        if (FOBJ.second->KEY == _Tag.c_str())
+            return FOBJ.second;
+   }
+}
 VOID UIManager::Free() {
     for (auto& Item : ItemList)
     {
@@ -96,6 +111,9 @@ VOID UIManager::Free() {
     for (auto& FO : FontList) {
         Safe_Release(FO.second->DXFont);
         Safe_Delete(FO.second);
+    }
+    for (auto& FOBJ : FilterList) {
+        Safe_Delete(FOBJ.second);
     }
         
     Safe_Release(DXSprite);

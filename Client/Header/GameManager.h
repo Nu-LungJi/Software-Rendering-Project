@@ -18,9 +18,10 @@ public:
 	GraphicDevice*		Get_DeviceClass()	{ return DEVCLASS;	}
 	LPDIRECT3DDEVICE9	Get_GraphicDevice() { return GRPDEV;	}
 private:
+	GameObject*					pBlackOut;
 	GraphicDevice*				DEVCLASS;
 	LPDIRECT3DDEVICE9			GRPDEV;
-
+	MiniGameScene* pMiniGame;
 public:
 	static	GameManager*		Create();
 	virtual	VOID				Free();

@@ -41,6 +41,20 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
+			// 인벤 하이라이트
+			for (int i = 1; i <= 8; i++) {
+				wstring Frame = L"EQP_HighLight" + to_wstring(i);
+				Component_Sprite->Get_Texture(Frame)->Set_Visible(FALSE);
+			}
+			for (int i = 2; i <= 10; i++) {
+				wstring Frame = L"INV_HighLight" + to_wstring(i);
+				Component_Sprite->Get_Texture(Frame)->Set_Visible(FALSE);
+			}
+			Component_Sprite->Get_Texture(L"INV_HighLight1")->Set_Visible(TRUE);
+		}
+
+
+		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/Open_Inven.mp3", CHANNELID::SOUND_EFFECT03, 0.4f);
 			FocusOn_SavedItem = TRUE;
 			for (auto& TXT : ItemInfo_Text) {
@@ -68,15 +82,24 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		}
 	}
 	
-	Selecting_SavedItem();
-	Selecting_EquipItem();
-	Display_ItemInfo();
-	Equip_Item();
+	if (UIManager::GetInstance()->Get_Active() == TRUE) {
+		Selecting_SavedItem();
+		Selecting_EquipItem();
+		Equip_Item();
+		
+	}
+
+
+	if (KEY_DOWN(DIK_U)) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpItem(Equip_ItemList[0]);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpSprite(Component_Sprite->Get_Texture(Equip_ItemList[0]->ItemDesc[Equip_ItemList[0]->INVFRAME]));
+	}
 
 	return 0;
 }
 VOID	PlayerInven::LateUpdate_GameObject(CONST FLOAT& _DT) {
-
+	Display_ItemInfo();
 }
 VOID	PlayerInven::Render_GameObject() {
 	if (UIManager::GetInstance()->Get_Active() == TRUE) {
@@ -211,7 +234,6 @@ HRESULT PlayerInven::Sprite_Initialize() {
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_Q.png", L"Inven_KEY_Q", 1000.f, 435.f, 20, 20, TRUE, 255);
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_E.png", L"Inven_KEY_E", 1110.f, 435.f, 20, 20, TRUE, 255);
 		}
-
 	}
 	/////////////////////////////////////////////////////////////// INFORMATION //////////////////////////////////////////////////////////////
 	{
@@ -249,6 +271,7 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InvenFrame_GreenBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
+
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InvenFrame_Relic_Horcrux", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_quiver.png", L"DIC_InvenFrame_Relic_quiver", 0.f, 0.f, 60, 60, FALSE, 255));
@@ -257,14 +280,16 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
+
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InfoFrame_Relic_Horcrux", 0.f, 0.f, 80, 80, FALSE, 255));
-	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Relic_quiver.png", L"DIC_InfoFrame_Relic_quiver", 0.f, 0.f, 80, 80, FALSE, 255));
+	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_quiver.png", L"DIC_InfoFrame_Relic_quiver", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Glove.png",  L"DIC_InfoFrame_Relic_Glove", 0.f, 0.f, 80, 80, FALSE, 255));
 
 	ItemINFO* it06 = new ItemINFO;
 	it06->ItemDesc = {
+		L"" ,
 		L"헤르메스의 신발",
 		L"아티펙트/노말",
 
@@ -276,15 +301,16 @@ HRESULT PlayerInven::Item_Initialize() {
 
 
 		L"" ,
-
 		L"DIC_InvenFrame_Relic_Item1",
 		L"DIC_InfoFrame_Relic_Item1"
 	};
 	it06->ItemPrice = 70;
+	it06->TEXTURE = Component_Sprite->Get_Texture(it06->ItemDesc[it06->INFFRAME])->TEXTURE;
 	it06->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it07 = new ItemINFO;
 	it07->ItemDesc = {
+		L"",
 		L"호크룩스",
 		L"아티펙트/노말",
 
@@ -293,8 +319,6 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"",
 
 		L"",
-
-
 		L"" ,
 
 		L"DIC_InvenFrame_Relic_Horcrux",
@@ -303,67 +327,11 @@ HRESULT PlayerInven::Item_Initialize() {
 	it07->ItemPrice = 70;
 	it07->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
-	ItemINFO* it01 = new ItemINFO;
-	it01->ItemDesc = {
-		L"오동나무 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"일반 공격력 24 ~ 26",
-		L"공격 속도 2.5",
-
-		L"치명타 확률이 +3% 증가합니다.",
-
-		L"" ,
-
-		L"DIC_InvenFrame_MichaelBow",
-		L"DIC_InfoFrame_MichaelBow"
-	};
-	it01->ItemPrice = 68;
-	it01->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
-	ItemINFO* it04 = new ItemINFO;
-	it04->ItemDesc = {
-		L"얼음 정령의 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"일반 공격력 14 - 16",
-		L"공격 속도 2",
-
-		L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
-
-		L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
-
-		L"DIC_InvenFrame_IceBow",
-		L"DIC_InfoFrame_IceBow"
-	};
-	it04->ItemPrice = 68;
-	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-
-	ItemINFO* it02 = new ItemINFO;
-	it02->ItemDesc = {
-		L"풍수의 활",
-		L"무기/희귀",
-
-		L"일반 공격",
-		L"이동 속도 + 20%",
-		L"공격 속도 2.5",
-
-		L"그냥 빨라집니다.",
-
-		L"",
-
-		L"DIC_InvenFrame_DarkBow",
-		L"DIC_InfoFrame_DarkBow"
-	};
-	it02->ItemPrice = 68;
-	it02->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
-		L"풍수의 활",
-		L"무기/희귀",
+		L"",
+		L"선현궁",
+		L"무기/노말",
 
 		L"일반 공격",
 		L"이동 속도 + 20%",
@@ -377,17 +345,12 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_GreenBow"
 	};
 	it03->ItemPrice = 68;
+	it03->TEXTURE = Component_Sprite->Get_Texture(it03->ItemDesc[it03->INFFRAME])->TEXTURE;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
-
-
 	Append_Item(it03);
-	Append_Item(it04);
-	Append_Item(it02);
-	Append_Item(it01);
 	Append_Item(it06);
 	Append_Item(it07);
-	//Append_Item(it05);
 
 	return S_OK;
 }
@@ -602,10 +565,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[7])->TEXTURE;
+		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[8])->TEXTURE;
 	}
 	if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && FocusOn_EquipedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[9])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[1];
@@ -731,6 +694,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 3:
 		item = new ItemINFO;
 		item->ItemDesc = {
+			L"",
 			L"얼음 정령의 활",
 			L"무기/희귀",
 
@@ -753,6 +717,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 4:
 		item = new ItemINFO;
 		item->ItemDesc = {
+			L"",
 			L"맥스 퀴버",
 			L"유물/희귀",
 
@@ -776,6 +741,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 5:
 		item = new ItemINFO;
 		item->ItemDesc = {
+			L"",
 			L"라이트닝 글러브",
 			L"유물/희귀",
 
@@ -795,7 +761,52 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
+	case 6 :
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"",
+			L"풍수의 활",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"이동 속도 + 20%",
+			L"공격 속도 2.5",
+
+			L"그냥 빨라집니다.",
+
+			L"",
+
+			L"DIC_InvenFrame_DarkBow",
+			L"DIC_InfoFrame_DarkBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		Append_Item(item);
+		break;
+	case 7:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"",
+			L"파르쿠나스",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"일반 공격력 24 ~ 26",
+			L"공격 속도 2.5",
+
+			L"치명타 확률이 +3% 증가합니다.",
+
+			L"" ,
+
+			L"DIC_InvenFrame_MichaelBow",
+			L"DIC_InfoFrame_MichaelBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		Append_Item(item);
+		break;
 	}
+
 
 	return S_OK;
 }

@@ -46,16 +46,22 @@ public:
 	void			Set_Obj(GameObject* pDst, _vec3 Center) { pObj = pDst; vCenter = Center; }
 	void			Set_Move(BOOL bMove) { StopMove = bMove; }
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
-	void			Docheol_Spawn(CONST FLOAT& _DT);
+	void			SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest);
 
-	VOID			Set_FocusOnBoss(BOOL _FOB);
-	BOOL			Get_FocusOnBoss() { return FocusOn_Boss; }
+	VOID			Ready_SmoothCamera(BOOL _FOB);
+	BOOL			Ready_SmoothCamera() { return FocusOn_Boss; }
 
 	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
 	BOOL			Get_ButtonLock() { return Button_Lock; }
 
+	VOID			Set_SCamDest(_vec3 _DEST)	{ SmoothCameraDest = _DEST; }
+	_vec3			Get_SCamDest()				{ return SmoothCameraDest; }
+
 	VOID			Set_EnableQuickZoom(INT _QZM) { Enable_QuickZoom = _QZM; }
 	BOOL			Get_EnableQuickZoom() { return Enable_QuickZoom; }
+
+	VOID			Set_VelocityLock(INT _QZM)	{ Velocity_Lock = _QZM; }
+	BOOL			Get_VelocityLock()			{ return Velocity_Lock; }
 private:
 	HRESULT			Component_Initialize();
 	VOID			Camera_QuickZoom(CONST FLOAT& _DT);
@@ -71,6 +77,7 @@ private:
 	FLOAT		RotationX, RotationY;
 
 	_vec3		Angle;
+	_vec3		SmoothCameraDest;
 
 	BOOL		MouseFix;
 	BOOL		MouseCheck;

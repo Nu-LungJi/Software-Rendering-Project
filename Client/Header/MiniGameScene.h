@@ -36,7 +36,7 @@ public:
 
 private:
 	Player* m_pPlayer = nullptr;
-
+	_bool	m_bEffect ;
 	Scene* m_pMainScene;
 	_float m_fTimer = 0.f;
 

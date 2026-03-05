@@ -431,6 +431,7 @@ VOID EvilSlime::State_Channeling(const _float& _DT)
 VOID EvilSlime::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }
@@ -461,6 +462,9 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			EvilSlime* pSlime = static_cast<EvilSlime*>(m_tInfo.pGameObj[i]);
 
 			pSlime->Get_Info()->Change_State(EVILSLIME_FISSION);
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
 
 			if (SCALE(pSlime)->x < 1.f) {
 				COLLIDER(pSlime)->Set_Hp(1.f);
@@ -476,7 +480,7 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 
 		
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.6f);
+      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		}
 		TileManager::GetInstance()->Set_StageArray();
 		m_tInfo.bTrigger[2] = false;

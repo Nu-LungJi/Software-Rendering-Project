@@ -15,8 +15,7 @@ public:
 	virtual VOID		Render_GameObject();
 
 	BOOL	Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT);
-	BOOL	Shadow_FadeIn(FLOAT _Timer);
-	BOOL	Shadow_FadeOut(FLOAT _Timer);
+	BOOL	Shadow_Fade(CONST FLOAT& _DT);
 
 public:
 	HRESULT Component_Initialize();
@@ -27,12 +26,16 @@ public:
 	static	NPCTalk* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
 private:
+	enum TALKING { NOT_TALKING, TALKING_ACTIVE, QUEST_TALK01, QUEST_TALK02, QUEST_TALK03, QUEST_TALK04, QUEST_TALK_ACCEPT, QUEST_TALK_DENY, QUIT_TALK, QUEST_END};
+
+private:
 	SpriteObject* Component_Sprite;
 
-	FLOAT		Timer01;
+	FLOAT		TalkTimer;
+	INT			FadeState;
 	_int		ContextPassing;
 
-	BOOL		ShadowCast;
+	BOOL		Enable_Interaction;
 
 	SpriteINFO* BackGround;
 	SpriteINFO* GRD_Top;
@@ -49,6 +52,12 @@ private:
 	FontObject* Talk;
 
 	Player*		PlayerObject;
+
+	vector<SpriteINFO*> TALKOBJECT;
+	vector<FontObject*> FOBJVec;
+
+	BOOL	AcceptedQuest;
+	BOOL	CompletedQuest;
 
 private:
 	virtual	VOID		Free();

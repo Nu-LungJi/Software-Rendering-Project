@@ -18,7 +18,7 @@ private:
 	HRESULT		Ready_UserInterface_Layer(CONST TCHAR* _LTAG);
 
 private:
-	CLoading* pLoading;
+	MiniGameScene* pMiniGame;
 public:
 	static	MapScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 	

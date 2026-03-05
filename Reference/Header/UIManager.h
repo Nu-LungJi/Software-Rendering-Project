@@ -31,10 +31,10 @@ struct ENGINE_DLL FontObject {
 	_vec2	Get_Pos() { return Position; }
 
 	VOID	Set_Color(INT _A, INT _R, INT _G, INT _B) { TextColor = D3DCOLOR_ARGB(_A, _R, _G, _B); }
-	FLOAT	Set_Color() { return TextColor; }
+	FLOAT	Get_Color() { return TextColor; }
 
 	VOID	Set_Visible(BOOL _Vis) { Visible = _Vis; }
-	BOOL	Set_Visible() { return Visible; }
+	BOOL	Get_Visible() { return Visible; }
 
 	VOID	Set_Active(BOOL isActive) { Active = isActive; }
 	BOOL	Get_Active() { return Active; }
@@ -63,7 +63,11 @@ public:
 
 	VOID		Render_FontObjects();
 
-	VOID		Update_DamageFont(LPDIRECT3DDEVICE9 _GRPDEV, FontObject* FO);
+	VOID		Add_FilterObjects(SpriteINFO* _OBJ) { FilterList.insert({ _OBJ->KEY.c_str(), _OBJ}); }
+
+	VOID		Render_FilterObjects();
+
+	SpriteINFO*	Find_FilterObjects(wstring _Tag);
 
 public:
 	BOOL		Get_Active()				{ return isActive;		}
@@ -77,6 +81,8 @@ private:
 	map<CONST TCHAR*, ItemINFO*>	ItemList;
 
 	map<CONST TCHAR*, FontObject*>	FontList;
+
+	map<CONST TCHAR*, SpriteINFO*>	FilterList;
 
 	BOOL		isActive;
 

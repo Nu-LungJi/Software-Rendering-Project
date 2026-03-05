@@ -35,6 +35,7 @@ public:
 	static	PlayerInven* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	SpriteObject*	Component_Sprite;
+	SpriteObject*	Component_ExtraSprite;
 	Player*			PlayerObject;
 
 	BOOL			FocusOn_SavedItem;

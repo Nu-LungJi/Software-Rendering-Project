@@ -41,10 +41,11 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
-	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::CHLG,this);
-	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	pBossUi->Set_ObjectTag(L"BossUI");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+	//BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::CHLG,this);
+	//pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	//pBossUi->Set_ObjectTag(L"BossUI");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
 	/////////////obj pooling////////
 	for (_int i = 0; i < 40; ++i)
@@ -126,12 +127,47 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 
 		_vec3 vPos = *Component_Transform->Get_Position();
 	
-		dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
-		
+		//dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+		// 광윤 추가 ▼
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(FALSE);
+
 		Spawner* pObj = Spawner::Create(GRPDEV,TILE_SIDE::TILE_FRONT,TILE_SPAWNER::ITEM_SPAWN1,vPos);
 		pObj->Set_ObjectTag(L"SpawnITem");
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_ITEM, vPos, FALSE));
 		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+		for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+		{
+			for (auto& iter : m_vecBullet[i])
+			{
+				Safe_Release(iter);
+			}
+			m_vecBullet[i].clear();
+		}
+		for (_int i = 0; i < (int)CL_EFFECT::CL_EFFECTEND; ++i)
+		{
+			for (auto& iter : m_vecEffect[i])
+			{
+				Safe_Release(iter);
+			}
+			m_vecEffect[i].clear();
+		}
+		for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+		{
+			for (auto& iter : m_vecOrignBullet[i])
+			{
+				Safe_Release(iter);
+			}
+			m_vecOrignBullet[i].clear();
+		}
+
+		//for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+		//{
+		//	for (auto& iter : m_vecPoolBullet[i])
+		//	{
+		//		Safe_Release(iter);
+		//	}
+		//	m_vecPoolBullet[i].clear();
+		//}
 		Set_ObjectDead(TRUE);
 	}
 	if (Component_Collider->Get_Hp() <= 0)
@@ -813,7 +849,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	{
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 4.f);
-
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(TRUE);
 
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;

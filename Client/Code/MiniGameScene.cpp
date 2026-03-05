@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 #include "Tesseract.h"
 
-MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_pMainScene(nullptr), m_fTimer(0.f) {}
+MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV),m_bEffect(false), m_pMainScene(nullptr), m_fTimer(0.f) {}
 MiniGameScene::~MiniGameScene() {}
 
 HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
@@ -28,7 +28,7 @@ HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 
 	return S_OK;
 }
-
+ 
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
 	m_fTimer += _DT;
@@ -36,9 +36,23 @@ INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 	Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
 
 	if (KEY_DOWN(DIK_P)) {
-		End_MiniGame();
-	}
 
+		if (!m_bEffect)
+		{
+			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({60.671,0.5f,43.405}, false, 0, false);
+			TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+			m_bEffect = true;
+		}
+	}
+	if (!TileManager::GetInstance()->Get_Loading())
+	{
+		TileManager::GetInstance()->Set_Stage();
+		TileManager::GetInstance()->Stage_Update(0.1);
+		TileManager::GetInstance()->Set_EndLoading(TRUE);
+		TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
+		End_MiniGame();
+		return 1;
+	}
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
 }
@@ -84,7 +98,7 @@ VOID MiniGameScene::Render_Scene() {}
 
 HRESULT MiniGameScene::Start_MiniGame()
 {
-	if (m_pMainScene == nullptr) {
+ 	if (m_pMainScene == nullptr) {
 		m_pMainScene = SceneManager::GetInstance()->Get_CurrentScene();
 	}
 
@@ -128,7 +142,8 @@ HRESULT MiniGameScene::Start_MiniGame()
 		}
 	}
 
-	SceneManager::GetInstance()->Set_CurrentScene(this);
+	//이거 스타트씬에서 할게요
+	//SceneManager::GetInstance()->Set_CurrentScene(this);
 
 	return S_OK;
 }
@@ -140,7 +155,7 @@ HRESULT MiniGameScene::End_MiniGame()
 	if (nullptr != Monster::Get_Camera())
 		Monster::Get_Camera()->Exit_MiniGame();
 
-	for (auto pLayer : LayerList)
+	for (auto& pLayer : LayerList)
 	{
 		for (auto pObj : *pLayer->Get_GameObjectList()) {
 			for (auto& pObj : *pLayer->Get_GameObjectList()) {
@@ -150,7 +165,6 @@ HRESULT MiniGameScene::End_MiniGame()
 	}
 	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
 	MonsterManager::GetInstance()->Release_Static_Batich();
-
 	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
 	return S_OK;	
 }
@@ -278,7 +292,6 @@ MiniGameScene* MiniGameScene::Create(LPDIRECT3DDEVICE9 _GRPDEV, Scene* pCurrScen
 	return LS;
 }
 void MiniGameScene::Free() {
-
 	Scene::Free();
 }
 
