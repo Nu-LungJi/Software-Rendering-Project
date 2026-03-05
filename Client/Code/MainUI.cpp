@@ -82,12 +82,12 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	FO_ArrowCount->Set_Text(ArrowCountText);
 
 	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();
-	if (cur_Equip_BowIDX == -1) return 0;
 	if (Cur_BowIMGIDX != cur_Equip_BowIDX) {
 		BowIMG_List[Cur_BowIMGIDX]->Set_Visible(FALSE);
-		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(FALSE);
+		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(TRUE);
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
+
 	if (KEY_DOWN(DIK_J)) {
 		Set_BossClearUI(TRUE);
 	}
