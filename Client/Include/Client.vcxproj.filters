@@ -514,6 +514,7 @@
     <ClInclude Include="..\Header\IntroUI.h">
       <Filter>04. UI\99. IntroUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -755,6 +756,7 @@
     <ClCompile Include="..\Code\IntroUI.cpp">
       <Filter>04. UI\99. IntroUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

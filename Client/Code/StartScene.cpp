@@ -129,13 +129,13 @@ HRESULT   StartScene::Ready_Scene() {
 			OPEN_EXISTING,		// 파일이 없을 경우 파일을 생성하여 저장(OPEN_EXISTING : 파일이 있을 경우에만 로드)
 			FILE_ATTRIBUTE_NORMAL,	// 파일 속성(아무런 속성이 없는 일반 파일)
 			NULL);				// 생성될 파일의 속성ㅇ르 제공할 템플릿 파일
-
+	
 		if (LFile == INVALID_HANDLE_VALUE)
 		{
 			MSG_BOX("로드 실패");
 			return E_FAIL;
 		}
-
+	
 		DWORD	dwByte(0);		// eof 역할
 		_int             iTilenum = 0;
 		TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
@@ -168,10 +168,10 @@ HRESULT   StartScene::Ready_Scene() {
 			ReadFile(LFile, &bAni, sizeof(_bool), &dwByte, NULL);
 			ReadFile(LFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
 			ReadFile(LFile, &eNext, sizeof(TILE_STAGE), &dwByte, NULL);
-
+	
 			if (0 == dwByte)
 				break;
-
+	
 			GameObject* GOBJ = nullptr;
 			//GRPDEV->AddRef();
 			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
@@ -180,19 +180,19 @@ HRESULT   StartScene::Ready_Scene() {
 			}
 			else
 				GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
-
+	
 			if (eTileStage == TILE_STAGE::TILE_DOCHERBOSS && eTileState == TILE_STATE::STATE_POTALGASI)
 			{
 				dynamic_cast<CXZTile*>(GOBJ)->Tile_Height_Speed((float)i);
 				i += 0.3f;
 			}
-
+	
 			if (eTileState == TILE_STATE::STATE_UNDERTILE)
 				++i;
-
+	
 			GOBJ->Set_ObjectTag(L"CXZTile");
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
-
+	
 			if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
 			else
@@ -201,16 +201,16 @@ HRESULT   StartScene::Ready_Scene() {
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 					->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 			}
-
+	
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
 			if (TILE_STATE::STATE_BOOM == eTileState)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
-
+	
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
-
+	
 		}
 		MSG_BOX("로드 성공");
 		CloseHandle(LFile);
@@ -219,7 +219,6 @@ HRESULT   StartScene::Ready_Scene() {
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
 	TileManager::GetInstance()->Set_StageCnt();
-
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -279,6 +278,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
+	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
@@ -299,7 +299,6 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
 
     Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
-    Add_GameObjectToScene<Augment>          (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
     Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"Shop");
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  

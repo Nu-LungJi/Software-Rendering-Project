@@ -21,6 +21,7 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     switch (m_eLeaf)
     {
     case LEAF_ATTACK::LEAF_FIRST:
+        m_fSpeed = 9.f;
          Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:

@@ -13,7 +13,7 @@ HRESULT Player::Ready_GameObject() {
 	//Temp
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
-
+	
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 10);
@@ -39,7 +39,7 @@ HRESULT Player::Ready_GameObject() {
 	_alphaDelayTimer	= 0.f;
 	_partnerTimer		= 0.f;
 	_Skill2				= false;
-
+	_defaultAttackSpeed = 2.f;
 	// UI
 	Component_Collider->Set_Hp(50.f);
 	Component_Collider->Set_Att(1.f);
@@ -77,7 +77,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({  20.213, 0.5f, 19.661f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
@@ -132,7 +132,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
-	_attackSpeed = 2.f;
+	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
 	Artifact_Effect();
 	Component_Collider->Set_Att(Component_Collider->Get_Att() * _atkUpgrade);
@@ -989,7 +989,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 		_isInvincible = true;
 	}
-  else if (mouseLB) {
+    else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
 		_attackDelay = 2.0f;
 		_frame = 1;
@@ -1487,7 +1487,7 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 			return TRUE;
 		}
 	}
-		return 0;
+		//return 0;
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
@@ -1551,7 +1551,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
-	Component_Transform->Set_Pos(m_vBackUpPos);
+	Component_Transform->Set_Pos(60.671, 0.5f, 43.405);
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;

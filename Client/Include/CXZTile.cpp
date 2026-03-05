@@ -28,7 +28,7 @@ HRESULT CXZTile::Ready_GameObject(TILE_SIDE eid, TILE_STATE eState) {
         break;
     }
     m_fHeightSpeed = 0.01f;
-
+    
     if (eState == TILE_STATE::STATE_UNDERTILE)
     {
         Make_BackGroundTextureList(L"SMT_Stage05_Background_Blue");
@@ -249,7 +249,7 @@ void CXZTile::Frame_Move(const FLOAT& _DT)
 
         break;
     case TILE_STATE::STATE_BOOM:
-        Tile_Boom(_DT);
+       // Tile_Boom(_DT);
         break;
     }
 }
@@ -342,7 +342,7 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
         if (m_pTileInfo->Get_NextStage() == TILE_STAGE::STAGE_ROLARUN)
         {
             TileManager::GetInstance()->Set_MiniGame(TRUE);
-            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 25.f, 2.f, 2. }, false, 0, false);
+            dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 2.5f, 0.7f, 2.5f }, false, 0, false);
             m_bEndPotal = false;
         }
         else
@@ -497,9 +497,9 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
         }
 
         Pos.y -= 0.1f;
-        if (Pos.y <= -0.1)
+        if (Pos.y <= 0.3)
         {
-            Pos.y = -0.1;
+            Pos.y = 0.3;
         }
         m_pTransform->Set_Pos(Pos);
         if (m_fFrame == 17)
@@ -509,7 +509,7 @@ void CXZTile::Tile_Boom(const FLOAT& _DT)
             Rot = *m_pTransform->Get_Rotation();
             EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::BOOM_F, 0, Pos, { 4.f,5.f,5.f }, { 0,0,0 }, true));
         }
-        if (m_fFrame > m_pTileInfo->Get_TileTextureName().size() - 3)
+        if (m_fFrame > 32)
         {
           SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Bomb.mp3", CHANNELID::SOUND_EFFECT06, 0.4f);
           Set_ObjectDead(TRUE);
