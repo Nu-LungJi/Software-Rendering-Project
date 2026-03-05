@@ -1481,8 +1481,6 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 		wstring Tag = _Other->Get_ObjectTag();
 		MainUI* mainUI;
 		if (Tag == L"Hurdle") {
-			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-			mainUI->Player_LostHP();
 
 			return TRUE;
 		}
@@ -1493,17 +1491,23 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 	MainUI* mainUI;
 	if (Tag == L"MonsterBullet")
 	{
-		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
+			mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
+			mainUI->Player_LostHP();
 
-		return TRUE;
+			return TRUE;
+		}
+		return false;
 	}
 	else if(Tag == L"Monster")
 	{
+		if (COLLIDER(_Other)->Get_Att() > 0.f) {
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_LostHP();
 
 		return TRUE;
+		}
+		return false;
 	}
 
 	return FALSE;
@@ -1562,7 +1566,7 @@ void Player::Fall(const _float& _DT)
 
 	if (Is_Falling) {
 		_vec3 vDir = Monster::Get_Gravity();
-		Component_Transform->Move_Pos(&vDir, 8.f, _DT);
+		Component_Transform->Move_Pos(&vDir, 10.f, _DT);
 	}
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {

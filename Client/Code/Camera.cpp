@@ -79,9 +79,32 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 			_vec3 vNewTargetEye = m_vTargetEye;
 			atCalc = { 0.f,0.f,0.f };
 
-			if		(vGravity.y == -1.f)	{ vNewTargetEye = { 0.f, 10.f, -10.f }; }
-			else if (vGravity.z == 1.f)		{ vNewTargetEye = { 10.f, 0.f, -10.f }; }
-			else							{ vNewTargetEye = { 0.f,-10.f,-10.f }; }
+			switch (*m_pEventTrigger)
+			{
+			case 0:
+				vNewTargetEye = { 0.f,10.f,-10.f };
+				break;
+			case 1:
+				vNewTargetEye = { 10.f,0.f,-10.f };
+				break;
+			case 2:
+				vNewTargetEye = { 0.f, 16.f, 0.f };
+				break;
+			case 3:
+				vNewTargetEye = { 10.f, 0.f, -10.f };
+				break;
+			case 4:
+				vNewTargetEye = { 0.f,-10.f,-10.f };
+				break;
+			case 5:
+				vNewTargetEye = { 0.f, 0.f, 16.f };
+				break;
+			case 6:
+				vNewTargetEye = { 0.f,-10.f,-10.f };
+			}
+			//if		(vGravity.y == -1.f)	{ vNewTargetEye = { 0.f, 10.f, -10.f }; }
+			//else if (vGravity.z == 1.f)		{ vNewTargetEye = { 10.f, 0.f, -10.f }; }
+			//else							{ vNewTargetEye = { 0.f,-10.f,-10.f }; }
 
 			if (m_vTargetEye != vNewTargetEye) {
 				m_vStartEye		= m_vCurrEye;
@@ -93,6 +116,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 			}
 
 			if (Is_Changing) {
+				PlayerObject->Set_DefaultSpeed(0.f);
 				m_fElapsedTime += _DT;
 				float fRatio	= m_fElapsedTime / m_fDuration;
 
@@ -107,6 +131,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 					D3DXVec3Lerp(&m_vCurrUp, &m_vStartUp, &m_vTargetUp, fRatio);
 				}
 			}
+			//PlayerObject->Set_PlayerStop(!Is_Changing);
 
 			eyeCalc = m_vCurrEye;
 			UpVec = m_vCurrUp;
@@ -552,6 +577,7 @@ HRESULT CameraObject::MiniGame(const _float& _DT)
 }
 
 void	CameraObject::Start_MiniGame() {
+	NearValue = 5.f;
 	m_eCurrScene = SCENE_TYPE::Minigame;
 	Button_Lock = true;
 	Velocity_Lock = true;
@@ -559,6 +585,7 @@ void	CameraObject::Start_MiniGame() {
 
 void CameraObject::Exit_MiniGame()
 {
+	NearValue = 0.1f;
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	Button_Lock = false;
 	Velocity_Lock = false;

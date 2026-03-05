@@ -466,6 +466,10 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 				COLLIDER(pSlime)->Set_Hp(1.f);
 			}
 
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
+
 			*pSlime->Get_FissionDst() = vDst;
 
 			_vec3 vSpeed = { MYSCALE->x * 0.25f, 0.f, MYSCALE->y * 0.25f };
