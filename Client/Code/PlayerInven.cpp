@@ -41,7 +41,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
-			// ì¸ë²¤ í•˜ì´ë¼ì´íŠ¸
+			// ÀÎº¥ ÇÏÀÌ¶óÀÌÆ®
 			for (int i = 1; i <= 8; i++) {
 				wstring Frame = L"EQP_HighLight" + to_wstring(i);
 				Component_Sprite->Get_Texture(Frame)->Set_Visible(FALSE);
@@ -89,6 +89,12 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		
 	}
 
+
+	if (KEY_DOWN(DIK_U)) {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpItem(Equip_ItemList[0]);
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_PopUpSprite(Component_Sprite->Get_Texture(Equip_ItemList[0]->ItemDesc[Equip_ItemList[0]->INVFRAME]));
+	}
 
 	return 0;
 }
@@ -228,7 +234,6 @@ HRESULT PlayerInven::Sprite_Initialize() {
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_Q.png", L"Inven_KEY_Q", 1000.f, 435.f, 20, 20, TRUE, 255);
 			Component_Sprite->Import_SpriteEX(BaseFolder, L"KEY_E.png", L"Inven_KEY_E", 1110.f, 435.f, 20, 20, TRUE, 255);
 		}
-
 	}
 	/////////////////////////////////////////////////////////////// INFORMATION //////////////////////////////////////////////////////////////
 	{
@@ -244,18 +249,18 @@ HRESULT PlayerInven::Sprite_Initialize() {
 }
 HRESULT PlayerInven::Text_Initialize() {
 	//////////////////////////////////////////////////////// INVEN OPTION ///////////////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"ë²„ë¦¬ê¸°", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"ì„ íƒ"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"¹ö¸®±â", { 1050.f, 437.f }, 16, L"Inven_QText", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"¼±ÅÃ"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
@@ -266,6 +271,7 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InvenFrame_GreenBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",	 L"DIC_InvenFrame_IceBow", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InvenFrame_MichaelBow", 0.f, 0.f, 60, 60, FALSE, 255));
+
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InvenFrame_Relic_Item1", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InvenFrame_Relic_Horcrux", 0.f, 0.f, 60, 60, FALSE, 255));
 	ItemDictionary_InvenFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_quiver.png", L"DIC_InvenFrame_Relic_quiver", 0.f, 0.f, 60, 60, FALSE, 255));
@@ -274,6 +280,7 @@ HRESULT PlayerInven::Item_Initialize() {
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"DarkBow.png",	 L"DIC_InfoFrame_DarkBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"GreenBow.png",	 L"DIC_InfoFrame_GreenBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"IceBow.png",		 L"DIC_InfoFrame_IceBow", 0.f, 0.f, 80, 80, FALSE, 255));
+
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"MichaelBow.png", L"DIC_InfoFrame_MichaelBow", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Item1.png", L"DIC_InfoFrame_Relic_Item1", 0.f, 0.f, 80, 80, FALSE, 255));
 	ItemDictionary_InfoFrame.push_back(Component_Sprite->Import_SpriteEX(BaseFolder, L"Relic_Horcrux.png", L"DIC_InfoFrame_Relic_Horcrux", 0.f, 0.f, 80, 80, FALSE, 255));
@@ -282,10 +289,11 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it06 = new ItemINFO;
 	it06->ItemDesc = {
-		L"í—¤ë¥´ë©”ìŠ¤ì˜ ì‹ ë°œ",
-		L"ì•„í‹°í™íŠ¸/ë…¸ë§",
+		L"" ,
+		L"Çì¸£¸Ş½ºÀÇ ½Å¹ß",
+		L"¾ÆÆ¼ÆåÆ®/³ë¸»",
 
-		L"ì´ë™ì†ë„ê°€ 20% ì¦ê°€í•©ë‹ˆë‹¤.",
+		L"ÀÌµ¿¼Óµµ°¡ 20% Áõ°¡ÇÕ´Ï´Ù.",
 		L"",
 		L"",
 
@@ -293,25 +301,24 @@ HRESULT PlayerInven::Item_Initialize() {
 
 
 		L"" ,
-
 		L"DIC_InvenFrame_Relic_Item1",
 		L"DIC_InfoFrame_Relic_Item1"
 	};
 	it06->ItemPrice = 70;
+	it06->TEXTURE = Component_Sprite->Get_Texture(it06->ItemDesc[it06->INFFRAME])->TEXTURE;
 	it06->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it07 = new ItemINFO;
 	it07->ItemDesc = {
-		L"í˜¸í¬ë£©ìŠ¤",
-		L"ì•„í‹°í™íŠ¸/ë…¸ë§",
+		L"",
+		L"È£Å©·è½º",
+		L"¾ÆÆ¼ÆåÆ®/³ë¸»",
 
-		L"ê³µê²©ë ¥ì´ 10 ì¦ê°€í•©ë‹ˆë‹¤.",
+		L"°ø°İ·ÂÀÌ 10 Áõ°¡ÇÕ´Ï´Ù.",
 		L"",
 		L"",
 
 		L"",
-
-
 		L"" ,
 
 		L"DIC_InvenFrame_Relic_Horcrux",
@@ -322,14 +329,15 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
-		L"ì„ í˜„ê¶",
-		L"ë¬´ê¸°/ë…¸ë§",
+		L"",
+		L"¼±Çö±Ã",
+		L"¹«±â/³ë¸»",
 
-		L"ì¼ë°˜ ê³µê²©",
-		L"ì´ë™ ì†ë„ + 20%",
-		L"ê³µê²© ì†ë„ 2.5",
+		L"ÀÏ¹İ °ø°İ",
+		L"ÀÌµ¿ ¼Óµµ + 20%",
+		L"°ø°İ ¼Óµµ 2.5",
 
-		L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆë‹¤.",
+		L"±×³É »¡¶óÁı´Ï´Ù.",
 
 		L"",
 
@@ -337,9 +345,8 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_GreenBow"
 	};
 	it03->ItemPrice = 68;
+	it03->TEXTURE = Component_Sprite->Get_Texture(it03->ItemDesc[it03->INFFRAME])->TEXTURE;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
-
-
 
 	Append_Item(it03);
 	Append_Item(it06);
@@ -490,7 +497,7 @@ HRESULT PlayerInven::Equip_Item() {
 	if (EquipMode) {
 		Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(FALSE);
 		UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"";
-		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì¥ì°©";
+		UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ÀåÂø";
 		if (KEY_DOWN(DIK_E)) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"UI/Inventory/UI_Select.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 			if (FocusOn_SavedItem) {
@@ -499,8 +506,8 @@ HRESULT PlayerInven::Equip_Item() {
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"ë²„ë¦¬ê¸°";
-				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì„ íƒ";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"¹ö¸®±â";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"¼±ÅÃ";
 			}
 			if (FocusOn_EquipedItem) {
 				if (((*EquipObject)->ItemType == (INT)ITEM_TYPE::NORMAL_WEAPON || (*EquipObject)->ItemType == (INT)ITEM_TYPE::RARE_WEAPON)
@@ -514,8 +521,8 @@ HRESULT PlayerInven::Equip_Item() {
 				EquipObject = nullptr;
 				EquipMode = FALSE;
 				Component_Sprite->Get_Texture(L"Inven_KEY_Q")->Set_Visible(TRUE);
-				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"ë²„ë¦¬ê¸°";
-				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"ì„ íƒ";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_QText")->Text = L"¹ö¸®±â";
+				UIManager::GetInstance()->Find_FontObject(L"Inven_EText")->Text = L"¼±ÅÃ";
 			}
 		}
 	}
@@ -558,10 +565,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[7])->TEXTURE;
+		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[8])->TEXTURE;
 	}
 	if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && FocusOn_EquipedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[9])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[1];
@@ -687,16 +694,17 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 3:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"ì–¼ìŒ ì •ë ¹ì˜ í™œ",
-			L"ë¬´ê¸°/í¬ê·€",
+			L"",
+			L"¾óÀ½ Á¤·ÉÀÇ È°",
+			L"¹«±â/Èñ±Í",
 
-			L"ì¼ë°˜ ê³µê²©",
-			L"ì¼ë°˜ ê³µê²©ë ¥ 14 - 16",
-			L"ê³µê²© ì†ë„ 2",
+			L"ÀÏ¹İ °ø°İ",
+			L"ÀÏ¹İ °ø°İ·Â 14 - 16",
+			L"°ø°İ ¼Óµµ 2",
 
-			L"ì–¼ìŒì˜ í™”ì‚´ : 3 ë°œì˜ ì–¼ìŒì˜ í™”ì‚´ì„ ë°œì‚¬í•©ë‹ˆë‹¤. \ní™”ì‚´ì— ë§ì€ ì ì—ê²Œ 3ì´ˆ ê°„ ë¹™ê²°ì„ ë¶€ì—¬í•©ë‹ˆë‹¤.",
+			L"¾óÀ½ÀÇ È­»ì : 3 ¹ßÀÇ ¾óÀ½ÀÇ È­»ìÀ» ¹ß»çÇÕ´Ï´Ù. \nÈ­»ì¿¡ ¸ÂÀº Àû¿¡°Ô 3ÃÊ °£ ºù°áÀ» ºÎ¿©ÇÕ´Ï´Ù.",
 
-			L"\"ì–¼ìŒì •ë ¹ì˜ í˜ì´ ë‹´ê¸´ í™œ. ì¥ê³  ìˆìŒ ì†ì´ ì–¼ì–´ë²„ë¦´ ê²ƒ ê°™ë‹¤.",
+			L"\"¾óÀ½Á¤·ÉÀÇ ÈûÀÌ ´ã±ä È°. Áã°í ÀÖÀ½ ¼ÕÀÌ ¾ó¾î¹ö¸± °Í °°´Ù.",
 
 			L"DIC_InvenFrame_IceBow",
 			L"DIC_InfoFrame_IceBow"
@@ -709,12 +717,13 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 4:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"ë§¥ìŠ¤ í€´ë²„",
-			L"ìœ ë¬¼/í¬ê·€",
+			L"",
+			L"¸Æ½º Äû¹ö",
+			L"À¯¹°/Èñ±Í",
 
 			L"",
-			L"ìœ ë¬¼/í¬ê·€",
-			L"ìµœëŒ€ í™”ì‚´ ê°œìˆ˜ 2ë°° ì¦ê°€",
+			L"À¯¹°/Èñ±Í",
+			L"ÃÖ´ë È­»ì °³¼ö 2¹è Áõ°¡",
 
 			L"",
 
@@ -732,12 +741,13 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 5:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"ë¼ì´íŠ¸ë‹ ê¸€ëŸ¬ë¸Œ",
-			L"ìœ ë¬¼/í¬ê·€",
+			L"",
+			L"¶óÀÌÆ®´× ±Û·¯ºê",
+			L"À¯¹°/Èñ±Í",
 
 			L"",
-			L"ìœ ë¬¼/í¬ê·€",
-			L"ê³µê²©ì†ë„ 2ë°° ì¦ê°€",
+			L"À¯¹°/Èñ±Í",
+			L"°ø°İ¼Óµµ 2¹è Áõ°¡",
 
 			L"",
 
@@ -754,14 +764,15 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 6 :
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"í’ìˆ˜ì˜ í™œ",
-			L"ë¬´ê¸°/í¬ê·€",
+			L"",
+			L"Ç³¼öÀÇ È°",
+			L"¹«±â/Èñ±Í",
 
-			L"ì¼ë°˜ ê³µê²©",
-			L"ì´ë™ ì†ë„ + 20%",
-			L"ê³µê²© ì†ë„ 2.5",
+			L"ÀÏ¹İ °ø°İ",
+			L"ÀÌµ¿ ¼Óµµ + 20%",
+			L"°ø°İ ¼Óµµ 2.5",
 
-			L"ê·¸ëƒ¥ ë¹¨ë¼ì§‘ë‹ˆë‹¤.",
+			L"±×³É »¡¶óÁı´Ï´Ù.",
 
 			L"",
 
@@ -775,14 +786,15 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 7:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"íŒŒë¥´ì¿ ë‚˜ìŠ¤",
-			L"ë¬´ê¸°/í¬ê·€",
+			L"",
+			L"ÆÄ¸£Äí³ª½º",
+			L"¹«±â/Èñ±Í",
 
-			L"ì¼ë°˜ ê³µê²©",
-			L"ì¼ë°˜ ê³µê²©ë ¥ 24 ~ 26",
-			L"ê³µê²© ì†ë„ 2.5",
+			L"ÀÏ¹İ °ø°İ",
+			L"ÀÏ¹İ °ø°İ·Â 24 ~ 26",
+			L"°ø°İ ¼Óµµ 2.5",
 
-			L"ì¹˜ëª…íƒ€ í™•ë¥ ì´ +3% ì¦ê°€í•©ë‹ˆë‹¤.",
+			L"Ä¡¸íÅ¸ È®·üÀÌ +3% Áõ°¡ÇÕ´Ï´Ù.",
 
 			L"" ,
 

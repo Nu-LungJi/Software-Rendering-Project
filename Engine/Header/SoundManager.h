@@ -25,7 +25,6 @@ public:
 	HRESULT		Stop_AllSound();
 
 	BOOL		IsPlaying(CHANNELID _SoundChannel);
-	VOID		Pause_Sound(CHANNELID _SoundChannel, BOOL _State) { SoundChannel[(LONG)_SoundChannel]->setPaused(_State); }
 	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { SoundChannel[(LONG)_CID]->setVolume(Volume); }
 private:
 	System*	SoundSystem; 

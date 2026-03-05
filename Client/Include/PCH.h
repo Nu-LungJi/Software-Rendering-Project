@@ -92,6 +92,7 @@
 #include "DropItemEffect.h"
 
 #pragma endregion
+#include "IntroUI.h"
 #include "Player.h"
 #include "MainUI.h"
 #include "NPCTalk.h"
@@ -126,10 +127,9 @@
 #include "MapScene.h"
 
 #include "DoCheolScene.h"
-#include "MiniGameScene.h"
-
+#include "MiniGameScene.h""
 #include "TempScene.h"
-#include "CLoading.h"
+
 //////////////////////////////////////////// Manager
 
 #include "GUIManager.h"

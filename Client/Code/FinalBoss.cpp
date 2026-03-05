@@ -20,7 +20,6 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	FSM->FSM_SetOwner(this);
 
 	ObjectTAG = L"Docheol";
-	Component_Collider->Set_Hp(10000.f);
 	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
 	BossMode[(LONG)BOSSMODE::MODE_INVALIDATE]		= TRUE;
@@ -33,11 +32,11 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
 
-	Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
-	Animation_TexList		= &Animation_Normal_Stand_TexList;
+	//Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
+	//Animation_TexList		= &Animation_Normal_Stand_TexList;
 
-	//Animation_FrameCount = ANIMATION_NONANIM_FRAMECOUNT;
-	//Animation_TexList = &Animation_NonAnim_TexList;
+	Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_TexList		= &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 
@@ -54,14 +53,14 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	PlayerToAxisXDegree = 0.f;
 	GeneratePos = { 0.f, 0.f, 0.f };
 
-	memset(MeteorTransform, 0, sizeof(MeteorTransform));
-	memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
+	memset(MeteorTransform	, 0	  , sizeof(MeteorTransform));
+	memset(STAGING_TRIGGER	, TRUE, sizeof(STAGING_TRIGGER));
 	memset(EXPLOSION_TRIGGER, TRUE, sizeof(EXPLOSION_TRIGGER));
-	memset(METEOR_TRIGGER, TRUE, sizeof(METEOR_TRIGGER));
-	memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
+	memset(METEOR_TRIGGER	, TRUE, sizeof(METEOR_TRIGGER));
+	memset(FIREBALL_TRIGGER	, TRUE, sizeof(FIREBALL_TRIGGER));
 	memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
-	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
-	memset(BBTrap, TRUE, sizeof(BBTrap));
+	memset(ERUSH_TRIGGER	, TRUE, sizeof(ERUSH_TRIGGER));
+	memset(BBTrap			, TRUE, sizeof(BBTrap));
 
 	PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
 
@@ -73,9 +72,10 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	FSM->Update_GameObject(_DT);
 
-	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= 100.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= -50.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
-		Camera->Set_FocusOnBoss(TRUE);
+		Camera->Ready_SmoothCamera(TRUE);
 		Enable_BossAppearStaging = TRUE;
 	}
 
@@ -86,9 +86,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	Skill_GroundExplosion(_DT);
-	
 	Skill_MeteorExplosion(_DT);
-	
 	Skill_RSwingFireBall(_DT);
 	Skill_FSwingFireBall(_DT);
 	Skill_RageUpFireBall(_DT);
@@ -301,7 +299,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 		//Animation_TexList = &Animation_Stunning_TexList;
 		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
 		//Animation_CurrentIndex = 0;
-		//Enable_BossDisappearStaging = true;
+		Enable_BossDisappearStaging = true;
 	}
 	else if (KEY_DOWN(DIK_P)) {
 		Component_Collider->Set_Hp(5000);
@@ -350,8 +348,7 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
-	Component_Collider->Set_Hp(1000.f);
-
+	Component_Collider->Set_Hp(10000.f);
 	return S_OK;
 }
 HRESULT FinalBoss::Texture_Initialize() {
@@ -1334,7 +1331,7 @@ VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
 					->Set_Pos(*dynamic_cast<Transform*>(ObjectPool_Supporter[IDX]->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 			}
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 5.50f	&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_DISAPPEAR]) {
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 6.00f	&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SUP_DISAPPEAR]) {
 			memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
 			//for (auto& i : ObjectPool_Supporter)
 			//	Safe_Release(i);
@@ -1349,7 +1346,7 @@ VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
 	
 		//////////////////////////////////////////////////// SOUNDPLAY ////////////////////////////////////////////////////
 		
-		if		(BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 0.6f && SUPPORTER_TRIGGER[(INT)SUPPORTER::SOUND_PLAY1]) {
+		if		(BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] > 0.6f			&& SUPPORTER_TRIGGER[(INT)SUPPORTER::SOUND_PLAY1]) {
 			VOLUME(CHANNELID::SOUND_EFFECT09, 0.1f);
 			PLAY_SOUND_ONCE(L"Docheol/Supporter_Summon.wav", CHANNELID::SOUND_EFFECT09);
 			SUPPORTER_TRIGGER[(INT)SUPPORTER::SOUND_PLAY1] = FALSE;
@@ -1449,20 +1446,14 @@ VOID FinalBoss::Skill_ExplosionRush(CONST FLOAT& _DT) {
 			Animation_CurrentIndex = 0;
 			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
 			Animation_Interval = 0.07f;
-			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
 
 			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME1] = FALSE;
 		}
-		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 5.05f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME4]) {
-
-			ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME4] = FALSE;
-
+		else if (BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] > 4.55f && ERUSH_TRIGGER[(INT)RUSH::RUSH_FLAME2]) {
 			BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] = 0.f;
 			Enable_ExplosionRush = FALSE;
 			memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 			ObjectPool_RageUp.clear();
-
-			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
 		}
 	}
 }

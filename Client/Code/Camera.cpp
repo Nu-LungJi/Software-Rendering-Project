@@ -37,7 +37,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
 
 	m_vVelocity = { 0.f , 0.f, 0.f };
-
+	SmoothCameraDest = { 0.f, 0.f, 0.f };
 	ObjectTAG = L"Camera";
 
 	OriginEye = EyeVec;
@@ -60,7 +60,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 
 	CheonLog_Respawn(_DT);
-	Docheol_Spawn(_DT);
+	SmoothCameraMove(_DT, SmoothCameraDest);
 
 	Camera_QuickZoom(_DT);
 
@@ -234,9 +234,6 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
 		}
-		if (KEY_DOWN(DIK_F1)) {		//	GUI 상태 바 숨김 여부 TRUE = Visible, FALSE = Hide
-			Camera_Show ? Camera_Show = FALSE : Camera_Show = TRUE;
-		}
 	}
 }
 VOID CameraObject::Camera_Rotation_Control(CONST FLOAT& _DT) {
@@ -402,7 +399,7 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 
 
 }
-VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
+VOID CameraObject::SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest) {
 	if (FocusOn_Boss) {
 		Focusing_Timer += _DT;
 
@@ -412,8 +409,8 @@ VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 		}
 
 		if (Focusing_Timer > 1.f && Focusing_Timer < 3.f) {
-			_vec3 CameraEyeDEST = { 63.6f, 18.55f, 95.105f };
-			_vec3 CameraAtDEST = { 63.6f, 15.04f, 96.105f };
+			_vec3 CameraEyeDEST = _EyeDest;// { 63.6f, 18.55f, 95.105f };
+			_vec3 CameraAtDEST = { _EyeDest.x, _EyeDest.y - 3.5f, _EyeDest.z + 1.f };
 			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
 
 			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
@@ -424,7 +421,7 @@ VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
+VOID CameraObject::Ready_SmoothCamera(BOOL _FOB) {
 	FocusOn_Boss = _FOB;
 	if (FocusOn_Boss) {
 		MouseCheck = FALSE;

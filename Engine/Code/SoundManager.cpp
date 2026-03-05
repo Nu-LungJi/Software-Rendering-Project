@@ -98,6 +98,11 @@ HRESULT SoundManager::Stop_AllSound() {
   for (INT ID = 0; ID < (LONG)CHANNELID::SOUND_END; ++ID) {
     SoundChannel[(LONG)ID]->stop();
   }
+
+  for (INT ID = 0; ID < (LONG)CHANNELID::SOUND_END; ++ID)
+  {
+	  ChannelGroup[(LONG)ID]->stop();
+  }
   return S_OK;
 }
 BOOL SoundManager::IsPlaying(CHANNELID _SoundChannel) {
