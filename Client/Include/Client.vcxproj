@@ -251,6 +251,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\FinalBoss.h" />
+    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h" />
     <ClInclude Include="..\Header\Frog_Bullet.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -514,6 +515,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
     <ClCompile Include="..\Code\Frog_Bullet.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>

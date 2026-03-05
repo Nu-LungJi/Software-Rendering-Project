@@ -83,17 +83,24 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 		}
 		else if (!wcscmp(tInfo.szName, L"Fireball"))				tInfo.name = (uint8_t)BULLET_TYPE::Fireball;
 	}
-	else if (!wcscmp(tInfo.szType, L"Effect"))				{ tInfo.Type = (uint8_t)MONSTER_SEP::Effect;
-		if		(!wcscmp(tInfo.szName, L"BlueEvilSlimeGroudIceEffect")) tInfo.name = (uint8_t)BULLET_TYPE::GroundIce;
-		else if (!wcscmp(tInfo.szName, L"Alert"))					  { tInfo.name = (uint8_t)MONSTER_EFFECT::ALERT;
-				if		(!wcscmp(tInfo.szState, L"Circle"))					tInfo.State = (uint8_t)ALERT_TYPE::Circle;
-				else if (!wcscmp(tInfo.szState, L"Rect"))					tInfo.State = (uint8_t)ALERT_TYPE::Rect;
-				else if (!wcscmp(tInfo.szState, L"Line"))					tInfo.State = (uint8_t)ALERT_TYPE::Line;
+	else if (!wcscmp(tInfo.szType, L"Effect")) {
+		tInfo.Type = (uint8_t)MONSTER_SEP::Effect;
+		if (!wcscmp(tInfo.szName, L"BlueEvilSlimeGroudIceEffect")) tInfo.name = (uint8_t)BULLET_TYPE::GroundIce;
+		else if (!wcscmp(tInfo.szName, L"Alert")) {
+			tInfo.name = (uint8_t)MONSTER_EFFECT::ALERT;
+			if (!wcscmp(tInfo.szState, L"Circle"))					tInfo.State = (uint8_t)ALERT_TYPE::Circle;
+			else if (!wcscmp(tInfo.szState, L"Rect"))					tInfo.State = (uint8_t)ALERT_TYPE::Rect;
+			else if (!wcscmp(tInfo.szState, L"Line"))					tInfo.State = (uint8_t)ALERT_TYPE::Line;
 		}
 		else if (!wcscmp(tInfo.szName, L"MonsterSummons01"))			tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_SUMMONS01;
 		else if (!wcscmp(tInfo.szName, L"MonsterSummons02"))			tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_SUMMONS02;
 		else if (!wcscmp(tInfo.szName, L"MonsterSummons03"))			tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_SUMMONS03;
 		else if (!wcscmp(tInfo.szName, L"baseDeathEffect"))				tInfo.name = (uint8_t)MONSTER_EFFECT::MONSTER_DEATH;
+		else if (!wcscmp(tInfo.szName, L"FireDevilBowChargeEffect")) {	tInfo.name = (uint8_t)BULLET_TYPE::FireDevilBowChargeEffect;
+			if		(!wcscmp(tInfo.szState, L"Birth"))						tInfo.State = (uint8_t)FIREDEVILBOWCHARGEEFFECT::Birth;
+			else if (!wcscmp(tInfo.szState, L"Death"))						tInfo.State = (uint8_t)FIREDEVILBOWCHARGEEFFECT::Death;
+			else if (!wcscmp(tInfo.szState, L"Charge"))						tInfo.State = (uint8_t)FIREDEVILBOWCHARGEEFFECT::Charge;
+		}
 	}
 	else if (!wcscmp(tInfo.szType, L"Tile"))			{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
 	}
