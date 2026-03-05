@@ -43,6 +43,10 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 	
 	if (KEY_DOWN(DIK_F1)) {			// 시작 버튼
 		if (Enable_FadeIn == FALSE) {
+			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(FALSE);
 			Enable_FadeIn = TRUE;
 			Enable_FadeOut = FALSE;
 		}
@@ -61,6 +65,10 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
 			dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);
 			dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(TRUE);
+			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(TRUE);
+			UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(TRUE);
+			UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Delete_FontObject(StartBTN);
 		}
 	}

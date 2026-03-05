@@ -92,9 +92,6 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	if (KEY_DOWN(DIK_J)) {
-		Set_BossClearUI(TRUE);
-	}
 }
 VOID	MainUI::Render_GameObject() {
 	_matrix matWorld, matScale, matTrans;
@@ -616,7 +613,7 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 		BossClearTimer += _DT;
 		FLOAT Delay = 0.f;
 		if (BossClearTimer > Delay && BossClear[0]) {
-			//Enable_FadeFilter = TRUE;
+			//
 			BossClear[0] = FALSE;
 		}
 		if		(BossClearTimer > Delay && BossClear[1]) {
@@ -634,13 +631,14 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 		else if (BossClearTimer > Delay + 2.f && BossClearTimer < Delay + 2.5f) {
 			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(255 * 2 * (BossClearTimer - (Delay + 2.f)), 255, 255, 255);
 		}
-		else if (BossClearTimer > Delay + 3.f && BossClearTimer < Delay + 3.5f) {
-			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(255 - 255 * 2 * (BossClearTimer - (Delay + 2.f)), 255, 255, 255);
+		else if (BossClearTimer > Delay + 3.5f && BossClearTimer < Delay + 4.f) {
+			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(255 - 255 * 2 * (BossClearTimer - (Delay + 3.5f)), 255, 255, 255);
 		}
-		else if (BossClearTimer > Delay + 3.5f) {
+		else if (BossClearTimer > Delay + 4.f) {
 			memset(BossClear, TRUE, sizeof(BossClear));
 			BossClearTimer = 0.f;
 			Enable_BossClearUI = FALSE;
+			Enable_FadeFilter = TRUE;
 		}
 	}
 }

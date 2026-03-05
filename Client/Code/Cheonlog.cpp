@@ -160,14 +160,14 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 			m_vecOrignBullet[i].clear();
 		}
 
-		for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
-		{
-			for (auto& iter : m_vecPoolBullet[i])
-			{
-				Safe_Release(iter);
-			}
-			m_vecPoolBullet[i].clear();
-		}
+		//for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+		//{
+		//	for (auto& iter : m_vecPoolBullet[i])
+		//	{
+		//		Safe_Release(iter);
+		//	}
+		//	m_vecPoolBullet[i].clear();
+		//}
 		Set_ObjectDead(TRUE);
 	}
 	if (Component_Collider->Get_Hp() <= 0)

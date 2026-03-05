@@ -72,7 +72,10 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	FSM->Update_GameObject(_DT);
 
-	if (Animation_TexList == &Animation_NonAnim_TexList && PlayerTransform->Get_Position()->z >= -50.f && FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+	if (Animation_TexList == &Animation_NonAnim_TexList 
+		//&& PlayerTransform->Get_Position()->z >= 88.5f && PlayerTransform->Get_Position()->x >= 51.5f
+		&& KEY_DOWN(DIK_F6)
+		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Ready_SmoothCamera(TRUE);
@@ -111,7 +114,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.f) {
 		srand(time(NULL));
 		if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE)		{ Action_Selector = rand() % 4 + 1; }
-		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE) { Action_Selector = rand() % 4 + 1;} //rand() % 5 + 1; } 보스 패턴 추가 시 적용
+		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
 
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 	}
@@ -203,6 +206,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = TRUE;
 			BossMode[(LONG)BOSSMODE::MODE_DEATH] = TRUE;
 			Enable_BossDisappearStaging = TRUE;
+			memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
 			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 		// < Stand -> RSwing >
@@ -294,12 +298,11 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	}
 
 	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(0);
+		Component_Collider->Set_Hp(10);
 		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 		//Animation_TexList = &Animation_Stunning_TexList;
 		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
 		//Animation_CurrentIndex = 0;
-		Enable_BossDisappearStaging = true;
 	}
 	else if (KEY_DOWN(DIK_P)) {
 		Component_Collider->Set_Hp(5000);
@@ -349,6 +352,7 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
 	Component_Collider->Set_Hp(10000.f);
+	//Component_Collider->Set_Hp(100.f);
 	return S_OK;
 }
 HRESULT FinalBoss::Texture_Initialize() {
@@ -647,7 +651,6 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
 			Enable_BossDisappearStaging = FALSE;
 			BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] = 0.f;
-
 			ObjectDead = TRUE;
 
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossClearUI(TRUE);
