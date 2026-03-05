@@ -175,7 +175,7 @@ public:
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
 
 	int		Get_CurArrowCount() { if (nullptr == _weaponSlot[_equipNum]) return 0;  else return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
-	int		Get_Bow_ImgIDX() { return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
+	int		Get_Bow_ImgIDX() { if (nullptr == _weaponSlot[_equipNum]) return -1; return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
@@ -188,6 +188,8 @@ public:
 	pState	Get_pState() { return _pState; }
 
 	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
+
+	VOID	Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
 	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
@@ -238,6 +240,7 @@ private:
 	Artifact*		_artifactSlot[4];
 	GameObject*		_inventory[10];
 	int				_equipNum;
+	Artifact*		_auguEffect;
 
 	bool			Debug;
 	bool			CameraMove;
@@ -289,6 +292,7 @@ private:
 	int				_atomicCount;
 	int				_atomicTotal;
 	int				_atomicReady;
+	float			_defaultAttackSpeed;
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)

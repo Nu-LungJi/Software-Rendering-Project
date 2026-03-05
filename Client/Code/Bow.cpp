@@ -287,6 +287,7 @@ void Bow::CreateArrow(const _float& _DT)
 		if (_type == BowType::WindBow) {
 			_attackDelay -= _windChargingTimer * 0.4;
 			_attackDelay = max(_attackDelay, 0.2f);
+			_attackDelay = 0.2f;  // 고정
 		}
 	
 		if (_attackTimer > _attackDelay || _Charging > 0) {
@@ -313,7 +314,7 @@ void Bow::CreateArrow(const _float& _DT)
 			D3DXVec2Normalize(&side, &side);
 			_vec3 rightPos = _arrowPos;
 			_vec3 leftPos = _arrowPos;
-			float convergeAngle = D3DXToRadian(4.f);
+			float convergeAngle = D3DXToRadian(5.f);
 			_vec2 rightDir = {
 				cosf(angle + convergeAngle),
 				-sinf(angle + convergeAngle)
@@ -594,8 +595,6 @@ void Bow::MakeArrow(_vec3 pos, _vec2 arrowDir, bool charging)
 	std::uniform_int_distribution<int> distribution(0, 100);
 
 	int arrowAtk = distribution(rd) % (_Stat.maxAtk - _Stat.minAtk) + _Stat.minAtk + _playerAtk;
-
-	if (distribution(rd) % 100 < *_playerCritical) arrowAtk *= 2;
 
 	GameObject* arrow = nullptr;
 

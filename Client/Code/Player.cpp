@@ -24,7 +24,7 @@ HRESULT Player::Ready_GameObject() {
 	_defaultSpeed		= 6.f;
 	_dashStart			= false;
 	_dashTime			= 0.f;
-	_dashG				= 30.f;
+	_dashG				= 45.f;
 	_speed				= 0.f;
 	_slideTime			= 0.f;
 	_g					= 30.f;
@@ -39,6 +39,7 @@ HRESULT Player::Ready_GameObject() {
 	_alphaDelayTimer	= 0.f;
 	_partnerTimer		= 0.f;
 	_Skill2				= false;
+	_auguEffect			= nullptr;
 
 	// UI
 	Component_Collider->Set_Hp(50.f);
@@ -49,7 +50,7 @@ HRESULT Player::Ready_GameObject() {
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
-	_critical			= 0;
+	_critical			= 50;
 	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;
@@ -60,6 +61,7 @@ HRESULT Player::Ready_GameObject() {
 	_MaxArrow			= 1.f;
 	_atkUpgrade			= 1.f;
 	_attackSpeed		= 1.5f;
+	_defaultAttackSpeed = 2.f;
 	//연출용
 	CameraMove = false;
 	//사운드용 타이머
@@ -94,20 +96,40 @@ HRESULT Player::Ready_GameObject() {
 		_artifactSlot[1] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_AtkUp"));
 		_artifactSlot[1]->Set_ItemIdx(1);
     
-		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"IceBow1");
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow1"))->Set_PlayerPos(Component_Transform->Get_Position());
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow1"))->Set_Bow_Type(BowType::IceBow);
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow1"))->Set_Bow_Equip(false);
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"IceBow");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"))->Set_PlayerPos(Component_Transform->Get_Position());
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"))->Set_Bow_Type(BowType::IceBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"))->Set_Bow_Equip(false);
 
-		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"EvilHeadBow1");
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow1"))->Set_PlayerPos(Component_Transform->Get_Position());
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow1"))->Set_Bow_Type(BowType::EvilHeadBow);
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow1"))->Set_Bow_Equip(false);
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"EvilHeadBow");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"))->Set_PlayerPos(Component_Transform->Get_Position());
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"))->Set_Bow_Type(BowType::EvilHeadBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"))->Set_Bow_Equip(false);
     
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"WindBow");
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"))->Set_PlayerPos(Component_Transform->Get_Position());
-		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"))->Set_Bow_Type(BowType::EvilHeadBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"))->Set_Bow_Type(BowType::WindBow);
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"))->Set_Bow_Equip(false);
+
+		//**********************디버깅용 활
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"IceBow_");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow_"))->Set_PlayerPos(Component_Transform->Get_Position());
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow_"))->Set_Bow_Type(BowType::IceBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow_"))->Set_Bow_Equip(false);
+		_weaponSlot[1] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow_"));
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"EvilHeadBow_");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow_"))->Set_PlayerPos(Component_Transform->Get_Position());
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow_"))->Set_Bow_Type(BowType::EvilHeadBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow_"))->Set_Bow_Equip(false);
+		_weaponSlot[2] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow_"));
+
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"WindBow_");
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow_"))->Set_PlayerPos(Component_Transform->Get_Position());
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow_"))->Set_Bow_Type(BowType::WindBow);
+		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow_"))->Set_Bow_Equip(false);
+		_weaponSlot[3] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow_"));
 	}
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
@@ -132,7 +154,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
-	_attackSpeed = 2.f;
+	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
 	Artifact_Effect();
 	Component_Collider->Set_Att(Component_Collider->Get_Att() * _atkUpgrade);
@@ -170,6 +192,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
+		SoundManager::GetInstance()->Stop_AllSound();
 	}
 	//SetOnTerrain(); - 광윤 디버그
 
@@ -323,12 +346,12 @@ void Player::Reset()
 	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 	mainUI->Player_ReFillHP(5);
 
-	for (int i = 1; i < 4; i++) {
-		if (_weaponSlot[i] != nullptr) {
-			_weaponSlot[i]->Set_Destroy();
-			_weaponSlot[i] = nullptr;
-		}
-	}
+	//for (int i = 1; i < 4; i++) {
+	//	if (_weaponSlot[i] != nullptr) {
+	//		_weaponSlot[i]->Set_Destroy();
+	//		_weaponSlot[i] = nullptr;
+	//	}
+	//}
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
@@ -724,6 +747,16 @@ void Player::DASH_STATE(const _float& _DT)
 		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
 		if (_invincibleTimer == 0.f) _isInvincible = false;
 	}
+
+	// 잔상
+	_partnerTimer += _DT;
+	if (_partnerTimer > 0.1f) {
+		_vec3 dest = *Component_Transform->Get_Position();
+		dest.z += 0.01;
+		_vec3 Size = { 2.f, 2.f, 2.f };
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SHADOW_PARTNER, &dest, min(0.3f, _speed), Size, false);
+		_partnerTimer = 0.f;
+	}
 		
 }
 void Player::ATTACK_STATE(const _float& _DT)
@@ -747,6 +780,7 @@ void Player::ATTACK_STATE(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 		_isInvincible = true;
+		_partnerTimer = 1.f;
 	}
 	else if (!mouseLB && !KEY_HOLD(DIK_SPACE)) {
 		_pState = pState::STATE_IDLE;
@@ -982,6 +1016,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_dashstock--;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 		_isInvincible = true;
+		_partnerTimer = 1.f;	
 	}
   else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
@@ -1394,15 +1429,17 @@ void Player::SetGrahpic()
 		break;
 	}
 
-	// COLOR = Texture * TFACTOR
 	GRPDEV->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	GRPDEV->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
 
-	// ALPHA = TextureAlpha * TFACTORAlpha
 	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	GRPDEV->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+
+	GRPDEV->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	GRPDEV->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	GRPDEV->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 }
 void Player::Anim(TCHAR FileName[128], float delay, int maxIdx, bool reverse)
 {
@@ -1678,13 +1715,13 @@ void Player::Buy_item(int itemIdx)
 	case 3 :
 		for (int idx = 0; idx < 4; idx++) {
 			if (nullptr == _weaponSlot[idx]) {
-				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow1"));
+				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"));
 				return;
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
 			if (nullptr == _inventory[idx]) {
-				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow1"));
+				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"));
 				break;
 			}
 		}
@@ -1728,13 +1765,13 @@ void Player::Buy_item(int itemIdx)
 	case 6:
 		for (int idx = 0; idx < 4; idx++) {
 			if (nullptr == _weaponSlot[idx]) {
-				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow1"));
+				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"));
 				return;
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
 			if (nullptr == _inventory[idx]) {
-				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow1"));
+				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"));
 				break;
 			}
 		}
