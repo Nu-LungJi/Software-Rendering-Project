@@ -1,4 +1,5 @@
 #include "../Include/PCH.h"
+#include "Tesseract.h"
 
 MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_pMainScene(nullptr), m_fTimer(0.f) {}
 MiniGameScene::~MiniGameScene() {}
@@ -30,8 +31,9 @@ HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
-	m_fTimer += _DT * 0.3f;
+	m_fTimer += _DT;
 	
+	Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
 
 	if (KEY_DOWN(DIK_P)) {
 		End_MiniGame();
@@ -46,20 +48,22 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 
-	if (POS(m_pPlayer)->x > 49.f) {
+	if ((POS(m_pPlayer)->x > 49.f )&&( m_iEventTrigger == 0)) {
 		m_pPlayer->Set_IsFalling(true);
 		Monster::Set_Gravity({ 0.f,0.f,1.f });
 		for (auto it : m_vecHurdles[0]) {
 			it->Set_ObjectDead(true);
 			it = nullptr;
+			m_iEventTrigger = 1;
 		}
 	}
-	if (POS(m_pPlayer)->y > 49.f) {
+	if ((POS(m_pPlayer)->y > 49.f) && (m_iEventTrigger == 1)) {
 		m_pPlayer->Set_IsFalling(true);
 		Monster::Set_Gravity({ 0.f,1.f,0.f });
 		for (auto it : m_vecHurdles[1]) {
 			it->Set_ObjectDead(true);
 			it = nullptr;
+			m_iEventTrigger = 2;
 		}
 	}
 	m_pPlayer->Fall(_DT);
@@ -180,6 +184,9 @@ HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 	SkyBox* pSkybox = SkyBox::Create(GRPDEV);
 	LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pSkybox);
 
+	Tesseract* pTesseract = Tesseract::Create(GRPDEV);
+	//LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(pTesseract);
+	Monster::Add_Monster_to_Scene(pTesseract, L"Chaser", GAMEOBJECT_TYPE::OBJECT_MONSTER, this);
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_GameLogic_Layer() {

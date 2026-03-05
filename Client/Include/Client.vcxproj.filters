@@ -253,6 +253,9 @@
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\05. Tile\02. Decor">
+      <UniqueIdentifier>{0584ba8f-4c3a-4661-a181-767822882f40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -526,6 +529,12 @@
     <ClInclude Include="..\Header\SkyBox.h">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h">
+      <Filter>03. GameObject\07. ProJectile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\Tesseract.h">
+      <Filter>03. GameObject\05. Tile\02. Decor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -781,6 +790,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\SkyBox.cpp">
       <Filter>03. GameObject\05. Tile\01. CubeFloor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp">
+      <Filter>03. GameObject\07. ProJectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Tesseract.cpp">
+      <Filter>03. GameObject\05. Tile\02. Decor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1495,8 +1495,8 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 
 			return TRUE;
 		}
-	}
 		return 0;
+	}
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
@@ -1578,7 +1578,7 @@ void Player::Fall(const _float& _DT)
 
 	if (Is_Falling) {
 		_vec3 vDir = Monster::Get_Gravity();
-		Component_Transform->Move_Pos(&vDir, 8.f, _DT);
+		Component_Transform->Move_Pos(&vDir, 10.f, _DT);
 	}
 }
 D3DXVECTOR3 Player::MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform) {

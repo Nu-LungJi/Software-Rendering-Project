@@ -42,4 +42,6 @@ private:
 
 	vector<GameObject*> m_vecHurdles[3];
 	FireDevilBowChargeEffect* m_pChaser;
+
+	int	m_iEventTrigger = 0;
 };
