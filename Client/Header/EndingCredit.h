@@ -25,11 +25,14 @@ public:
 
 private:
 	SpriteObject* Component_Sprite;
-	vector<SpriteINFO*> TextureList;
-	vector<FontObject*>	FontObjectList;
+	vector<FontObject*>	FontList;
 
 	SpriteINFO* _BlackScreen;
+	SpriteINFO* _WhiteScreen;
 	SpriteINFO* BackGround;
+	SpriteINFO* BlackFont_Frame;
+	SpriteINFO* Credit1;
+	SpriteINFO* Credit2;
 	
 
 	// 참조 변수
@@ -39,6 +42,8 @@ private:
 	BOOL	Start;
 	FLOAT	POSX;
 	FLOAT	POSY;
+	FLOAT	FramePosX;
+	FLOAT	FramePosY;
 	FLOAT	WIDTH;
 	FLOAT	HEIGHT;
 	INT		Frame;
@@ -47,6 +52,10 @@ private:
 	FLOAT	FrameDelay;
 	FLOAT	SizeRatio;
 	FLOAT	MoveSpeed;
+	FLOAT	FrameSpeed;
+	FLOAT	WhiteScreenOpacity;
+	FLOAT   Credit1_Timer;
+	FLOAT   Credit2_Timer;
 
 public:
 	static	EndingCredit* Create(LPDIRECT3DDEVICE9 _GRPDEV);

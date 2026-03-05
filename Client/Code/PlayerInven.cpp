@@ -86,7 +86,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		Selecting_SavedItem();
 		Selecting_EquipItem();
 		Equip_Item();
-		
+		Display_ItemInfo();
 	}
 
 
@@ -348,7 +348,74 @@ HRESULT PlayerInven::Item_Initialize() {
 	it03->TEXTURE = Component_Sprite->Get_Texture(it03->ItemDesc[it03->INFFRAME])->TEXTURE;
 	it03->ItemType = (int)ITEM_TYPE::NORMAL_WEAPON;
 
+	ItemINFO* it04 = new ItemINFO;
+	it04->ItemDesc = {
+		L"",
+		L"선현궁",
+		L"무기/노말",
+
+		L"일반 공격",
+		L"이동 속도 + 20%",
+		L"공격 속도 2.5",
+
+		L"그냥 빨라집니다.",
+
+		L"",
+
+		L"DIC_InvenFrame_IceBow",
+		L"DIC_InfoFrame_IceBow"
+	};
+	it04->ItemPrice = 68;
+	it04->TEXTURE = Component_Sprite->Get_Texture(it04->ItemDesc[it04->INFFRAME])->TEXTURE;
+	it04->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
+	ItemINFO* it05 = new ItemINFO;
+	it05->ItemDesc = {
+		L"",
+		L"선현궁",
+		L"무기/노말",
+
+		L"일반 공격",
+		L"이동 속도 + 20%",
+		L"공격 속도 2.5",
+
+		L"그냥 빨라집니다.",
+
+		L"",
+
+		L"DIC_InvenFrame_DarkBow",
+		L"DIC_InfoFrame_DarkBow"
+	};
+	it05->ItemPrice = 68;
+	it05->TEXTURE = Component_Sprite->Get_Texture(it05->ItemDesc[it05->INFFRAME])->TEXTURE;
+	it05->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
+	ItemINFO* it08 = new ItemINFO;
+	it08->ItemDesc = {
+		L"",
+		L"선현궁",
+		L"무기/노말",
+
+		L"일반 공격",
+		L"이동 속도 + 20%",
+		L"공격 속도 2.5",
+
+		L"그냥 빨라집니다.",
+
+		L"",
+
+		L"DIC_InvenFrame_MichaelBow",
+		L"DIC_InfoFrame_MichaelBow"
+	};
+	it08->ItemPrice = 68;
+	it08->TEXTURE = Component_Sprite->Get_Texture(it08->ItemDesc[it08->INFFRAME])->TEXTURE;
+	it08->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
 	Append_Item(it03);
+	Append_Item(it04);
+	Append_Item(it05);
+	Append_Item(it08);
+
 	Append_Item(it06);
 	Append_Item(it07);
 
@@ -595,10 +662,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[7])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[8])->TEXTURE;
 	}
 	if (Saved_ItemList[SavedItemIndex - 1] != nullptr && FocusOn_SavedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[9])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[1];
