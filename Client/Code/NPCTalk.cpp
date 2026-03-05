@@ -171,6 +171,7 @@ BOOL NPCTalk::Shadow_Fade(CONST FLOAT& _DT) {
 		}
 		else if (TalkTimer > 1.f && TalkTimer < 2.f) {
 			NameBar	->Set_Visible(FALSE);
+			Name	->Set_Visible(FALSE);
 			Square	->Set_Visible(FALSE);
 			Talk	->Set_Visible(FALSE);
 		}

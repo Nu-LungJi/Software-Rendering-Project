@@ -77,7 +77,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({  28.814f, 0.5f, 34.78f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 19.661f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
@@ -278,13 +278,13 @@ HRESULT Player::Component_Initialize() {
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
 
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
-	//Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Stand");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Run");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Slide");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Attack");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/NewDash");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Death");
+	Component_Texture->Import_TextureFromFolder(L"../../Resource/Player/Landing");
 
 	return S_OK;
 }
@@ -1487,7 +1487,6 @@ BOOL Player::OnCollisionEnter(GameObject* _Other)
 			return TRUE;
 		}
 	}
-		return 0;
 
 	if (_pState == pState::STATE_DEATH || _pState == pState::STATE_LANDING) return FALSE;
 	wstring Tag = _Other->Get_ObjectTag();
@@ -1551,7 +1550,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
-	Component_Transform->Set_Pos(m_vBackUpPos);
+	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;

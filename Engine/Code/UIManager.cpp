@@ -33,7 +33,6 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
     FontInfo.Quality = DEFAULT_QUALITY;
     FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
-
     lstrcpyW(FontInfo.FaceName, FO->FontType.c_str());
 
     if (FAILED(D3DXCreateFontIndirectW(_GRPDEV, &FontInfo, &FO->DXFont))) {
