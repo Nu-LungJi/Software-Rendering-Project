@@ -16,10 +16,7 @@ HRESULT   StartScene::Ready_Scene() {
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-
-    SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
-    SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
-
+	
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
@@ -215,9 +212,10 @@ HRESULT   StartScene::Ready_Scene() {
 		MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
+	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	TileManager::GetInstance()->Set_StageCnt();
+	  TileManager::GetInstance()->Set_StageCnt();
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -242,7 +240,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 			}
 		}
-
+		IntroToStage(_DT);
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
     return Scene::Update_Scene(_DT);
@@ -307,6 +305,33 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 
     return S_OK;
+}
+VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
+	if (PlayingSound == 0) return;
+	if (PlayingSound == 1) {
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.f);
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav"	  , CHANNELID::SOUND_BGM02, 0.f);
+		PlayingSound = 2;
+	}
+	else if (PlayingSound == 2) {
+		if (Volume01 <= 0.3f) {
+			Volume01 += (_DT / 6);
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, Volume01);
+		}
+		else {
+			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
+			PlayingSound = 3;
+		}
+	}
+	else if (PlayingSound == 3){
+		if (Volume02 <= 0.3f) {
+			Volume02 += (_DT / 6);
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);
+		}
+		else {
+			PlayingSound = 0;
+		}
+	}
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
     StartScene* LS = new StartScene(_GRPDEV);

@@ -19,6 +19,10 @@ public:
 	VOID		LateUpdate_EffectManager(CONST FLOAT& _DT);
 	VOID		Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDER _RENDER);
 
+	VOID		Add_GlobalEffect(GameObject* _Effect);
+	VOID		Render_GlobalEffect(LPDIRECT3DDEVICE9 _GRPDEV);
+	GameObject*	Find_GlobalEffect(wstring _Tag);
+
 public:
 	HRESULT				Append_Effect(EFFECT_OWNER _Owner, GameObject* _Effect, INT _FB = (INT)EFFECT_RENDER::BOSS_FRONT_EFFECT);
 	GameObject*			Get_Effect(EFFECT_OWNER _Owner, wstring	_TAG);
@@ -30,7 +34,10 @@ private:
 	list<GameObject*>	Container_BossFrontEffect;
 	list<GameObject*>	Container_BossBackEffect;
 	list<GameObject*>	Container_UIEffect;
+
 	GameObject*			Scene_Effect;
+
+	list<GameObject*>	Global_Effect;
 public:
 	virtual			VOID	Free();
 };

@@ -63,11 +63,11 @@ public:
 
 	VOID		Render_FontObjects();
 
-	VOID		Add_FilterObjects(SpriteINFO* _OBJ) { FilterList.insert({ _OBJ->KEY.c_str(), _OBJ}); }
-
-	VOID		Render_FilterObjects();
-
-	SpriteINFO*	Find_FilterObjects(wstring _Tag);
+	VOID			Add_GlobalObject(SpriteINFO* _OBJ) { GlobalSpriteList.insert({ _OBJ->KEY.c_str(), _OBJ}); }
+	VOID			Add_GlobalObject(FontObject* _OBJ, wstring _Key) { GlobalFontList.insert({ _Key.c_str(), _OBJ}); }
+	VOID			Render_GlobalObject();
+	SpriteINFO*		Find_GlobalObject(wstring _Tag);
+	FontObject*		Find_GlobalFontObject(wstring _Tag);
 
 public:
 	BOOL		Get_Active()				{ return isActive;		}
@@ -82,7 +82,8 @@ private:
 
 	map<CONST TCHAR*, FontObject*>	FontList;
 
-	map<CONST TCHAR*, SpriteINFO*>	FilterList;
+	map<CONST TCHAR*, SpriteINFO*>	GlobalSpriteList;
+	map<CONST TCHAR*, FontObject*>	GlobalFontList;
 
 	BOOL		isActive;
 

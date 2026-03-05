@@ -42,7 +42,10 @@ HRESULT	Supporter::Ready_GameObject(){
 	return S_OK;
 }
 INT		Supporter::Update_GameObject(CONST FLOAT& _DT) { 
-	if (ObjectDead == TRUE) return -1;
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		return -1;
+	}
 	
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -73,7 +76,10 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 	return 0;
 }
 VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
-	if (ObjectDead == TRUE)  return;
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		return;
+	}
 	GameObject::LateUpdate_GameObject(_DT);
 	if (Supporter_Type == 1 && Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
 		AlphaZValue = 1.f;
@@ -83,7 +89,10 @@ VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 	}
 }
 VOID	Supporter::Render_GameObject(){
-	if (ObjectDead == TRUE)  return;
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		return;
+	}
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());

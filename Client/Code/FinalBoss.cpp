@@ -32,11 +32,11 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
 
-	//Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
-	//Animation_TexList		= &Animation_Normal_Stand_TexList;
+	Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
+	Animation_TexList		= &Animation_Normal_Stand_TexList;
 
-	Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
-	Animation_TexList		= &Animation_NonAnim_TexList;
+	//Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
+	//Animation_TexList		= &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 
@@ -61,9 +61,11 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
 	memset(ERUSH_TRIGGER	, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap			, TRUE, sizeof(BBTrap));
+	// Debug ▼
+	PlayerTransform->Set_Pos(51.f, 0.5f, 88.f);
+	STOP_ALLSOUND;
 
 	PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
-
 	return S_OK;
 }
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
@@ -73,9 +75,9 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	FSM->Update_GameObject(_DT);
 
 	if (Animation_TexList == &Animation_NonAnim_TexList 
-		//&& PlayerTransform->Get_Position()->z >= 88.5f && PlayerTransform->Get_Position()->x >= 51.5f
-		&& KEY_DOWN(DIK_F6)
-		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+		&& PlayerTransform->Get_Position()->z >= 88.5f && PlayerTransform->Get_Position()->x >= 51.5f
+		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()
+		) {
 
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Ready_SmoothCamera(TRUE);
@@ -205,8 +207,27 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 
 			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = TRUE;
 			BossMode[(LONG)BOSSMODE::MODE_DEATH] = TRUE;
+
+			BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] = 0.f;
+
+			Enable_BossAppearStaging = FALSE;
 			Enable_BossDisappearStaging = TRUE;
+			Enable_GroundExplosion = FALSE;
+			Enable_GroundQuadExplosion = FALSE;
+			Enable_RageUpFireBall = FALSE;
+			Enable_SupporterFlame = FALSE;
+			Enable_ExplosionRush = FALSE;
+
 			memset(STAGING_TRIGGER, TRUE, sizeof(STAGING_TRIGGER));
+
+			for (auto& ORU : ObjectPool_RageUp) 
+				ORU->Set_ObjectDead(TRUE);
+			for (auto& ORU : ObjectPool_Supporter)
+				ORU->Set_ObjectDead(TRUE);
+			for (auto& ORU : ObjectPool_RSwing)
+				ORU->Set_ObjectDead(TRUE);
+			for (auto& ORU : ObjectPool_FSwing)
+				ORU->Set_ObjectDead(TRUE);
 			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 		// < Stand -> RSwing >
@@ -298,7 +319,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	}
 
 	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(10);
+		Component_Collider->Set_Hp(0);
 		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 		//Animation_TexList = &Animation_Stunning_TexList;
 		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -352,7 +373,6 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
 	Component_Collider->Set_Hp(10000.f);
-	//Component_Collider->Set_Hp(100.f);
 	return S_OK;
 }
 HRESULT FinalBoss::Texture_Initialize() {

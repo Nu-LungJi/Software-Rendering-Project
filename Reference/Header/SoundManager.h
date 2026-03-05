@@ -26,6 +26,11 @@ public:
 
 	BOOL		IsPlaying(CHANNELID _SoundChannel);
 	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { SoundChannel[(LONG)_CID]->setVolume(Volume); }
+	FLOAT		Get_ChannelVolume(CHANNELID _CID) {
+		FLOAT F = 0.f;
+		SoundChannel[(LONG)_CID]->getVolume(&F);
+		return F;
+	}
 private:
 	System*	SoundSystem; 
 
