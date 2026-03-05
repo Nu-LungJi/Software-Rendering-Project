@@ -43,6 +43,11 @@ HRESULT	Supporter::Ready_GameObject(){
 }
 INT		Supporter::Update_GameObject(CONST FLOAT& _DT) { 
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		for (auto& BFB : BFBVec) {
+			Safe_Release(BFB);
+			CollisionManager::GetInstance()->Delete_ColliderObject(BFB);
+		}
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		ObjectDead = TRUE;
 		return -1;
 	}
@@ -78,6 +83,7 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return;
 	}
 	GameObject::LateUpdate_GameObject(_DT);
@@ -91,6 +97,7 @@ VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 VOID	Supporter::Render_GameObject(){
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return;
 	}
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);

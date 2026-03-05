@@ -32,11 +32,11 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	Animation_CurrentIndex		= 0;
 	Animation_PreviousIndex		= 0;
 
-	Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
-	Animation_TexList		= &Animation_Normal_Stand_TexList;
+	//Animation_FrameCount	= ANIMATION_NORMAL_STAND_FRAMECOUNT;
+	//Animation_TexList		= &Animation_Normal_Stand_TexList;
 
-	//Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
-	//Animation_TexList		= &Animation_NonAnim_TexList;
+	Animation_FrameCount	= ANIMATION_NONANIM_FRAMECOUNT;
+	Animation_TexList		= &Animation_NonAnim_TexList;
 
 	Action_Selector = 0;
 
@@ -61,8 +61,7 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(SUPPORTER_TRIGGER, TRUE, sizeof(SUPPORTER_TRIGGER));
 	memset(ERUSH_TRIGGER	, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap			, TRUE, sizeof(BBTrap));
-	// Debug ▼
-	PlayerTransform->Set_Pos(51.f, 0.5f, 88.f);
+
 	STOP_ALLSOUND;
 
 	PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
@@ -113,7 +112,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE || BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] += _DT;
 
-	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.f) {
+	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 4.f) {
 		srand(time(NULL));
 		if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE)		{ Action_Selector = rand() % 4 + 1; }
 		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
@@ -319,7 +318,7 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	}
 
 	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(0);
+		Component_Collider->Set_Hp(10);
 		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
 		//Animation_TexList = &Animation_Stunning_TexList;
 		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -672,6 +671,11 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			Enable_BossDisappearStaging = FALSE;
 			BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] = 0.f;
 			ObjectDead = TRUE;
+
+			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(TRUE);
+			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(TRUE);
+			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(TRUE);
+			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(TRUE);
 
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossClearUI(TRUE);
 		}
