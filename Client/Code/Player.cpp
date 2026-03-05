@@ -13,7 +13,7 @@ HRESULT Player::Ready_GameObject() {
 	//Temp
 	Component_Collider->Set_Hp(5.f);
 	Component_Collider->Set_Att(1.f);
-
+	
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 10);
@@ -39,7 +39,7 @@ HRESULT Player::Ready_GameObject() {
 	_alphaDelayTimer	= 0.f;
 	_partnerTimer		= 0.f;
 	_Skill2				= false;
-
+	_defaultAttackSpeed = 2.f;
 	// UI
 	Component_Collider->Set_Hp(50.f);
 	Component_Collider->Set_Att(1.f);
@@ -132,7 +132,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
-	_attackSpeed = 2.f;
+	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
 	Artifact_Effect();
 	Component_Collider->Set_Att(Component_Collider->Get_Att() * _atkUpgrade);
@@ -989,7 +989,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 		_isInvincible = true;
 	}
-  else if (mouseLB) {
+    else if (mouseLB) {
 		_pState = pState::STATE_ATTACK;
 		_attackDelay = 2.0f;
 		_frame = 1;
