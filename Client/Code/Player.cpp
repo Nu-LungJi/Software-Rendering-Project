@@ -376,6 +376,7 @@ void Player::IDLE_STATE(const _float& _DT)
 				rightDir = { -1.f,0.f,0.f };
 				upDir = { 0.f,0.f,1.f };
 			}
+			if (_pState == pState::STATE_ON_EVENT)	return;
 		}
 
 		D3DXVec3Normalize(&upDir, &upDir);
