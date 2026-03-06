@@ -58,7 +58,7 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 
 				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
 				SoundManager::GetInstance()->Stop_AllSound();
-				SoundManager::GetInstance()->Play_Sound_Once(L"DoCheol/BackGround_Sound.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+				SoundManager::GetInstance()->Play_Sound_Once(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
 				m_bStop = false;
 			}
 

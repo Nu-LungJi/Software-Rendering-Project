@@ -86,7 +86,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		Selecting_SavedItem();
 		Selecting_EquipItem();
 		Equip_Item();
-		Display_ItemInfo();
+		//Display_ItemInfo();
 	}
 
 

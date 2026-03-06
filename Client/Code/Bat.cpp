@@ -15,7 +15,7 @@ HRESULT Bat::Ready_GameObject() {
 HRESULT Bat::Ready_GameObject(_vec3 vPos, BOOL bMini) {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	m_tInfo.eState[0] = MONSTER_STATE_SUMMON;
+	m_tInfo.eState[0] = MONSTER_STATE_TRACKING;
 	m_tInfo.bMiniGame = bMini;
 	Component_Collider->Set_Hp(BAT_HP);
 	Component_Collider->Set_Att(1.f);
