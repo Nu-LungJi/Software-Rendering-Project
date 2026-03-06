@@ -836,7 +836,7 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_Q.png", L"KEY_Q", 45.f, 595.f, 20.f, 20.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token1", 104.f, 669.f, 33.f, 29.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token2", 137.f, 669.f, 33.f, 29.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token3", 170.f, 669.f, 33.f, 29.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token3", 170.f, 669.f, 33.f, 29.f, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// INTERACT /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png", L"KEY_E", 720.f, 590.f, 35, 35, FALSE, 255);
