@@ -134,7 +134,7 @@ private:
 	HRESULT		MiniGame(const _float& _DT);
 	int*		m_pEventTrigger = nullptr;
 	_float		m_fElapsedTime;
-	_float		m_fDuration = 1.5f;
+	_float		m_fDuration = 1.f;
 	_vec3		m_vCurrEye,		m_vCurrUp;
 	_vec3		m_vStartEye,	m_vTargetEye;
 	_vec3		m_vStartUp,		m_vTargetUp;

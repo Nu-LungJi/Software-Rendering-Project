@@ -1,7 +1,7 @@
 #include "../Include/PCH.h"
 #include "Tesseract.h"
 
-MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV),m_bEffect(false), m_pMainScene(nullptr), m_fTimer(0.f) {}
+MiniGameScene::MiniGameScene(LPDIRECT3DDEVICE9 _GRPDEV) : Scene(_GRPDEV), m_bEffect(false), m_pMainScene(nullptr), m_fTimer(0.f) {}
 MiniGameScene::~MiniGameScene() {}
 
 HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
@@ -23,25 +23,27 @@ HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 	if (FAILED(Ready_Enviroment_Layer()))			return E_FAIL;
 	if (FAILED(Ready_GameLogic_Layer()))			return E_FAIL;
 	if (FAILED(Ready_UserInterface_Layer()))		return E_FAIL;
-	
+
 	m_fTimer = -5.f;
 
 	return S_OK;
 }
- 
+
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
-	m_fTimer += _DT;
-	
-	if (m_fTimer > 2.f) {
-		Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
-		m_fTimer = 0.f;
+	if (m_pMainUI == nullptr)	m_pMainUI = static_cast<MainUI*>(LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Get_GameObject(L"MainUI"));
+	if (m_pMainUI != nullptr) {
+		m_pMainUI->Set_EnableDisplayHPBar(TRUE);
+		m_pMainUI->Set_BossMaxHP(100.f);
 	}
+
+	m_fTimer += _DT;
+
 	if (KEY_DOWN(DIK_P)) {
 
 		if (!m_bEffect)
 		{
-			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({60.671,0.5f,43.405}, false, 0, false);
+			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 60.671,0.5f,43.405 }, false, 0, false);
 			TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
 			m_bEffect = true;
 		}
@@ -64,7 +66,7 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	CollisionManager::GetInstance()->LateUpdate_CollisionManager();
 	CollisionManager::GetInstance()->Render_CollisionManager();
 
-	if ((POS(m_pPlayer)->x > 49.f )&&( m_iEventTrigger == 0)) {
+	if ((POS(m_pPlayer)->x > 49.f) && (m_iEventTrigger == 0)) {
 		m_pPlayer->Set_IsFalling(true);
 		Monster::Set_Gravity({ 0.f,0.f,1.f });
 		for (auto it : m_vecHurdles[0]) {
@@ -92,24 +94,29 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 
 	m_pPlayer->Fall(_DT);
 
-	if (POS(m_pPlayer)->z > 35.f)
+	if (m_iEventTrigger == -1)
 		End_MiniGame();
-	else if (Monster::Get_Gravity().y == -1.f)
-		if (POS(m_pPlayer)->x < -3.f)	
+	else if (POS(m_pPlayer)->z > 50.f)
+		End_MiniGame();
+	else if (Monster::Get_Gravity().y == -1.f) {
+	if (POS(m_pPlayer)->y < -3.f)
+		End_MiniGame();
+}
+	else if (Monster::Get_Gravity().z == 1.f) {
+		if (POS(m_pPlayer)->z > 13.f)
 			End_MiniGame();
-	else if (Monster::Get_Gravity().z == 1.f) 
-		if (POS(m_pPlayer)->z > 13.f) 
-			End_MiniGame();
-	else if (Monster::Get_Gravity().y == 1.f)
+	}
+	else if (Monster::Get_Gravity().y == 1.f) {
 		if (POS(m_pPlayer)->y > 63.f)
 			End_MiniGame();
+	}
 
 }
 VOID MiniGameScene::Render_Scene() {}
 
 HRESULT MiniGameScene::Start_MiniGame()
 {
- 	if (m_pMainScene == nullptr) {
+	if (m_pMainScene == nullptr) {
 		m_pMainScene = SceneManager::GetInstance()->Get_CurrentScene();
 	}
 
@@ -128,7 +135,7 @@ HRESULT MiniGameScene::Start_MiniGame()
 		m_pPlayer->AddRef();
 
 		LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Add_GameObject(Monster::Create<Shadow>(GRPDEV));
-		
+
 		Layer* pUiLayer = m_pMainScene->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE);
 		LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE] = pUiLayer;
 		pUiLayer->AddRef();
@@ -137,11 +144,12 @@ HRESULT MiniGameScene::Start_MiniGame()
 		if (nullptr == Monster::Get_Camera()) {
 			Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
 			Monster::Set_Camera(static_cast<CameraObject*>(LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Camera")));
+			Monster::Set_Camera(static_cast<CameraObject*>(Monster::Set_Target(L"Camera")));
 		}
 		if (nullptr == Monster::Get_Player()) {
 			Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
 			Monster::Set_Player(static_cast<Player*>((LayerList[(long)LAYER_TYPE::LAYER_DYNAMIC_OBJECT]->Get_GameObject(L"Player"))));
-			m_pPlayer = Monster::Get_Player();
+			m_pPlayer = static_cast<Player*>(Monster::Set_Target(L"Player"));
 		}
 	}
 
@@ -153,8 +161,11 @@ HRESULT MiniGameScene::Start_MiniGame()
 			CollisionManager::GetInstance()->Add_ColliderObject(pObj);
 		}
 	}
+	CollisionManager::GetInstance()->Add_ColliderObject(m_pChaser);
 
-	//이거 스타트씬에서 할게요
+	SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
+	m_pMainUI = nullptr;
+	
 	// 디버그 키 진입 하고싶을때 킬것
 	//SceneManager::GetInstance()->Set_CurrentScene(this);
 
@@ -177,9 +188,12 @@ HRESULT MiniGameScene::End_MiniGame()
 		}
 	}
 	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
+	SoundManager::GetInstance()->Stop_AllSound();
+	m_pMainUI->Set_EnableDisplayHPBar(false);
+	m_pMainUI = nullptr;
 	MonsterManager::GetInstance()->Release_Static_Batich();
 	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
-	return S_OK;	
+	return S_OK;
 }
 HRESULT MiniGameScene::Ready_Enviroment_Layer() {
 
@@ -220,13 +234,13 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer() {
 
 	for (float i = 20; i < 50; i += 5)
 	{
-		int		iCount	= RANDOM::Get_int(1, 5);
-		bool	bDir	= (RANDOM::Get_int(0,9) < 5);
-		_vec3	vSrc	= { i, 1.f, 10.f * bDir };
-		_vec3	vDst	= { i, 1.f, 10.f * (!bDir)};
-		_float	fSpeed	= RANDOM::Get_float(1.f, 6.f);
+		int		iCount = RANDOM::Get_int(1, 5);
+		bool	bDir = (RANDOM::Get_int(0, 9) < 5);
+		_vec3	vSrc = { i, 1.f, 10.f * bDir };
+		_vec3	vDst = { i, 1.f, 10.f * (!bDir) };
+		_float	fSpeed = RANDOM::Get_float(1.f, 6.f);
 
-		uint8_t Type	= RANDOM::Get_int((uint8_t)MONSTER_TYPE::Bat, (uint8_t)MONSTER_TYPE::Random -1);
+		uint8_t Type = RANDOM::Get_int((uint8_t)MONSTER_TYPE::Bat, (uint8_t)MONSTER_TYPE::Random - 1);
 
 		for (int j = 0; j < iCount; ++j)
 		{
@@ -240,7 +254,7 @@ HRESULT MiniGameScene::Ready_GameLogic_Layer() {
 				break;
 			case (uint8_t)Engine::MONSTER_TYPE::ScorpionEvilSoul:
 				pHurdle = Monster::Create<ScorpionEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);
-				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this); 
+				Monster::Add_Monster_to_Scene(pHurdle, L"Hurdle", GAMEOBJECT_TYPE::OBJECT_HURDLE, this);
 				break;
 			case (uint8_t)Engine::MONSTER_TYPE::ShotGunEvilSoul:
 				pHurdle = Monster::Create<ShotGunEvilSoul>(GRPDEV, vSrc, vDst, fSpeed, 2.f);

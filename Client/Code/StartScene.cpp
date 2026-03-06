@@ -9,12 +9,12 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-   // ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
 
@@ -206,7 +206,7 @@ HRESULT   StartScene::Ready_Scene() {
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 	
 		}
-		MSG_BOX("로드 성공");
+		//MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
 	PlayingSound = TRUE;
@@ -300,7 +300,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  
     Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
-    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
+    Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 
@@ -328,9 +328,7 @@ VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
 			Volume02 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);
 		}
-		else {
-			PlayingSound = 0;
-		}
+		else { PlayingSound = 0; }
 	}
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
