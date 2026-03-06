@@ -75,8 +75,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 
 	if (Animation_TexList == &Animation_NonAnim_TexList 
 		&& PlayerTransform->Get_Position()->z >= 88.5f && PlayerTransform->Get_Position()->x >= 51.5f
-		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()
-		) {
+		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Ready_SmoothCamera(TRUE);

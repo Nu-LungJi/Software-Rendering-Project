@@ -47,7 +47,7 @@ HRESULT Player::Ready_GameObject() {
 	_key				= 0;
 	_coin				= 200;
 	_crystal			= 0;
-	_token				= 2;
+	_token				= 3;
 	_atk				= 1;
 	_critical			= 50;
 	_chargingSpeed		= 0.3f;
@@ -330,7 +330,7 @@ void Player::Reset()
 	_key				= 0;
 	_coin				= 0;
 	_crystal			= 0;
-	_token				= 2;
+	_token				= 3;
 	_equipNum			= 0; // 지금 장착한 무기 idx
 	_atk				= 1;
 	_critical			= 0;
