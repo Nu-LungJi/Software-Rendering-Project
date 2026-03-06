@@ -202,8 +202,11 @@ public:
 	int		Get_AtomicRaady() { return _atomicReady; }
 	void	Set_AtomicRaady() { _atomicReady += 1; }
 
-	_vec3			Get_MouseDir();
+	_vec3				Get_MouseDir();
 	_float			Get_MouseDistance();
+
+	// GET REliC
+	int		Get_Relic_ImgIdx()			{ if (nullptr == _artifactSlot[_equipNum]) return -1; return _artifactSlot[_equipNum]->Get_ItemIdx(); }
 
 	/// 인벤용
 	void		Artifact_Effect();
@@ -239,7 +242,7 @@ private:
 	void			Calc_Near();
 private:
 	Bow*			_weaponSlot[4];
-	Artifact*		_artifactSlot[4];
+	Artifact*		_artifactSlot[4]; // 렐릭
 	GameObject*		_inventory[10];
 	int				_equipNum;
 	Artifact*		_auguEffect;

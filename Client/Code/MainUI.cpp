@@ -88,6 +88,9 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
 
+	Reset_Relic();
+	Set_RelicIcon();	// 렐릭 아이콘
+
 	if (KEY_DOWN(DIK_J)) {
 		Set_BossClearUI(TRUE);
 	}
@@ -366,6 +369,52 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type)
 			Frame->Set_Pos(0.f, 503.f + 30.f);
 			Effect->Set_Pos(0.f, 503.f + 30.f);
 			Font->Set_Pos(180.f, 555.f + 30.f);
+		}
+	}
+}
+
+VOID MainUI::Reset_Relic()
+{
+	for (auto idx : relicEffectList) {
+		// 텍 비지블 오프
+	}
+}
+
+VOID MainUI::Set_RelicIcon()
+{
+	SpriteINFO* sprite = nullptr;
+	
+	for (int i = 0; i < 4; i++) {
+		int idx = PlayerObject->Get_Relic_ImgIdx();
+		if (idx == -1) continue;
+		switch (idx) {
+		case 0:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item1");			
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f,600.f);
+			break;
+		case 1:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item2");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f,600.f);
+			break;
+		case 2:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item3");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		case 3:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item4");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		case 4:
+			sprite = Component_Sprite->Get_Texture(L"Perk_");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -802,6 +851,16 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// Relic_BackGround////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_IconBackground.png", L"Relic_BackGround", 600.f, 290.f, 80, 80, FALSE, 0);
+	//////////////////////////////////////////////// RelicUI ////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-15.png", L"Relic_Item1", 720.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Item2", 780.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-02.png", L"Relic_Item3", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-05.png", L"Relic_Item4", 600.f, 290.f, 80, 80, FALSE, 0);
+
 
 	return S_OK;
 }
