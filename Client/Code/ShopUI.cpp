@@ -284,7 +284,6 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
         Safe_Delete(Item_Index[iIndex]);
         Item_Index[iIndex] = nullptr;
 
-        playerInven->Display_ItemInfo();
 
         return true;
     }
