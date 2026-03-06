@@ -31,12 +31,14 @@ HRESULT	MiniGameScene::Ready_Scene(Scene* pScene) {
 
 INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
+	if (m_pMainUI == nullptr)	m_pMainUI = static_cast<MainUI*>(LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Get_GameObject(L"MainUI"));
+	if (m_pMainUI != nullptr) {
+		m_pMainUI->Set_EnableDisplayHPBar(TRUE);
+		m_pMainUI->Set_BossMaxHP(100.f);
+	}
+
 	m_fTimer += _DT;
 
-	if (m_fTimer > 2.f) {
-		Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
-		m_fTimer = 0.f;
-	}
 	if (KEY_DOWN(DIK_P)) {
 
 		if (!m_bEffect)
@@ -92,7 +94,9 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 
 	m_pPlayer->Fall(_DT);
 
-	if (POS(m_pPlayer)->z > 50.f)
+	if (m_iEventTrigger == -1)
+		End_MiniGame();
+	else if (POS(m_pPlayer)->z > 50.f)
 		End_MiniGame();
 	else if (Monster::Get_Gravity().y == -1.f) {
 	if (POS(m_pPlayer)->y < -3.f)
@@ -158,9 +162,12 @@ HRESULT MiniGameScene::Start_MiniGame()
 		}
 	}
 	CollisionManager::GetInstance()->Add_ColliderObject(m_pChaser);
-	//이거 스타트씬에서 할게요
+
+	SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
+	m_pMainUI = nullptr;
+	
 	// 디버그 키 진입 하고싶을때 킬것
-	SceneManager::GetInstance()->Set_CurrentScene(this);
+	//SceneManager::GetInstance()->Set_CurrentScene(this);
 
 	return S_OK;
 }
@@ -181,6 +188,9 @@ HRESULT MiniGameScene::End_MiniGame()
 		}
 	}
 	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
+	SoundManager::GetInstance()->Stop_AllSound();
+	m_pMainUI->Set_EnableDisplayHPBar(false);
+	m_pMainUI = nullptr;
 	MonsterManager::GetInstance()->Release_Static_Batich();
 	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
 	return S_OK;

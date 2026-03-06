@@ -17,12 +17,16 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
         switch (*m_pSceneEvent)
         {
         case 0:
-            vMoveDir = { 1.f,0.f,0.f };
-            m_pTransform->Get_Position()->y = 0.f;
-            m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
+            m_fTimer += _DT;
+            if (m_fTimer > 5.f) {
+                vMoveDir = { 1.f,0.f,0.f };
+                m_pTransform->Get_Position()->y = 0.f;
+                m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
+            }
             break;
         case 1:
             m_pTransform->Set_Pos(30.f, 0.f, 2.5f);
+            m_fTimer = 0.f;
             break;
         case 2:
             vMoveDir = { 1.f,0.f,0.f };
@@ -56,6 +60,7 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                     m_fTimer = 0.f;
                     m_pTransform->Set_Pos(50.f, 49.f, 50.f);
                     m_pCollider->Set_Scale(0.5f, 0.5f, 0.5f);
+                    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
                 }
             }
             break;
@@ -68,25 +73,25 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                 if (fCurrentY < 58.f) fCurrentY = 58.f;
             }
             if (m_fScale > 3.0f) {
-                m_fScale -= 1.5f * _DT;
+                m_fScale -= 2.f * _DT;
                 if (m_fScale <= 3.0f) {
                     m_fScale = 3.0f;
                     m_fTimer = 0.f;
                 }
             }
-            m_pTransform->Set_Pos(50.f, fCurrentY, 30.f);
+            m_pTransform->Set_Pos(50.f, fCurrentY, 40.f);
             if (m_fScale <= 3.0f) {
                 _float fSP = 0.099f - (m_fTimer * 0.05f);
                 if (fSP > 0.001f) {
                     _vec3 vShake = {
                         RANDOM::Get_float(-fSP, fSP) + 50.f,
                         RANDOM::Get_float(-fSP, fSP) + fCurrentY,
-                        RANDOM::Get_float(-fSP, fSP) + 30.f
+                        RANDOM::Get_float(-fSP, fSP) + 40.f
                     };
                     m_pTransform->Set_Pos(vShake);
                 }
                 else {
-                    m_pTransform->Set_Pos(50.f, 58.f, 30.f);
+                    m_pTransform->Set_Pos(50.f, 58.f, 40.f);
                 }
             }
         }
@@ -151,7 +156,7 @@ HRESULT Tesseract::Component_Initialize() {
     m_pCollider->Set_CenterPos(m_pTransform);
     m_pCollider->Set_Scale(6.f, 6.f, 6.f);
 
-    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
+    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"720000.png");
 
     for (int i = 0; i < 16; i++) {
         m_fVertices4D[i] = D3DXVECTOR4((i & 1) ? 1.f : -1.f, (i & 2) ? 1.f : -1.f,
@@ -196,9 +201,13 @@ BOOL Tesseract::OnCollisionEnter(GameObject* _Other)
     }
     else if (Tag == L"Cube") {
         if (++CubeCounter > 5) {
-            SoundManager::GetInstance()->Play_Sound_Once(L"Object/CubeTile_Death.wav",CHANNELID::SOUND_EFFECT08);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Object/CubeTile_Death.wav",CHANNELID::SOUND_EFFECT08, 0.3f);
+            Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
             CubeCounter = 0;
         }
+    }
+    else if (Tag == L"Player") {
+        *m_pSceneEvent = -1;
     }
     return 0;
 }
