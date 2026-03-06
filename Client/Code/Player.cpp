@@ -49,7 +49,7 @@ HRESULT Player::Ready_GameObject() {
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
-	_critical			= 50;
+	_critical			= 0;
 	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;

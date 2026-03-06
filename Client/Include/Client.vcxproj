@@ -311,6 +311,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Header\Player.h" />
+    <ClInclude Include="..\Header\Playerglitter.h" />
     <ClInclude Include="..\Header\PlayerInven.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -551,6 +552,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp" />
+    <ClCompile Include="..\Code\Playerglitter.cpp" />
     <ClCompile Include="..\Code\PlayerInven.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>

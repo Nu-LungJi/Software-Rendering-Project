@@ -32,19 +32,19 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  {
 			  case 0:
 		
-				  //pObj = Bat::Create(GRPDEV, vPos, true);
+				  pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
+				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
-				  //pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				  pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 3:
-				  //pObj = EvilSlime::Create(GRPDEV, vPos, true);
+				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
 				  break;
 			  case 4:
-				  //pObj = EvilFrog::Create(GRPDEV, vPos, true);
+				  pObj = EvilFrog::Create(GRPDEV, vPos, true);
 				  break;
 			  }
 			  if(pObj != nullptr)
@@ -284,7 +284,6 @@ void Spawner::Monster_Spawn4()
 		m_bSpawn = true;
 	}
 }
-
 void Spawner::CL_Spawn()
 {
 	_vec3 vPos;
