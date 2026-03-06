@@ -47,7 +47,7 @@ HRESULT Player::Ready_GameObject() {
 	_key				= 0;
 	_coin				= 200;
 	_crystal			= 0;
-	_token				= 3;
+	_token				= 2;
 	_atk				= 1;
 	_critical			= 0;
 	_chargingSpeed		= 0.3f;
@@ -331,7 +331,7 @@ void Player::Reset()
 	_key				= 0;
 	_coin				= 0;
 	_crystal			= 0;
-	_token				= 3;
+	_token				= 2;
 	_equipNum			= 0; // 지금 장착한 무기 idx
 	_atk				= 1;
 	_critical			= 0;
@@ -1733,6 +1733,8 @@ void Player::Buy_item(int itemIdx)
 	switch (itemIdx) {
 	case 0:
 		_token += 1;
+		dynamic_cast<SpriteObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI")->Get_Component(COMPONENT_TYPE::COMPONENT_SPRITE))
+			->Get_Texture(L"Token" + to_wstring(_token))->Set_Visible(TRUE);
 		break;
 	case 1:
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
