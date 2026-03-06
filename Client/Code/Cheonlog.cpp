@@ -135,6 +135,7 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 		pObj->Set_ObjectTag(L"SpawnITem");
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_ITEM, vPos, FALSE));
 		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+
 		for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 		{
 			for (auto& iter : m_vecOrignBullet[i])
@@ -1064,6 +1065,7 @@ void Cheonlog::Free()
     {
         for (auto& iter : m_vecCheonlogTexture[i])
         {
+			
             Safe_Release(iter);
         }
         m_vecCheonlogTexture[i].clear();
@@ -1098,6 +1100,7 @@ void Cheonlog::Free()
 	{
 		for (auto& iter : m_vecPoolBullet[i])
 		{
+			CollisionManager::GetInstance()->Delete_ColliderObject(iter);
 			Safe_Release(iter);
 		}
 		m_vecPoolBullet[i].clear();

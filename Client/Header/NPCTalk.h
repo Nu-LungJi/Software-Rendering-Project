@@ -16,6 +16,7 @@ public:
 
 	BOOL	Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT);
 	BOOL	Shadow_Fade(CONST FLOAT& _DT);
+	VOID	Animation_Select(CONST FLOAT& _DT);
 
 public:
 	HRESULT Component_Initialize();
@@ -26,7 +27,8 @@ public:
 	static	NPCTalk* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 
 private:
-	enum TALKING { NOT_TALKING, TALKING_ACTIVE, QUEST_TALK01, QUEST_TALK02, QUEST_TALK03, QUEST_TALK04, QUEST_TALK_ACCEPT, QUEST_TALK_DENY, QUIT_TALK, QUEST_END};
+	enum TALKING { NOT_TALKING, TALKING_ACTIVE, TALKING_FAIL, QUEST_TALK01, QUEST_TALK02, QUEST_TALK03, QUEST_TALK04, 
+		QUEST_TALK_ACCEPT01, QUEST_TALK_ACCEPT02, QUEST_TALK_DENY, QUIT_TALK, QUEST_END};
 
 private:
 	SpriteObject* Component_Sprite;
@@ -58,6 +60,13 @@ private:
 
 	BOOL	AcceptedQuest;
 	BOOL	CompletedQuest;
+
+	BOOL	Enable_SelectAction;
+	FLOAT	SelectTimer;
+
+	FontObject* SelectOption01, *SelectOption02;
+
+	vector<SpriteINFO*> SelectBTN01, SelectBTN02;
 
 private:
 	virtual	VOID		Free();

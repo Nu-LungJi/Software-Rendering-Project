@@ -113,6 +113,8 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 				m_vTargetUp		= -vGravity;
 				m_fElapsedTime	= 0.f;
 				Is_Changing		= true;
+				PlayerObject->Set_pState(pState::STATE_IDLE);
+				PlayerObject->Set_EventState(true);
 			}
 
 			if (Is_Changing) {
@@ -125,13 +127,14 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 					m_vCurrEye	= m_vTargetEye;
 					m_vCurrUp	= m_vTargetUp;
 					Is_Changing = false;
+					PlayerObject->Set_pState(pState::STATE_IDLE);
+					PlayerObject->Set_EventState(false);
 				}
 				else {
 					D3DXVec3Lerp(&m_vCurrEye, &m_vStartEye, &m_vTargetEye, fRatio);
 					D3DXVec3Lerp(&m_vCurrUp, &m_vStartUp, &m_vTargetUp, fRatio);
 				}
 			}
-			//PlayerObject->Set_PlayerStop(!Is_Changing);
 
 			eyeCalc = m_vCurrEye;
 			UpVec = m_vCurrUp;

@@ -21,7 +21,7 @@ INT		Augment::Update_GameObject(CONST FLOAT& _DT) {
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 
 		PlayerObject->Set_PlayerStop(TRUE);
-		Perk_Text[2]->Text = L"°¡È£ ¼±ÅÃ";
+		Perk_Text[2]->Text = L"ê°€í˜¸ ì„ íƒ";
 		Perk_Text[2]->Visible = TRUE;
 
 		INT iType = IsMouseOnPerk();
@@ -107,9 +107,9 @@ HRESULT Augment::Sprite_Initialize() {
 
 HRESULT Augment::Text_Initialize() {
 	///////////////////////////////////////FONT//////////////////////////////////
-	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 415.f }, 18, L"PERK_TITLE", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 500.f }, 20, L"PERK_INFO", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 115.f }, 25, L"PERK_SELECT", L"Yoon\u00AE ´ëÇÑ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 415.f }, 18, L"PERK_TITLE", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 500.f }, 20, L"PERK_INFO", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	Perk_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.f, 115.f }, 25, L"PERK_SELECT", L"Yoon\u00AE ëŒ€í•œ", D3DCOLOR_ARGB(200, 255, 255, 255)));
 	
 	return S_OK;
 }
@@ -118,19 +118,19 @@ HRESULT Augment::Text_Initialize() {
 HRESULT Augment::Perk_Initialize()
 {
   ItemINFO* pPerk0 = new ItemINFO;
-	pPerk0->ItemDesc = { L"",L"°¡È£¸¦ ¼±ÅÃÇÏ¼¼¿ä " };
+	pPerk0->ItemDesc = { L"",L"ê°€í˜¸ë¥¼ ì„ íƒí•˜ì„¸ìš” " };
   Perk_Info.push_back(pPerk0);
 
 	ItemINFO* pPerk1 = new ItemINFO;
-	pPerk1->ItemDesc = { L"½Å¼ÓÇÑ »ç³É",L"°ø°Ý¼Óµµ°¡ 50% »¡¶óÁý´Ï´Ù." };
+	pPerk1->ItemDesc = { L"ì‹ ì†í•œ ì‚¬ëƒ¥",L"ê³µê²©ì†ë„ê°€ 50% ë¹¨ë¼ì§‘ë‹ˆë‹¤." };
   Perk_Info.push_back(pPerk1);
 
 	ItemINFO* pPerk2 = new ItemINFO;
-  pPerk2->ItemDesc = { L"°­È­µÈ È°½ÃÀ§",L"ÀÏ¹Ý °ø°ÝÀÌ 20% °­È­µË´Ï´Ù." };
+  pPerk2->ItemDesc = { L"ê°•í™”ëœ í™œì‹œìœ„",L"ì¼ë°˜ ê³µê²©ì´ 20% ê°•í™”ë©ë‹ˆë‹¤." };
   Perk_Info.push_back(pPerk2);
 
 	ItemINFO* pPerk3 = new ItemINFO;
-	pPerk3->ItemDesc = { L"Á¤È®ÇÑ ÃÊÁ¡",L"Ä¡¸íÅ¸ È®·üÀÌ 50% Áõ°¡µË´Ï´Ù." };
+	pPerk3->ItemDesc = { L"ì •í™•í•œ ì´ˆì ",L"ì¹˜ëª…íƒ€ í™•ë¥ ì´ 50% ì¦ê°€ë©ë‹ˆë‹¤." };
   Perk_Info.push_back(pPerk3);
 
 	return S_OK;
@@ -141,13 +141,13 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 	switch (_PerkType)
 	{
 		case FIRST:
-			PlayerObject->Set_DefaultAttackSpeed(1.f);
+			PlayerObject->Set_AttackSpeed(*PlayerObject->Get_AttackSpeed() * 1.25f);
       break;
 		case SECOND:
-			PlayerObject->Set_AttackSpeed(1.5f);
+			PlayerObject->Set_Atk(*PlayerObject->Get_AttackSpeed() * 1.5f);
       break;
 		case THIRD:
-			PlayerObject->Set_Speed(*PlayerObject->Get_Critical() * 1.25f);
+			PlayerObject->Set_Critical(50);
       break;
 	}
 	return S_OK;

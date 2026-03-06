@@ -14,17 +14,13 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
     if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
-
-    //이거 스타트씬이랑 하니까 프레임 드랍 너무 심하게나서 우선 주석 칠게요
-    //pMiniGame = nullptr;
-    //pMiniGame = MiniGameScene::Create(GRPDEV, this);
 
     //Load Tile 천록
 	{
@@ -83,8 +79,6 @@ HRESULT   StartScene::Ready_Scene() {
 	
 			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
 			{
-	
-	
 				GOBJ = Spawner::Create(GRPDEV, eTileSide, eSpawn, Info);
 			}
 			else
@@ -111,7 +105,10 @@ HRESULT   StartScene::Ready_Scene() {
 			if (TILE_STATE::STATE_BOOM == eTileState)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
 	
-			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
+
+
+			if(GOBJ->Get_ObjectTag().front() = !nullptr)
+				TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 	
 		}
 		CloseHandle(hFile);
@@ -209,15 +206,16 @@ HRESULT   StartScene::Ready_Scene() {
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 	
 		}
-		MSG_BOX("로드 성공");
+		//MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
-	PlayingSound = FALSE;
-	TileManager::GetInstance()->Set_StageCnt();
+	PlayingSound = TRUE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	TileManager::GetInstance()->Set_StageCnt();
+	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
 	TileManager::GetInstance()->Set_Stage();
-    return S_OK;
+	return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
     
@@ -254,11 +252,11 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->Render_CollisionManager();
 
 
-    if (KEY_DOWN(DIK_P)) {
-        pMiniGame = MiniGameScene::Create(GRPDEV, this);
-        pMiniGame->Start_MiniGame();
-        return;
-    }
+   //if (KEY_DOWN(DIK_P)) {
+   //    pMiniGame = MiniGameScene::Create(GRPDEV, this);
+   //    pMiniGame->Start_MiniGame();
+   //    return;
+   //}
 }
 VOID StartScene::Render_Scene() {
 
@@ -269,14 +267,15 @@ VOID StartScene::Render_Scene() {
     //if (FAILED(LYR->Add_GameObject(GOBJ)))   return E_FAIL;
 }
 HRESULT StartScene::Ready_Enviroment_Layer() {
-   // Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_STATIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_STATIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
     return S_OK;
 }
 HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
-	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
+	Add_GameObjectToScene<Playerglitter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"glitter");
+	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
@@ -301,7 +300,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  
     Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
-    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
+    Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 
@@ -329,9 +328,7 @@ VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
 			Volume02 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);
 		}
-		else {
-			PlayingSound = 0;
-		}
+		else { PlayingSound = 0; }
 	}
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

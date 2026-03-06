@@ -49,7 +49,7 @@ HRESULT Player::Ready_GameObject() {
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
-	_critical			= 50;
+	_critical			= 0;
 	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;
@@ -359,6 +359,7 @@ void Player::IDLE_STATE(const _float& _DT)
 				rightDir = { -1.f,0.f,0.f };
 				upDir = { 0.f,0.f,1.f };
 			}
+			if (_pState == pState::STATE_ON_EVENT)	return;
 		}
 
 		D3DXVec3Normalize(&upDir, &upDir);
@@ -1741,8 +1742,9 @@ void Player::Buy_item(int itemIdx)
 			if (nullptr == _artifactSlot[idx]) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
-				_artifactSlot[idx]->Set_ItemIdx(2);
-				return;
+				_artifactSlot[idx]->Set_ItemIdx(2);// 최대 화살수
+				// 렐릭 푸쉬 Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
+				return; 
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
@@ -1759,7 +1761,8 @@ void Player::Buy_item(int itemIdx)
 			if (nullptr == _artifactSlot[idx]) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Glove");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Glove"));
-				_artifactSlot[idx]->Set_ItemIdx(3);
+				_artifactSlot[idx]->Set_ItemIdx(3); // 글러브
+				// 렐릭 푸쉬Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
 				return;
 			}
 		}
@@ -2034,12 +2037,14 @@ VOID Player::Chage_Item(int src, int dst)
 			if (_inventory[dst - 8] == nullptr) {
 				_inventory[dst - 8] = _artifactSlot[src - 4];
 				_artifactSlot[src - 4] = nullptr;
+				// 딜리트렐릭_inventory[dst - 8]->itemIdx
 			}
 			else {
 				if (GAMEOBJECT_TYPE::ARTIFACT != _inventory[dst - 8]->Get_ObjectType()) return;
 				obj = _inventory[dst - 8];
 				_inventory[dst - 8] = _artifactSlot[src - 4];
 				_artifactSlot[src - 4] = static_cast<Artifact*>(obj);
+				// 딜리트렐릭_inventory[dst - 8]->itemIdx
 			}
 		}
 	}
@@ -2061,6 +2066,7 @@ VOID Player::Chage_Item(int src, int dst)
 			}
 		}
 		else if (src >= 4 && src < 8) {
+			// 인벤 렐릭슬로 푸쉬
 			return;
 		}
 		else {

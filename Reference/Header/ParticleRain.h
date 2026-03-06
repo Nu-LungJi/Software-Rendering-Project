@@ -21,6 +21,7 @@ public:
     virtual		void		Add_Particle(_vec3* Look = 0);
     virtual     _int		Update_Particle(const _float& fTimeDelta);
 
+
 public:
     static ParticleRain* Create(LPDIRECT3DDEVICE9 pGraphicDev, _Bound* BoundingBox, _int NumParticles);
     virtual Component* Clone();

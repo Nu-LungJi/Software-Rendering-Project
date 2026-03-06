@@ -346,6 +346,11 @@ VOID PlayerEffect::Render_GameObject() {
 	if (ObjectDead)	return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	//KJJ 03 06
+	if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		Monster::BillBoard(Component_Transform, GRPDEV);
+	}
+
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
 

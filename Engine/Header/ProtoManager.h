@@ -8,7 +8,7 @@
 #include "Collider.h"
 #include "TileInfo.h"
 #include "ParticleRain.h"
-
+#include "ParticleEffect.h"
 BEGIN(Engine)
 class ENGINE_DLL ProtoManager : public Base {
 	DECLARE_SINGLETON(ProtoManager)
