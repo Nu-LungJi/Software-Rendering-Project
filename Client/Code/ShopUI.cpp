@@ -112,7 +112,7 @@ HRESULT ShopUI::Item_Initialize() {
     };
     pItem1->ItemPrice = 20;
     pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
-    pItem1->TEXTURE = InvenSprite->Get_Texture(pItem1->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
+    //pItem1->TEXTURE = InvenSprite->Get_Texture(pItem1->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE; // 텍스쳐 가져오는부분 오류있어서 일단 주석침
     Item_Index.push_back(pItem1);
 
     ItemINFO* pItem2 = new ItemINFO;
@@ -125,7 +125,7 @@ HRESULT ShopUI::Item_Initialize() {
         L"DIC_InfoFrame_Health"};
     pItem2->ItemPrice = 15;
     pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
-    pItem2->TEXTURE = InvenSprite->Get_Texture(pItem2->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
+    //pItem2->TEXTURE = InvenSprite->Get_Texture(pItem2->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem2);
 
     ItemINFO* pItem3 = new ItemINFO;
@@ -138,7 +138,7 @@ HRESULT ShopUI::Item_Initialize() {
         L"DIC_InfoFrame_ArrowFill" };
     pItem3->ItemPrice = 15;
     pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
-    pItem3->TEXTURE = InvenSprite->Get_Texture(pItem3->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
+   // pItem3->TEXTURE = InvenSprite->Get_Texture(pItem3->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem3);
 
     ItemINFO* pItem4 = new ItemINFO;
@@ -159,7 +159,7 @@ HRESULT ShopUI::Item_Initialize() {
 
     pItem4->ItemPrice = 80;
     pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
-    pItem4->TEXTURE = InvenSprite->Get_Texture(pItem4->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
+    //pItem4->TEXTURE = InvenSprite->Get_Texture(pItem4->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem4);
 
     ItemINFO* pItem5 = new ItemINFO;
