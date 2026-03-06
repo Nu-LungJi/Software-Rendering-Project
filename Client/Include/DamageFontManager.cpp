@@ -19,8 +19,8 @@ HRESULT DamageFontManager::Ready_DamageFontManager()
 		for (int i = 0; i < 40; i++) {
 			_vec3 destPos = { 0.f, 0.f, 0.f };
 	
-			FontObject* FO = UIManager::GetInstance()->Add_FontSprite(GRPDEV, to_wstring(0), { 0.f, 0.f }, k + 30,
-				L"DamageFont", L"Bastard", D3DCOLOR_ARGB(0, 247, 230, 0));
+			FontObject* FO = UIManager::GetInstance()->Add_FontSprite(GRPDEV, to_wstring(0), { 0.f, 0.f }, k + 40,
+				L"DamageFont", L"North Face", D3DCOLOR_ARGB(0, 247, 230, 0));
 			FO->Set_Active(false);
 			FontList[k].push_back(FO);
 		}
@@ -46,7 +46,7 @@ VOID DamageFontManager::Render_DamageFontManager()
 	return VOID();
 }
 
-VOID DamageFontManager::Add_DamageFont(GameObject* obj, int damage)
+VOID DamageFontManager::Add_DamageFont(GameObject* obj, int damage, bool isCritical)
 {
 	_vec3 targetPos = *(static_cast<Transform*>(obj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 
@@ -58,6 +58,7 @@ VOID DamageFontManager::Add_DamageFont(GameObject* obj, int damage)
 	DamageFont->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
 	DamageFont->Set_ObjectTag(L"DamageFont");
 	DamageFont->Set_Damage(damage);
+	DamageFont->Set_Critical(isCritical);
 
 	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(DamageFont);
 

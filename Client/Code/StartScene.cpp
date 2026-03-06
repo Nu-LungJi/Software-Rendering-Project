@@ -9,17 +9,14 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-
-    SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
-    SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
-
+	
 
     if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
     if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
@@ -129,13 +126,13 @@ HRESULT   StartScene::Ready_Scene() {
 			OPEN_EXISTING,		// 파일이 없을 경우 파일을 생성하여 저장(OPEN_EXISTING : 파일이 있을 경우에만 로드)
 			FILE_ATTRIBUTE_NORMAL,	// 파일 속성(아무런 속성이 없는 일반 파일)
 			NULL);				// 생성될 파일의 속성ㅇ르 제공할 템플릿 파일
-
+	
 		if (LFile == INVALID_HANDLE_VALUE)
 		{
 			MSG_BOX("로드 실패");
 			return E_FAIL;
 		}
-
+	
 		DWORD	dwByte(0);		// eof 역할
 		_int             iTilenum = 0;
 		TILE_SIDE        eTileSide = TILE_SIDE::TILE_END;
@@ -168,10 +165,10 @@ HRESULT   StartScene::Ready_Scene() {
 			ReadFile(LFile, &bAni, sizeof(_bool), &dwByte, NULL);
 			ReadFile(LFile, &eSpawn, sizeof(TILE_SPAWNER), &dwByte, NULL);
 			ReadFile(LFile, &eNext, sizeof(TILE_STAGE), &dwByte, NULL);
-
+	
 			if (0 == dwByte)
 				break;
-
+	
 			GameObject* GOBJ = nullptr;
 			//GRPDEV->AddRef();
 			if (eTileState == TILE_STATE::STATE_NORMAL && eSpawn != TILE_SPAWNER::SPAWN_END)
@@ -180,19 +177,19 @@ HRESULT   StartScene::Ready_Scene() {
 			}
 			else
 				GOBJ = CXZTile::Create(GRPDEV, eTileSide, eTileState);
-
+	
 			if (eTileStage == TILE_STAGE::TILE_DOCHERBOSS && eTileState == TILE_STATE::STATE_POTALGASI)
 			{
 				dynamic_cast<CXZTile*>(GOBJ)->Tile_Height_Speed((float)i);
 				i += 0.3f;
 			}
-
+	
 			if (eTileState == TILE_STATE::STATE_UNDERTILE)
 				++i;
-
+	
 			GOBJ->Set_ObjectTag(L"CXZTile");
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileStage(eTileStage);
-
+	
 			if (eTileState == TILE_STATE::STATE_DESTORY || eTileState == TILE_STATE::STATE_ANIMATION || eTileState == TILE_STATE::STATE_POTALEFFECT)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileAnimaiton(cTileName, iTileTextureCnt, eTileSide, eTileState, eTileMode, iTilenum, vNextPos, bAni);
 			else
@@ -201,23 +198,24 @@ HRESULT   StartScene::Ready_Scene() {
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))
 					->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 			}
-
+	
 			dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_TileSpawner(eSpawn);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Scale(Scale);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Rotation(Rotation);
 			dynamic_cast<Transform*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(Info);
 			if (TILE_STATE::STATE_BOOM == eTileState)
 				dynamic_cast<TileInfo*>(GOBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Set_Boom(L"Spr_Object_Explosionjar_Stage01_0");
-
+	
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
-
+	
 		}
 		MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
+	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
 	TileManager::GetInstance()->Set_Stage();
     return S_OK;
 }
@@ -243,7 +241,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 			}
 		}
-
+		IntroToStage(_DT);
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
     return Scene::Update_Scene(_DT);
@@ -278,6 +276,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
+	Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
@@ -298,16 +297,42 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
 
     Add_GameObjectToScene<PlayerInven>      (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"PlayerInven"   );
-    //Add_GameObjectToScene<Augment>          (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI     , L"Augment"      );    
     Add_GameObjectToScene<ShopUI>           (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"Shop");
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  
     Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
-    Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
+    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 
     return S_OK;
+}
+VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
+	if (PlayingSound == 0) return;
+	if (PlayingSound == 1) {
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.f);
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav"	  , CHANNELID::SOUND_BGM02, 0.f);
+		PlayingSound = 2;
+	}
+	else if (PlayingSound == 2) {
+		if (Volume01 <= 0.3f) {
+			Volume01 += (_DT / 6);
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, Volume01);
+		}
+		else {
+			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
+			PlayingSound = 3;
+		}
+	}
+	else if (PlayingSound == 3){
+		if (Volume02 <= 0.3f) {
+			Volume02 += (_DT / 6);
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);
+		}
+		else {
+			PlayingSound = 0;
+		}
+	}
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
     StartScene* LS = new StartScene(_GRPDEV);

@@ -33,7 +33,8 @@ HRESULT	BossFireBall::Ready_GameObject() {
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 
 	FireBall_Timer += _DT;
-	if (ObjectDead == TRUE) {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
 		return -1;
 	}
 		
@@ -74,9 +75,14 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	return 0; 
 }
 VOID	BossFireBall::LateUpdate_GameObject(CONST FLOAT& _DT) {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		return;
+	}
 	GameObject::LateUpdate_GameObject(_DT);
 	if ((ObjectTAG == L"Sup FireBall0" || ObjectTAG == L"Sup FireBall1" || ObjectTAG == L"Sup FireBall2")) return;
-	if (Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+	if (Boss->Get_ObjectDead() != TRUE 
+		&& Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
 		AlphaZValue = 1.f;
 	}
 	else {
@@ -84,6 +90,11 @@ VOID	BossFireBall::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	}
 }
 VOID	BossFireBall::Render_GameObject() {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		return;
+	}
+
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());

@@ -48,6 +48,7 @@ public:
 	static Arrow*	Create(LPDIRECT3DDEVICE9 _GRPDEV, BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3* _PlayerPOS, _vec2 _arrowDir);
 	int				Get_Atk()	{ return _arrowAtk; }
 	void			Set_HP(int hp) { _hp = hp; }
+	VOID			Set_Critical(bool val) { _isCritical = val; }
 	BOOL			OnCollisionEnter(GameObject* _Other);
 	BOOL			OnCollisionStay(GameObject* _Other);
 private:
@@ -96,5 +97,7 @@ private:
 	float		_AtomicAccel;
 	float		_arrowLength;
 	bool		_isReady;
+
+	bool		_isCritical;
 };
 

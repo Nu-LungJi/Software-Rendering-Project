@@ -21,6 +21,8 @@ VOID RenderManager::Render_GameObject(LPDIRECT3DDEVICE9& _GRPDEV) {
 	Render_Alpha(_GRPDEV);
 	Render_UI(_GRPDEV);
 
+	EffectManager::GetInstance()->Render_GlobalEffect(_GRPDEV);
+
 	Clear_RenderGroup();
 }
 VOID RenderManager::Clear_RenderGroup()	{
@@ -91,8 +93,8 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 	if (pBlackOut != nullptr)
 		pBlackOut->Render_GameObject();
 
-	UIManager::GetInstance()->Render_FilterObjects();
-
+	UIManager::GetInstance()->Render_GlobalObject();
+	
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {

@@ -48,7 +48,7 @@ public:
 public:
 	// Utility
 	static	VOID				Replay_Effect(wstring _TAG);
-
+	VOID				Replay_Effect();
 	VOID Set_All_Visible(BOOL _B) {
 		for (auto& info : TextureList) info.Set_Visible(_B);
 	}

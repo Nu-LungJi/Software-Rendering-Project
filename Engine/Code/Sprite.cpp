@@ -10,7 +10,7 @@ SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_
 	for (size_t i = 0; i < TextureList.size(); ++i)
 		TextureList[i].TEXTURE->AddRef();
 }
-SpriteObject::~SpriteObject()																									{}
+SpriteObject::~SpriteObject(){}
 
 HRESULT SpriteObject::Ready_Sprite() {
 	D3DXCreateSprite(GRPDEV, &Sprite);

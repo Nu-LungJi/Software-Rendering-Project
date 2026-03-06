@@ -124,6 +124,9 @@ VOID UIEffect::Replay_Effect(wstring _TAG) {
 	if (Effect == nullptr)	return;
 	Effect->TextureIndex = 0;
 }
+VOID UIEffect::Replay_Effect() {
+	this->TextureIndex = 0;
+}
 VOID	  UIEffect::Free() {
 	GameObject::Free();
 }

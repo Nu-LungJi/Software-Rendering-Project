@@ -32,19 +32,19 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  {
 			  case 0:
 		
-				  pObj = Bat::Create(GRPDEV, vPos, true);
+				  //pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
+				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
-				  pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				  //pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 3:
-				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
+				  //pObj = EvilSlime::Create(GRPDEV, vPos, true);
 				  break;
 			  case 4:
-				  pObj = EvilFrog::Create(GRPDEV, vPos, true);
+				  //pObj = EvilFrog::Create(GRPDEV, vPos, true);
 				  break;
 			  }
 			  if(pObj != nullptr)
@@ -85,24 +85,8 @@ VOID Spawner::LateUpdate_GameObject(const _float& _DT) {
 			return;
 		_int i = pObj->Get_Stage();
 
-		switch (i)
-		{
-
-		case 0:
-			m_SpawnCnt = 1;
-			m_SpawnDelay = 3;
-			break;
-		case 1:
-			m_SpawnCnt = 2;
-			m_SpawnDelay = 2;
-
-			break;
-		case 2:
-			m_SpawnCnt = 3;
-			m_SpawnDelay = 1;
-
-			break;
-		}
+			m_SpawnCnt   = 1 + i * 1;
+			m_SpawnDelay = 3 - i * 0.5f;
 	}
 	
 	AlphaYSorting(&vPos);
@@ -159,19 +143,19 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN1:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-			Monster_Spawn();
+		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-			Monster_Spawn2();
+		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-			Monster_Spawn3();
+		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-			Monster_Spawn4();
+		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 		if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)

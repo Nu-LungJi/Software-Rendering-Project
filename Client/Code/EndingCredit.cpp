@@ -10,18 +10,27 @@ HRESULT EndingCredit::Ready_GameObject()
 	m_bCreditStart = false;
 	WIDTH = 1884.f;
 	HEIGHT = 1921.f;
-	POSX = -600.f;
+	POSX = -350.f;
 	POSY = -600.f;
 	Frame = 1;
 	FrameTimer = 0.f;
 	FrameDelay = 0.1f;
 	SizeRatio = 2.f;
-	MoveSpeed = 20.f;
+	MoveSpeed = 30.f;
 	Timer = 0.f;
 	Start = false;
+	FramePosX = WINCX - 50.f;
+	FramePosY = 0;
+	FrameSpeed = 30.f;
+	WhiteScreenOpacity = 255;
+
+	Credit1_Timer = 0.f;
+	Credit2_Timer = 0.f;
 
 	BackGround = nullptr;
+	BlackFont_Frame = nullptr;
 	_BlackScreen = nullptr;
+	_WhiteScreen = nullptr;
 
 	if (FAILED(Component_Initialize()))		return E_FAIL;
 	if (FAILED(Sprite_Initialize()))		return E_FAIL;
@@ -32,9 +41,6 @@ HRESULT EndingCredit::Ready_GameObject()
 
 INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 {
-	GameObject::Update_GameObject(_DT);
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
-
 	Player* PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
 	if (KEY_DOWN(DIK_M)) {
@@ -47,19 +53,56 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 	}
 
 	if (m_bCreditStart) {
+		{
+			PlayerObject->Set_PlayerStop(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(FALSE);
+			UIManager::GetInstance()->Find_FontObject(L"ArrowCountText")->Set_Visible(FALSE);
+		}
+
 		Timer += _DT;
 		FrameTimer += _DT;
+
+		GameObject::Update_GameObject(_DT);
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 		
 		if (!Start) Update_Ready();
 
-		// 크기 조절
+		// 집 위치 조절
 		if (Timer < 5.f) {
 			POSX += MoveSpeed * _DT;
-			POSX = min(POSX, -200);
+			POSX = min(POSX, -150);
 			if (BackGround != nullptr)
 				BackGround->Set_Pos(POSX, POSY);
+
+			// 화이트 스크린
+			WhiteScreenOpacity -= _DT * 100.f;
+			WhiteScreenOpacity = max(0, WhiteScreenOpacity);
+			_WhiteScreen->Set_Opacity(WhiteScreenOpacity);
 		}
 
+		if (POSX >= -150) {
+			// 블랙 프레임
+			FrameSpeed += _DT * 300.f;
+			FrameSpeed = min(255, FrameSpeed);
+			BlackFont_Frame->Set_Opacity(FrameSpeed);
+		}
+
+		if (FrameSpeed >= 255) {
+			Credit1->Set_Pos(Credit1->Get_Pos().x, Credit1->Get_Pos().y - _DT * 40.f);
+		}
+		if (Credit1->Get_Pos().y <= WINCY - 520.f) {
+			Credit2->Set_Pos(Credit2->Get_Pos().x, Credit2->Get_Pos().y - _DT * 40.f);
+		}
+
+		// 텍스트
+		//if (FrameSpeed >= 255) {
+		//	FontList[0]->Set_Active(TRUE);
+		//	FontList[0]->Set_Pos(FontList[0]->Get_Pos().x, FontList[0]->Get_Pos().y - _DT * 40.f);
+		//}
+
+		// 집 애니메이션
 		if (FrameTimer > FrameDelay) {
 			FrameTimer = 0.f;
 
@@ -115,6 +158,14 @@ HRESULT EndingCredit::Component_Initialize()
 
 HRESULT EndingCredit::Text_Initialize()
 {
+	//FontObject* FO = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"최광윤", {WINCX - 260.f, WINCY}, 40.f,
+	//	L"Tile", L"Bastard", D3DCOLOR_ARGB(255, 255, 255, 255));
+	//FO->Set_Active(false);
+	//FontList.push_back(FO);
+	//
+	//FO = UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"최광윤", { WINCX - 260.f, WINCY }, 40.f,
+	//	L"EndingName", L"Bastard", D3DCOLOR_ARGB(255, 255, 255, 255));
+
 	return S_OK;
 }
 
@@ -129,9 +180,12 @@ HRESULT EndingCredit::Sprite_Initialize()
 		wsprintfW(FileName2, L"EndingCredet_BackGound%d", i);
 		Component_Sprite->Import_Sprite(FileName1, FileName2, POSX, POSY, WIDTH, HEIGHT, FALSE, 255);
 	}
-	
+	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Ending_BlackFrame.png", L"Black_FontFrame", 0, 0, WINCX, WINCY, FALSE, 0);
 
+	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/WhiteScreen.png", L"WhiteScreen", 0, 0, WINCX, WINCY, FALSE, 255);
 
+	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Credit1.png", L"Credit1", WINCX - 520.f, WINCY, 520.f, 520.f, FALSE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Credit2.png", L"Credit2", WINCX - 520.f, WINCY, 520.f, 520.f, FALSE, 255);
 
 	return S_OK;
 }
@@ -140,6 +194,14 @@ HRESULT EndingCredit::Update_Ready()
 {
 	_BlackScreen = Component_Sprite->Get_Texture(L"BlackScreen");
 	_BlackScreen->Set_Visible(TRUE);
+	_WhiteScreen = Component_Sprite->Get_Texture(L"WhiteScreen");
+	_WhiteScreen->Set_Visible(TRUE);
+	BlackFont_Frame = Component_Sprite->Get_Texture(L"Black_FontFrame");
+	BlackFont_Frame->Set_Visible(TRUE);
+	Credit1 = Component_Sprite->Get_Texture(L"Credit1");
+	Credit1->Set_Visible(TRUE);
+	Credit2 = Component_Sprite->Get_Texture(L"Credit2");
+	Credit2->Set_Visible(TRUE);
 
 	return S_OK;
 }

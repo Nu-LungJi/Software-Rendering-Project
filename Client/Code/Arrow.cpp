@@ -35,6 +35,7 @@ HRESULT Arrow::Ready_GameObject(BowType _BOWTYPE, int _LVEL, int arrowAtk, _vec3
     turnSpeed == D3DXToRadian(2.5f);
     _isReady = false;
     _alphaRatio = 1.f;
+    _isCritical = false;
 
     _angle = atan2f(-_arrowDir.y, _arrowDir.x);
     _originAngle = _angle;
@@ -134,10 +135,10 @@ INT Arrow::Update_GameObject(const _float& _DT)
         maxLifeTime = 2.f;
         break;
     case ArrowType::IceArrow_LV1:
-        maxLifeTime = 0.4f;
+        maxLifeTime = 0.3;
         break;
     case ArrowType::IceCharging:
-        maxLifeTime = 0.6f;
+        maxLifeTime = 0.35f;
         break;
     case ArrowType::EvilHead_Arrow:
         maxLifeTime = 1.f;
@@ -273,10 +274,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
 
         // windArrow Angle
         _matrix matWorld;
-        if (_type == ArrowType::Wind_Arrow) {
+        if (_type == ArrowType::Wind_Arrow || _type == ArrowType::FairyCharging) {
             _searchDelay += _DT;
 
             turnSpeed = D3DXToRadian(3.f);
+            if(_type == ArrowType::FairyCharging) turnSpeed = D3DXToRadian(2.f);
             Search_Target_Object(30.f);
 
             float TargetAngle = 0.f;
@@ -300,15 +302,20 @@ INT Arrow::Update_GameObject(const _float& _DT)
                     _angle += (delta > 0.f ? turnSpeed : -turnSpeed);
                 }
             }
-            
-            _matrix matRotZ;
-            D3DXMatrixRotationZ(&matRotZ, _angle);
-            matWorld = matSize * matRotZ * matBillboard;
+            if (_type == ArrowType::Wind_Arrow) {
+                _matrix matRotZ;
+                D3DXMatrixRotationZ(&matRotZ, _angle);
+                matWorld = matSize * matRotZ * matBillboard;
+            }
+            else {
+                _matrix matRotZ;
+                D3DXMatrixRotationZ(&matRotZ, 0.f);
+                matWorld = matSize * matRotZ * matBillboard;
+            }
         }
         else {
             _matrix matRotZ;
             D3DXMatrixRotationZ(&matRotZ, _originAngle);
-            if (_type == ArrowType::FairyCharging) D3DXMatrixRotationZ(&matRotZ, 0.f);
             matWorld = matSize * matRotZ * matBillboard;
         }
 
@@ -322,7 +329,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 60.f;
             break;
         case ArrowType::IceCharging:
-            _speed = 40.f;
+            _speed = 60.f;
             break;
         case ArrowType::EvilHead_Arrow:
             _speed = 20.f;
@@ -360,19 +367,19 @@ INT Arrow::Update_GameObject(const _float& _DT)
             matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
         }
 
-        if (_type == ArrowType::FairyCharging) {
-            _targetPos = nullptr;
-            Search_Target();
-            if (_targetPos != nullptr) {
-                _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
-                D3DXVec3Normalize(&dir, &dir);
-                _angle = atan2f(-dir.z, dir.x);
-
-                matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
-                matWorld._42 = (*curPos).y;
-                matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
-            }
-        }
+        //if (_type == ArrowType::FairyCharging) {
+        //    _targetPos = nullptr;
+        //    Search_Target();
+        //    if (_targetPos != nullptr) {
+        //        _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
+        //        D3DXVec3Normalize(&dir, &dir);
+        //        _angle = atan2f(-dir.z, dir.x);
+        //
+        //        matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
+        //        matWorld._42 = (*curPos).y;
+        //        matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
+        //    }
+        //}
 
         // ÀÌµ¿
         switch (_type)
@@ -639,32 +646,43 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 
     wstring Tag = _Other->Get_ObjectTag();
     int hp = Component_Collider->Get_Hp();
-    int atk = COLLIDER(_Other)->Get_Att();
+
+    std::random_device rd;
+    std::uniform_int_distribution<int> distribution(0, 100);
+
+    Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+   
+
+    bool _isCritical = false;
+    if (distribution(rd) % 100 <= *player->Get_Critical()) {
+        Component_Collider->Set_Att(Component_Collider->Get_Att() * 2.f);
+        _isCritical = true;
+    }
 
     if (Tag == L"Monster") {
-        atk = 1.f;
-        DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att());
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+        Component_Collider->Set_Hp(0);
+        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
 
         return TRUE;
     }
 
     else if (Tag == L"CheonLog") {
-        atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - (int)Component_Collider->Get_Att());
-        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+        Component_Collider->Set_Hp(0);
+        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
 
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
-        atk = 1.f;
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att());
+        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
-        Component_Collider->Set_Hp(hp - atk);
+        Component_Collider->Set_Hp(0);
+        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
 
         return TRUE;
     }
