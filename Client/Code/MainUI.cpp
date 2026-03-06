@@ -540,6 +540,13 @@ VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
 		if	(HPOPC < 253.f)	{ HPOPC += _DT * 255.f / 2.f; }
 		else				{ HPOPC = 255.f; Enable_DisplayHPBar = 2;}
 
+		if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Visible(true);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity((INT)HPOPC);
+			HPBarFill->Set_Opacity(HPOPC);
+			return;
+		}
+
 		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
@@ -601,7 +608,7 @@ VOID MainUI::Display_FadeFilter(CONST FLOAT& _DT) {
 	}
 }
 VOID MainUI::Synchronize_BossHPBar() {
-	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
+	if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
 		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 		CurrentHP = 1.f - ((float)(CheonLog->Get_Hp()) / (float)MaxHP);
 
@@ -617,6 +624,17 @@ VOID MainUI::Synchronize_BossHPBar() {
 
 		BarScale = { HPRatio, BarScale.y, BarScale.z };
 		if (BarScale.x <= 0) BarScale.x = 0;
+	}
+	else if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		
+		_float fProgressRatio = 0.f;
+
+		fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
+
+		if		(fProgressRatio > 1)		fProgressRatio = 1.f;
+		else if (fProgressRatio < 0)		fProgressRatio = 0.f;
+
+		BarScale = { fProgressRatio, BarScale.y, BarScale.z };
 	}
 }
 

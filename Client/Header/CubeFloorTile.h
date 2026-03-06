@@ -3,7 +3,7 @@
 
 class CameraObject;
 
-enum class POOLINGMODE :uint8_t { X = 0, Y, Z, End };
+enum class POOLINGMODE :uint8_t { X = 0, Y, Z, MINUS_X, End };
 
 class CubeFloorTile :
     public GameObject
@@ -27,7 +27,7 @@ public:
         m_iTileNumber = iTileNumber;
         if (m_pTransform != nullptr) m_pTransform->Get_Position()->y += 0.0001f * iTileNumber;
     }
-    //void            Set_TileState(TILE_STATE eid)       { m_eTileState = eid; }
+
     Transform* Get_TransCom() { return m_pTransform; }
     Buffer* Get_Buffer() { return m_pBuffer; }
 
@@ -45,6 +45,7 @@ public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid = true);
+
 
     BOOL			OnCollisionStay(GameObject* _Other)	override;
     bool           m_bGrid;

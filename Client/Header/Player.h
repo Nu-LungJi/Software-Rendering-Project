@@ -15,6 +15,8 @@ enum class pState
 	STATE_ATTACK,
 	STATE_LANDING,
 	STATE_DEATH,
+	//KJJ 03 06
+	STATE_ON_EVENT,
 
 	End
 };
@@ -331,6 +333,9 @@ private:
 		void			Set_IsFalling(bool b) { Is_Falling = b;}
 		bool			Get_IsFalling() { return Is_Falling; }
 		void			Fall(const _float& _DT);
+		void			Set_pState(pState pState) { _pState = pState; }
+		void			Set_eState(eState eState) { _eState = eState; }
+		void			Set_EventState(bool b) { m_bEventState = b; }
 
 	private:
 		SCENE_TYPE		m_eCurrScene;
@@ -338,5 +343,6 @@ private:
 		_vec3			m_vBackupScale;
 		bool			Is_Falling;
 		_float			m_fBackUpHp;
+		bool			m_bEventState = false;
 
 };

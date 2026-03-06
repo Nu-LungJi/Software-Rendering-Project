@@ -88,6 +88,7 @@ HRESULT Fireball::Component_Initialize() {
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Att(1.f);
 
 	m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Bullet,
 										(uint8_t)BULLET_TYPE::Fireball, 0);

@@ -9,7 +9,7 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
@@ -209,14 +209,14 @@ HRESULT   StartScene::Ready_Scene() {
 			TileManager::GetInstance()->Load_TilePush(GOBJ, eTileStage, eTileMode);
 	
 		}
-		MSG_BOX("로드 성공");
+		//MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
 	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
-	TileManager::GetInstance()->Set_Stage();
+	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
+	//TileManager::GetInstance()->Set_Stage();
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
