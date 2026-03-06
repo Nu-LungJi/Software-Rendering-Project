@@ -14,7 +14,7 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
 
@@ -215,8 +215,6 @@ HRESULT   StartScene::Ready_Scene() {
 	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
-	//TileManager::GetInstance()->Set_Stage();
     return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -276,7 +274,6 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
-		Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
 
     //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
     //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
@@ -329,9 +326,7 @@ VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
 			Volume02 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);
 		}
-		else {
-			PlayingSound = 0;
-		}
+		else { PlayingSound = 0; }
 	}
 }
 StartScene* StartScene::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

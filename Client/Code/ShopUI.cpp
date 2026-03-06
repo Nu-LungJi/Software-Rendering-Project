@@ -100,14 +100,19 @@ HRESULT	ShopUI::Text_Initialize() {
 }
 
 HRESULT ShopUI::Item_Initialize() {
+    SpriteObject* InvenSprite = static_cast<SpriteObject*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven")->Get_Component(COMPONENT_TYPE::COMPONENT_SPRITE));
     ItemINFO* pItem1 = new ItemINFO;
     pItem1->ItemDesc = { 
         L"사도의 가호",
         L"소모품",L"",L"",L"",
         L"사도의 가호를 하나 충전합니다.",
-        L"", L"" };
+        L"", 
+        L"DIC_InvenFrame_Token", 
+        L"DIC_InfoFrame_Token"
+    };
     pItem1->ItemPrice = 20;
     pItem1->ItemType = (int)ITEM_TYPE::SUPPLY;
+    pItem1->TEXTURE = InvenSprite->Get_Texture(pItem1->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem1);
 
     ItemINFO* pItem2 = new ItemINFO;
@@ -115,9 +120,12 @@ HRESULT ShopUI::Item_Initialize() {
         L"생명력", 
         L"소모품", L"",L"",L"",
         L"잃은 체력을 한 칸 회복합니다.",
-        L"", L"" };
+        L"", 
+        L"DIC_InvenFrame_Health",
+        L"DIC_InfoFrame_Health"};
     pItem2->ItemPrice = 15;
     pItem2->ItemType = (int)ITEM_TYPE::SUPPLY;
+    pItem2->TEXTURE = InvenSprite->Get_Texture(pItem2->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem2);
 
     ItemINFO* pItem3 = new ItemINFO;
@@ -125,9 +133,12 @@ HRESULT ShopUI::Item_Initialize() {
         L"화살 충전", 
         L"소모품",L"",L"",L"",
         L"현재 사용중인 활의 화살을 전부 충전합니다.",
-        L"", L"" };
+        L"",
+        L"DIC_InvenFrame_ArrowFill", 
+        L"DIC_InfoFrame_ArrowFill" };
     pItem3->ItemPrice = 15;
     pItem3->ItemType = (int)ITEM_TYPE::SUPPLY;
+    pItem3->TEXTURE = InvenSprite->Get_Texture(pItem3->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem3);
 
     ItemINFO* pItem4 = new ItemINFO;
@@ -148,26 +159,35 @@ HRESULT ShopUI::Item_Initialize() {
 
     pItem4->ItemPrice = 80;
     pItem4->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+    pItem4->TEXTURE = InvenSprite->Get_Texture(pItem4->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem4);
 
     ItemINFO* pItem5 = new ItemINFO;
 
-    pItem5->ItemDesc = { L"맥스 퀴버",L"유물/희귀",L"",
-                                            L"",L"",
-                                            L"최대 화살 개수 2배 증가", L"",
-                                            L"0" };
+    pItem5->ItemDesc = { 
+        L"맥스 퀴버",
+        L"유물/희귀", L"", L"", L"", 
+        L"최대 화살 개수 2배 증가", 
+        L"",
+        L"DIC_InvenFrame_Relic_quiver",
+        L"DIC_InfoFrame_Relic_quiver" };
     pItem5->ItemPrice = 10;
     pItem5->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
+   // pItem5->TEXTURE = InvenSprite->Get_Texture(pItem5->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem5);
 
     ItemINFO* pItem6 = new ItemINFO;
 
-    pItem6->ItemDesc = { L"라이트닝 글러브",L"유물/희귀",L"",
-                                            L"",L"",
-                                            L"공격 속도가 2배 빨라집니다.",L"",
-                                            L"75" };
+    pItem6->ItemDesc = { 
+        L"라이트닝 글러브",
+        L"유물/희귀", L"", L"", L"",
+        L"공격 속도가 2배 빨라집니다.",
+        L"",
+        L"DIC_InvenFrame_Relic_Glove",
+        L"DIC_InfoFrame_Relic_Glove"};
     pItem6->ItemPrice = 75;
     pItem6->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+   // pItem6->TEXTURE = InvenSprite->Get_Texture(pItem6->ItemDesc[ItemINFO::ITINFO::INFFRAME])->TEXTURE;
     Item_Index.push_back(pItem6);
 
 
@@ -193,6 +213,7 @@ void ShopUI::Show_Item()
     pPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
     for (auto iter = TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).begin(); iter != TileManager::GetInstance()->Get_TileList(TILE_STAGE4, TILEMODE_CHANGE::MODE_TILE).end();)
     {
+        InteractionUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"));
         eSpawn = dynamic_cast<TileInfo*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_Spawner();
         vTilePos = *dynamic_cast<Transform*>((*iter)->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
 
@@ -202,6 +223,7 @@ void ShopUI::Show_Item()
             {
             case TILE_SPAWNER::ITEM_SPAWN1:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 사도의 가호", TRUE);
                 if (buy_Item(pPlayer, 0))
                 {
                     Safe_Release(*iter);
@@ -211,6 +233,7 @@ void ShopUI::Show_Item()
                 return;
             case TILE_SPAWNER::ITEM_SPAWN2:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 체력 회복", TRUE);
                 if (buy_Item(pPlayer, 1))
                 {
                     Safe_Release(*iter);
@@ -220,6 +243,7 @@ void ShopUI::Show_Item()
                 return;
             case TILE_SPAWNER::ITEM_SPAWN3:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 화살 충전", TRUE);
                 if (buy_Item(pPlayer, 2))
                 {
                     Safe_Release(*iter);
@@ -230,6 +254,7 @@ void ShopUI::Show_Item()
                 return;
             case TILE_SPAWNER::ITEM_SPAWN4:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 빙결의 활", TRUE);
                 if (buy_Item(pPlayer, 3))
                 {
                     Safe_Release(*iter);
@@ -239,6 +264,7 @@ void ShopUI::Show_Item()
                 return;
             case TILE_SPAWNER::ITEM_SPAWN5:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 맥스 퀴버", TRUE);
                 if (buy_Item(pPlayer, 4))
                 {
                     Safe_Release(*iter);
@@ -248,6 +274,7 @@ void ShopUI::Show_Item()
                 return;
             case TILE_SPAWNER::ITEM_SPAWN6:
                 isActive = true;
+                InteractionUI->PopUp_Interaction_Notice(L"구매 - 라이트닝 글러브", TRUE);
                 if (buy_Item(pPlayer, 5))
                 {
                     Safe_Release(*iter);
@@ -255,6 +282,8 @@ void ShopUI::Show_Item()
                     SoundManager::GetInstance()->Play_Sound_Once(L"UI/Item/UI_Get item.wav", CHANNELID::SOUND_EFFECT07, 0.4f);
                 }
                 return;
+            default:
+                InteractionUI->PopUp_Interaction_Notice(L"", FALSE);
             }
         }
         else
@@ -269,10 +298,14 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
 {
     m_iCurrentItemIndex = iIndex;
     PlayerInven* playerInven = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"));
-    if (KeyManager::GetInstance()->Get_KeyState(DIK_E))
+    if (KEY_DOWN(DIK_E))
     {
-        if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice)
+        if (pPlayer->Get_Coin() < Item_Index[iIndex]->ItemPrice) {
+            dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Speech_PopUp(L"돈이 부족해요.");
             return false;
+        }
+       
+        dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, Item_Index[iIndex], Item_Index[iIndex]->ItemDesc[ItemINFO::ITINFO::INFFRAME]);
 
         REPLAY_UI_EFFECT(L"COIN_EFFECT");
         
@@ -280,9 +313,9 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
         pPlayer->Buy_item(iIndex);
         playerInven->Buy_Item(iIndex);
 
-        Safe_Release(Item_Index[iIndex]->TEXTURE);
-        Safe_Delete(Item_Index[iIndex]);
-        Item_Index[iIndex] = nullptr;
+        //Safe_Release(Item_Index[iIndex]->TEXTURE);
+        //Safe_Delete(Item_Index[iIndex]);
+        //Item_Index[iIndex] = nullptr;
 
 
         return true;
