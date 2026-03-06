@@ -59,6 +59,7 @@ private:
 	ItemINFO*		JunkObject;
 
 	_int			srcIdx;
+	bool			IsOpen;
 
 private:
 	virtual	VOID		Free();

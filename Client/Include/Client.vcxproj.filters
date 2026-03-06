@@ -524,6 +524,9 @@
     <ClInclude Include="..\Header\Tesseract.h">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClInclude>
+    <ClInclude Include="Player_Shadow.h">
+      <Filter>03. GameObject\01. Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -768,6 +771,9 @@
     <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
     <ClCompile Include="..\Code\Tesseract.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
+    </ClCompile>
+    <ClCompile Include="Player_Shadow.cpp">
+      <Filter>03. GameObject\01. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

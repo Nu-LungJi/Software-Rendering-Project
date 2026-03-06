@@ -295,6 +295,7 @@ private:
 	int				_atomicReady;
 
 	float			_defaultAttackSpeed;
+	BOOL			RealStart;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP

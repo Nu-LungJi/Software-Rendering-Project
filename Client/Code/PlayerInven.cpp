@@ -20,6 +20,7 @@ HRESULT	PlayerInven::Ready_GameObject() {
 	FocusOn_EquipedItem = FALSE;
 
 	EquipMode = FALSE;
+	IsOpen = FALSE;
 
 	for (auto& TXT : ItemInfo_Text) {
 		TXT->Visible = FALSE;
@@ -39,6 +40,7 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 	if (KEY_DOWN(DIK_B)) {
 		UIManager::GetInstance()->Get_Active() ? UIManager::GetInstance()->Set_Active(FALSE) : UIManager::GetInstance()->Set_Active(TRUE);
 		UIManager::GetInstance()->Get_Active() ? PlayerObject->Set_PlayerStop(TRUE) : PlayerObject->Set_PlayerStop(FALSE);
+		IsOpen ? IsOpen = FALSE : IsOpen = TRUE;
 
 		if (UIManager::GetInstance()->Get_Active() == TRUE) {
 			// 인벤 하이라이트
@@ -86,7 +88,6 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 		Selecting_SavedItem();
 		Selecting_EquipItem();
 		Equip_Item();
-		Display_ItemInfo();
 	}
 
 
@@ -100,6 +101,10 @@ INT		PlayerInven::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	PlayerInven::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	Display_ItemInfo();
+	if (!IsOpen) {
+		for (auto& Comp : ItemInfo_Screen) Comp->Set_Visible(FALSE);
+		for (auto& Txt : ItemInfo_Text) Txt->Set_Visible(FALSE);
+	}
 }
 VOID	PlayerInven::Render_GameObject() {
 	if (UIManager::GetInstance()->Get_Active() == TRUE) {
@@ -253,14 +258,14 @@ HRESULT PlayerInven::Text_Initialize() {
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"선택"	, { 1150.f, 437.f }, 16, L"Inven_EText", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(255, 255, 255, 255), 100, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////// INVEN INFO ////////////////////////////////////////////////////////////////
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255)));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 310.f, 184.f }, 15, L"ITEM_Title"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255), 100, FALSE));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 360.f, 225.f }, 12, L"ITEM_Class"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255), 100, FALSE));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 243.f }, 12, L"ITEM_ATKType", L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255), 100, FALSE));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 255.f }, 12, L"ITEM_ATK"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255), 100, FALSE));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 363.f, 267.f }, 12, L"ITEM_Add"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 255, 255, 255), 100, FALSE));
 
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, TRUE, DT_LEFT));
-	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, TRUE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 330.f }, 12, L"ITEM_DESC"	 , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(200, 0, 255, 0), 100, FALSE, DT_LEFT));
+	ItemInfo_Text.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 160.f, 420.f }, 12, L"ITEM_ExDESC" , L"Yoon\u00AE 대한", D3DCOLOR_ARGB(120, 255, 255, 255), 100, FALSE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return S_OK;
 }
@@ -874,6 +879,10 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		break;
 	}
 
+	for (auto& Comp : ItemInfo_Screen)
+		Comp->Set_Visible(FALSE);
+	for (auto& Comp : ItemInfo_Text)
+		Comp->Set_Visible(FALSE);
 
 	return S_OK;
 }

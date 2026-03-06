@@ -9,7 +9,7 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
@@ -213,9 +213,9 @@ HRESULT   StartScene::Ready_Scene() {
 		CloseHandle(LFile);
 	}
 	PlayingSound = FALSE;
+	TileManager::GetInstance()->Set_StageCnt();
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHERBOSS);
 	TileManager::GetInstance()->Set_Stage();
     return S_OK;
 }

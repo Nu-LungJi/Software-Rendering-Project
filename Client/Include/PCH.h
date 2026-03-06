@@ -121,6 +121,7 @@
 #include "DamageFont.h"
 #include "Artifact.h"
 #include "EndingCredit.h"
+#include "Player_Shadow.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
