@@ -83,7 +83,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Pos({ 20.213f , 0.5f, 18.f }); // 광윤 디버깅용
 	// 활 생성
 	{
-		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Player_Shadow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::PLAYER_SHADOW, L"PlayerShadow");
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Player_Shadow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"PlayerShadow");
 
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"FairyBow"))->Set_PlayerPos(Component_Transform->Get_Position());
@@ -2037,43 +2037,20 @@ VOID Player::Chage_Item(int src, int dst)
 			if (_inventory[dst - 8] == nullptr) {
 				_inventory[dst - 8] = _artifactSlot[src - 4];
 				_artifactSlot[src - 4] = nullptr;
-				// 딜리트렐릭_inventory[dst - 8]->itemIdx
 			}
 			else {
 				if (GAMEOBJECT_TYPE::ARTIFACT != _inventory[dst - 8]->Get_ObjectType()) return;
 				obj = _inventory[dst - 8];
 				_inventory[dst - 8] = _artifactSlot[src - 4];
 				_artifactSlot[src - 4] = static_cast<Artifact*>(obj);
-				// 딜리트렐릭_inventory[dst - 8]->itemIdx
 			}
 		}
 	}
 	else {
 		if (_inventory[src - 8] == nullptr) return;
-		if (dst < 4) {
-			if (_weaponSlot[dst] == nullptr) {
-				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
-				_inventory[src - 8] = nullptr;
-			}
-			else {
-				if (dst == _equipNum) {
-					_weaponSlot[dst]->Set_Bow_Equip(false);
-					static_cast<Bow*>(_inventory[src - 8])->Set_Bow_Equip(true);
-				}
-				obj = _weaponSlot[dst];
-				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
-				_inventory[src - 8] = obj;
-			}
-		}
-		else if (src >= 4 && src < 8) {
-			// 인벤 렐릭슬로 푸쉬
-			return;
-		}
-		else {
-			obj = _inventory[dst - 8];
-			_inventory[dst - 8] =_inventory[src - 8];
-			_inventory[src - 8] = obj;
-		}
+		obj = _inventory[dst - 8];
+		_inventory[dst - 8] =_inventory[src - 8];
+		_inventory[src - 8] = obj;
 	}
 
 	return VOID();
