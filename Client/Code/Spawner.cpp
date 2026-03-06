@@ -284,7 +284,6 @@ void Spawner::Monster_Spawn4()
 		m_bSpawn = true;
 	}
 }
-
 void Spawner::CL_Spawn()
 {
 	_vec3 vPos;

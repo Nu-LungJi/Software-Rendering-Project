@@ -138,7 +138,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         maxLifeTime = 0.3;
         break;
     case ArrowType::IceCharging:
-        maxLifeTime = 0.35f;
+        maxLifeTime = 0.8f;
         break;
     case ArrowType::EvilHead_Arrow:
         maxLifeTime = 1.f;
@@ -177,12 +177,12 @@ INT Arrow::Update_GameObject(const _float& _DT)
             SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
             break;
         case ArrowType::IceArrow_LV1:
-            Size = { 1.5f, 1.5f, 1.5f };
+            Size = { 1.f, 1.f, 1.f };
             effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_BOMB, &effectPos, 0.2f, Size, false);
             break;
         case ArrowType::IceCharging:
-            Size = { 2.5f, 2.5f, 2.5f };
+            Size = { 1.f, 1.f, 1.f };
             effectPos.y += 0.7f;
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_HITEFFECT, &effectPos, 0.3f, Size, false);
             break;
@@ -246,6 +246,9 @@ INT Arrow::Update_GameObject(const _float& _DT)
         switch (_type)
         {
         case ArrowType::FairyArrow:
+            _size = 1.f;
+            break;
+        case ArrowType::IceArrow_LV1:
             _size = 1.f;
             break;
         case ArrowType::EvilHead_Arrow:
@@ -329,7 +332,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             _speed = 60.f;
             break;
         case ArrowType::IceCharging:
-            _speed = 60.f;
+            _speed = 30.f;
             break;
         case ArrowType::EvilHead_Arrow:
             _speed = 20.f;
@@ -426,9 +429,8 @@ INT Arrow::Update_GameObject(const _float& _DT)
             }
             break;
         case ArrowType::IceCharging:
-            if (_effectDelay > 0.05f) {
+            if (_effectDelay > 0.1f) {
                 Size = { 1.f, 1.f, 1.f };
-                //PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_THORN, &effectPos, 0.4f, Size, false);
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
                 //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
@@ -554,11 +556,11 @@ void Arrow::SetGrahpic()
         break;
     case ArrowType::IceArrow_LV1:
         if (_frame > 6) _frame = 1;
-        wsprintfW(FileName, L"IceArrow_%d.png", _frame);
+        wsprintfW(FileName, L"IceArrow_LV1_%d.png", _frame);
         break;
     case ArrowType::IceCharging:
-        if (_frame > 4) _frame = 1;
-        wsprintfW(FileName, L"IceArrow_Charging%d.png", _frame);
+        if (_frame > 10) _frame = 1;
+        wsprintfW(FileName, L"IceChargeShot%d.png", _frame);
         break;
     case ArrowType::EvilHead_Arrow:
         if (_frame > 7) _frame = 1;
@@ -652,18 +654,23 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 
     Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
    
+    int originATK = Component_Collider->Get_Att();
 
     bool _isCritical = false;
     if (distribution(rd) % 100 <= *player->Get_Critical()) {
-        Component_Collider->Set_Att(Component_Collider->Get_Att() * 2.f);
+        Component_Collider->Set_Att(originATK * 2.f);
         _isCritical = true;
     }
 
     if (Tag == L"Monster") {
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att(), _isCritical);
+        if (_type == ArrowType::IceCharging) {
+            _vec3 Size = { 2.f, 2.f, 2.f };
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+        }
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
+        Component_Collider->Set_Att(originATK);
 
         return TRUE;
     }
@@ -671,21 +678,31 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
     else if (Tag == L"CheonLog") {
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - (int)Component_Collider->Get_Att());
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+        if (_type == ArrowType::IceCharging) {
+            _vec3 Size = { 2.f, 2.f, 2.f };
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+        }
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
+        if (_isCritical)  Component_Collider->Set_Att(originATK);
 
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
         COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+        if (_type == ArrowType::IceCharging) {
+            _vec3 Size = { 2.f, 2.f, 2.f };
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+        }
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        if (_isCritical)  Component_Collider->Set_Att(Component_Collider->Get_Att() * 0.5f);
+        if (_isCritical)  Component_Collider->Set_Att(originATK);
 
         return TRUE;
     }
+
+    if (_isCritical)  Component_Collider->Set_Att(originATK);
 
     return FALSE;
 }

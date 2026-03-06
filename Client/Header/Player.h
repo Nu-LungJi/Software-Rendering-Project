@@ -179,6 +179,7 @@ public:
 	int		Get_CurArrowCount() { if (nullptr == _weaponSlot[_equipNum]) return 0;  else return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
 	int		Get_Bow_ImgIDX() { if (nullptr == _weaponSlot[_equipNum]) return -1; return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
+	pSee    Get_See()	 { return _see; }
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	bool	Get_Invincible() { return _isInvincible; }
@@ -300,6 +301,7 @@ private:
 	int				_atomicReady;
 
 	float			_defaultAttackSpeed;
+	BOOL			RealStart;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP

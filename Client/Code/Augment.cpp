@@ -147,7 +147,7 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 			PlayerObject->Set_Atk(*PlayerObject->Get_AttackSpeed() * 1.5f);
       break;
 		case THIRD:
-			PlayerObject->Set_Critical(*PlayerObject->Get_Critical() * 1.5f);
+			PlayerObject->Set_Critical(50);
       break;
 	}
 	return S_OK;
