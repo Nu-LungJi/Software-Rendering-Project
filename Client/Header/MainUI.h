@@ -42,6 +42,7 @@ public:		// Trigger Function
 	VOID			Set_EnableItemPopUP(BOOL _POP, ItemINFO* _IT, wstring _SPR);
 
 	VOID			Set_BossClearUI(BOOL _BCU) { Enable_BossClearUI = _BCU; }
+	VOID			Set_PlayTutorial(BOOL _TUT) { Enable_Tutorial = _TUT; }
 
 
 	// 렐릭용
