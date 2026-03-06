@@ -13,73 +13,119 @@ HRESULT Tesseract::Ready_GameObject() {
 }
 INT	Tesseract::Update_GameObject(const _float& _DT) {
     _vec3 vMoveDir = { 1.f,0.f,0.f };
-    switch (*m_pSceneEvent)
-    {
-    default:
-        break;
-    case 0:
-        vMoveDir = { 1.f,0.f,0.f };
-        m_pTransform->Get_Position()->y = 0.f;
-        m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
-        break;
-    case 1:
-        m_pTransform->Set_Pos(30.f, 0.f, 2.5f);
-        break;
-    case 2:
-        vMoveDir = { 1.f,0.f,0.f };
-        m_pTransform->Move_Pos(&vMoveDir, 50.f, _DT);
-        if (m_pTransform->Get_Position()->x > 55.f) {
-            *m_pSceneEvent = 3;
-            m_pTransform->Set_Pos(55.f, 0.f, 2.5f);
+    if (m_pSceneEvent != nullptr) {
+        switch (*m_pSceneEvent)
+        {
+        case 0:
+            m_fTimer += _DT;
+            if (m_fTimer > 5.f) {
+                vMoveDir = { 1.f,0.f,0.f };
+                m_pTransform->Get_Position()->y = 0.f;
+                m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
+            }
+            break;
+        case 1:
+            m_pTransform->Set_Pos(30.f, 0.f, 2.5f);
+            m_fTimer = 0.f;
+            break;
+        case 2:
+            vMoveDir = { 1.f,0.f,0.f };
+            m_fTimer += _DT;
+            {
+                float fSpeed = (m_fTimer > 3.f) ? -10.f : 60.f;
+                m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
+                if (m_pTransform->Get_Position()->x > 80.f) {
+                    m_fTimer = 0.f;
+                    *m_pSceneEvent = 3;
+                    m_pTransform->Set_Pos(50.f, -10.f, 7.5f);
+                }
+            }
+            break;
+        case 3:
+            vMoveDir = { 0.f,1.f,0.f };
+            m_pTransform->Get_Position()->x = 50.f;
+            m_pTransform->Move_Pos(&vMoveDir, 8.f, _DT);
+            break;
+        case 4:
+            m_pTransform->Set_Pos(50.f, 20.f, 7.5f);
+            break;
+        case 5:
+            vMoveDir = { 0.f,1.f,0.f };
+            {
+                m_fTimer += _DT;
+                float fSpeed = (m_fTimer > 5.f) ? -10.f : 30.f;
+                m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
+                if (m_pTransform->Get_Position()->y > 100.f) {
+                    *m_pSceneEvent = 6;
+                    m_fTimer = 0.f;
+                    m_pTransform->Set_Pos(50.f, 49.f, 50.f);
+                    m_pCollider->Set_Scale(0.5f, 0.5f, 0.5f);
+                    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
+                }
+            }
+            break;
+        case 6:
+        {
+            m_fTimer += _DT;
+            _float fCurrentY = m_pTransform->Get_Position()->y;
+            if (fCurrentY < 58.f) {
+                fCurrentY -= 2.0f * _DT;
+                if (fCurrentY < 58.f) fCurrentY = 58.f;
+            }
+            if (m_fScale > 3.0f) {
+                m_fScale -= 2.f * _DT;
+                if (m_fScale <= 3.0f) {
+                    m_fScale = 3.0f;
+                    m_fTimer = 0.f;
+                }
+            }
+            m_pTransform->Set_Pos(50.f, fCurrentY, 40.f);
+            if (m_fScale <= 3.0f) {
+                _float fSP = 0.099f - (m_fTimer * 0.05f);
+                if (fSP > 0.001f) {
+                    _vec3 vShake = {
+                        RANDOM::Get_float(-fSP, fSP) + 50.f,
+                        RANDOM::Get_float(-fSP, fSP) + fCurrentY,
+                        RANDOM::Get_float(-fSP, fSP) + 40.f
+                    };
+                    m_pTransform->Set_Pos(vShake);
+                }
+                else {
+                    m_pTransform->Set_Pos(50.f, 58.f, 40.f);
+                }
+            }
         }
         break;
-    case 3:
-        vMoveDir = { 0.f,1.f,0.f };
-        m_pTransform->Get_Position()->x = 50.f;
-        m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
-        break;
-    case 4:
-        m_pTransform->Set_Pos(50.f, 20.f, 2.5f);
-        break;
-    case 5:
-        vMoveDir = { 0.f,1.f,0.f };
-        m_pTransform->Move_Pos(&vMoveDir, 50.f, _DT);
-        if (m_pTransform->Get_Position()->y > 80.f) {
-            *m_pSceneEvent = 6.f;
         }
-        break;
     }
 
     m_fRadian += _DT * 3.f;
+
 
     TESSERACTVERTEX* pVertex = nullptr;
     if (SUCCEEDED(m_fVertexBuffer->Lock(0, 0, (void**)&pVertex, 0))) {
         float fCos = cosf(m_fRadian), fSin = sinf(m_fRadian);
         float fDistance = 4.0f;
-
         for (int i = 0; i < 16; i++) {
             D3DXVECTOR4 vRot;
             vRot.x = m_fVertices4D[i].x * fCos - m_fVertices4D[i].w * fSin;
             vRot.y = m_fVertices4D[i].y;
             vRot.z = m_fVertices4D[i].z;
             vRot.w = m_fVertices4D[i].x * fSin + m_fVertices4D[i].w * fCos;
-
             float fWScale = 1.0f / (fDistance - vRot.w);
-
             pVertex[i].pos.x = vRot.x * fWScale * m_fScale;
             pVertex[i].pos.y = vRot.y * fWScale * m_fScale;
             pVertex[i].pos.z = vRot.z * fWScale * m_fScale;
-            pVertex[i].color = D3DCOLOR_ARGB(100, 0, 255, 255);
-        }
+ }
         m_fVertexBuffer->Unlock();
     }
 
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-
-	return GameObject::Update_GameObject(_DT);
+    //AlphaSorting(m_pTransform->Get_Position());
+    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+    return GameObject::Update_GameObject(_DT);
 }
 VOID Tesseract::LateUpdate_GameObject(const _float& _DT) {
-
+    GameObject::LateUpdate_GameObject(_DT);
 }
 
 VOID Tesseract::Render_GameObject()
@@ -110,7 +156,7 @@ HRESULT Tesseract::Component_Initialize() {
     m_pCollider->Set_CenterPos(m_pTransform);
     m_pCollider->Set_Scale(6.f, 6.f, 6.f);
 
-    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
+    m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"720000.png");
 
     for (int i = 0; i < 16; i++) {
         m_fVertices4D[i] = D3DXVECTOR4((i & 1) ? 1.f : -1.f, (i & 2) ? 1.f : -1.f,
@@ -144,6 +190,36 @@ HRESULT Tesseract::Component_Initialize() {
         m_fIndexBuffer->Unlock();
     }
     return S_OK;
+}
+
+BOOL Tesseract::OnCollisionEnter(GameObject* _Other)
+{
+    wstring Tag = _Other->Get_ObjectTag();
+    if (Tag == L"Hurdle") {
+        _Other->Set_ObjectDead(true);
+        return true;
+    }
+    else if (Tag == L"Cube") {
+        if (++CubeCounter > 5) {
+            SoundManager::GetInstance()->Play_Sound_Once(L"Object/CubeTile_Death.wav",CHANNELID::SOUND_EFFECT08, 0.3f);
+            Monster::Get_Camera()->Camera_Shaking(30, 0.5f);
+            CubeCounter = 0;
+        }
+    }
+    else if (Tag == L"Player") {
+        *m_pSceneEvent = -1;
+    }
+    return 0;
+}
+
+BOOL Tesseract::OnCollisionStay(GameObject* _Other)
+{
+    return 0;
+}
+
+BOOL Tesseract::OnCollisionExit(GameObject* _Other)
+{
+    return 0;
 }
 
 Tesseract* Tesseract::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

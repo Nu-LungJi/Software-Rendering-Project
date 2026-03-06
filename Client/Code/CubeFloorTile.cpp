@@ -33,26 +33,26 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 
 	Pooling();
 
-	switch (m_ePoolingMode)
-	{
-	case POOLINGMODE::X:
-		if (POS(m_pTarget)->x - 5.f > m_pTransform->Get_Position()->x) {
-			m_iFalling = 1;
-		}
-		break;
-	case POOLINGMODE::Y:
-		if (POS(m_pTarget)->y -5.f > m_pTransform->Get_Position()->y) {
-			m_iFalling = 1;
-		}
-		break;
-	case POOLINGMODE::Z:
-		if (POS(m_pTarget)->z -5.f > m_pTransform->Get_Position()->z) {
-			m_iFalling = 1;
-		}
-		break;
-	default:
-		break;
-	}
+	//switch (m_ePoolingMode)
+	//{
+	//case POOLINGMODE::X:
+	//	if (POS(m_pTarget)->x - 5.f > m_pTransform->Get_Position()->x) {
+	//		m_iFalling = 1;
+	//	}
+	//	break;
+	//case POOLINGMODE::Y:
+	//	if (POS(m_pTarget)->y -5.f > m_pTransform->Get_Position()->y) {
+	//		m_iFalling = 1;
+	//	}
+	//	break;
+	//case POOLINGMODE::Z:
+	//	if (POS(m_pTarget)->z -5.f > m_pTransform->Get_Position()->z) {
+	//		m_iFalling = 1;
+	//	}
+	//	break;
+	//default:
+	//	break;
+	//}
 	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -165,14 +165,19 @@ BOOL CubeFloorTile::OnCollisionStay(GameObject* _Other)
 		{
 		case POOLINGMODE::X:
 			Monster::Hurdle_CollisionStay(this, _Other, 0, 1, 0);
+			return true;
 			break;
 		case POOLINGMODE::Y:
 			Monster::Hurdle_CollisionStay(this, _Other, 0, 0, 1);
+			return true;
 			break;
 		case POOLINGMODE::Z:
 			Monster::Hurdle_CollisionStay(this, _Other, 0, 1, 0);
 			break;
 		}
+	else if (Tag == L"Chaser") {
+		m_iFalling = true;
+	}
 	return 0;
 }
 VOID CubeFloorTile::Free() {
@@ -241,7 +246,7 @@ bool CubeFloorTile::Pooling()
 		}
 	}
 	else if (m_ePoolingMode == POOLINGMODE::Z) {
-		if (vPos->z - fHalf > m_pTransform->Get_Position()->z) {
+		if (vPos->z - 20.f > m_pTransform->Get_Position()->z) {
 				vPos->z += fFullLoop;
 				bMoved = true;
 		}

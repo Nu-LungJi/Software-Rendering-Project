@@ -45,6 +45,7 @@ private:
 
 	vector<GameObject*> m_vecHurdles[3];
 	Tesseract* m_pChaser;
+	MainUI* m_pMainUI;
 
 	int	m_iEventTrigger = 0;
 };

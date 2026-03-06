@@ -15,6 +15,8 @@ enum class pState
 	STATE_ATTACK,
 	STATE_LANDING,
 	STATE_DEATH,
+	//KJJ 03 06
+	STATE_ON_EVENT,
 
 	End
 };
@@ -175,7 +177,7 @@ public:
 	void	Set_SlowTime(int slowTime) { _slowTime = slowTime; }
 
 	int		Get_CurArrowCount() { if (nullptr == _weaponSlot[_equipNum]) return 0;  else return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
-	int		Get_Bow_ImgIDX() { return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
+	int		Get_Bow_ImgIDX() { if (nullptr == _weaponSlot[_equipNum]) return -1; return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
@@ -188,7 +190,9 @@ public:
 	pState	Get_pState() { return _pState; }
 
 	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
-	VOID   Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
+
+	VOID	Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
+	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
 	void			CheonLog_Spawn();
@@ -198,8 +202,11 @@ public:
 	int		Get_AtomicRaady() { return _atomicReady; }
 	void	Set_AtomicRaady() { _atomicReady += 1; }
 
-	_vec3			Get_MouseDir();
+	_vec3				Get_MouseDir();
 	_float			Get_MouseDistance();
+
+	// GET REliC
+	int		Get_Relic_ImgIdx()			{ if (nullptr == _artifactSlot[_equipNum]) return -1; return _artifactSlot[_equipNum]->Get_ItemIdx(); }
 
 	/// 인벤용
 	void		Artifact_Effect();
@@ -235,9 +242,10 @@ private:
 	void			Calc_Near();
 private:
 	Bow*			_weaponSlot[4];
-	Artifact*		_artifactSlot[4];
+	Artifact*		_artifactSlot[4]; // 렐릭
 	GameObject*		_inventory[10];
 	int				_equipNum;
+	Artifact*		_auguEffect;
 
 	bool			Debug;
 	bool			CameraMove;
@@ -286,11 +294,13 @@ private:
 	float			_invincibleTimer;	//	무적 타이머
 	float			_alphaDelayTimer;	//	깜박임 타이머
 	float			_arrowTimer;
-	float			_defaultAttackSpeed;
+
 	int				_atomicCount;
 	int				_atomicTotal;
 	int				_atomicReady;
-	
+
+	float			_defaultAttackSpeed;
+
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
 	int				_dashstock;		// 플레이어 MP(눈물모양)
@@ -326,6 +336,9 @@ private:
 		void			Set_IsFalling(bool b) { Is_Falling = b;}
 		bool			Get_IsFalling() { return Is_Falling; }
 		void			Fall(const _float& _DT);
+		void			Set_pState(pState pState) { _pState = pState; }
+		void			Set_eState(eState eState) { _eState = eState; }
+		void			Set_EventState(bool b) { m_bEventState = b; }
 
 	private:
 		SCENE_TYPE		m_eCurrScene;
@@ -333,5 +346,6 @@ private:
 		_vec3			m_vBackupScale;
 		bool			Is_Falling;
 		_float			m_fBackUpHp;
+		bool			m_bEventState = false;
 
 };

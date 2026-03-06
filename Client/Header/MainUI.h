@@ -43,6 +43,11 @@ public:		// Trigger Function
 
 	VOID			Set_BossClearUI(BOOL _BCU) { Enable_BossClearUI = _BCU; }
 
+
+	// 렐릭용
+	VOID			Reset_Relic();
+	VOID			Set_RelicIcon();
+
 	vector<FontObject*> Get_AllFontObject() { return AllFontOBJ; }
 
 private:
@@ -106,7 +111,11 @@ private:
 	FontObject*			FO_ArrowCount;		// 화살 카운트
 	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
 	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
-	
+
+////////////RelicEffect//
+	vector<SpriteINFO*> relicEffectList;
+	int					Cur_RelicIMGIDX;
+
 ////////////////////////////////////////////// 보스전 활용 변수들
 	vector<FontObject*> AllFontOBJ;
 	vector<SpriteINFO*> AllSpriteOBJ;

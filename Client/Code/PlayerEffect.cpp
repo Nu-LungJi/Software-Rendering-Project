@@ -59,6 +59,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) { Make_TextureList(L"IRA_Charged"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED_END) { Make_TextureList(L"IRA_Charging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_AREA) { Make_TextureList(L"NPC_Atomic_Area"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_AREA) { Make_TextureList(L"NPC_Atomic_Area"); }
 
 	if (_SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER) {
 		Make_TextureList(player->Get_FileName());
@@ -345,6 +346,11 @@ VOID PlayerEffect::Render_GameObject() {
 	if (ObjectDead)	return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	//KJJ 03 06
+	if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		Monster::BillBoard(Component_Transform, GRPDEV);
+	}
+
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
 
@@ -407,7 +413,7 @@ BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 	}
 	else if (_Other->Get_ObjectTag() == L"Docheol") {
 		atk = 1.f;
-		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
 		Component_Collider->Set_Hp(hp - atk);
 		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
 		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);

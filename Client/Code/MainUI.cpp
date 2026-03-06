@@ -90,9 +90,13 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();
 	if (Cur_BowIMGIDX != cur_Equip_BowIDX) {
 		BowIMG_List[Cur_BowIMGIDX]->Set_Visible(FALSE);
-		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(FALSE);
+		BowIMG_List[cur_Equip_BowIDX]->Set_Visible(TRUE);
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
+
+	Reset_Relic();
+	Set_RelicIcon();	// 렐릭 아이콘
+
 	if (KEY_DOWN(DIK_J)) {
 		Enable_BossClearUI = TRUE;
 	}
@@ -375,6 +379,52 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type)
 	}
 }
 
+VOID MainUI::Reset_Relic()
+{
+	for (auto idx : relicEffectList) {
+		// 텍 비지블 오프
+	}
+}
+
+VOID MainUI::Set_RelicIcon()
+{
+	SpriteINFO* sprite = nullptr;
+	
+	for (int i = 0; i < 4; i++) {
+		int idx = PlayerObject->Get_Relic_ImgIdx();
+		if (idx == -1) continue;
+		switch (idx) {
+		case 0:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item1");			
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f,600.f);
+			break;
+		case 1:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item2");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f,600.f);
+			break;
+		case 2:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item3");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		case 3:
+			sprite = Component_Sprite->Get_Texture(L"Relic_Item4");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		case 4:
+			sprite = Component_Sprite->Get_Texture(L"Perk_");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 VOID MainUI::Display_InteractionUI() {
 	if (Enable_Interaction == 2) return;
 
@@ -545,6 +595,13 @@ VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
 		if	(HPOPC < 253.f)	{ HPOPC += _DT * 255.f / 2.f; }
 		else				{ HPOPC = 255.f; Enable_DisplayHPBar = 2;}
 
+		if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Visible(true);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity((INT)HPOPC);
+			HPBarFill->Set_Opacity(HPOPC);
+			return;
+		}
+
 		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
@@ -606,7 +663,7 @@ VOID MainUI::Display_FadeFilter(CONST FLOAT& _DT) {
 	}
 }
 VOID MainUI::Synchronize_BossHPBar() {
-	if		(TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
+	if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS && SceneManager::GetInstance()->Get_GameObject(L"CheonLog") != nullptr) {
 		Collider* CheonLog = dynamic_cast<Collider*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog")->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER));
 		CurrentHP = 1.f - ((float)(CheonLog->Get_Hp()) / (float)MaxHP);
 
@@ -622,6 +679,17 @@ VOID MainUI::Synchronize_BossHPBar() {
 
 		BarScale = { HPRatio, BarScale.y, BarScale.z };
 		if (BarScale.x <= 0) BarScale.x = 0;
+	}
+	else if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		
+		_float fProgressRatio = 0.f;
+
+		fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
+
+		if		(fProgressRatio > 1)		fProgressRatio = 1.f;
+		else if (fProgressRatio < 0)		fProgressRatio = 0.f;
+
+		BarScale = { fProgressRatio, BarScale.y, BarScale.z };
 	}
 }
 
@@ -796,6 +864,7 @@ HRESULT MainUI::Sprite_Initialize() {
 	UIManager::GetInstance()->Add_GlobalObject(FilterOBJ);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
 
+
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/DarkBow.png"		, L"DIC_InfoFrame_DarkBow"		, 1300.f, 310.f, 60, 60, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/GreenBow.png"		, L"DIC_InfoFrame_GreenBow"		, 1300.f, 310.f, 60, 60, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/IceBow.png"		, L"DIC_InfoFrame_IceBow"		, 1300.f, 310.f, 60, 60, FALSE, 0);
@@ -809,6 +878,19 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png"		, L"DIC_InfoFrame_Token"		, 1300.f, 310.f, 60, 60, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ArrowFill.png"	, L"DIC_InfoFrame_ArrowFill"	, 1300.f, 310.f, 60, 70, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Health.png"		, L"DIC_InfoFrame_Health"		, 1300.f, 310.f, 60, 60, FALSE, 0);
+
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item1.png", L"Relic_Item1", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item2.png", L"Relic_Item2", 1300.f, 290.f, 80, 80, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////// Relic_BackGround////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_IconBackground.png", L"Relic_BackGround", 600.f, 290.f, 80, 80, FALSE, 0);
+	//////////////////////////////////////////////// RelicUI ////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-15.png", L"Relic_Item1", 720.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Item2", 780.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-02.png", L"Relic_Item3", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-05.png", L"Relic_Item4", 600.f, 290.f, 80, 80, FALSE, 0);
 
 	return S_OK;
 }

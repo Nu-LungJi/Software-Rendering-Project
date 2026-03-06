@@ -27,6 +27,13 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     D3DXFONT_DESCW FontInfo;
     ZeroMemory(&FontInfo, sizeof(FontInfo));
 
+    //FontInfo.Height = FO->TextScale;
+    //FontInfo.Weight = FO->TextWeight;
+    //FontInfo.CharSet = HANGUL_CHARSET;
+    //FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
+    //FontInfo.Quality = DEFAULT_QUALITY;
+    //FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
+
     FontInfo.Height = FO->TextScale;
     FontInfo.Weight = FO->TextWeight;
     FontInfo.CharSet = DEFAULT_CHARSET;
