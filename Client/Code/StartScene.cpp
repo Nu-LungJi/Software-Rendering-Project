@@ -13,7 +13,6 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
@@ -212,10 +211,11 @@ HRESULT   StartScene::Ready_Scene() {
 	PlayingSound = TRUE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
-	TileManager::GetInstance()->Set_StageCnt();
-	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
+
+	TileManager::GetInstance()->Set_CurStage(TILE_DOCHER1);
 	TileManager::GetInstance()->Set_Stage();
-	return S_OK;
+    return S_OK;
+
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
     

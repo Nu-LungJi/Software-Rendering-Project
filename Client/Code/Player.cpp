@@ -47,7 +47,7 @@ HRESULT Player::Ready_GameObject() {
 	_key				= 0;
 	_coin				= 200;
 	_crystal			= 0;
-	_token				= 2;
+	_token				= 3;
 	_atk				= 1;
 	_critical			= 0;
 	_chargingSpeed		= 0.3f;
@@ -324,6 +324,24 @@ void Player::Reset()
 	_frame = 1;
 	_isStop = false;
 	_isInvincible = false;
+
+	// UI
+	//Component_Collider->Set_Hp(5);
+	_dashstock			= 3;
+	_key				= 0;
+	_coin				= 0;
+	_crystal			= 0;
+	_token				= 3;
+	_equipNum			= 0; // 지금 장착한 무기 idx
+	_atk				= 1;
+	_critical			= 0;
+	_chargingSpeed		= 1.f;
+	_range				= 1.f;
+	_arrowSize			= 1.f;
+	_arrowSpeed			= 1.f;
+	_MaxArrow			= 1.f;
+	_hit_inv_Time		= 2.f;
+	_dash_inv_Time		= 2.f;
 
 	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 	mainUI->Player_ReFillHP(5);
