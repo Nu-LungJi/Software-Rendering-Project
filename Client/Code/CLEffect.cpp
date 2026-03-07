@@ -457,7 +457,7 @@ BOOL	CLEffect::OnCollisionStay(GameObject* _Other)
 			m_bDead = true;
 			return true;
 		}
-		else {
+		else if(m_bDead == FALSE){
 			dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"입장 - 파괴된 천계 입구", TRUE);
 		}
 	}

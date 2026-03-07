@@ -125,13 +125,13 @@ VOID	MainUI::Render_GameObject() {
 	BossHPSprite->SetTransform(&matWorld);
 	
 	BossHPSprite->Begin(D3DXSPRITE_ALPHABLEND);
-
-	BossHPSprite->Draw(HPBarFill->TEXTURE, NULL, NULL, &HPBarFill->POS, D3DCOLOR_ARGB(HPBarFill->OPACITY, 255, 255, 255));
+	if(HPBarFill->VISIBLE != FALSE)
+		BossHPSprite->Draw(HPBarFill->TEXTURE, NULL, NULL, &HPBarFill->POS, D3DCOLOR_ARGB(HPBarFill->OPACITY, 255, 255, 255));
 
 	D3DXMatrixIdentity(&matWorld);
 	BossHPSprite->SetTransform(&matWorld);
-
-	BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
+	if (BossTitleBar->VISIBLE != FALSE)
+		BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
 
 	BossHPSprite->End();
 }
