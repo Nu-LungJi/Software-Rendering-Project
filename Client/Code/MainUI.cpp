@@ -386,8 +386,21 @@ VOID MainUI::PopUp_Speech_Bubble_Skill(wstring _Text, FLOAT _DT, int type)
 
 VOID MainUI::Reset_Relic()
 {
-	for (auto idx : relicEffectList) {
-		// 텍 비지블 오프
+	for (int i = 0; i < 4; ++i)
+	{
+		int relicIdx = PlayerObject->Get_Relic_ImgIdx(i);
+
+		if (_relicIcons[i] == nullptr) continue;
+		if (relicIdx == -1)
+		{
+			_relicIcons[i]->Set_Visible(FALSE);
+			if (_relicBars[i]) _relicBars[i]->Set_Visible(FALSE);
+		}
+		else
+		{
+			_relicIcons[i]->Set_Visible(TRUE);
+			if (_relicBars[i]) _relicBars[i]->Set_Visible(TRUE);
+		}
 	}
 }
 
@@ -401,56 +414,58 @@ VOID MainUI::Set_RelicIcon()
 		switch (idx) {
 		case 0:
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info1");			
-			sprite->Set_Visible(TRUE);
-      sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f,500.f);
+			_relicIcons[i] = sprite;
+			_relicIcons[i]->Set_Visible(TRUE);
+      _relicIcons[i]->Set_Opacity(255);
+			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
 
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar");
-      sprite->Set_Visible(TRUE);
-      sprite->Set_Opacity(255);
-      sprite->Set_Pos(530 + i * 50.f, 500.f);
-			break;
+			sprite = Component_Sprite->Get_Texture(L"Relic_Bar1");			
+			_relicBars[i] = sprite;
+			_relicBars[i]->Set_Visible(TRUE);
+			_relicBars[i]->Set_Opacity(255);
+			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+
 		case 1:
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info2");
-			sprite->Set_Visible(TRUE);
-			sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 500.f);
+			_relicIcons[i] = sprite;
+			_relicIcons[i]->Set_Visible(TRUE);
+			_relicIcons[i]->Set_Opacity(255);
+			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar2");
-			sprite->Set_Visible(TRUE);
-			sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i] = sprite;
+			_relicBars[i]->Set_Visible(TRUE);
+			_relicBars[i]->Set_Opacity(255);
+			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
 
 			break;
 		case 2:
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info3");
-			sprite->Set_Visible(TRUE);
-      sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 600.f);
+			_relicIcons[i] = sprite;
+			_relicIcons[i]->Set_Visible(TRUE);
+			_relicIcons[i]->Set_Opacity(255);
+			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar3");
-			sprite->Set_Visible(TRUE);
-			sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i] = sprite;
+			_relicBars[i]->Set_Visible(TRUE);
+			_relicBars[i]->Set_Opacity(255);
+			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
 
 			break;
 		case 3:
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info4");
-			sprite->Set_Visible(TRUE);
-      sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 600.f);
+			_relicIcons[i] = sprite;
+			_relicIcons[i]->Set_Visible(TRUE);
+			_relicIcons[i]->Set_Opacity(255);
+			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar4");
-			sprite->Set_Visible(TRUE);
-			sprite->Set_Opacity(255);
-			sprite->Set_Pos(530 + i * 50.f, 500.f);
-
-			break;
-		case 4:
-			//sprite = Component_Sprite->Get_Texture(L"Perk_03");
-			//sprite->Set_Visible(TRUE);
-			//sprite->Set_Pos(600 + i * 50.f, 600.f);
-			break;
+			_relicBars[i] = sprite;
+			_relicBars[i]->Set_Visible(TRUE);
+			_relicBars[i]->Set_Opacity(255);
+			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+			break;		
 		default:
 			break;
 		}
@@ -567,6 +582,17 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HPBar_Frame"));
 		
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar1")) ;
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar3"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar4"));
+
+    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info1"));
+    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info2"));
+    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
+    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
+
+
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT1")));
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT2")));
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT3")));
@@ -916,11 +942,10 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// Relic_BackGround////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar", 600.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar1", 600.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar2", 600.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar3", 600.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar4", 600.f, 290.f, 40, 40, FALSE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_IconBackground.png", L"Relic_BackGround", 600.f, 290.f, 80, 80, FALSE, 0);
 	//////////////////////////////////////////////// RelicUI ////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-15.png", L"Relic_Info1", 720.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Info2", 780.f, 290.f, 40, 40, FALSE, 0);

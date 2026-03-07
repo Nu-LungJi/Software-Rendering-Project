@@ -224,6 +224,7 @@ public:
 private:
 	virtual VOID Free();
 
+
 private:
 	D3DXVECTOR3			MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform);
 	D3DXVECTOR3			RayOnTerrain();
