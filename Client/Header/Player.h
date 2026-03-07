@@ -179,6 +179,7 @@ public:
 	int		Get_CurArrowCount() { if (nullptr == _weaponSlot[_equipNum]) return 0;  else return _weaponSlot[_equipNum]->Get_Bow_Stat()->curArrow; } // 화살 개수
 	int		Get_Bow_ImgIDX() { if (nullptr == _weaponSlot[_equipNum]) return -1; return _weaponSlot[_equipNum]->Get_IMG_IDX(); }
 
+	pSee    Get_See()	 { return _see; }
 	_int	GetBowCharging() { return _weaponSlot[_equipNum]->Get_Charging(); }
 
 	bool	Get_Invincible() { return _isInvincible; }
@@ -202,8 +203,11 @@ public:
 	int		Get_AtomicRaady() { return _atomicReady; }
 	void	Set_AtomicRaady() { _atomicReady += 1; }
 
-	_vec3			Get_MouseDir();
+	_vec3				Get_MouseDir();
 	_float			Get_MouseDistance();
+
+	// GET REliC
+	int		Get_Relic_ImgIdx()			{ if (nullptr == _artifactSlot[_equipNum]) return -1; return _artifactSlot[_equipNum]->Get_ItemIdx(); }
 
 	/// 인벤용
 	void		Artifact_Effect();
@@ -239,7 +243,7 @@ private:
 	void			Calc_Near();
 private:
 	Bow*			_weaponSlot[4];
-	Artifact*		_artifactSlot[4];
+	Artifact*		_artifactSlot[4]; // 렐릭
 	GameObject*		_inventory[10];
 	int				_equipNum;
 	Artifact*		_auguEffect;
@@ -297,6 +301,7 @@ private:
 	int				_atomicReady;
 
 	float			_defaultAttackSpeed;
+	BOOL			RealStart;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP

@@ -35,6 +35,7 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	FireBall_Timer += _DT;
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return -1;
 	}
 		
@@ -77,6 +78,7 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 VOID	BossFireBall::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return;
 	}
 	GameObject::LateUpdate_GameObject(_DT);
@@ -92,6 +94,7 @@ VOID	BossFireBall::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID	BossFireBall::Render_GameObject() {
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return;
 	}
 

@@ -43,7 +43,8 @@ private:
 	INT      m_iCurrentItemIndex;
 
 	BOOL         isActive;
-	ItemINFO* m_pShopItem;
+	ItemINFO*	m_pShopItem;
+	MainUI*		InteractionUI;
 
 private:
 	virtual   VOID      Free();

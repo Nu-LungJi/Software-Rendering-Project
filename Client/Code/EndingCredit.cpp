@@ -120,8 +120,6 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 			if (Frame < 6 || (Frame >= 15 && Frame <= 20)) FrameDelay = 0.1f;
 			else FrameDelay = 0.3f;
 		}
-
-
 	}
 	else {
 		if (BackGround != nullptr) {

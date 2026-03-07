@@ -141,13 +141,13 @@ HRESULT Augment::Add_PlayerStatus(INT _PerkType)
 	switch (_PerkType)
 	{
 		case FIRST:
-			PlayerObject->Set_DefaultAttackSpeed(1.f);
+			PlayerObject->Set_AttackSpeed(*PlayerObject->Get_AttackSpeed() * 1.25f);
       break;
 		case SECOND:
-			PlayerObject->Set_AttackSpeed(1.5f);
+			PlayerObject->Set_Atk(*PlayerObject->Get_AttackSpeed() * 1.5f);
       break;
 		case THIRD:
-			PlayerObject->Set_Speed(*PlayerObject->Get_Critical() * 1.25f);
+			PlayerObject->Set_Critical(50);
       break;
 	}
 	return S_OK;

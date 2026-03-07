@@ -14,7 +14,7 @@ private:
 public:
     virtual     void        PostRender_Particle();
 
-    virtual     HRESULT     Ready_Buffer(_vec3* origin, _int NumParticles);
+    virtual     HRESULT     Ready_Buffer( _int NumParticles);
     virtual     void        Render_Buffer();
     virtual		void		Reset_Particle(ATTR* attribute, _vec3* Look = 0);
     virtual	    void		Reset();
@@ -22,8 +22,19 @@ public:
     virtual		void		PreRedner_Particle();
     virtual     _int		Update_Particle(const _float& fTimeDelta);
 
+    void                    Set_Pos(_vec3 Pos) { vPos = Pos; }
+    void                    Set_Look(_vec3 Look) { vLook = Look; }
+    void                    Set_Right(_vec3 Right) { vRight = Right; }
+    void                    Set_Up(_vec3 Up) { vUp = Up; }
+private:
+    list<Attribute>         m_ParticlePool;
+    _vec3                   vPos;
+    _vec3                   vLook;
+    _vec3                   vRight;
+    _vec3                   vUp;
+    _float                    i;
 public:
-    static ParticleEffect* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3* origin, _int NumParticles);
+    static ParticleEffect* Create(LPDIRECT3DDEVICE9 pGraphicDev,_int NumParticles);
     virtual Component* Clone();
 private:
     virtual void Free();

@@ -214,9 +214,6 @@
     <Filter Include="03. GameObject\06. Effect">
       <UniqueIdentifier>{ac5a840f-6ffe-4f26-9c83-a1aa4ca23c92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\06. Effect\01. PlayerEffect">
-      <UniqueIdentifier>{c06fa3c8-29a5-4f3f-8a94-48e018a67418}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\06. Effect\02. MonsterEffect">
       <UniqueIdentifier>{34704031-17da-4c00-892b-afee47c0af80}</UniqueIdentifier>
     </Filter>
@@ -261,6 +258,9 @@
     </Filter>
     <Filter Include="03. GameObject\02. Monster\02. Monster\06. Tesseract">
       <UniqueIdentifier>{f2b03ead-23ed-4a04-9470-8f4fc1c9025a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\01. PlayerEffect">
+      <UniqueIdentifier>{c06fa3c8-29a5-4f3f-8a94-48e018a67418}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -524,6 +524,12 @@
     <ClInclude Include="..\Header\Tesseract.h">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\Playerglitter.h">
+      <Filter>03. GameObject\09. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Player_Shadow.h">
+      <Filter>03. GameObject\01. Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -768,6 +774,12 @@
     <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
     <ClCompile Include="..\Code\Tesseract.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Playerglitter.cpp">
+      <Filter>03. GameObject\09. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Player_Shadow.cpp">
+      <Filter>03. GameObject\01. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -131,6 +131,12 @@ GameObject* Layer::Search_Target_Object(_vec3* myPos, _float radius)
 	for (auto& OBJ : GameObjectList) {
 		if (OBJ->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_MONSTER || OBJ->Get_ObjectType() == GAMEOBJECT_TYPE::OBJECT_FINALBOSS) {
 			_vec3* tempPos = (dynamic_cast<Transform*>(OBJ->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
+			if (nullptr == tempPos) continue;
+			if (target == nullptr) {
+				targetPos = tempPos;
+				target = OBJ;
+				continue;
+			}
 			_vec3 vlength = *tempPos - *myPos;
 			float length = D3DXVec3Length(&vlength);
 			if (length < minLength) {

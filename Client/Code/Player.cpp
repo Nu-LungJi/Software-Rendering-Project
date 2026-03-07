@@ -49,7 +49,7 @@ HRESULT Player::Ready_GameObject() {
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
-	_critical			= 50;
+	_critical			= 0;
 	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;
@@ -66,6 +66,8 @@ HRESULT Player::Ready_GameObject() {
 	//사운드용 타이머
 	_walk_time = 0.35f;
 
+	RealStart = false;
+
 	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Camera"));
 
@@ -77,10 +79,12 @@ HRESULT Player::Ready_GameObject() {
 
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
-	Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	//Component_Transform->Set_Pos({ 20.213f , 0.5f, 19.661f }); // 광윤 디버깅용
+	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 18.f }); // 광윤 디버깅용
 	// 활 생성
 	{
+		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Player_Shadow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"PlayerShadow");
+
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::BOW, L"FairyBow");
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"FairyBow"))->Set_PlayerPos(Component_Transform->Get_Position());
 		_weaponSlot[0] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"FairyBow"));
@@ -312,15 +316,12 @@ HRESULT Player::Component_Initialize() {
 }
 void Player::Reset()
 {
-	_defaultSpeed = 6.f;
 	_dashStart = false;
 	_dashTime = 0.f;
 	_dashG = 30.f;
 	_speed = 0.f;
 	_slideTime = 0.f;
-	_g = 30.f;
 	_frame = 1;
-	_arrowCount = 0;
 	_isStop = false;
 	_isInvincible = false;
 
@@ -988,6 +989,11 @@ void Player::ATTACK_STATE(const _float& _DT)
 void Player::LANDING_STATE(const _float& _DT)
 {
 	_eState = eState::STATE_LAND;
+
+	if (KEY_DOWN(DIK_S)) RealStart = true;
+
+	if (!RealStart)
+		_frame = 1;
 
 	if (_frame == 10) {
 		_weaponSlot[0]->Set_Bow_Equip(true);
@@ -1727,6 +1733,8 @@ void Player::Buy_item(int itemIdx)
 	switch (itemIdx) {
 	case 0:
 		_token += 1;
+		dynamic_cast<SpriteObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI")->Get_Component(COMPONENT_TYPE::COMPONENT_SPRITE))
+			->Get_Texture(L"Token" + to_wstring(_token))->Set_Visible(TRUE);
 		break;
 	case 1:
 		mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
@@ -1754,8 +1762,9 @@ void Player::Buy_item(int itemIdx)
 			if (nullptr == _artifactSlot[idx]) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
-				_artifactSlot[idx]->Set_ItemIdx(2);
-				return;
+				_artifactSlot[idx]->Set_ItemIdx(2);// 최대 화살수
+				// 렐릭 푸쉬 Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
+				return; 
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
@@ -1772,7 +1781,8 @@ void Player::Buy_item(int itemIdx)
 			if (nullptr == _artifactSlot[idx]) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Glove");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Glove"));
-				_artifactSlot[idx]->Set_ItemIdx(3);
+				_artifactSlot[idx]->Set_ItemIdx(3); // 글러브
+				// 렐릭 푸쉬Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
 				return;
 			}
 		}
@@ -2058,29 +2068,9 @@ VOID Player::Chage_Item(int src, int dst)
 	}
 	else {
 		if (_inventory[src - 8] == nullptr) return;
-		if (dst < 4) {
-			if (_weaponSlot[dst] == nullptr) {
-				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
-				_inventory[src - 8] = nullptr;
-			}
-			else {
-				if (dst == _equipNum) {
-					_weaponSlot[dst]->Set_Bow_Equip(false);
-					static_cast<Bow*>(_inventory[src - 8])->Set_Bow_Equip(true);
-				}
-				obj = _weaponSlot[dst];
-				_weaponSlot[dst] = static_cast<Bow*>(_inventory[src - 8]);
-				_inventory[src - 8] = obj;
-			}
-		}
-		else if (src >= 4 && src < 8) {
-			return;
-		}
-		else {
-			obj = _inventory[dst - 8];
-			_inventory[dst - 8] =_inventory[src - 8];
-			_inventory[src - 8] = obj;
-		}
+		obj = _inventory[dst - 8];
+		_inventory[dst - 8] =_inventory[src - 8];
+		_inventory[src - 8] = obj;
 	}
 
 	return VOID();

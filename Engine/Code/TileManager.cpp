@@ -362,7 +362,8 @@ void TileManager::Save_Tile(HWND g_hWnd)
     {
         for (size_t j = 0; j < TILEMODE_CHANGE::MODE_END; ++j)
         {
-            for (auto& pTile : m_vecTileBuffer[i][j])
+        
+               for (auto& pTile : m_vecTileBuffer[i][j])
             {
                 pTile->Update_GameObject(0); //안하면 큰일남;;
                 pTile->LateUpdate_GameObject(0);
