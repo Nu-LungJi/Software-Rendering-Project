@@ -163,7 +163,6 @@ HRESULT MiniGameScene::Start_MiniGame()
 	}
 	CollisionManager::GetInstance()->Add_ColliderObject(m_pChaser);
 
-	SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
 	m_pMainUI = nullptr;
 	
 	// 디버그 키 진입 하고싶을때 킬것
