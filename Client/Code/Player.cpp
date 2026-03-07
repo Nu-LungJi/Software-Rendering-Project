@@ -17,8 +17,8 @@ HRESULT Player::Ready_GameObject() {
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 10);
-	_pState				= pState::STATE_IDLE;
-	_eState				= eState::STATE_STANDING;
+	_pState				= pState::STATE_START;
+	_eState				= eState::STATE_LAND;
 	_see				= pSee::SEE_DOWN;
 	_skillState			= skillState::NONE;
 	_defaultSpeed		= 6.f;
@@ -49,7 +49,7 @@ HRESULT Player::Ready_GameObject() {
 	_crystal			= 0;
 	_token				= 2;
 	_atk				= 1;
-	_critical			= 0;
+	_critical			= 50;
 	_chargingSpeed		= 0.3f;
 	_range				= 1.f;
 	_arrowSize			= 1.f;
@@ -80,7 +80,7 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({ 20.213f , 0.5f, 18.f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 18.5f }); // 광윤 디버깅용
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Player_Shadow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"PlayerShadow");
@@ -89,7 +89,7 @@ HRESULT Player::Ready_GameObject() {
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"FairyBow"))->Set_PlayerPos(Component_Transform->Get_Position());
 		_weaponSlot[0] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"FairyBow"));
 		_weaponSlot[0]->Set_Bow_Type(BowType::FairyBow);
-		_weaponSlot[0]->Set_Bow_Equip(true);
+		_weaponSlot[0]->Set_Bow_Equip(false);
 
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_SpeedUp");
 		_artifactSlot[0] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_SpeedUp"));
@@ -137,6 +137,8 @@ HRESULT Player::Ready_GameObject() {
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 	Debug = false;
+	StartEffectDead = false;
+	SummonStart = false;
 
 	return S_OK;
 }
@@ -146,6 +148,22 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_vec3 pPos = *Component_Transform->Get_Position();
 	Component_Transform->Set_Pos(pPos);
+
+	// 플레이어 소환
+	if (KEY_DOWN(DIK_N)) {
+		SummonStart = true;
+		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
+			Get_GameObject(L"Camera"));
+		Camera->Set_VelocityLock(true);
+	}
+
+	if (SummonStart) {
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Tif_Teleport_AppearAtCamp.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
+		_vec3 Size = { 2.f, 2.f, 2.f };
+		_vec3 SummonEffectPos = { 20.213f , 0.5f, 100.f };
+		PLAY_PLAYER_EFFECT(PLAYER_SKILL::SUMMON_EFFECT, &SummonEffectPos, 0.5f, Size, false);
+		SummonStart = false;
+	}
 
 	if (_isStop)
 		return S_OK;
@@ -244,6 +262,9 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	case pState::STATE_DEATH:
 		DEATH_STATE(_DT);
 		break;
+	case pState::STATE_START:
+		START_STATE(_DT);
+		break;
 	default:
 		break;
 	}
@@ -318,40 +339,13 @@ void Player::Reset()
 {
 	_dashStart = false;
 	_dashTime = 0.f;
-	_dashG = 30.f;
 	_speed = 0.f;
 	_slideTime = 0.f;
 	_frame = 1;
 	_isStop = false;
 	_isInvincible = false;
-
-	// UI
-	//Component_Collider->Set_Hp(5);
-	_dashstock			= 3;
-	_key				= 0;
-	_coin				= 0;
-	_crystal			= 0;
-	_token				= 2;
-	_equipNum			= 0; // 지금 장착한 무기 idx
-	_atk				= 1;
-	_critical			= 0;
-	_chargingSpeed		= 1.f;
-	_range				= 1.f;
-	_arrowSize			= 1.f;
-	_arrowSpeed			= 1.f;
-	_MaxArrow			= 1.f;
-	_hit_inv_Time		= 2.f;
-	_dash_inv_Time		= 2.f;
-
 	MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 	mainUI->Player_ReFillHP(5);
-
-	//for (int i = 1; i < 4; i++) {
-	//	if (_weaponSlot[i] != nullptr) {
-	//		_weaponSlot[i]->Set_Destroy();
-	//		_weaponSlot[i] = nullptr;
-	//	}
-	//}
 }
 void Player::IDLE_STATE(const _float& _DT)
 {
@@ -391,11 +385,6 @@ void Player::IDLE_STATE(const _float& _DT)
 				_eState = eState::STATE_STANDING;
 			}
 		}
-
-		//bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
-
-		//if (!mouseLB && _frame > 8)
-		//	_frame = 1;
 
 		// 장비 스왑
 		if (KEY_DOWN(DIK_1)) {
@@ -756,6 +745,9 @@ void Player::DASH_STATE(const _float& _DT)
 		dest.z += 0.01;
 		_vec3 Size = { 2.f, 2.f, 2.f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SHADOW_PARTNER, &dest, min(0.3f, _speed), Size, false);
+		Size = { 0.5f, 0.5f, 0.5f };
+		dest.z -= 1.3f;
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::PLAYER_DASHEFFECT, &dest, 0.2, Size, false);
 		_partnerTimer = 0.f;
 	}
 		
@@ -989,32 +981,50 @@ void Player::ATTACK_STATE(const _float& _DT)
 void Player::LANDING_STATE(const _float& _DT)
 {
 	_eState = eState::STATE_LAND;
-
+	LandingTimer += _DT;
 	if (KEY_DOWN(DIK_S)) RealStart = true;
+	if(LandingTimer > 0.8f) RealStart = true;
 
 	if (!RealStart)
 		_frame = 1;
 
 	if (_frame == 10) {
-		_weaponSlot[0]->Set_Bow_Equip(true);
 		_pState = pState::STATE_IDLE;
 		_eState = eState::STATE_STANDING;
 		_see = pSee::SEE_DOWN;
+		LandingTimer = 0.f;
+		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
+			Get_GameObject(L"Camera"));
+		Camera->Set_VelocityLock(false);
+		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
 	}
 }
 bool Player::DEATH_STATE(const _float& _DT)
 {
 	_eState = eState::STATE_DEAD;
-	_weaponSlot[_equipNum]->Set_Bow_Equip(false);
 
 	if (KEY_DOWN(DIK_T)) {
 		Reset();
 		_frame = 1;
 		_pState = pState::STATE_LANDING;
 		_eState = eState::STATE_LAND;
+		_weaponSlot[_equipNum]->Set_Bow_Equip(true);
 	}
 
 	return false;
+}
+void Player::START_STATE(const _float& _DT)
+{
+	_alphaRatio = 0.f;
+	if (StartEffectDead) {
+		_alphaRatio = 1.f;
+		_vec3 effectPos = *Component_Transform->Get_Position();
+		effectPos.z -= 1.5f;
+		_vec3 Size = { 7.f, 7.f, 7.f };
+		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SPAWN_BOTTOM, &effectPos, 0.7f, Size, false); // 스폰될떄 바닥 이펙트
+		_pState = pState::STATE_LANDING;
+		dynamic_cast<Player_Shadow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerShadow"))->Set_Alpha(1.f);
+	}
 }
 void Player::Idle_Final_Input(const _float& _DT)
 {
@@ -1763,7 +1773,6 @@ void Player::Buy_item(int itemIdx)
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
 				_artifactSlot[idx]->Set_ItemIdx(2);// 최대 화살수
-				// 렐릭 푸쉬 Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
 				return; 
 			}
 		}

@@ -77,21 +77,26 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                 if (m_fScale <= 3.0f) {
                     m_fScale = 3.0f;
                     m_fTimer = 0.f;
+                    return -1;
                 }
             }
-            m_pTransform->Set_Pos(50.f, fCurrentY, 40.f);
-            if (m_fScale <= 3.0f) {
-                _float fSP = 0.099f - (m_fTimer * 0.05f);
+            m_pTransform->Set_Pos(50.f, fCurrentY, 50.f);
+            if (m_fScale <= 4.0f) {
+                if (nullptr == m_pWhiteOut) {
+                    m_pWhiteOut = StageWhiteOut::Create(GRPDEV);
+                    SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE)->Add_GameObject(m_pWhiteOut);
+                }
+                _float fSP = 0.01f + (m_fTimer * 0.05f);
                 if (fSP > 0.001f) {
                     _vec3 vShake = {
                         RANDOM::Get_float(-fSP, fSP) + 50.f,
                         RANDOM::Get_float(-fSP, fSP) + fCurrentY,
-                        RANDOM::Get_float(-fSP, fSP) + 40.f
+                        RANDOM::Get_float(-fSP, fSP) + 50.f
                     };
                     m_pTransform->Set_Pos(vShake);
                 }
                 else {
-                    m_pTransform->Set_Pos(50.f, 58.f, 40.f);
+                    m_pTransform->Set_Pos(50.f, 58.f, 50.f);
                 }
             }
         }

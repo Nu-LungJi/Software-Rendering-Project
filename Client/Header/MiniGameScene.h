@@ -27,6 +27,7 @@ private:
 	HRESULT		Ready_Enviroment_Layer();
 	HRESULT		Ready_GameLogic_Layer();
 	HRESULT		Ready_UserInterface_Layer() { return S_OK; };
+	VOID		Ready_MonsterHurdle(_vec3 _Src, _vec3 _Dst);
 
 public:
 	static	MiniGameScene* Create(LPDIRECT3DDEVICE9 _GRPDEV, Scene* pCurrScene = nullptr);
@@ -36,6 +37,7 @@ public:
 public:
 	virtual void Free();
 	Tesseract* Get_Chaser() { return m_pChaser; }
+	int*		Get_EventTrigger() { return &m_iEventTrigger; }
 
 private:
 	Player* m_pPlayer = nullptr;

@@ -231,6 +231,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 				TileManager::GetInstance()->Set_MiniGame(false);
 				SoundManager::GetInstance()->Stop_AllSound();
+				SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
 				SceneManager::GetInstance()->Set_CurrentScene(pMiniGame);
 			
 			}

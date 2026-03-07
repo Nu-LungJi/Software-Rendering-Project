@@ -10,7 +10,7 @@ HRESULT Player_Shadow::Ready_GameObject()
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	lateReady = false;
-	AlphaRatio = 1.f;
+	AlphaRatio = 0.f;
 
 	return S_OK;
 }

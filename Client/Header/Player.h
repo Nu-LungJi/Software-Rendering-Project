@@ -15,6 +15,7 @@ enum class pState
 	STATE_ATTACK,
 	STATE_LANDING,
 	STATE_DEATH,
+	STATE_START,
 	//KJJ 03 06
 	STATE_ON_EVENT,
 
@@ -205,10 +206,16 @@ public:
 
 	_vec3				Get_MouseDir();
 	_float			Get_MouseDistance();
+	void		Set_Start_Effect_Dead(bool val) {StartEffectDead = val;}
 
 	// GET REliC
-	int		Get_Relic_ImgIdx()			{ if (nullptr == _artifactSlot[_equipNum]) return -1; return _artifactSlot[_equipNum]->Get_ItemIdx(); }
+	int Get_Relic_ImgIdx(int slotIdx)
+	{
+		if (slotIdx < 0 || slotIdx >= 4) return -1; // 범위 체크
+		if (nullptr == _artifactSlot[slotIdx]) return -1;
 
+		return _artifactSlot[slotIdx]->Get_ItemIdx();
+	}
 	/// 인벤용
 	void		Artifact_Effect();
 	void		Chage_Item(int src, int dst);
@@ -218,6 +225,7 @@ public:
 	void		Reset_MaxArrow();
 private:
 	virtual VOID Free();
+
 
 private:
 	D3DXVECTOR3			MousePicker_NonTarget(HWND _hWnd, Buffer* _TerrainBuffer, Transform* _TerrainTransform);
@@ -231,6 +239,7 @@ private:
 	void			ATTACK_STATE(const _float& _DT);
 	void			LANDING_STATE(const _float& _DT);
 	bool			DEATH_STATE(const _float& _DT);
+	void			START_STATE(const _float& _DT);
 	void			Idle_Final_Input(const _float& _DT);
 
 	void			SKILL_NONE(const _float& _DT);
@@ -302,6 +311,10 @@ private:
 
 	float			_defaultAttackSpeed;
 	BOOL			RealStart;
+
+	float			LandingTimer;
+	bool			StartEffectDead;
+	bool			SummonStart;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP

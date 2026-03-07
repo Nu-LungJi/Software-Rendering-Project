@@ -1,0 +1,74 @@
+#include "../Include/PCH.h"
+#include "WhiteOut.h"
+
+StageWhiteOut::StageWhiteOut(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+StageWhiteOut::StageWhiteOut(CONST GameObject& _RHS) : GameObject(_RHS) {}
+StageWhiteOut::~StageWhiteOut() {}
+
+HRESULT StageWhiteOut::Ready_Effect() {
+	if (FAILED(Component_Initialize())) return E_FAIL;
+	D3DXCreateSprite(GRPDEV, &m_pDrawSprite);
+	m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"ffffff.png");
+
+	SoundManager::GetInstance()->Stop_AllSound();
+	SoundManager::GetInstance()->Play_Sound_Once(L"Stage/WhiteOut.wav", CHANNELID::SOUND_BGM02);
+
+	return S_OK;
+}
+
+INT  StageWhiteOut::Update_GameObject(CONST FLOAT& _DT) {
+
+
+	m_fTimer += _DT;
+	m_fAlpha += _DT * 60.f;
+
+	if (m_fTimer > 1.5f) {
+		m_pDropitem = DropItem::Create(GRPDEV);
+		*POS(m_pDropitem) = *POS(Monster::Get_Player());
+		m_fTimer = 0.f;
+	}
+
+	if (m_fAlpha > 255.f) {
+		Monster::Add_Monster_to_Scene(m_pDropitem, L"DropItem", GAMEOBJECT_TYPE::OBJECT_END);
+		return -1;
+	}
+
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+
+	return GameObject::Update_GameObject(_DT);
+}
+VOID StageWhiteOut::LateUpdate_GameObject(CONST FLOAT& _DT) {
+	GameObject::LateUpdate_GameObject(_DT);
+}
+VOID StageWhiteOut::Render_GameObject() {
+	
+	D3DXMATRIX matScale;
+	D3DXMatrixScaling(&matScale, (float)(WINCX / 64), (float)(WINCY / 64), 1.0f);
+
+	m_pDrawSprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+	m_pDrawSprite->SetTransform(&matScale);
+
+	m_pDrawSprite->Draw(m_pTexture, NULL, NULL, 0, D3DCOLOR_ARGB((int)m_fAlpha, 255, 255, 255));
+
+	m_pDrawSprite->End();
+}
+
+HRESULT	StageWhiteOut::Component_Initialize() {
+
+	return S_OK;
+}
+StageWhiteOut* StageWhiteOut::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
+	StageWhiteOut* WhiteOut = new StageWhiteOut(_GRPDEV);
+	if (FAILED(WhiteOut->Ready_Effect())) {
+		MSG_BOX("Cannot Create Effect.");
+		Safe_Release(WhiteOut);
+		return nullptr;
+	}
+	return WhiteOut;
+}
+VOID StageWhiteOut::Free() {
+
+	Safe_Release(m_pDrawSprite);
+	GameObject::Free();
+}

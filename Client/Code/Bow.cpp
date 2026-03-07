@@ -140,7 +140,7 @@ INT Bow::Update_GameObject(const _float& _DT)
 						PLAY_PLAYER_EFFECT(PLAYER_SKILL::WIND_CHARGING, &_pulsepos, 1.f, Size, true);
 						break;
 					case BowType::IceBow:
-						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 0.35f, Size, true);
+						PLAY_PLAYER_EFFECT(PLAYER_SKILL::ICE_CHARGE, &_pulsepos, 0.7f, Size, true);
 						break;
 					case BowType::EvilHeadBow:
 						Size = { 1.5f, 1.5f, 1.5f };
