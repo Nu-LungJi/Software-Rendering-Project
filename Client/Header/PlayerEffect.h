@@ -50,5 +50,7 @@ private:
 	float _offsetX;
 	float _offsetY;
 	float _offsetZ;
+
+	BOOL Critical;
 };
 

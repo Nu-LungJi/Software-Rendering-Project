@@ -15,6 +15,7 @@ enum class pState
 	STATE_ATTACK,
 	STATE_LANDING,
 	STATE_DEATH,
+	STATE_START,
 	//KJJ 03 06
 	STATE_ON_EVENT,
 
@@ -205,6 +206,7 @@ public:
 
 	_vec3				Get_MouseDir();
 	_float			Get_MouseDistance();
+	void		Set_Start_Effect_Dead(bool val) {StartEffectDead = val;}
 
 	// GET REliC
 	int Get_Relic_ImgIdx(int slotIdx)
@@ -237,6 +239,7 @@ private:
 	void			ATTACK_STATE(const _float& _DT);
 	void			LANDING_STATE(const _float& _DT);
 	bool			DEATH_STATE(const _float& _DT);
+	void			START_STATE(const _float& _DT);
 	void			Idle_Final_Input(const _float& _DT);
 
 	void			SKILL_NONE(const _float& _DT);
@@ -308,6 +311,10 @@ private:
 
 	float			_defaultAttackSpeed;
 	BOOL			RealStart;
+
+	float			LandingTimer;
+	bool			StartEffectDead;
+	bool			SummonStart;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP
