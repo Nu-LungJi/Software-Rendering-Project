@@ -102,7 +102,9 @@ FILENAMEINFO MonsterManager::Make_ID_from_Filename(const wstring& _Filename)
 			else if (!wcscmp(tInfo.szState, L"Charge"))						tInfo.State = (uint8_t)FIREDEVILBOWCHARGEEFFECT::Charge;
 		}
 	}
-	else if (!wcscmp(tInfo.szType, L"Tile"))			{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
+	else if (!wcscmp(tInfo.szType, L"Tile"))						{tInfo.Type = (uint8_t)MONSTER_SEP::Tile;
+				if (!wcscmp(tInfo.szName, L"Pedestal"))						tInfo.name = 1;
+				if (!wcscmp(tInfo.szName, L"DropItem"))						tInfo.name = 2;
 	}
 	else return tInfo;
 

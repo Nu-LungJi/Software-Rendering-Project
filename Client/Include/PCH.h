@@ -81,6 +81,7 @@
 #include "Shadow.h"
 #include "SkyBox.h"
 #include "FireDevilBowChargeEffect.h"
+#include "WhiteOut.h"
 
 #pragma endregion
 
