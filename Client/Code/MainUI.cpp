@@ -100,7 +100,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	Reset_Relic();
-	Set_RelicIcon();	// 렐릭 아이콘
+	Set_RelicIcon();
 
 	if (KEY_DOWN(DIK_J)) {
 		Enable_BossClearUI = TRUE;
@@ -396,33 +396,60 @@ VOID MainUI::Set_RelicIcon()
 	SpriteINFO* sprite = nullptr;
 	
 	for (int i = 0; i < 4; i++) {
-		int idx = PlayerObject->Get_Relic_ImgIdx();
+		int idx = PlayerObject->Get_Relic_ImgIdx(i);
 		if (idx == -1) continue;
 		switch (idx) {
 		case 0:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Item1");			
+			sprite = Component_Sprite->Get_Texture(L"Relic_Info1");			
 			sprite->Set_Visible(TRUE);
-			sprite->Set_Pos(600 + i * 50.f,600.f);
+      sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f,500.f);
+
+			sprite = Component_Sprite->Get_Texture(L"Relic_Bar");
+      sprite->Set_Visible(TRUE);
+      sprite->Set_Opacity(255);
+      sprite->Set_Pos(530 + i * 50.f, 500.f);
 			break;
 		case 1:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Item2");
+			sprite = Component_Sprite->Get_Texture(L"Relic_Info2");
 			sprite->Set_Visible(TRUE);
-			sprite->Set_Pos(600 + i * 50.f,600.f);
+			sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 500.f);
+
+			sprite = Component_Sprite->Get_Texture(L"Relic_Bar2");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 500.f);
+
 			break;
 		case 2:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Item3");
+			sprite = Component_Sprite->Get_Texture(L"Relic_Info3");
 			sprite->Set_Visible(TRUE);
-			sprite->Set_Pos(600 + i * 50.f, 600.f);
+      sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 600.f);
+
+			sprite = Component_Sprite->Get_Texture(L"Relic_Bar3");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 500.f);
+
 			break;
 		case 3:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Item4");
+			sprite = Component_Sprite->Get_Texture(L"Relic_Info4");
 			sprite->Set_Visible(TRUE);
-			sprite->Set_Pos(600 + i * 50.f, 600.f);
+      sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 600.f);
+
+			sprite = Component_Sprite->Get_Texture(L"Relic_Bar4");
+			sprite->Set_Visible(TRUE);
+			sprite->Set_Opacity(255);
+			sprite->Set_Pos(530 + i * 50.f, 500.f);
+
 			break;
 		case 4:
-			sprite = Component_Sprite->Get_Texture(L"Perk_");
-			sprite->Set_Visible(TRUE);
-			sprite->Set_Pos(600 + i * 50.f, 600.f);
+			//sprite = Component_Sprite->Get_Texture(L"Perk_03");
+			//sprite->Set_Visible(TRUE);
+			//sprite->Set_Pos(600 + i * 50.f, 600.f);
 			break;
 		default:
 			break;
@@ -889,13 +916,16 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Relic_Item3.png", L"Relic_Item3", 1300.f, 290.f, 80, 80, TRUE, 0);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// Relic_BackGround////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar", 600.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar2", 600.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar3", 600.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_GageBar.png", L"Relic_Bar4", 600.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_UI_InGame_Perk_IconBackground.png", L"Relic_BackGround", 600.f, 290.f, 80, 80, FALSE, 0);
 	//////////////////////////////////////////////// RelicUI ////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-15.png", L"Relic_Item1", 720.f, 290.f, 80, 80, FALSE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Item2", 780.f, 290.f, 80, 80, FALSE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-02.png", L"Relic_Item3", 600.f, 290.f, 80, 80, FALSE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-05.png", L"Relic_Item4", 600.f, 290.f, 80, 80, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-15.png", L"Relic_Info1", 720.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Info2", 780.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-02.png", L"Relic_Info3", 600.f, 290.f, 40, 40, FALSE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-05.png", L"Relic_Info4", 600.f, 290.f, 40, 40, FALSE, 0);
 
 	return S_OK;
 }
