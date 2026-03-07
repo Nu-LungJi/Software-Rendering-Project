@@ -102,9 +102,6 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 			case 6:
 				vNewTargetEye = { 0.f,-10.f,-10.f };
 			}
-			//if		(vGravity.y == -1.f)	{ vNewTargetEye = { 0.f, 10.f, -10.f }; }
-			//else if (vGravity.z == 1.f)		{ vNewTargetEye = { 10.f, 0.f, -10.f }; }
-			//else							{ vNewTargetEye = { 0.f,-10.f,-10.f }; }
 
 			if (m_vTargetEye != vNewTargetEye) {
 				m_vStartEye		= m_vCurrEye;

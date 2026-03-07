@@ -7,6 +7,8 @@ struct TESSERACTVERTEX {
 };
 #define D3DFVF_TESSERACTVERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE)
 
+class StageWhiteOut;
+
 class Tesseract :
     public GameObject
 {
@@ -48,6 +50,7 @@ private:
     IDirect3DTexture9* m_pTexture = nullptr;
     Transform*      m_pTransform = nullptr;
     Collider*       m_pCollider = nullptr;
+    StageWhiteOut*  m_pWhiteOut = nullptr;
 
 public:
     static         Tesseract* Create(LPDIRECT3DDEVICE9 pGraphicDev);

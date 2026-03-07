@@ -10,9 +10,18 @@ HRESULT CubeFloorTile::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 	
 	m_pTimer = static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Get_Timer();
+
 	return S_OK;
 }
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
+
+
+	if (m_bSet_Hurdle) {
+		m_pHurdle = Hurdle::Create(GRPDEV);
+		Monster::Add_Monster_to_Scene(m_pHurdle, L"Wall", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+		m_pHurdle->Set_bMoved(true);
+		m_bSet_Hurdle = false;
+	}
 
 	if (!m_bTrigger) {
 
@@ -31,28 +40,37 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 	if (m_pTarget == nullptr)
 		m_pTarget = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
+	if (m_pHurdle != nullptr) {
+		_vec3*	pHurdlePos = POS(m_pHurdle);
+		_vec3*	pHurdleScale = SCALE(m_pHurdle);
+		_vec3*	pMyPos = m_pTransform->Get_Position();
+		_vec3*	pMyScale = m_pTransform->Get_Scale();
+
+		m_pHurdle->Set_bMoved(true);
+
+		*pHurdlePos = *pMyPos;
+		*pHurdleScale = *pMyScale;
+
+		switch (m_ePoolingMode)
+		{
+		case POOLINGMODE::X:
+			pHurdlePos->y = pMyPos->y + pMyScale->y * 2.f;
+			pHurdleScale->x = pMyScale->x * 0.5f;
+			break;
+		case POOLINGMODE::Y:
+			pHurdlePos->z = pMyPos->z - pMyScale->z * 2.f;
+			pHurdleScale->y = pMyScale->y * 0.5f;
+			break;
+		case POOLINGMODE::Z:
+			m_pHurdle->Set_ObjectDead(true);
+			m_pHurdle = nullptr;
+			break;
+		}
+
+	}
+
 	Pooling();
 
-	//switch (m_ePoolingMode)
-	//{
-	//case POOLINGMODE::X:
-	//	if (POS(m_pTarget)->x - 5.f > m_pTransform->Get_Position()->x) {
-	//		m_iFalling = 1;
-	//	}
-	//	break;
-	//case POOLINGMODE::Y:
-	//	if (POS(m_pTarget)->y -5.f > m_pTransform->Get_Position()->y) {
-	//		m_iFalling = 1;
-	//	}
-	//	break;
-	//case POOLINGMODE::Z:
-	//	if (POS(m_pTarget)->z -5.f > m_pTransform->Get_Position()->z) {
-	//		m_iFalling = 1;
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
 	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -93,7 +111,6 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
 		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
 	}
-	if (!IsIn_Cam) return;
 
 	GameObject::LateUpdate_GameObject(_DT);
 }
@@ -120,7 +137,7 @@ HRESULT CubeFloorTile::Component_Initialize() {
 
 	m_bTrigger = false;
 
-	m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"CubeFloorTileDark.dds");
+	m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"CubeFloor.dds");
 	if (m_pTexture == nullptr) return E_FAIL;
 
 	Monster::Staic_Obj(GRPDEV, m_pTransform);
@@ -182,7 +199,6 @@ BOOL CubeFloorTile::OnCollisionStay(GameObject* _Other)
 }
 VOID CubeFloorTile::Free() {
 
-
 	GameObject::Free();
 }
 bool CubeFloorTile::Pooling()
@@ -209,7 +225,7 @@ bool CubeFloorTile::Pooling()
 	_float fThresholdY = fLimitY + (fSize * 2.5f);
 	_float fEdgeZ = MINIGAMETILEZ * vScale->z * 2.f;
 
-	bool bMoved = false;
+	bMoved = false;
 
 	if (m_ePoolingMode == POOLINGMODE::X) {
 		if ((vTargetPos.x - vPos->x > fHalf)||
@@ -257,5 +273,5 @@ bool CubeFloorTile::Pooling()
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
 		m_iFalling = 4;
 	}
-	return IsIn_Cam;
+	return bMoved;
 }
