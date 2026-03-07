@@ -55,7 +55,7 @@ HRESULT	MainUI::Ready_GameObject() {
 
 	Enable_Tutorial = FALSE;
 	Tutorial_Timer = 0.f;
-	Tutorial_Sequence = 0;
+	Tutorial_Sequencer = 1;
 
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"));
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"IceBow_IMG"));
@@ -220,8 +220,8 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 		SpriteINFO* Character	= Component_Sprite->Get_Texture(L"SpeechBubble_Tif");
 		FontObject* Font		= UIManager::GetInstance()->Find_FontObject(L"TifNotice_Text");
 
-		Font->Text = _Text;
 		if		(Timer01 < SpeechBubble_FadeInTime) {
+			Font->Text = _Text;
 			Timer01 += _DT;
 
 			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y - Timer01 * 2 * cosf(Timer01));
@@ -251,16 +251,18 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 		else if (Timer01 >= SpeechBubble_FadeInTime + SpeechBubble_StayTime && Timer01 < SpeechBubble_FadeInTime + SpeechBubble_FadeOutTime + SpeechBubble_StayTime) {
 			Timer01 += _DT;
 
-			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y + (Timer01 - 6) * 3);
-			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y + (Timer01 - 6) * 3);
-			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + (Timer01 - 6) * 3);
-			Font->Set_Pos( Font->Get_Pos().x, Font->Get_Pos().y + (Timer01 - 6) * 3 );
+			FLOAT Factor = Timer01 - (SpeechBubble_FadeInTime + SpeechBubble_StayTime);
 
-			if (Timer01 < 7.f) {
-				BackGround->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Frame->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Character->Set_Opacity(255 - 255 * (Timer01 - 6));
-				Font->Set_Color(200 - 200 * (Timer01 - 6), 255, 255, 255);
+			BackGround->Set_Pos(BackGround->Get_Pos().x, BackGround->Get_Pos().y + Factor * 2 * cosf(Factor));
+			Frame->Set_Pos(Frame->Get_Pos().x, Frame->Get_Pos().y + Factor * 2 * cosf(Factor));
+			Character->Set_Pos(Character->Get_Pos().x, Character->Get_Pos().y + Factor * 2 * cosf(Factor));
+			Font->Set_Pos( Font->Get_Pos().x, Font->Get_Pos().y + Factor * 2 * cosf(Factor));
+
+			if (Timer01 < SpeechBubble_FadeInTime + SpeechBubble_FadeOutTime + SpeechBubble_StayTime) {
+				BackGround->Set_Opacity(255 - 255 * Factor);
+				Frame->Set_Opacity(255 - 255 * Factor);
+				Character->Set_Opacity(255 - 255 * Factor);
+				Font->Set_Color(200 - 200 * Factor, 255, 255, 255);
 			}
 			else {
 				BackGround->Set_Opacity(0);
@@ -278,10 +280,10 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			Character->Set_Opacity(0);
 			Font->Set_Color(0, 255, 255, 255);
 
-			BackGround->Set_Pos(0.f, 529.f + 30.f);
-			Character->Set_Pos(0.f, 529.f + 30.f);
-			Frame->Set_Pos(0.f, 503.f + 30.f);
-			Font->Set_Pos( 180.f, 555.f + 30.f );
+			BackGround->Set_Pos(0.f, 560.f);
+			Character->Set_Pos(0.f, 560.f);
+			Frame->Set_Pos(0.f, 533.f);
+			Font->Set_Pos( 140.f, 577.f );
 		}
 	}
 }
@@ -536,7 +538,6 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_ArrowCount"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"				));
-		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HPBar_Frame"));
 		
@@ -777,7 +778,77 @@ VOID MainUI::Display_Tutorial(CONST FLOAT& _DT) {
 	if (Enable_Tutorial) {
 		Tutorial_Timer += _DT;
 
+		SpeechBubble_FadeInTime = 1.f;
+		SpeechBubble_FadeOutTime = 1.f;
+		SpeechBubble_StayTime = 2.f;
+		if (Tutorial_Timer <= 1.f) {
+			Component_Sprite->Get_Texture(L"KEY_E")->Set_Opacity(255- 255 * Tutorial_Timer);
+			Component_Sprite->Get_Texture(L"Interaction_BG")->Set_Opacity(155 - 155 * Tutorial_Timer);
+			UIManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(200 - 200 * Tutorial_Timer, 255, 255, 255);
+		}
+
+		FLOAT SpeechInterval = 6.f;
+
+		if		(Tutorial_Timer <  SpeechInterval * 1.f && Tutorial_Sequencer == 1) {
+			Speech_PopUp(L"안녕하세요 모험가님 저는 시간의 사도 티프에요,\n이번 모험을 도와드릴 조력자이기도 합니다.");
+			Tutorial_Sequencer = 2;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 1.f && Tutorial_Timer < SpeechInterval * 2.f && Tutorial_Sequencer == 2) {
+			Speech_PopUp(L"먼저 [W, A, S, D]키로 이동하면서 천천히 \n마을을 둘러보세요.");
+			Tutorial_Sequencer = 3;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 2.f && Tutorial_Timer < SpeechInterval * 3.f && Tutorial_Sequencer == 3) {
+			Speech_PopUp(L"그리고 [마우스]를 통해 시선을 옮기고, 클릭하여, \n화살을 발사하거나 대쉬를 써보세요.");
+			Tutorial_Sequencer = 4;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 3.f && Tutorial_Timer < SpeechInterval * 4.f && Tutorial_Sequencer == 4) {
+			Speech_PopUp(L"[숫자키 1 - 4]로 현재 착용중인 무기를 변경하여,\n다양한 공격을 해보세요.");
+			Tutorial_Sequencer = 5;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 4.f && Tutorial_Timer < SpeechInterval * 5.f && Tutorial_Sequencer == 5) {
+			Speech_PopUp(L"무기들이나, 장비들은 [B]키를 눌러 확인할 수 있고,\n장비를 변경하실 수도 있어요.");
+			Tutorial_Sequencer = 6;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 5.f && Tutorial_Timer < SpeechInterval * 6.f && Tutorial_Sequencer == 6) {
+			Speech_PopUp(L"마지막으로 [Q]키 와 [R]키를 이용해서 가호 스킬을\n사용할 수 있으니, 잊지 마세요!.");
+			Tutorial_Sequencer = 7;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 6.f && Tutorial_Timer < SpeechInterval * 7.f && Tutorial_Sequencer == 7) {
+			Speech_PopUp(L"모험가님을 위해 특별히 모험에 도움이 될만한 \n장비들을 드릴게요.");
+			
+			Tutorial_Sequencer = 8;
+		}
+		if (Tutorial_Sequencer == 8 && Tutorial_Timer >= SpeechInterval * 6.f + 0.01f) {
+			ItemINFO* Hermes = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(0);
+			Set_EnableItemPopUP(TRUE, Hermes, L"DIC_InfoFrame_Relic_Item1");
+			Tutorial_Sequencer = 9;
+		}
+		if (Tutorial_Sequencer == 9 && Tutorial_Timer >= SpeechInterval * 6.f + 0.99f) {
+			ItemINFO* Horcrux = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(1);
+			Set_EnableItemPopUP(TRUE, Horcrux, L"DIC_InfoFrame_Relic_Horcrux");
+			Tutorial_Sequencer = 10;
+		}
+		else if (Tutorial_Timer >= SpeechInterval * 7.f && Tutorial_Timer < SpeechInterval * 8.f && Tutorial_Sequencer == 10) {
+			Speech_PopUp(L"이제 떠날 준비가 다 되셨군요, 모험가님께 행운을 빌게요. \n아래에 포탈이 있습니다.");
+			Tutorial_Sequencer = 11;
+		}
+
 		
+		if (Tutorial_Sequencer == 11) {
+
+			SpeechBubble_FadeInTime = 1.f;
+			SpeechBubble_FadeOutTime = 1.f;
+			SpeechBubble_StayTime = 5.f;
+
+			Component_Sprite->Get_Texture(L"KEY_E")->Set_Opacity(255);
+			Component_Sprite->Get_Texture(L"Interaction_BG")->Set_Opacity(155);
+			UIManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(200, 255, 255, 255);
+
+			Set_FadeOption(FALSE, 2.f);
+			HPBarFill->Set_Visible(FALSE);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Visible(FALSE);
+			Enable_Tutorial = FALSE;
+		}
 	}
 }
 
@@ -951,11 +1022,11 @@ HRESULT MainUI::Text_Initialize() {
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 760.f, 600.f }, 16, L"Interaction_Text",	L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255), 100, TRUE, DT_LEFT));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////// GETITEM ///////////////////////////////////////////////////
-	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
-	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1550.f, 340.f }, 12, L"ItemClass",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255)));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1430.f, 330.f }, 20, L"ItemInfo",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255));
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 1550.f, 340.f }, 12, L"ItemClass",			L"08서울한강체 L",	D3DCOLOR_ARGB(200, 255, 255, 255));
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
-	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 30.f }, 13, L"TifNotice_Text",					L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 100, TRUE, DT_LEFT);
+	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 140.f, 550.f + 27.f }, 13, L"TifNotice_Text",					L"08서울한강체 L",	D3DCOLOR_ARGB(255, 255, 255, 255), 0, TRUE, DT_LEFT);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 615.091,	5.f }, 15, L"Boss_Name",		L"08서울한강체 L",	D3DCOLOR_ARGB(0, 255, 255, 255), 700));
 	AllFontOBJ.push_back(UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"", { 616.967f, 25.f }, 13, L"Boss_Tag",			L"08서울한강체 L",	D3DCOLOR_ARGB(0, 160, 160, 160)));
@@ -965,7 +1036,7 @@ HRESULT MainUI::Text_Initialize() {
 	UIManager::GetInstance()->Add_GlobalObject(UIManager::GetInstance()->Find_FontObject(L"Destroyed"), L"Destroyed");
 	return S_OK;
 }
-VOID MainUI::PopUp_ItemInfo(ItemINFO* Item, FLOAT _DT) {
+VOID	MainUI::PopUp_ItemInfo(ItemINFO* Item, FLOAT _DT) {
 	if (Enable_ItemPopUp) {
 		if (ItemINFOSetting) {
 			BackGround = Component_Sprite->Get_Texture(L"ItemNoticeBG");
@@ -1080,7 +1151,7 @@ VOID MainUI::PopUp_ItemInfo(ItemINFO* Item, FLOAT _DT) {
 		}
 	}
 }
-VOID MainUI::Set_EnableItemPopUP(BOOL _POP, ItemINFO* _IT, wstring _SPR) {
+VOID	MainUI::Set_EnableItemPopUP(BOOL _POP, ItemINFO* _IT, wstring _SPR) {
 	Enable_ItemPopUp = _POP;
 	PopUpItem = _IT;
 	PlayerInven* PI = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"));

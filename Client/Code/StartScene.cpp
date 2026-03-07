@@ -9,8 +9,8 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
+	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
@@ -208,7 +208,7 @@ HRESULT   StartScene::Ready_Scene() {
 		//MSG_BOX("로드 성공");
 		CloseHandle(LFile);
 	}
-	PlayingSound = TRUE;
+	PlayingSound = FALSE;
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
@@ -265,7 +265,7 @@ VOID StartScene::Render_Scene() {
     //if (FAILED(LYR->Add_GameObject(GOBJ)))   return E_FAIL;
 }
 HRESULT StartScene::Ready_Enviroment_Layer() {
-    Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_STATIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
+    //Add_GameObjectToScene<Terrain>(LAYER_TYPE::LAYER_STATIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Terrain");
     return S_OK;
 }
 HRESULT StartScene::Ready_GameLogic_Layer() {
@@ -282,7 +282,7 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
 
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
     //Add_GameObjectToScene<Fireball>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
-    //Add_GameObjectToScene<NPC>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC     , L"NPC_Tif"      );
+    Add_GameObjectToScene<NPC>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC     , L"NPC_Tif"      );
     return S_OK;
 }
 HRESULT StartScene::Ready_UserInterface_Layer() {
@@ -305,23 +305,27 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     return S_OK;
 }
 VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
-	if (PlayingSound == 0) return;
-	if (PlayingSound == 1) {
+	if		(PlayingSound == 0) return;
+	if		(PlayingSound == 1) {
 		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.f);
 		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav"	  , CHANNELID::SOUND_BGM02, 0.f);
-		PlayingSound = 2;
+		PlayingSound = 3;
 	}
-	else if (PlayingSound == 2) {
+	if		(PlayingSound == 2) {
+		SoundManager::GetInstance()->Play_Sound(L"UI/Intro/Intro_BGM.wav", CHANNELID::SOUND_BGM01, 0.5f);
+		PlayingSound = 0;
+	}
+	else if (PlayingSound == 3) {
 		if (Volume01 <= 0.3f) {
 			Volume01 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, Volume01);
 		}
 		else {
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
-			PlayingSound = 3;
+			PlayingSound = 4;
 		}
 	}
-	else if (PlayingSound == 3){
+	else if (PlayingSound == 4){
 		if (Volume02 <= 0.3f) {
 			Volume02 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);

@@ -100,7 +100,7 @@ HRESULT	ShopUI::Text_Initialize() {
 }
 
 HRESULT ShopUI::Item_Initialize() {
-    SpriteObject* InvenSprite = static_cast<SpriteObject*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven")->Get_Component(COMPONENT_TYPE::COMPONENT_SPRITE));
+    SpriteObject* InvenSprite = dynamic_cast<SpriteObject*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven")->Get_Component(COMPONENT_TYPE::COMPONENT_SPRITE));
     ItemINFO* pItem1 = new ItemINFO;
     pItem1->ItemDesc = { 
         L"사도의 가호",

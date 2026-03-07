@@ -21,7 +21,10 @@ private:
 	GameObject*					pBlackOut;
 	GraphicDevice*				DEVCLASS;
 	LPDIRECT3DDEVICE9			GRPDEV;
-	MiniGameScene* pMiniGame;
+	MiniGameScene*				pMiniGame;
+	HCURSOR hCustomCursor;
+	IDirect3DTexture9* CursorTex;
+	IDirect3DSurface9* Surface;
 public:
 	static	GameManager*		Create();
 	virtual	VOID				Free();

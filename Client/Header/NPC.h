@@ -28,7 +28,7 @@ private:
 	Texture*	Component_Texture;
 	Collider*	Component_Collider;
 
-	GameObject* Player;
+	GameObject* PlayerObject;
 	MainUI*		PlayerUI;
 	NPCTalk*	NPCTalkUI;
 
@@ -36,7 +36,6 @@ private:
 
 	_float  Timer_Tif;
 	_int	Tif_AnimIDX;
-
 
 	BOOL	Interaction_Possible;
 

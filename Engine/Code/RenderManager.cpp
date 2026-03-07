@@ -80,6 +80,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			if (_OBJ->Get_ObjectTag() == L"MainUI") {
 				_OBJ->Render_GameObject();
 				EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::UI_EFFECT);
+			
 				UIManager::GetInstance()->Render_FontObjects();
 			}
 			else {

@@ -10,10 +10,12 @@ HRESULT NPC::Ready_GameObject() {
 	Timer_Tif = 0.f;
 	Tif_AnimIDX = 1;
 
-	Interaction_Possible = FALSE;
+	Interaction_Possible = TRUE;
 
-	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
-		Get_GameObject(L"Camera"));
+	PlayerObject	= dynamic_cast<Player*>	(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+
+
+	CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
 
 	_vec3 cameraDir = *(Camera->Get_EyeVec()) - *(Camera->Get_AtVec());
 	_vec3 planeDir = { 0.f, 1.f, 0.f };
@@ -29,41 +31,16 @@ INT	NPC::Update_GameObject(const _float& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 
-	TalkWithNPC(_DT);
-	Timer_Tif += _DT;
-
 	return 0;
 }
 VOID NPC::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
+	Timer_Tif += _DT;
 	if (Timer_Tif > 0.2f) {
 		Tif_AnimIDX = Tif_AnimIDX % 7 + 1;
 		Timer_Tif = 0.f;
 	}
-
-	_matrix		matBill, matWorld, matView;
-
-	matWorld = *Component_Transform->Get_World();
-	GRPDEV->GetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMatrixIdentity(&matBill);
-
-	// y축 회전만 제거
-	matBill._11 = matView._11;
-	matBill._13 = matView._13;
-	matBill._31 = matView._31;
-	matBill._33 = matView._33;
-
-	D3DXMatrixInverse(&matBill, 0, &matBill);
-
-	// 주의 할 것
-	matWorld = matBill * matWorld;
-
-	Component_Transform->Set_World(&matWorld);
-
-	_vec3		vPos;
-	Component_Transform->Get_Info(INFO_POS, &vPos);
-	AlphaSorting(&vPos);
+		AlphaZValue = PlayerObject->Get_AlphaZValue() + 1;
 }
 VOID NPC::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -91,10 +68,10 @@ HRESULT NPC::Component_Initialize() {
 	}
 	
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+	Component_Collider->Set_Scale(2.f, 2.f, 2.f);
 
-	Component_Transform->Set_Pos(5.f, 1.f, 5.f);
-	Component_Transform->Set_Scale(0.6f, 1.2f, 1.f);
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 23.f }); 
+	Component_Transform->Set_Scale(0.72f, 1.44f, 1.2f);
 
 	return S_OK;
 }
@@ -112,21 +89,23 @@ VOID NPC::Free() {
 }
 
 BOOL NPC::OnCollisionEnter(GameObject* _Other) {
-	PlayerUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"));
-	NPCTalkUI = dynamic_cast<NPCTalk*>(SceneManager::GetInstance()->Get_GameObject(L"NPCTalk"));
-
-	if (_Other->Get_ObjectTag() == L"Player") {
-		
-		PlayerUI->PopUp_Interaction_Notice(L"대화하기 - 티프", TRUE);
-		
-		return TRUE;
-	}
 	return FALSE;
 }
 BOOL NPC::OnCollisionStay(GameObject* _Other) {
-	if (KEY_DOWN(DIK_E)) 
-		Interaction_Possible = TRUE;
 	
+	if (_Other->Get_ObjectTag() == L"Player") {
+		if (Interaction_Possible) {
+			PlayerUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"));
+			
+			PlayerUI->PopUp_Interaction_Notice(L"대화하기 - 티프", TRUE);
+			UIManager::GetInstance()->Find_FontObject(L"Interaction_Text")->Set_Color(255, 255, 255, 255);
+		}
+		if (Interaction_Possible && KEY_DOWN(DIK_E)) {
+			PlayerUI->Set_PlayTutorial(TRUE);
+			Interaction_Possible = FALSE;
+		}
+		return TRUE;
+	}
 	return FALSE;
 }
 BOOL NPC::OnCollisionExit(GameObject* _Other) {
@@ -135,17 +114,4 @@ BOOL NPC::OnCollisionExit(GameObject* _Other) {
 		return TRUE;
 	}
 	return FALSE;
-}
-
-VOID NPC::TalkWithNPC(FLOAT _DT) {
-	if (Interaction_Possible) {
-		if (ObjectTAG == L"NPC_Tif") 
-			if (NPCTalkUI->Activate_NPCTalk(NPC_CHARACTER::NPC_TIF, _DT) == TRUE) {
-				Interaction_Possible = FALSE;
-			}
-		if (ObjectTAG == L"NPC_Shop")
-			if(NPCTalkUI->Activate_NPCTalk(NPC_CHARACTER::NPC_SHOP, _DT) == TRUE) {
-				Interaction_Possible = FALSE;
-			}
-	}
 }

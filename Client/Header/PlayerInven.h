@@ -31,6 +31,8 @@ public:
 
 	HRESULT Buy_Item(INT itemIdx);
 
+	ItemINFO* Get_Item(INT itemIdx);
+
 	SpriteINFO* Get_InvenFrameSprite(wstring _TAG);
 	SpriteINFO* Get_InfoFrameSprite(wstring _TAG);
 

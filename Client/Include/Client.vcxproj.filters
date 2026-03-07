@@ -43,9 +43,6 @@
     <Filter Include="04. UI\AugmentUI">
       <UniqueIdentifier>{cdda3270-297f-43a4-a689-5010dc732961}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. UI\02. MainUI">
-      <UniqueIdentifier>{6dda267f-0b5a-42fe-86aa-cfd14ceff1a0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. UI\04. NPCTalk">
       <UniqueIdentifier>{d4b94dac-8b9e-4ebb-ae55-e178ec4c4624}</UniqueIdentifier>
     </Filter>
@@ -69,9 +66,6 @@
     </Filter>
     <Filter Include="02. Scene\99. MiniGameScene">
       <UniqueIdentifier>{7b40fad7-addf-4aa7-8e5d-9fe597019890}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. UI\06. BossUI">
-      <UniqueIdentifier>{fc9f92f2-60b9-4c63-9fc8-7271ee9b4f51}</UniqueIdentifier>
     </Filter>
     <Filter Include="07. Font">
       <UniqueIdentifier>{788fe5ad-1fe2-427d-9297-1a8705adc142}</UniqueIdentifier>
@@ -794,5 +788,10 @@
     <ResourceCompile Include="Client.rc">
       <Filter>00. DefaultWindow\Assets</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Resource\Extra\MouseCursor.cur">
+      <Filter>00. DefaultWindow\Assets</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -78,7 +78,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 
 		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
-		Camera->Ready_SmoothCamera(TRUE);
+		Camera->Set_SmoothCamera(TRUE);
 		Enable_BossAppearStaging = TRUE;
 	}
 

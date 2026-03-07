@@ -32,19 +32,19 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 			  {
 			  case 0:
 		
-				  pObj = Bat::Create(GRPDEV, vPos, true);
+				  //pObj = Bat::Create(GRPDEV, vPos, true);
 				  break;
 			  case 1:
-				  pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
+				  //pObj = ScorpionEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 2:
-				  pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
+				  //pObj = ShotGunEvilSoul::Create(GRPDEV, vPos, true);
 				  break;
 			  case 3:
-				  pObj = EvilSlime::Create(GRPDEV, vPos, true);
+				  //pObj = EvilSlime::Create(GRPDEV, vPos, true);
 				  break;
 			  case 4:
-				  pObj = EvilFrog::Create(GRPDEV, vPos, true);
+				  //pObj = EvilFrog::Create(GRPDEV, vPos, true);
 				  break;
 			  }
 			  if(pObj != nullptr)
@@ -143,19 +143,19 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN1:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-		Monster_Spawn();
+		//Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-		Monster_Spawn2();
+		//Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-		Monster_Spawn3();
+		//Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
 		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
-		Monster_Spawn4();
+		//Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
 		if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
@@ -190,13 +190,18 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 					}
 				}
 				else {
-
-					if (Crash_Player() != nullptr && KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z))
-					{
-						dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
-						dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
-						Set_ObjectDead(TRUE);
+					if (Crash_Player() != nullptr) {
+						dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - Ç³¼öÀÇ È°", TRUE);
+						if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z)) {
+							dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
+							dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
+							ItemINFO* PungSuArrow = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Get_Item(6);
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, PungSuArrow, L"DIC_InfoFrame_DarkBow");
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+							Set_ObjectDead(TRUE);
+						}
 					}
+					
         }
 		}
 		break;

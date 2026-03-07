@@ -29,6 +29,7 @@ public:		// Trigger Function
 	VOID			Speech_PopUp_Skill(wstring _Text, int type) { SpeechBubble_Text = _Text; Enable_SpeechBubbleSkill = TRUE; ImgFrame = 1; FrameTimer = 0.f;  Effect = nullptr; skillType = type; }
 
 	VOID			Set_FadeOption(INT _OPT, FLOAT _SPEED) { Enable_MainUIFade = _OPT; FadeSpeed = _SPEED; }
+	BOOL			Get_FadeOption() { return Enable_MainUIFade; }
 
 	VOID			Set_EnableSpeechBubble(BOOL _ESB) { SpeechBubble_Activate = _ESB; }
 
@@ -154,7 +155,7 @@ private:
 ////////////////////////////////////////////// 튜토리얼
 	INT				Enable_Tutorial;
 	FLOAT			Tutorial_Timer;
-	INT				Tutorial_Sequence;
+	INT				Tutorial_Sequencer;
 //////////////////////////////////////////////
 private:
 	virtual	VOID		Free();
