@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 class CameraObject;
+class Hurdle;
 
 enum class POOLINGMODE :uint8_t { X = 0, Y, Z, MINUS_X, End };
 
@@ -48,17 +49,20 @@ public:
 
 
     BOOL			OnCollisionStay(GameObject* _Other)	override;
-    bool           m_bGrid;
 
+    bool            m_bGrid;
+
+    
 private:
     virtual  void            Free();
 
-    bool    Pooling();
-
+    bool            Pooling();
+    bool            bMoved = true;
 public:
     void        Set_OriginPos(_vec3 _vPos) { m_vOriginPos = _vPos; }
     void        Move_to_OriginPos() { m_pTransform->Set_Pos(m_vOriginPos); }
     POOLINGMODE Get_PoolingMode() { return m_ePoolingMode; }
+    void        Set_Hurdle(bool b) { m_bSet_Hurdle = b; }
 
 private:
     GameObject*         m_pTarget = nullptr;
@@ -71,6 +75,8 @@ private:
     int                 m_iFalling;
     _vec3               m_vOriginPos;
     POOLINGMODE         m_ePoolingMode = POOLINGMODE::X;
+    Hurdle*             m_pHurdle = nullptr;
+    bool                m_bSet_Hurdle = false;
 };
 
 class CubeFunction

@@ -90,8 +90,9 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_FOUR].push_back(pAttack);
 	}
-	SoundManager::GetInstance()->Stop_AllSound();
-	SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+	
+	SoundManager::GetInstance()->Play_Sound(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_BGM01, 0.4f,FALSE);
+	
 	return S_OK;
 }
 HRESULT	 Cheonlog::Make_TextureList(wstring _FileName, LEAF_ATTACK eid)

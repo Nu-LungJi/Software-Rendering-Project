@@ -1773,7 +1773,6 @@ void Player::Buy_item(int itemIdx)
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
 				_artifactSlot[idx]->Set_ItemIdx(2);// 최대 화살수
-				// 렐릭 푸쉬 Push_RelicIcon(_artifactSlot[idx]->Get_ItemIdx());
 				return; 
 			}
 		}

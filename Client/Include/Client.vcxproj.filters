@@ -148,9 +148,6 @@
     <Filter Include="03. GameObject\03. NPC\01. Shop\03. DropItem">
       <UniqueIdentifier>{6e20169a-f86b-4124-9a9f-76e5c02f61bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\03. NPC\01. Shop\04. DropItemEffect">
-      <UniqueIdentifier>{9fd12251-ffa4-4d9d-8467-7920e29ac2c5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\04. Terrain">
       <UniqueIdentifier>{a0a97f9e-3e66-4576-971e-17a85d10cb35}</UniqueIdentifier>
     </Filter>
@@ -247,9 +244,6 @@
     <Filter Include="03. GameObject\10. Hurdle">
       <UniqueIdentifier>{84b3ae16-d7ce-4569-94bb-cc684334f78e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. GameObject\05. Tile\02. Decor">
-      <UniqueIdentifier>{0584ba8f-4c3a-4661-a181-767822882f40}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. UI\EndingCredit">
       <UniqueIdentifier>{25bf7cb3-d5e6-411d-9715-73543dc361c3}</UniqueIdentifier>
     </Filter>
@@ -261,6 +255,15 @@
     </Filter>
     <Filter Include="03. GameObject\06. Effect\01. PlayerEffect">
       <UniqueIdentifier>{c06fa3c8-29a5-4f3f-8a94-48e018a67418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\07. ProJectile\07. FireDevilBowChareEffect">
+      <UniqueIdentifier>{2c1df1f5-3d8e-4556-a7ce-3a2060c968cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\03. NPC\01. Shop\04. DropItemEffect">
+      <UniqueIdentifier>{9fd12251-ffa4-4d9d-8467-7920e29ac2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\06. Effect\06. WhiteOut">
+      <UniqueIdentifier>{e0410cb3-55f6-4fe4-a6fc-5e781b2fe2eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -520,7 +523,6 @@
     <ClInclude Include="..\Header\IntroUI.h">
       <Filter>04. UI\99. IntroUI</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h" />
     <ClInclude Include="..\Header\Tesseract.h">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClInclude>
@@ -529,6 +531,12 @@
     </ClInclude>
     <ClInclude Include="Player_Shadow.h">
       <Filter>03. GameObject\01. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\FireDevilBowChargeEffect.h">
+      <Filter>03. GameObject\07. ProJectile\07. FireDevilBowChareEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\WhiteOut.h">
+      <Filter>03. GameObject\06. Effect\06. WhiteOut</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -771,7 +779,6 @@
     <ClCompile Include="..\Code\IntroUI.cpp">
       <Filter>04. UI\99. IntroUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp" />
     <ClCompile Include="..\Code\Tesseract.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClCompile>
@@ -780,6 +787,12 @@
     </ClCompile>
     <ClCompile Include="Player_Shadow.cpp">
       <Filter>03. GameObject\01. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FireDevilBowChargeEffect.cpp">
+      <Filter>03. GameObject\07. ProJectile\07. FireDevilBowChareEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WhiteOut.cpp">
+      <Filter>03. GameObject\06. Effect\06. WhiteOut</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
