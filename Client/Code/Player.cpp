@@ -17,6 +17,7 @@ HRESULT Player::Ready_GameObject() {
 	memset(_weaponSlot, 0, sizeof(Bow*) * 4);
 	memset(_artifactSlot, 0, sizeof(GameObject*) * 4);
 	memset(_inventory, 0, sizeof(GameObject*) * 10);
+
 	_pState				= pState::STATE_START;
 	_eState				= eState::STATE_LAND;
 	_see				= pSee::SEE_DOWN;
@@ -80,7 +81,8 @@ HRESULT Player::Ready_GameObject() {
 	Component_Transform->Set_Scale({ 2.f, 2.f, 2.f });
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 	//Component_Transform->Set_Pos({ 5.f, 0.5f, 5.f });
-	Component_Transform->Set_Pos({ 20.213f , 0.5f, 18.5f }); // 광윤 디버깅용
+	Component_Transform->Set_Pos({ 20.213f , 0.5f, 20.f }); // 광윤 디버깅용
+
 	// 활 생성
 	{
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Player_Shadow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"PlayerShadow");
@@ -215,8 +217,8 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_pState = pState::STATE_DEATH;
 		SoundManager::GetInstance()->Stop_AllSound();
 	}
-	//SetOnTerrain(); - 광윤 디버그
 
+	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	_frameTick += _DT;
 	if (_isStop) return 0;
 
@@ -281,7 +283,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	}
 
 	AlphaSorting(Component_Transform->Get_Position());
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+	
 
 	return S_OK;
 }

@@ -29,18 +29,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     GameManager* GM = GameManager::Create();
     GUIManager::GetInstance()->Ready_GUIManager();
-   // EditorManager::GetInstance()->Initialize();
+    // EditorManager::GetInstance()->Initialize();
     MSG msg;
     msg.message = WM_NULL;
 
     if (!GM) return FALSE;
 
     TimeManager::GetInstance()->Ready_TimeManager();                        // 전체 타이머 초기화
-    
+
     TimeManager::GetInstance()->Activate_Timer(TIMERTYPE::TIMER_WORLD);     // 월드  타이머 활성화
     TimeManager::GetInstance()->Activate_Timer(TIMERTYPE::TIMER_FPS);       // FPS용 타이머 활성화
     FLOAT FixedFPS = 60.f;
-    
+
     while (true) {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
             if (WM_QUIT == msg.message) break;
@@ -51,9 +51,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             }
         }
         else {
-            
+
             TimeManager::GetInstance()->Update_TimeManager(TIMERTYPE::TIMER_WORLD);
-            
+
             if (TimeManager::GetInstance()->Check_FixedFrame(TimeManager::GetInstance()->Get_DeltaTime(TIMERTYPE::TIMER_WORLD), FixedFPS)) {
 
                 TimeManager::GetInstance()->Update_TimeManager(TIMERTYPE::TIMER_FPS);
@@ -114,9 +114,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
     float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
     //SetProcessDPIAware();
     hWnd = CreateWindowW(szWindowClass, L"Software Rendering Project", WS_OVERLAPPEDWINDOW,
-       (Resolution.x - WINCX)/2 - 8, (Resolution.y - WINCY) / 2 - 19, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+        (Resolution.x - WINCX) / 2 - 8, (Resolution.y - WINCY) / 2 - 19, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
-    
+
     if (!hWnd) return FALSE;
 
     ShowWindow(hWnd, nCmdShow);
@@ -131,15 +131,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
     switch (message)
     {
-    //case WM_DPICHANGED:
-    //    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
-    //    {
-    //        //const int dpi = HIWORD(wParam);
-    //        //printf("WM_DPICHANGED to %d (%.0f%%)\n", dpi, (float)dpi / 96.0f * 100.0f);
-    //        const RECT* suggested_rect = (RECT*)lParam;
-    //        ::SetWindowPos(hWnd, NULL, suggested_rect->left, suggested_rect->top, suggested_rect->right - suggested_rect->left, suggested_rect->bottom - suggested_rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
-    //    }
-    //    break;
+        //case WM_DPICHANGED:
+        //    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
+        //    {
+        //        //const int dpi = HIWORD(wParam);
+        //        //printf("WM_DPICHANGED to %d (%.0f%%)\n", dpi, (float)dpi / 96.0f * 100.0f);
+        //        const RECT* suggested_rect = (RECT*)lParam;
+        //        ::SetWindowPos(hWnd, NULL, suggested_rect->left, suggested_rect->top, suggested_rect->right - suggested_rect->left, suggested_rect->bottom - suggested_rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
+        //    }
+        //    break;
     case WM_COMMAND:
     {
         int wmId = LOWORD(wParam);

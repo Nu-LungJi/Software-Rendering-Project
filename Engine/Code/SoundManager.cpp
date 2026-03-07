@@ -28,8 +28,6 @@ HRESULT SoundManager::Ready_SoundManager() {
 }
 VOID SoundManager::Update_SoundManager() {
   SoundSystem->update();
-
- 
 }
 
 HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume)

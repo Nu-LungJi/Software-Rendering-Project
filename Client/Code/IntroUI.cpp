@@ -15,7 +15,7 @@ HRESULT		IntroUI::Ready_GameObject(){
 	dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
 	dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(TRUE);
 
-	SoundManager::GetInstance()->Play_Sound(L"UI/Intro/Intro_BGM.wav", CHANNELID::SOUND_BGM01, 0.5f);
+	//SoundManager::GetInstance()->Play_Sound(L"UI/Intro/Intro_BGM.wav", CHANNELID::SOUND_BGM01, 0.5f);
 
 	Filter = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter");
 	Filter->Set_Opacity(255);
@@ -25,8 +25,8 @@ HRESULT		IntroUI::Ready_GameObject(){
 	Enable_FadeOut		= FALSE;
 	Enable_MenuBar		= FALSE;
 	Enable_GameStart	= FALSE;
+	Enable_ClickToStart = FALSE;
 
-	//dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 0.5f);
 	return S_OK;
 }
 INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
@@ -36,7 +36,10 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 
 	if (Enable_FadeIn == TRUE && Filter->OPACITY > 2) {
 		Filter->Set_Opacity(Filter->OPACITY - 2);
-		if (Filter->OPACITY < 50) Enable_MenuBar = TRUE;
+		if (Filter->OPACITY < 50) {
+			Enable_MenuBar = TRUE;
+			Enable_ClickToStart = TRUE;
+		}
 	}
 	else if (Enable_FadeOut == TRUE && Filter->OPACITY < 253) {
 		Filter->Set_Opacity(Filter->OPACITY + 2);
@@ -46,8 +49,9 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 		StartBTN->Set_Color(Component_Sprite->Get_Texture(L"MenuBar")->Get_Opacity(), 255, 255, 255);
 	}
 	
-	if (KEY_DOWN(DIK_F1)) {			// 시작 버튼
+	if (KEY_DOWN(DIK_2)) {			// 시작 버튼
 		if (Enable_FadeIn == FALSE) {
+			static_cast<StartScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Set_BGMPlayer(2);
 			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(FALSE);
 			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(FALSE);
 			UIManager::GetInstance()->Find_FontObject(L"CrystalCountText")->Set_Visible(FALSE);
@@ -57,7 +61,7 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 		}
 		return 0;
 	}
-	if (MOUSE_LBUTTON) {
+	if (Enable_ClickToStart && MOUSE_LBUTTON) {
 		Enable_FadeOut = TRUE;
 		Enable_FadeIn = FALSE;
 		Enable_GameStart = TRUE;
@@ -79,6 +83,7 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 			UIManager::GetInstance()->Delete_FontObject(StartBTN);
 
 			static_cast<StartScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Set_BGMPlayer(TRUE);
+			dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 1.f);
 		}
 	}
 	

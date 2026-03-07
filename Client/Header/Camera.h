@@ -48,8 +48,8 @@ public:
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
 	void			SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest);
 
-	VOID			Ready_SmoothCamera(BOOL _FOB);
-	BOOL			Ready_SmoothCamera() { return FocusOn_Boss; }
+	VOID			Set_SmoothCamera(INT _FOB);
+	BOOL			Get_SmoothCamera() { return FocusOn_Boss; }
 
 	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
 	BOOL			Get_ButtonLock() { return Button_Lock; }
@@ -104,7 +104,7 @@ private:
 	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
 
 	////////////////////////////////////////////// 보스전 활용 변수들
-	BOOL		FocusOn_Boss;
+	INT			FocusOn_Boss;
 	FLOAT		Focusing_Timer;
 	_vec3		OriginCameraPos;
 	_vec3		OriginCameraAt;

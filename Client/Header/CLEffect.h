@@ -19,6 +19,7 @@ public:
 	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1},_bool bNext = false);
 	
 	virtual BOOL				OnCollisionStay(GameObject* _Other);
+	virtual BOOL				OnCollisionExit(GameObject* _Other);
 
 public:
 	_bool						AlphaStart(CL_EFFECT eid);

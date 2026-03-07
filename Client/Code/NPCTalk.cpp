@@ -74,7 +74,7 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 			FadeState = 1;
 			PlayerObject->Set_PlayerStop(FALSE);
 			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(FALSE);
-			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Ready_SmoothCamera(FALSE);
+			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SmoothCamera(FALSE);
 
 			ContextPassing = (INT)QUEST_END;
 		}
@@ -101,7 +101,8 @@ BOOL NPCTalk::Activate_NPCTalk(NPC_CHARACTER _NPCC, FLOAT _DT) {
 		if (ContextPassing == (INT)QUEST_TALK_ACCEPT02) {
 			Name->Text = L"연";
 			Talk->Text = L"좋습니다. 보상만 확실하다면 물불 안 가리는 게 모험가죠! \n걱정 말고 기다리세요!";
-			dynamic_cast<ShopKeeper*>(SceneManager::GetInstance()->Get_GameObject(L"ShopNPC"))->Set_QuestState(QUESTSTATE::ACCEPTED);
+			if (dynamic_cast<ShopKeeper*>(SceneManager::GetInstance()->Get_GameObject(L"ShopNPC"))->Get_QuestState() == QUESTSTATE::NOT_ACCEPTED)
+				dynamic_cast<ShopKeeper*>(SceneManager::GetInstance()->Get_GameObject(L"ShopNPC"))->Set_QuestState(QUESTSTATE::ACCEPTED);
 		}
 		if (ContextPassing == (INT)QUEST_TALK_DENY) {
 			Name->Text = L"연";
@@ -396,7 +397,7 @@ VOID	 NPCTalk::Animation_Select(CONST FLOAT& _DT) {
 			}
 		}
 
-		if (ContextPassing == (INT)QUIT_TALK) {
+		if		(ContextPassing == (INT)QUIT_TALK) {
 
 			SelectBTN01[0]->Set_Opacity(0);
 			SelectBTN01[1]->Set_Opacity(0);
@@ -434,9 +435,9 @@ HRESULT  NPCTalk::Sprite_Initialize() {
 	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_S1.png", L"SelectionBar1_S", BarStartX + 15.f, BarStartY + 12.f, 29 , 29, FALSE, 0);
 
 	BarStartX = 850.f, BarStartY = 450.f;
-	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_N2.png", L"SelectionBar2_N", BarStartX, BarStartY				, 321, 54, FALSE, 0);
-	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_Y2.png", L"SelectionBar2_Y", BarStartX, BarStartY				, 321, 54, FALSE, 0);
-	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_S2.png", L"SelectionBar2_S", BarStartX + 15.f, BarStartY + 12.f	, 29, 29, FALSE, 0);
+	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_N2.png", L"SelectionBar2_N", BarStartX			, BarStartY			, 321, 54, FALSE, 0);
+	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_Y2.png", L"SelectionBar2_Y", BarStartX			, BarStartY			, 321, 54, FALSE, 0);
+	Component_Sprite->Import_SpriteEX(BaseFolder, L"SelectionBar_S2.png", L"SelectionBar2_S", BarStartX + 15.f	, BarStartY + 12.f	, 29 , 29, FALSE, 0);
 
 	SelectBTN01.resize(3);
 	SelectBTN01[0] = Component_Sprite->Get_Texture(L"SelectionBar1_N");

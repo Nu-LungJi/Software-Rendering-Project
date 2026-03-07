@@ -16,7 +16,6 @@ HRESULT GameManager::Ready_GameManager() {
 	return S_OK;
 }
 VOID	GameManager::Update_GameManager(CONST FLOAT& _DT) {
-	
 	SoundManager::GetInstance()->Update_SoundManager();
 	KeyManager::GetInstance()->Update_KeyManager(_DT);
 	SceneManager::GetInstance()->Update_SceneManager(_DT);
@@ -28,7 +27,6 @@ VOID	GameManager::LateUpdate_GameManager(CONST FLOAT& _DT) {
 }
 VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
-
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
 	//DEVCLASS->Render_End();
 }
@@ -81,6 +79,8 @@ VOID		 GameManager::Free() {
 
 	Safe_Release(DEVCLASS);
 	Safe_Release(GRPDEV);
+
+	Surface->Release();
 	
 	GraphicDevice	::DestroyInstance();
 	KeyManager		::DestroyInstance();
