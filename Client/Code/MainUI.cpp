@@ -115,6 +115,7 @@ VOID	MainUI::Render_GameObject() {
 
 	GRPDEV->GetTransform(D3DTS_WORLD, &matWorld);
 
+	Component_Sprite->Render_Sprite();
 	D3DXMatrixIdentity(&matScale);
 	D3DXMatrixIdentity(&matTrans);
 	D3DXMatrixTranslation(&matTrans, HPBarFill->POS.x + (1.f - BarScale.x) * 640.f / 4.f, HPBarFill->POS.y, 0);
@@ -133,7 +134,6 @@ VOID	MainUI::Render_GameObject() {
 	BossHPSprite->Draw(BossTitleBar->TEXTURE, NULL, NULL, &BossTitleBar->POS, D3DCOLOR_ARGB(BossTitleBar->OPACITY, 255, 255, 255));
 
 	BossHPSprite->End();
-	Component_Sprite->Render_Sprite();
 }
 
 VOID MainUI::Player_LostHP() {
@@ -905,9 +905,9 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IRABow_UI.png", L"IRABow_IMG", 1173.f, 588.f, 95, 95, FALSE, 150);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// BOSSUI /////////////////////////////////////////////////////
-	Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HPFrame.png", L"HPBar_Frame", 320, 40, 600, 30, FALSE, 0);
-	HPBarFill	= new SpriteINFO(L"HPBar_Fill", 590, 23, 162, 22, FALSE, 0);
-	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Spr_Ui_Boss_HP.png", HPBarFill->WIDTH, HPBarFill->HEIGHT,
+	Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/RealBossHp_Frame.png", L"HPBar_Frame", 320, 43, 600, 8, FALSE, 0);
+	HPBarFill	= new SpriteINFO(L"HPBar_Fill", 600, 7, 160, 22, FALSE, 0);
+	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/RealBossHp_Bar.png", HPBarFill->WIDTH, HPBarFill->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&HPBarFill->TEXTURE);
 	BossTitleBar = new SpriteINFO(L"Boss_TitleBar", 260, 4, 2, 400, FALSE, 0);
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Boss_UI/Boss_TitleBar.png", BossTitleBar->WIDTH, BossTitleBar->HEIGHT,

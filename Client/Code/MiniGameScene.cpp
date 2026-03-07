@@ -41,6 +41,25 @@ INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 
 	if (KEY_DOWN(DIK_P)) {
 
+		if (!m_bEffect)
+		{
+			TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+
+			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 60.671,0.5f,43.405 }, false, 0, false);
+
+			m_bEffect = true;
+		}
+	
+	}
+	
+	if (!TileManager::GetInstance()->Get_Loading())
+	{
+		TileManager::GetInstance()->Set_Stage();
+		TileManager::GetInstance()->Stage_Update(0.1);
+
+		TileManager::GetInstance()->Set_EndLoading(TRUE);
+		TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
+
 		End_MiniGame();
 	}
 
@@ -154,7 +173,6 @@ HRESULT MiniGameScene::Start_MiniGame()
 	
 	// 디버그 키 진입 하고싶을때 킬것
 	//SceneManager::GetInstance()->Set_CurrentScene(this);
-
 	return S_OK;
 }
 

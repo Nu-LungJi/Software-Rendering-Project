@@ -33,6 +33,8 @@ VOID Rain::LateUpdate_GameObject(const _float& _DT) {
 		Set_ObjectDead(TRUE);
 }
 VOID Rain::Render_GameObject() {
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DEFENSE)
+		return;
 	Component_Buffer->PreRedner_Particle();
 	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -49,7 +51,7 @@ HRESULT Rain::Component_Initialize() {
 	BoundingBox bound;
 	bound.vMin = { -15,-15, -15 };
 	bound.vMax = { 15,10, 15 };
-	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,1500);
+	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,2500);
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
 

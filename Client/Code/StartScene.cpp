@@ -224,15 +224,20 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 			{
 				pMiniGame = MiniGameScene::Create(GRPDEV, this);
 				pMiniGame->Start_MiniGame();
+				//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::STAGE_ROLARUN);
+				TileManager::GetInstance()->Set_Stage();
+				TileManager::GetInstance()->Set_BeforeStage();
 				TileManager::GetInstance()->Set_EndLoading(TRUE);
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 				TileManager::GetInstance()->Set_MiniGame(false);
 				SoundManager::GetInstance()->Stop_AllSound();
 				SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
 				SceneManager::GetInstance()->Set_CurrentScene(pMiniGame);
+			
 			}
 			else
 			{
+				TileManager::GetInstance()->Set_BeforeStage();
 				TileManager::GetInstance()->Set_Stage();
 				TileManager::GetInstance()->Set_EndLoading(TRUE);
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
@@ -273,18 +278,11 @@ HRESULT StartScene::Ready_GameLogic_Layer() {
     Add_GameObjectToScene<CameraObject>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_CAMERA, L"Camera");
     Add_GameObjectToScene<Player>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"Player");
     Add_GameObjectToScene<Rain>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Rain");
-	Add_GameObjectToScene<Playerglitter>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"glitter");
-	//Add_GameObjectToScene<Tile>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_TERRAIN, L"Tile");
-
-    //Add_GameObjectToScene<Bat>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Bat");
-    //Add_GameObjectToScene<ScorpoinEvilSoul>   (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"ScorpoinEvilSoul");
-
-    //Add_GameObjectToScene<EvilFrog>           (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"EvilFrog");
-
     //Add_GameObjectToScene<FinalBoss>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Docheol");
     //Add_GameObjectToScene<Fireball>         (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_MONSTER, L"Fireball");
     //Add_GameObjectToScene<NPC>            (LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_NPC     , L"NPC_Tif"      );
-    return S_OK;
+
+	return S_OK;
 }
 HRESULT StartScene::Ready_UserInterface_Layer() {
     //Add_GameObjectToScene<MainMenuButton>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"MainButton");
@@ -299,6 +297,11 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
     Add_GameObjectToScene<EndingCredit>     (LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI,      L"EndingCredit");
  
     Add_GameObjectToScene<NPCTalk>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NPCTalk");
+	//Cheonlog* pCL = Cheonlog::Create(GRPDEV, { 1,1,1 });
+	//
+	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	//pCL->Set_ObjectTag(L"CheonLog");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
     //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
@@ -309,20 +312,24 @@ VOID StartScene::IntroToStage(CONST FLOAT& _DT) {
 	if (PlayingSound == 0) return;
 	if (PlayingSound == 1) {
 		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.f);
-		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav"	  , CHANNELID::SOUND_BGM02, 0.f);
-		PlayingSound = 2;
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.f);
+		PlayingSound = 3;
 	}
-	else if (PlayingSound == 2) {
+	if (PlayingSound == 2) {
+		SoundManager::GetInstance()->Play_Sound(L"UI/Intro/Intro_BGM.wav", CHANNELID::SOUND_BGM01, 0.5f);
+		PlayingSound = 0;
+	}
+	else if (PlayingSound == 3) {
 		if (Volume01 <= 0.3f) {
 			Volume01 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, Volume01);
 		}
 		else {
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableFade(FALSE);
-			PlayingSound = 3;
+			PlayingSound = 4;
 		}
 	}
-	else if (PlayingSound == 3){
+	else if (PlayingSound == 4) {
 		if (Volume02 <= 0.3f) {
 			Volume02 += (_DT / 6);
 			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, Volume02);

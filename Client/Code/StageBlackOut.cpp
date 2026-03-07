@@ -12,12 +12,19 @@ HRESULT StageBlackOut::Ready_Effect(_vec3* vPos, _bool bDocheol) {
 	
 		Make_TextureList(L"../../Tile/Frame/frame_black_L_to_R", WINCX, WINCY, 255, 46,SCENE_EFFECT::SCENE_STAGE);
 		Make_TextureList(L"../../Tile/Frame/Spr_Effect_ChaosSwordBlackHole_Start_",WINCX,WINCY,255,46,SCENE_EFFECT::SCENE_BOSS);
+
 	m_fFrame = 0;
+	m_fBossDelay = 0;
 	m_iFrameCnt = 0;
+	m_iPlayerSound = 1;
 	m_bDocheol = bDocheol;
 	m_bStop = false;
 	Set_ObjectTag(L"BlackOut");
 	m_bRestart = true;
+	m_fVolume01 = 0.5f;
+	m_fVolume02 = 0.f;
+	m_fVolume03 = 0.f;
+	m_bCheonLog = true;
 	return S_OK;
 }
 HRESULT StageBlackOut::Make_TextureList(wstring _FileName, UINT _WIDTH, UINT _HEIGHT, INT _OPACITY, INT iCnt, SCENE_EFFECT eid)
@@ -58,7 +65,7 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 
 				dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Set_Pos(m_vPos);
 				SoundManager::GetInstance()->Stop_AllSound();
-				SoundManager::GetInstance()->Play_Sound_Once(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+				SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, 0.4f,FALSE);
 				m_bStop = false;
 			}
 
@@ -87,9 +94,23 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 			m_fFrame += _DT;
 			if (m_bStop && TileManager::GetInstance()->Get_Loading())
 			{
-				++m_iFrameCnt;
-
-				m_bStop = false;
+				if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS || TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHERBOSS || TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DEFENSE || TileManager::GetInstance()->Get_Stage() == TILE_STAGE::STAGE_ROLARUN || TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::STAGE_ROLARUN || TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::TILE_DEFENSE)
+				{
+					m_fBossDelay += _DT;
+					if (m_fBossDelay > 1.f)
+					{
+						++m_iFrameCnt;
+						m_fBossDelay = 0;
+						m_bStop = false;
+					}
+					else
+						return 1;
+				}
+				else
+				{
+					++m_iFrameCnt;
+					m_bStop = false;
+				}
 			}
 
 			if (m_iFrameCnt == 21)
@@ -117,6 +138,8 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 		}
 
 	}
+
+	BackGround_Volume(_DT);
 	return 0;
 }
 VOID StageBlackOut::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -143,6 +166,50 @@ VOID StageBlackOut::Render_GameObject() {
 HRESULT	StageBlackOut::Component_Initialize() {
 
 	return S_OK;
+}
+void StageBlackOut::BackGround_Volume(const _float _DT)
+{
+	
+	if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_FIRSTBOSS && m_bCheonLog)
+	{
+		if (m_fVolume01 >= 0)
+		{
+			m_fVolume01 -= _DT / 24;
+			m_bCheonLog = false;
+		}
+			
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume01);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, m_fVolume01);
+	}
+
+	if (TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::TILE_DEFENSE)
+	{
+	
+		if (m_fVolume02 <= 0.3f)
+		{
+			m_fVolume02 += _DT / 6;
+		}
+		else return;
+			
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume02);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, m_fVolume02);
+	}
+
+	if (TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::STAGE_ROLARUN)
+	{
+		if (m_fVolume03 <= 0.4f)
+			return;
+
+		if(m_fVolume03 <= 0)
+			SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, m_fVolume03, FALSE);
+		else 
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume03);
+
+		m_fVolume03 += _DT / 6;
+		m_fVolume01 = 0;
+	}
+	
+
 }
 StageBlackOut* StageBlackOut::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3* vPos, _bool bDocheol) {
 	StageBlackOut* Blackout = new StageBlackOut(_GRPDEV);

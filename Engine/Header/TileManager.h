@@ -66,6 +66,8 @@ public:
     void                    Set_Stage() { m_eStage = m_eCurrent; }
     void                    Set_CurStage(TILE_STAGE es) { m_eCurrent = es; }
 
+    void                    Set_BeforeStage() { m_eBefore = m_eStage; }
+    TILE_STAGE              Get_BeforeStage() { return m_eBefore ; }
 
     void                    Set_BreakDari(_bool Mini) { m_bDari = Mini; }
     _bool                   Get_BreakDari() { return m_bDari; }
@@ -98,6 +100,7 @@ private:
     _bool                   m_bChangeMiniGame;
     _bool                   m_bDari;
 
+    TILE_STAGE              m_eBefore;
     TILE_STAGE              m_eCurrent;
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;
