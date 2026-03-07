@@ -15,11 +15,11 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 	m_bEndWave = false;
 	m_bAugment = false;
 	m_iKeyCnt = 0;
-	m_StageCnt[0] = 10;
-	m_StageCnt[1] = 20;
-	m_StageCnt[2] = 30;
-	m_StageCnt[3] = 40;
-	m_StageCnt[4] = 50;
+	m_StageCnt[0] = 1;
+	m_StageCnt[1] = 2;
+	m_StageCnt[2] = 3;
+	m_StageCnt[3] = 4;
+	m_StageCnt[4] = 5;
 	m_iMaxWave = 5;
 	wstring Font = L"Gowun Dodum";
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"¶ó¿îµå :", { 423.14f, 10.f }, 35, L"STAGE_NAME", Font.c_str(), D3DCOLOR_ARGB(200, 255, 255, 255));
@@ -57,10 +57,8 @@ INT	MiniGameCounter::Update_GameObject(const _float& _DT) {
 	//Imgui();
 	if (Get_ObjectDead() == TRUE)
 	{
-		SoundManager::GetInstance()->Stop_AllSound();
-		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.3f);
-		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.25f);
-
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.f,FALSE);
+		SoundManager::GetInstance()->Play_Sound(L"Stage/Ambience_Rain.wav", CHANNELID::SOUND_BGM02, 0.f, FALSE);
 		return -1;
 	}
 	if (m_StageCnt[m_iCnt] <= 0)
@@ -100,6 +98,15 @@ VOID MiniGameCounter::LateUpdate_GameObject(const _float& _DT) {
 		m_bEnd = true;
 		m_fTime += _DT;
 		m_fFrame += _DT;
+
+	_float fVolume = SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM03) - (_DT / 10);
+
+	if (fVolume <= 0)
+	{
+		fVolume = 0.f;
+	}
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM03, fVolume);
+
 		if (m_fFrame > 0.1f)
 		{
 			m_fFrame = 0;
@@ -129,7 +136,6 @@ VOID MiniGameCounter::LateUpdate_GameObject(const _float& _DT) {
 			_vec3 vPos = { 17.862f, 0.5f, 121.045f };
 			dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0,false);
 			TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE4);
-
 			Set_ObjectDead(TRUE);
 		}
 	}

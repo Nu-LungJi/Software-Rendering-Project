@@ -22,13 +22,14 @@ ParticleEffect::~ParticleEffect()
 HRESULT ParticleEffect::Ready_Buffer(_int NumParticles)
 {
 	m_dwVtxSize = sizeof(VTXCOL);
-	m_dwVtxCnt = 256;
+	m_dwVtxCnt = 64;
 	m_fsize = 0.2f;
 	m_dwFVF = FVF_COL;
 	m_dwOffset = 0;
-	m_dwBatchSize = 128;
+	m_dwBatchSize = 64;
 	i = 0.1f;
-
+	j = 0.5f;
+	fAngle = 0.f;
 	for (int i = 0; i < NumParticles; i++)
 		CDYBuffer::Add_Particle();
 	m_bBoundingBox.vMin = { -0.9f,-0.3f, -0.9f };
@@ -68,24 +69,29 @@ void  ParticleEffect::Reset_Particle(ATTR* attribute, _vec3* Look)
 	//D3DXVec3Normalize(&m_bBoundingBox.vMax, &m_bBoundingBox.vMax);
 	//
 	//Get_RandomVector(&attribute->vPosition, &vMin, &vMax);
-	
-	attribute->vPosition.x =  CDYBuffer::Get_RandomFloat(-0.3f, 0.3f) * 2.f;
-	attribute->vPosition.y = CDYBuffer::Get_RandomFloat(-0.25f, 0.1f) * -3.f;
-	attribute->vPosition.z =0.1;
-	attribute->vVelocity = vLook;
-	attribute->dwColor = D3DXCOLOR(CDYBuffer::Get_RandomFloat(1.f, 1.0f),
+	vOriginPos = vOriginPos - vPos;
 
-		CDYBuffer::Get_RandomFloat(0.0f, 1.0f),
-		CDYBuffer::Get_RandomFloat(0.0f, 1.0f), 1.f);
+	attribute->vPosition.x =  CDYBuffer::Get_RandomFloat(0.15f, 0.35f) * -3.f;
+	attribute->vPosition.y = CDYBuffer::Get_RandomFloat(-0.25f, -0.4f) * -3.f;
+	attribute->vPosition.z = CDYBuffer::Get_RandomFloat(-0.2f, 0.2f);
+	attribute->vPosition += vOriginPos;
+	attribute->vVelocity =   vLook + vOriginLook* 0.5f;
+	attribute->World = World;
+	attribute->dwColor = D3DXCOLOR(CDYBuffer::Get_RandomFloat(0.1f, 1.0f),
+	
+	CDYBuffer::Get_RandomFloat(0.0f, 1.0f),
+	CDYBuffer::Get_RandomFloat(0.0f, 1.0f), 0.5f);
 
 	_int iRand = 1 + rand()%3;
 		
 	
-	attribute->fAge = 0;
+	attribute->fAge = 0 + j;
 	attribute->fLifeTime = 0 + i;
 	i += 0.1f;
-
-	if (i > 2)
+	j -= 0.1f;
+	if (j < 0)
+		j = 0.5f;
+	if (i > 3)
 		i = 0.5f;
 }
 void  ParticleEffect::Reset()
@@ -135,7 +141,7 @@ _int ParticleEffect::Update_Particle(const _float& fTimeDelta)
 	{
 		if ((*iter).bIsAlive)
 		{
-			(*iter).vPosition += (*iter).vVelocity * 3.f * fTimeDelta;
+			(*iter).vPosition += (*iter).vVelocity * 1.f * fTimeDelta *fAngle;
 
 			(*iter).fAge += fTimeDelta;
 

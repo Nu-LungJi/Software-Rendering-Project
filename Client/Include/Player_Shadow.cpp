@@ -10,7 +10,7 @@ HRESULT Player_Shadow::Ready_GameObject()
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
 	lateReady = false;
-	AlphaRatio = 1.f;
+	AlphaRatio = 0.f;
 
 	return S_OK;
 }
@@ -55,7 +55,7 @@ VOID Player_Shadow::Render_GameObject()
 
 	// ÃÊ±âÈ­
 	GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
-	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 }
 
 HRESULT Player_Shadow::Component_Initialize()

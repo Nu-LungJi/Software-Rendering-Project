@@ -14,6 +14,8 @@ public:
 	virtual			VOID		Render_GameObject();
 
 	static Player_Shadow* Create(LPDIRECT3DDEVICE9 _GRPDEV);
+
+	VOID			Set_Alpha(float val) { AlphaRatio = val; }
 private:
 	HRESULT			Component_Initialize();
 	VOID			SetGrahpic();

@@ -60,7 +60,7 @@ HRESULT SoundManager::Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundCh
 
 
 }
-HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume) {
+HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume, _bool ChanelMode) {
   Sound* SoundObject = nullptr;
 
   string RootPath = "../../Sound/";
@@ -84,8 +84,10 @@ HRESULT SoundManager::Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel
   else {
     SoundSystem->playSound(iter->second, ChannelGroup[(int)_SoundChannel], FALSE, &pSound);
   }
-
-  SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
+  
+  if(ChanelMode)
+	SoundChannel[(LONG)_SoundChannel]->setVolume(Volume);
+  else ChannelGroup[(LONG)_SoundChannel]->setVolume(Volume);
   return S_OK;
 }
 HRESULT SoundManager::Stop_Sound(CHANNELID _SoundChannel) {

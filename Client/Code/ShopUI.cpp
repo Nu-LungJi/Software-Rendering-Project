@@ -305,7 +305,7 @@ _bool ShopUI::buy_Item(Player* pPlayer, _int iIndex)
             return false;
         }
        
-        dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, Item_Index[iIndex], Item_Index[iIndex]->ItemDesc[ItemINFO::ITINFO::INFFRAME]);
+       dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, Item_Index[iIndex], Item_Index[iIndex]->ItemDesc[ItemINFO::ITINFO::INFFRAME]);
 
         REPLAY_UI_EFFECT(L"COIN_EFFECT");
         

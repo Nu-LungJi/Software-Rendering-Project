@@ -38,15 +38,22 @@ INT	FireDevilBowChargeEffect::Update_GameObject(const _float& _DT) {
 	{
 	default:
 		break;
-	case MONSTER_STATE_MINIGAME_IDLE:
+
+	case MONSTER_STATE_MINIGAME_IDLE: {
+		CameraObject* pCamera = Monster::Get_Camera();
+		tagHurdleInfo* pHurdle = m_tInfo._pHurdle;
+		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
+
+		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+		}
 		m_tInfo.fSpeed = 0.f;
 		m_tInfo.Textureinfo._frameTick += _DT;
 		if (m_tInfo.Textureinfo._frameTick > 0.15f) {
 			if (++m_tInfo.Textureinfo._frame > m_tInfo.Textureinfo._Endframe) {
 				m_tInfo.Change_State(MONSTER_STATE_MINIGAME_MOVE);
 				m_tInfo.ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Effect,
-													(uint8_t)BULLET_TYPE::FireDevilBowChargeEffect,
-													(uint8_t)FIREDEVILBOWCHARGEEFFECT::Charge);
+					(uint8_t)BULLET_TYPE::FireDevilBowChargeEffect,
+					(uint8_t)FIREDEVILBOWCHARGEEFFECT::Charge);
 				if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo)))
 					ObjectDead = true;
 			}
@@ -54,12 +61,24 @@ INT	FireDevilBowChargeEffect::Update_GameObject(const _float& _DT) {
 		break;
 	case MONSTER_STATE_MINIGAME_MOVE:
 		m_tInfo.fSpeed = 3.f;
+		{
+		CameraObject* pCamera = Monster::Get_Camera();
+		tagHurdleInfo* pHurdle = m_tInfo._pHurdle;
+		if ((nullptr == pCamera) || (nullptr == pHurdle)) return 0;
 
+		pHurdle->VisibleCount += pCamera->IsIn_Frustum(pHurdle->vPos, pHurdle->fDis * 0.6f);
+		_vec3 vCalc = pHurdle->vDst - *MYPOS;
+		_float fCalc = D3DXVec3Dot(&vCalc, &pHurdle->vDir);
+
+		if (fCalc < 0.f)
+			*MYPOS = pHurdle->vSrc;
+		}
 		m_tInfo.Textureinfo._frameTick += _DT;
 		if (m_tInfo.Textureinfo._frameTick > 0.25f) {
 			++m_tInfo.Textureinfo._frame %= m_tInfo.Textureinfo._Endframe + 1;
 		}
 		break;
+
 	case MONSTER_STATE_DEAD:
 		m_tInfo.fSpeed = 0.f;
 	}

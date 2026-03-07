@@ -370,20 +370,6 @@ INT Arrow::Update_GameObject(const _float& _DT)
             matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
         }
 
-        //if (_type == ArrowType::FairyCharging) {
-        //    _targetPos = nullptr;
-        //    Search_Target();
-        //    if (_targetPos != nullptr) {
-        //        _vec3 dir = *_targetPos - *Component_Transform->Get_Position();
-        //        D3DXVec3Normalize(&dir, &dir);
-        //        _angle = atan2f(-dir.z, dir.x);
-        //
-        //        matWorld._41 = (*curPos).x + _calcSpeed * cosf(_angle);
-        //        matWorld._42 = (*curPos).y;
-        //        matWorld._43 = (*curPos).z - _calcSpeed * sinf(_angle);
-        //    }
-        //}
-
         // ÀÌµ¿
         switch (_type)
         {
@@ -666,11 +652,11 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, (int)Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::IceCharging) {
             _vec3 Size = { 2.f, 2.f, 2.f };
-            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.3f, Size, false);
         }
+        Component_Collider->Set_Att(originATK);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        Component_Collider->Set_Att(originATK);
 
         return TRUE;
     }
@@ -680,11 +666,12 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::IceCharging) {
             _vec3 Size = { 2.f, 2.f, 2.f };
-            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.3f, Size, false);
         }
+        if (_isCritical)  Component_Collider->Set_Att(originATK);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        if (_isCritical)  Component_Collider->Set_Att(originATK);
+        
 
         return TRUE;
     }
@@ -693,11 +680,12 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
         if (_type == ArrowType::IceCharging) {
             _vec3 Size = { 2.f, 2.f, 2.f };
-            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.5f, Size, false);
+            PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.3f, Size, false);
         }
+        if (_isCritical)  Component_Collider->Set_Att(originATK);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;
         Component_Collider->Set_Hp(0);
-        if (_isCritical)  Component_Collider->Set_Att(originATK);
+        
 
         return TRUE;
     }

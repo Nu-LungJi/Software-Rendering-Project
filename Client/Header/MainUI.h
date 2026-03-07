@@ -117,7 +117,8 @@ private:
 ////////////RelicEffect//
 	vector<SpriteINFO*> relicEffectList;
 	int					Cur_RelicIMGIDX;
-
+	SpriteINFO* _relicIcons[4] = { nullptr, };
+	SpriteINFO* _relicBars[4] = { nullptr, };
 ////////////////////////////////////////////// 보스전 활용 변수들
 	vector<FontObject*> AllFontOBJ;
 	vector<SpriteINFO*> AllSpriteOBJ;
