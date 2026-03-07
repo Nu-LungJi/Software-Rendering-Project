@@ -12,14 +12,6 @@ HRESULT GameManager::Ready_GameManager() {
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 	DamageFontManager::GetInstance()->Ready_DamageFontManager();
-	CursorTex = nullptr;
-	Surface	= nullptr;
-	D3DXCreateTextureFromFile(GRPDEV, L"../../Resource/Extra/MouseCursor1.png", &CursorTex);
-	GRPDEV->CreateOffscreenPlainSurface(64, 64, D3DFMT_A8R8G8B8, D3DPOOL_SCRATCH, &Surface, NULL);
-	D3DXLoadSurfaceFromFile(Surface, NULL, NULL, L"../../Resource/Extra/MouseCursor1.png", NULL, D3DX_FILTER_NONE, 0, NULL);
-
-	CursorTex->GetSurfaceLevel(0, &Surface);
-	GRPDEV->SetCursorProperties(32, 0, Surface);
 
 	return S_OK;
 }
@@ -35,7 +27,6 @@ VOID	GameManager::LateUpdate_GameManager(CONST FLOAT& _DT) {
 }
 VOID	GameManager::Render_GameManager() {
 	DEVCLASS->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
-	//GRPDEV->ShowCursor(TRUE);
 	SceneManager::GetInstance()->Render_SceneManager(GRPDEV);
 	//DEVCLASS->Render_End();
 }

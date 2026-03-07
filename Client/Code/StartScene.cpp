@@ -9,8 +9,8 @@ HRESULT   StartScene::Ready_Scene() {
     ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
     UIManager::GetInstance()->Ready_UIManager(GRPDEV);
 
-	//MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-    //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
+	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
+    ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
 
     //ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
