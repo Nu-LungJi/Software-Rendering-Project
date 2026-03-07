@@ -80,7 +80,6 @@ VOID		 GameManager::Free() {
 	Safe_Release(DEVCLASS);
 	Safe_Release(GRPDEV);
 
-	Surface->Release();
 	
 	GraphicDevice	::DestroyInstance();
 	KeyManager		::DestroyInstance();
