@@ -134,6 +134,7 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 
 VOID EndingCredit::LateUpdate_GameObject(const FLOAT& _DT)
 {
+	return;
 }
 
 VOID EndingCredit::Render_GameObject()
