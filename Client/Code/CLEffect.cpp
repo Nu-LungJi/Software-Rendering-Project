@@ -384,7 +384,7 @@ void CLEffect::Move_ItemEffect(const _float& _DT)
 
 			Set_ObjectDead(TRUE);
 			vPos.y += 3.f;
-			vPos.z += 12.f;
+			vPos.z += 14.f;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_POTAL, vPos, FALSE));
 
 		}

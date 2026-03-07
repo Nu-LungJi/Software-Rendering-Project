@@ -138,9 +138,6 @@
     <ClInclude Include="..\Header\SceneManager.h">
       <Filter>05. SceneManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\SoundManager.h">
-      <Filter>04. SoundManager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\KeyManager.h">
       <Filter>03. KeyManager</Filter>
     </ClInclude>
@@ -182,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="..\Header\MonsterManager.h">
       <Filter>13. MonsterManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\SoundManager.h">
+      <Filter>04. SoundManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -27,16 +27,14 @@ VOID Playerglitter::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
 	
 	//_float m_fAngle = atan2f(vLook.y, vLook.x);
-	_vec3		vPos, vPlayerLook, vPlayerRight, vPlayerUp, vOrigin, myPos, vScale, vLook(0,0,1), vLookPaticle;
+	_vec3		vPos, vPlayerLook, vOrigin, myPos, vScale, vLook(0,0,1), vLookPaticle;
 	_matrix		matWorld, matScale, matPlayerWorld, RotZ, matBill;
-	_float		yOffset = -0.1f;
-	_float		LookOffset = 0.5f;
+	_float		yOffset(-0.1f), LookOffset(0.5f),Angle(0);
 	Player* vPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->
 		Get_GameObject(L"Player"));
 	D3DXMatrixIdentity(&matWorld);
 	matPlayerWorld = *dynamic_cast<Transform*>(vPlayer->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_World();
 	GRPDEV->GetTransform(D3DTS_VIEW, &matBill);
-
 	switch (vPlayer->Get_See())
 	{
 	case pSee::SEE_UP:
@@ -73,28 +71,35 @@ VOID Playerglitter::LateUpdate_GameObject(const _float& _DT) {
 	}
 	else
 	{
-
-		D3DXMatrixRotationZ(&RotZ, acosf(D3DXVec3Dot(&m_vOriginLook, &vLook)));
-		D3DXVec3TransformNormal(&vLookPaticle, &vLook, &RotZ);
+		Angle   = atan2f(vLook.y - m_vOriginLook.y, vLook.x - m_vOriginLook.x);
+		Component_Buffer->Set_OiriginLook(m_vOriginLook);
+		Component_Buffer->Set_OiriginPos(vPos);
 		m_pOthe = m_pCurr;
 	}
 
+	m_pCurr = vPlayer->Get_See();
+	m_vOriginLook = vLook;
 
+	memcpy(vPlayerLook, matPlayerWorld.m[2], sizeof(_vec3));
+	D3DXVec3Normalize(&vPlayerLook, &vPlayerLook);
+
+	D3DXVec3TransformNormal(&vPlayerLook, &vLook, &matPlayerWorld);
 	memcpy(vPos,		 matPlayerWorld.m[3], sizeof(_vec3));
-	vLook *= LookOffset;
-	D3DXVec3Normalize(&vLook, &vLook);
-	vPos += vLook;
-	vPos.y = -0.3f;
+	D3DXMatrixRotationZ(&RotZ, Angle);
+	D3DXVec3TransformNormal(&vPlayerLook, &vPlayerLook, &RotZ);
+	vPlayerLook *= LookOffset;
 
-	Component_Buffer->Set_Look(vLook);
+	D3DXVec3Normalize(&vPlayerLook, &vPlayerLook);
+	vPos += vPlayerLook;
+	vPos.y = -0.5f;
+	vPos.z -= 0.8f;
+	Component_Buffer->Set_Look(vPlayerLook,1);
 	Component_Buffer->Set_Pos(vPos);
 
-	//memcpy(matWorld.m[3], vPos, sizeof(_vec3));
-	//
-	//Component_Transform->Set_World(&matWorld);
 	Component_Transform->Set_Pos(vPos);
-	m_fSpeed = vPlayer->Get_Speed();
 
+
+	m_fSpeed = vPlayer->Get_Speed();
 	if (m_fSpeed != 0)
 		Component_Buffer->Reset();
 	
@@ -102,6 +107,7 @@ VOID Playerglitter::LateUpdate_GameObject(const _float& _DT) {
 VOID Playerglitter::Render_GameObject() {
 
 	Component_Buffer->PreRedner_Particle();
+	GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetTexture(0, StaticTexture);
@@ -114,7 +120,7 @@ VOID Playerglitter::Render_GameObject() {
 }
 HRESULT Playerglitter::Component_Initialize() {
 
-	Component_Buffer = ParticleEffect::Create(GRPDEV, 64);
+	Component_Buffer = ParticleEffect::Create(GRPDEV, 16);
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
 

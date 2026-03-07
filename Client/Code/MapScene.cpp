@@ -8,13 +8,12 @@ HRESULT	MapScene::Ready_Scene() {
 
 	ProtoManager::GetInstance()->Ready_Prototype(GRPDEV);
 
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../ReSource/Spr_Monster_EvilFrog");
 	MonsterManager::GetInstance()->Load_Textures_from_Folder(GRPDEV, L"../../MonsterManager");
-
 	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Boss");
-	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Tile");
+
+	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
+	ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	Ready_GameLogic_Layer(L"GameLogic_Layer");
 	Ready_UserInterface_Layer(L"UI_Layer");
 
@@ -289,13 +288,13 @@ HRESULT MapScene::Ready_UserInterface_Layer(CONST TCHAR* _LTAG) {
 	//Add_GameObjectToScene<MiniGameCounter>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"DefensUI");
 
 	//Add_GameObjectToScene<Augment>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Argument");
-	//Cheonlog* pCL = Cheonlog::Create(GRPDEV, { 1,1,1 });
+	Cheonlog* pCL = Cheonlog::Create(GRPDEV, { 1,1,1 });
    
-	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
-	//pCL->Set_ObjectTag(L"CheonLog");
-	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
-   //
-	//Add_GameObjectToScene<ShopUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"ShopUI");
+	pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
+	pCL->Set_ObjectTag(L"CheonLog");
+	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
+   
+	Add_GameObjectToScene<ShopUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"ShopUI");
 	
 	return S_OK;
 }
