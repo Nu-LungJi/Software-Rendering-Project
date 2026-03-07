@@ -25,6 +25,8 @@ HRESULT		IntroUI::Ready_GameObject(){
 	Enable_FadeOut		= FALSE;
 	Enable_MenuBar		= FALSE;
 	Enable_GameStart	= FALSE;
+
+	//dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 0.5f);
 	return S_OK;
 }
 INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){

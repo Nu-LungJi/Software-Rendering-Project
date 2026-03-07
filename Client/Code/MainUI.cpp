@@ -57,6 +57,11 @@ HRESULT	MainUI::Ready_GameObject() {
 	Tutorial_Timer = 0.f;
 	Tutorial_Sequence = 0;
 
+	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"));
+	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"IceBow_IMG"));
+	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"));
+	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
+
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -204,7 +209,7 @@ VOID MainUI::Player_UseSkill() {
 		REPLAY_UI_EFFECT(UIKey_HP);
 
 		UIKey_HP = L"Token" + to_wstring(PlayerToken);
-		//Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
+		Component_Sprite->Get_Texture(UIKey_HP)->Set_Visible(FALSE);
 	}
 }
 
@@ -464,14 +469,14 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 			SO->Set_Opacity((INT)GlobalOPC);
 
 		if (EffectFaded == FALSE) {
-			for (auto& AUE : AllUIEffect) {
+			for (auto& AUE : AllUIEffect) 
 				AUE->Set_EffectFadeOption(TRUE);
-			}
 			EffectFaded = TRUE;
 		}
 	}
 	else if (Enable_MainUIFade == FALSE) {
 		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE) {
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity(0);
 			Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE = TRUE;
 			HPBarFill->VISIBLE = TRUE;
 		}
@@ -526,6 +531,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"KEY_Q"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Token1"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Token2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Token3"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_Arrow"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_ArrowCount"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"				));
@@ -545,6 +551,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"COIN_EFFECT")));
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"TOKEN_EFFECT1")));
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"TOKEN_EFFECT2")));
+		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"TOKEN_EFFECT3")));
 
 		Enable_MainUIFade = 2;								
 	}														
@@ -601,7 +608,7 @@ VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
 			HPBarFill->Set_Opacity(HPOPC);
 			return;
 		}
-
+		
 		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS) {
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"라 우 라");
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"타락한 자연의 사도");
@@ -609,6 +616,8 @@ VOID MainUI::Display_BossHPBar(CONST FLOAT& _DT) {
 		else if (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS) {
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Text(L"도 철");
 			UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Text(L"분노의 거대 사념체");
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Visible(TRUE);
+			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity((INT)HPOPC);
 		}
 		UIManager::GetInstance()->Find_FontObject(L"Boss_Name")->Set_Color((INT)HPOPC, 255, 255, 255);
 		UIManager::GetInstance()->Find_FontObject(L"Boss_Tag")->Set_Color((INT)HPOPC, 255, 255, 255);
@@ -696,7 +705,7 @@ VOID MainUI::Synchronize_BossHPBar() {
 VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 	if (Enable_BossClearUI) {
 		BossClearTimer += _DT;
-		FLOAT Delay = 0.f, BackGroundOPC = 180.f;
+		FLOAT Delay = 3.f, BackGroundOPC = 180.f;
 		SpriteINFO* FadeBG = Component_Sprite->Get_Texture(L"BossClearBG");
 		if (BossClearTimer > Delay  && BossClearTimer < Delay + 6.f) {
 			if (BossClearTimer <= 5.f) {
@@ -746,7 +755,7 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 			UIManager::GetInstance()->Find_FontObject(L"Destroyed")->Set_Color(255 - 254 * 2 * (BossClearTimer - (Delay + 3.8f)), 255, 255, 255);
 		}
 
-		if (BossClear[9]) {
+		if (BossClearTimer > Delay && BossClear[9]) {
 			PLAY_SOUND_ONCE(L"Docheol/UI_Stage clear.wav", CHANNELID::SOUND_EFFECT10);
 
 			static_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_BREAK"))->Set_All_Visible(TRUE);
@@ -827,7 +836,7 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_Q.png", L"KEY_Q", 45.f, 595.f, 20.f, 20.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token1", 104.f, 669.f, 33.f, 29.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token2", 137.f, 669.f, 33.f, 29.f, TRUE);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token3", 170.f, 669.f, 33.f, 29.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Token.png", L"Token3", 170.f, 669.f, 33.f, 29.f, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// INTERACT /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/KEY_E.png", L"KEY_E", 720.f, 590.f, 35, 35, FALSE, 255);
@@ -836,15 +845,11 @@ HRESULT MainUI::Sprite_Initialize() {
 	//////////////////////////////////////////////// WEAPON /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_Arrow.png", L"WeaponBG_Arrow", 1166.f, 580.f, 108, 108, TRUE, 150);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/WeaponBG_ArrowCount.png", L"WeaponBG_ArrowCount", 1167.f, 681.f, 108, 30, TRUE, 150);
-	SpriteINFO* EquipArrowImg = nullptr;
-	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/FairyBow_UI.png", L"FairyBow_IMG", 1173.f, 586.f, 90, 90, TRUE, 150);
-	BowIMG_List.push_back(EquipArrowImg);
-	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IceBow_UI.png", L"IceBow_IMG", 1174.f, 589.f, 85, 85, FALSE, 150);
-	BowIMG_List.push_back(EquipArrowImg);
-	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/EvilHeadBow_UI.png", L"EvilHeadBow_IMG", 1175.f, 589.f, 90, 90, FALSE, 150);
-	BowIMG_List.push_back(EquipArrowImg);
-	EquipArrowImg = Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IRABow_UI.png", L"IRABow_IMG", 1173.f, 588.f, 95, 95, FALSE, 150);
-	BowIMG_List.push_back(EquipArrowImg);
+
+	Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/FairyBow_UI.png", L"FairyBow_IMG", 1173.f, 586.f, 90, 90, TRUE, 150);
+	Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IceBow_UI.png", L"IceBow_IMG", 1174.f, 589.f, 85, 85, FALSE, 150);
+	Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/EvilHeadBow_UI.png", L"EvilHeadBow_IMG", 1175.f, 589.f, 90, 90, FALSE, 150);
+	Component_Sprite->Import_Sprite(L"../../UI/Weapon_UI/IRABow_UI.png", L"IRABow_IMG", 1173.f, 588.f, 95, 95, FALSE, 150);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////// BOSSUI /////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/Boss_UI/Spr_Ui_Boss_HPFrame.png", L"HPBar_Frame", 320, 40, 600, 30, FALSE, 0);
@@ -860,8 +865,8 @@ HRESULT MainUI::Sprite_Initialize() {
 	D3DXCreateTextureFromFileExW(GRPDEV, L"../../UI/Filter_Fade.png", FilterOBJ->WIDTH, FilterOBJ->HEIGHT,
 		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (LPDIRECT3DTEXTURE9*)&FilterOBJ->TEXTURE);
 	UIManager::GetInstance()->Add_GlobalObject(FilterOBJ);
-	FilterOBJ = Component_Sprite->Import_Sprite(L"../../UI/Filter_Fade.png", L"BossClearBG", 0, 0, 1280, 720, TRUE, 0);
-	UIManager::GetInstance()->Add_GlobalObject(FilterOBJ);
+	Component_Sprite->Import_Sprite(L"../../UI/Filter_Fade.png", L"BossClearBG", 0, 0, 1280, 720, TRUE, 0);
+	UIManager::GetInstance()->Add_GlobalObject(Component_Sprite->Get_Texture(L"BossClearBG"));
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/ItemNoticeBG.png", L"ItemNoticeBG", 1300.f, 320.f, 300, 40, TRUE, 0);
 
 
