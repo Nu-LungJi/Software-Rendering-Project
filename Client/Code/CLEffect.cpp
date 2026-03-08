@@ -248,7 +248,7 @@ void CLEffect::Move_Normal(const _float& _DT)
 			if (m_bDead)
 			{
 				if (m_eEffect == CL_EFFECT::SPAWN_THUNDER && m_bNextEffect)
-					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_BOOM_CIRCLE, {vPos.x, 1.f, vPos.z}, TRUE, {1.5f,1.5f,1.5f}, {65,0,0}, 0.1f));
+					EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_BOOM_CIRCLE, {vPos.x, 1.5f, vPos.z}, TRUE, {1.5f,1.5f,1.5f}, {65,0,0}, 0.1f));
 
 				if (m_eEffect == CL_EFFECT::SPAWN_BOOM)
 					dynamic_cast<Cheonlog*>(SceneManager::GetInstance()->Get_GameObject(L"CheonLog"))->Set_Statu(vPos);
