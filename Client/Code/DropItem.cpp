@@ -86,6 +86,7 @@ BOOL DropItem::OnCollisionStay(GameObject* _Other)
 				if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
 					m_iPickUpEvent = 1;
 					*m_pEventTrigger = -1;	//Temp;
+
 					return true;
 				}
 			}

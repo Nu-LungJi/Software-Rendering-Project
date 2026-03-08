@@ -209,6 +209,9 @@ HRESULT   StartScene::Ready_Scene() {
 		CloseHandle(LFile);
 	}
 	PlayingSound = FALSE;
+	TileManager::GetInstance()->Set_StageCnt();
+	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
+	//TileManager::GetInstance()->Set_Stage();
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
@@ -224,9 +227,10 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 			{
 				pMiniGame = MiniGameScene::Create(GRPDEV, this);
 				pMiniGame->Start_MiniGame();
-				//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::STAGE_ROLARUN);
-				TileManager::GetInstance()->Set_Stage();
+
 				TileManager::GetInstance()->Set_BeforeStage();
+				TileManager::GetInstance()->Set_CurStage(TILE_STAGE::STAGE_ROLARUN);
+				TileManager::GetInstance()->Set_Stage();
 				TileManager::GetInstance()->Set_EndLoading(TRUE);
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 				TileManager::GetInstance()->Set_MiniGame(false);
@@ -244,6 +248,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 			}
 		}
 		IntroToStage(_DT);
+
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
     return Scene::Update_Scene(_DT);

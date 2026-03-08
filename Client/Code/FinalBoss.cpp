@@ -62,9 +62,9 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(ERUSH_TRIGGER	, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap			, TRUE, sizeof(BBTrap));
 
-	STOP_ALLSOUND;
+	//STOP_ALLSOUND;
 
-	PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
+	//PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
 	return S_OK;
 }
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
