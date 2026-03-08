@@ -14,7 +14,7 @@ public:
 	VOID		LateUpdate_DamageFontManager(CONST FLOAT& _DT);
 	VOID		Render_DamageFontManager();
 
-	VOID		Add_DamageFont(GameObject* obj, int damage);
+	VOID		Add_DamageFont(GameObject* obj, int damage, bool isCritical = false);
 	FontObject* Get_Fo(int size);
 
 private:

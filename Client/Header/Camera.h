@@ -46,16 +46,22 @@ public:
 	void			Set_Obj(GameObject* pDst, _vec3 Center) { pObj = pDst; vCenter = Center; }
 	void			Set_Move(BOOL bMove) { StopMove = bMove; }
 	void			CheonLog_Respawn(CONST FLOAT& _DT);
-	void			Docheol_Spawn(CONST FLOAT& _DT);
+	void			SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest);
 
-	VOID			Set_FocusOnBoss(BOOL _FOB);
-	BOOL			Get_FocusOnBoss() { return FocusOn_Boss; }
+	VOID			Set_SmoothCamera(INT _FOB);
+	BOOL			Get_SmoothCamera() { return FocusOn_Boss; }
 
 	VOID			Set_ButtonLock(BOOL _BTL) { Button_Lock = _BTL; }
 	BOOL			Get_ButtonLock() { return Button_Lock; }
 
+	VOID			Set_SCamDest(_vec3 _DEST)	{ SmoothCameraDest = _DEST; }
+	_vec3			Get_SCamDest()				{ return SmoothCameraDest; }
+
 	VOID			Set_EnableQuickZoom(INT _QZM) { Enable_QuickZoom = _QZM; }
 	BOOL			Get_EnableQuickZoom() { return Enable_QuickZoom; }
+
+	VOID			Set_VelocityLock(INT _QZM)	{ Velocity_Lock = _QZM; }
+	BOOL			Get_VelocityLock()			{ return Velocity_Lock; }
 private:
 	HRESULT			Component_Initialize();
 	VOID			Camera_QuickZoom(CONST FLOAT& _DT);
@@ -71,6 +77,7 @@ private:
 	FLOAT		RotationX, RotationY;
 
 	_vec3		Angle;
+	_vec3		SmoothCameraDest;
 
 	BOOL		MouseFix;
 	BOOL		MouseCheck;
@@ -97,7 +104,7 @@ private:
 	D3DXPLANE	FrustumPlane[(uint8_t)FRUSTUMPLANE::End];
 
 	////////////////////////////////////////////// 보스전 활용 변수들
-	BOOL		FocusOn_Boss;
+	INT			FocusOn_Boss;
 	FLOAT		Focusing_Timer;
 	_vec3		OriginCameraPos;
 	_vec3		OriginCameraAt;
@@ -110,12 +117,27 @@ public:
 private:
 	virtual VOID Free();
 
+
+	/////////// 미니게임 b 활용 변수들
 public:
 	void		Set_Target(Player* _Obj) { m_pTarget = _Obj; }
+	void		Start_MiniGame();
+	void		Exit_MiniGame();
+	void		CameraRotTime(float _DT) { m_fDuration = _DT; }
+	void		Set_EventTrigger(int* pInt) { m_pEventTrigger = pInt; }
+
 private:
 	SCENE_TYPE	m_eCurrScene;
 	_float		m_fOffset[(uint8_t)FRUSTUMPLANE::End];
 
-	Player* m_pTarget;
+	Player*		m_pTarget;
 	HRESULT		MiniGame(const _float& _DT);
+	int*		m_pEventTrigger = nullptr;
+	_float		m_fElapsedTime;
+	_float		m_fDuration = 1.f;
+	_vec3		m_vCurrEye,		m_vCurrUp;
+	_vec3		m_vStartEye,	m_vTargetEye;
+	_vec3		m_vStartUp,		m_vTargetUp;
+	bool		Is_Changing;
+
 };

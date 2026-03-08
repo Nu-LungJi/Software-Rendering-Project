@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 class CLoading;
+class MiniGameScene;
 class StartScene : public Scene {
 protected:
 	explicit StartScene(LPDIRECT3DDEVICE9 _GRPDEV);
@@ -12,13 +13,19 @@ public:
 	virtual VOID      LateUpdate_Scene(CONST FLOAT& _DT);
 	virtual VOID      Render_Scene();
 
+	VOID	Set_BGMPlayer(BOOL _VAL) { PlayingSound = _VAL; }
+
 private:
 	HRESULT      Ready_Enviroment_Layer();
 	HRESULT      Ready_GameLogic_Layer();
 	HRESULT      Ready_UserInterface_Layer();
 
+	VOID		 IntroToStage(CONST FLOAT& _DT);
+
 private:
-	CLoading* pLoading;
+	MiniGameScene* pMiniGame;
+	INT				PlayingSound;
+	FLOAT			Volume01, Volume02;
 public:
 	static   StartScene* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:

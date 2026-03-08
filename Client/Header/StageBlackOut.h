@@ -17,9 +17,11 @@ public:
 	HRESULT						Ready_Effect( _vec3* vPos, _bool bDocheol);
 	
 	void						Set_Docheol() { m_bDocheol = true; }
-	void					    Set_Pos(_vec3 vPos, _bool bRe, _float fFrame, SCENE_EFFECT eid = SCENE_EFFECT::SCENE_STAGE) { m_vPos = vPos; m_bRestart = bRe; m_fFrame = fFrame; m_eSceneID = eid; }
+	void					    Set_Pos(_vec3 vPos, _bool bRe, _float fFrame, _bool Bgm,SCENE_EFFECT eid = SCENE_EFFECT::SCENE_STAGE) { m_bBgm = Bgm, m_vPos = vPos; m_bRestart = bRe; m_fFrame = fFrame; m_eSceneID = eid; }
 	void						Set_FrameCnt() { ++m_iFrameCnt; }
 
+
+	void						BackGround_Volume(const _float _DT);
 public:
 	static	StageBlackOut*	    Create(LPDIRECT3DDEVICE9 _GRPDEV, _vec3* vPos, _bool bDocheol = false);
 private:
@@ -27,12 +29,20 @@ private:
 	virtual	VOID				Free();
 private:
 	_float							 m_fFrame;
+	_float							 m_fBossDelay;
+	_float							 m_fVolume01;
+	_float							 m_fVolume02;
+	_float						     m_fVolume03;
+
 	_int							 m_iFrameCnt;
+	_int							 m_iPlayerSound;
 	_vec3							 m_vPos;
 	_bool							 m_bStop;
 	_bool						     m_bRestart;
+	_bool							 m_bCheonLog;
 	_bool							 m_bDocheol;
-
+	_bool							 m_bLastBgm;
+	_bool							 m_bBgm;
 	SCENE_EFFECT					 m_eSceneID;
 
 	ID3DXSprite*					 m_pDrawSprite;

@@ -53,7 +53,6 @@ private:
 	Buffer* Component_Buffer;
 	Transform* Component_Transform;
 	Texture* Component_Texture;
-
 	IDirect3DTexture9* g_pTexture = NULL; // 로드된 이미지
 	ID3DXSprite* g_pSprite = NULL;   // 스프라이트 객체
 public:
@@ -65,6 +64,7 @@ public:
 	_int		Get_Charging()					{ return _Charging; }
 	_int		Get_IMG_IDX()					{ return _imgIDX; }
 	void		Refill_Arrow()					{ _Stat.curArrow = _Stat.maxArrow; }
+	void		Reset_MaxArrow();
 private:
 	virtual VOID Free();
 private:
@@ -92,8 +92,11 @@ private:
 	_float		_ChargingTime;
 	_float		_chargingTime;
 
-	int*		_playerAtk;
+	_float		_windChargingTimer;
+
+	int			_playerAtk;
 	int*		_playerCritical;
 	float*		_playerChargingSpeed;
+	float*		_playerAttackSpped;
 };
 

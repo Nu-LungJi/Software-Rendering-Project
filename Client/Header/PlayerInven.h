@@ -31,10 +31,16 @@ public:
 
 	HRESULT Buy_Item(INT itemIdx);
 
+	ItemINFO* Get_Item(INT itemIdx);
+
+	SpriteINFO* Get_InvenFrameSprite(wstring _TAG);
+	SpriteINFO* Get_InfoFrameSprite(wstring _TAG);
+
 public:
 	static	PlayerInven* Create(LPDIRECT3DDEVICE9 _GRPDEV);
 private:
 	SpriteObject*	Component_Sprite;
+	SpriteObject*	Component_ExtraSprite;
 	Player*			PlayerObject;
 
 	BOOL			FocusOn_SavedItem;
@@ -58,6 +64,7 @@ private:
 	ItemINFO*		JunkObject;
 
 	_int			srcIdx;
+	bool			IsOpen;
 
 private:
 	virtual	VOID		Free();

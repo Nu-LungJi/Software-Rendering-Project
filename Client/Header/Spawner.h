@@ -46,6 +46,7 @@ private:
     _bool                   m_bSpawn;
     _bool                   m_bTrigger;
     _bool                   m_bEndGame;
+    _bool                   m_bTest;
 
     _int                    m_SpawnCnt;
     _int                    m_iCnt;

@@ -1,6 +1,6 @@
 #include "../Include/PCH.h"
 
-Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
+Spawner::Spawner(LPDIRECT3DDEVICE9 _GRPDEV) :m_bEndGame(false), m_bTest(false), m_iCnt(0), m_SpawnCnt(1), m_SpawnDelay(3.f), GameObject(_GRPDEV), m_fDefense(0.f), m_bTrigger(false), m_bSpawn(false), m_fTime(0), m_fFrame(0), m_bStopFrame(false), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTileInfo(nullptr) {}
 Spawner::Spawner(const GameObject& _RHS) : GameObject(_RHS) {}
 Spawner::~Spawner() {}
 
@@ -10,6 +10,13 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 
 	switch (eSpawn)
 	{
+	case TILE_SPAWNER::ITEM_SPAWN1:
+		if (TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS)
+		{
+			m_pTransform->Set_Pos(vPos);
+			m_pTransform->Set_Rotation(55.f,0.f,0.f);
+		}
+		break;
 	  case TILE_SPAWNER::CL_SPAWN:
 		m_bSpawn = true;
 		break;
@@ -17,7 +24,7 @@ HRESULT Spawner::Ready_GameObject(TILE_SIDE eid, TILE_SPAWNER eSpawn, _vec3 vPos
 		  
 		for (int i = 0; i < 3; ++i)
 		{
-			  if (TileManager::GetInstance()->Get_Defense().size() > 2000)
+			  if (TileManager::GetInstance()->Get_Defense().size() > 1000)
 				  break;
 			  _int iRand = rand() % 5;
 			  GameObject* pObj=nullptr;
@@ -78,19 +85,8 @@ VOID Spawner::LateUpdate_GameObject(const _float& _DT) {
 			return;
 		_int i = pObj->Get_Stage();
 
-		switch (i)
-		{
-		case 1:
-			m_SpawnCnt = 2;
-			m_SpawnDelay = 1;
-
-			break;
-		case 2:
-			m_SpawnCnt = 3;
-			m_SpawnDelay = 0.2;
-
-			break;
-		}
+			m_SpawnCnt   = 1 + i * 1;
+			m_SpawnDelay = 3 - i * 0.5f;
 	}
 	
 	AlphaYSorting(&vPos);
@@ -102,7 +98,11 @@ VOID Spawner::Render_GameObject()
 {
 	GRPDEV->SetTransform(D3DTS_WORLD, m_pTransform->Get_World());
 
-	GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
+	if (m_pTileInfo->Get_Spawner() == TILE_SPAWNER::ITEM_SPAWN1 && TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
+	{
+		GRPDEV->SetTexture(0, ResourceManager::GetInstance()->Find_Texture(L"EvilHeadBow_UI.png"));
+	}
+	else GRPDEV->SetTexture(0, m_pTileInfo->Get_Texture());
 
 	m_pBuffer->Render_Buffer();
 
@@ -142,19 +142,68 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 	case TILE_SPAWNER::NPC2:
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN1:
+		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
 		Monster_Spawn();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN2:
+		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
 		Monster_Spawn2();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN3:
+		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
 		Monster_Spawn3();
 		break;
 	case TILE_SPAWNER::MONSTER_SPAWN4:
+		if (TileManager::GetInstance()->Get_Stage() != TILE_DOCHERBOSS)
 		Monster_Spawn4();
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN1:
-	
+		if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_FIRSTBOSS)
+		{
+			_vec3 vLook = *dynamic_cast<Transform*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player")->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position() - *m_pTransform->Get_Position();
+			_vec3 vPos  = *m_pTransform->Get_Position();
+			D3DXVec3Normalize(&vLook,&vLook);
+			m_fFrame += _DT;
+				if (!m_bSpawn)
+				{
+					if (m_fFrame > 0.1f)
+					{
+						m_fFrame = 0;
+						++m_iCnt;
+						if (m_iCnt < 7)
+						{
+							vPos += vLook * 6.f * _DT;
+							vPos.y += 0.1f;		
+						}
+						else
+						{
+							vPos += vLook * 5.f * _DT;
+							vPos.y -= 0.3f;
+						}
+						if (vPos.y <= 0)
+						{
+							vPos.y = 0;
+							m_bSpawn = true;
+						}
+							
+						m_pTransform->Set_Pos(vPos);
+					}
+				}
+				else {
+					if (Crash_Player() != nullptr) {
+						dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - Ç³¼öÀÇ È°", TRUE);
+						if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z)) {
+							dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
+							dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
+							ItemINFO* PungSuArrow = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Get_Item(6);
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, PungSuArrow, L"DIC_InfoFrame_DarkBow");
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+							Set_ObjectDead(TRUE);
+						}
+					}
+					
+        }
+		}
 		break;
 	case TILE_SPAWNER::ITEM_SPAWN2:
 		break;
@@ -198,6 +247,8 @@ void Spawner::Monster_Spawn()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
+
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<Bat>(GRPDEV, vPos,1.5f),L"Monster",GAMEOBJECT_TYPE::OBJECT_MONSTER);
 		m_bSpawn = true;
 	}
@@ -209,7 +260,9 @@ void Spawner::Monster_Spawn2()
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
 
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<ScorpionEvilSoul>(GRPDEV, vPos, 2.3f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 		m_bSpawn = true;
 	}
 }
@@ -219,7 +272,10 @@ void Spawner::Monster_Spawn3()
 	{
 		_vec3 vPos;
 		m_pTransform->Get_Info(INFO_POS, &vPos);
+
+		vPos.y = 1.f;
 		Monster::Add_Monster_to_Scene(Monster::Create<ShotGunEvilSoul>(GRPDEV,vPos,2.f), L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
+
 		m_bSpawn = true;
 	}
 }
@@ -233,7 +289,6 @@ void Spawner::Monster_Spawn4()
 		m_bSpawn = true;
 	}
 }
-
 void Spawner::CL_Spawn()
 {
 	_vec3 vPos;
@@ -349,7 +404,7 @@ Transform* Spawner::Crash_Player()
 
 void Spawner::Boss()
 {
-	if (!m_bSpawn)
+	if (!m_bTest)
 	{
 		_vec3 vPos;
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<FinalBoss>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_FINALBOSS, L"Docheol");
@@ -359,7 +414,7 @@ void Spawner::Boss()
 		vPos = *m_pTransform->Get_Position();
 		Transform* DCTransform = dynamic_cast<Transform*>(Docheol->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM));
 		DCTransform->Set_Pos(DCTransform->Get_Position()->x + vPos.x, DCTransform->Get_Position()->y + vPos.y, DCTransform->Get_Position()->z + vPos.z);
-		m_bSpawn = true;
+		m_bTest = true;
 	}
 }
 

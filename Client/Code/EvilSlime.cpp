@@ -31,6 +31,7 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 {
 	// 하나만 해도 됨
 	Component_Collider->Update_Component(_DT);
+	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	if (m_tInfo.bMiniGame)
 	{// 창준 추가
@@ -43,20 +44,12 @@ INT	EvilSlime::Update_GameObject(const _float& _DT)
 		return 1;
 	}
 
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = MYSCALE->y * 0.5f;
-	}
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
+
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x* 0.5f, MYSCALE->x * 0.5f);
 
 
 	if (Component_Collider->Get_Hp() <= 0.f)
@@ -159,7 +152,8 @@ VOID EvilSlime::LateUpdate_GameObject(const _float& _DT) {
 		break;
 	}	
 	
-	if (static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, MYSCALE->x)) {
+	if (Monster::Minigame_LateUpdate(_DT, &m_tInfo) ||
+		(static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->IsIn_Frustum(*MYPOS, 10.f))) {
 		AlphaZValue = Monster::BillBoard(Component_Transform, GRPDEV);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
@@ -230,21 +224,21 @@ EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos, BOOL bMini) {
 }
 BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 {
-	wstring Tag;
+	wstring Tag = _Other->Get_ObjectTag();
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		Tag = _Other->Get_ObjectTag();
-		if (Tag == L"PlayerArrow")		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Hit.wav", CHANNELID::SOUND_EFFECT08, 0.05f);
-		return TRUE;
-	//case MONSTER_STATE_SUMMON:
-	//case MONSTER_STATE_APPEAR:
-	//case MONSTER_STATE_DEAD:
-	//case MONSTER_STATE_DISAPPEAR:
-	//case MONSTER_STATE_CASTING:
-	//case EVILSLIME_FISSION:
-	//	return 0;
+		if (Tag == L"PlayerArrow") {
+			return Monster::Damaged_by_Arrow(_Other, this);
+		}
+		break;
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_CASTING:
+	case EVILSLIME_FISSION:
+		return 0;
 	}
 
 	return FALSE;
@@ -258,8 +252,13 @@ BOOL EvilSlime::OnCollisionStay(GameObject* _Other)
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Get_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
+		}
 	}
 	return FALSE;
 }
@@ -269,6 +268,7 @@ BOOL EvilSlime::OnCollisionExit(GameObject* _Other)
 }
 VOID EvilSlime::Free() {
 
+	Monster::Release_Hurdle(&m_tInfo);
 	GameObject::Free();
 }
 
@@ -380,9 +380,12 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 			pBullet->Get_Info()->fTimer[1] = EVILSLIME_CASTING_TIME;
 			*SCALE(m_tInfo.pGameObj[i]) = *MYSCALE;
 
-			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Guardian_IceFairy_GroundHit_02.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
+			// KJJ 03.03 FIX
 
+			pBullet->Set_ObjectTag(L"MonsterBullet");
+			pBullet->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
+			SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_STATIC_OBJECT)->Add_GameObject(pBullet);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
 		}
 	}
 	else
@@ -401,7 +404,11 @@ VOID EvilSlime::State_Casting(const _float& _DT)
 			static_cast<EVILSLIME_BULLET_TYPE*>(m_tInfo.pGameObj[i])->Get_Info()->bTrigger[0] = true;
 			m_tInfo.pGameObj[i] = nullptr;
 		}
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Slime_Ice.wav", CHANNELID::SOUND_EFFECT08, 0.2f);
+
 		m_tInfo.Change_State(MONSTER_STATE_CHANNELING);
+
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Slime_Land.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
 	}
 }
 
@@ -421,6 +428,7 @@ VOID EvilSlime::State_Channeling(const _float& _DT)
 VOID EvilSlime::State_Dead()
 {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	TileManager::GetInstance()->Set_StageArray();
 	ObjectDead = true;
 }
@@ -428,7 +436,7 @@ VOID EvilSlime::State_Dead()
 VOID EvilSlime::State_Fission(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
-	if (m_tInfo.fTimer[0] <= 0.5f) {
+	if (m_tInfo.fTimer[0] <= 1.5f) {
 		_float fHeight = (m_vFissionDst.y - MYSCALE->y * 0.5f) * sinf(D3DX_PI * (m_tInfo.fTimer[0] / 0.5f));
 		MYPOS->y += fHeight;
 	}
@@ -443,7 +451,7 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			_vec3 vDst = { MYPOS->x + ((MYSCALE->x * RANDOM::Get_float(MYPOS->x, -MYPOS->x,this))),
 							MYSCALE->y,
 							MYPOS->z + ((MYSCALE->y * RANDOM::Get_float(MYPOS->z, -MYPOS->z,this)))};
-
+			TileManager::GetInstance()->Set_StageAddCount();
 			m_tInfo.pGameObj[i] = Monster::Create<EvilSlime>(GRPDEV, *MYPOS);
 
 			*SCALE(m_tInfo.pGameObj[i]) = *MYSCALE * 0.5f;
@@ -451,6 +459,13 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			EvilSlime* pSlime = static_cast<EvilSlime*>(m_tInfo.pGameObj[i]);
 
 			pSlime->Get_Info()->Change_State(EVILSLIME_FISSION);
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
+
+			if (SCALE(pSlime)->x < 1.f) {
+				COLLIDER(pSlime)->Set_Hp(1.f);
+			}
 
 			*pSlime->Get_FissionDst() = vDst;
 
@@ -460,10 +475,11 @@ VOID EvilSlime::State_Fission(const _float& _DT)
 			vDst -= *MYPOS;
 			D3DXVec3Normalize(&pSlime->Get_Info()->vDirection, &vDst);
 
+		
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i], L"Monster", GAMEOBJECT_TYPE::OBJECT_MONSTER);
-      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.8f);
+      SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_SlimeSplit.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		}
-
+		TileManager::GetInstance()->Set_StageArray();
 		m_tInfo.bTrigger[2] = false;
 		m_tInfo.pGameObj[0] = m_tInfo.pGameObj[1] = m_tInfo.pGameObj[2] = m_tInfo.pGameObj[3] = nullptr;
 		ObjectDead = true;

@@ -10,6 +10,9 @@ HRESULT Rain::Ready_GameObject() {
 	return S_OK;
 }
 INT	Rain::Update_GameObject(const _float& _DT) {
+	if (Get_ObjectDead())
+		return -1;
+	
 	GameObject::Update_GameObject(_DT);
 	_vec3		vPos;
 
@@ -26,9 +29,12 @@ INT	Rain::Update_GameObject(const _float& _DT) {
 }
 VOID Rain::LateUpdate_GameObject(const _float& _DT) {
 	//GameObject::LateUpdate_GameObject(_DT);
-
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHER1)
+		Set_ObjectDead(TRUE);
 }
 VOID Rain::Render_GameObject() {
+	if (TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DEFENSE)
+		return;
 	Component_Buffer->PreRedner_Particle();
 	GRPDEV->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -45,7 +51,7 @@ HRESULT Rain::Component_Initialize() {
 	BoundingBox bound;
 	bound.vMin = { -15,-15, -15 };
 	bound.vMax = { 15,10, 15 };
-	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,1500);
+	Component_Buffer = ParticleRain::Create(GRPDEV,&bound,2500);
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
 

@@ -2,6 +2,9 @@
 #include "GameObject.h"
 
 class CameraObject;
+class Hurdle;
+
+enum class POOLINGMODE :uint8_t { X = 0, Y, Z, MINUS_X, End };
 
 class CubeFloorTile :
     public GameObject
@@ -25,7 +28,7 @@ public:
         m_iTileNumber = iTileNumber;
         if (m_pTransform != nullptr) m_pTransform->Get_Position()->y += 0.0001f * iTileNumber;
     }
-    //void            Set_TileState(TILE_STATE eid)       { m_eTileState = eid; }
+
     Transform* Get_TransCom() { return m_pTransform; }
     Buffer* Get_Buffer() { return m_pBuffer; }
 
@@ -44,22 +47,36 @@ public:
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, bool _Grid = true);
     static         CubeFloorTile* Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _vec3 vScale, bool _Grid = true);
 
-    BOOL			OnCollisionEnter(GameObject* _Other)	override;
-    bool           m_bGrid;
 
+    BOOL			OnCollisionStay(GameObject* _Other)	override;
+
+    bool            m_bGrid;
+
+    
 private:
     virtual  void            Free();
 
-    bool    Pooling();
+    bool            Pooling();
+    bool            bMoved = true;
+public:
+    void        Set_OriginPos(_vec3 _vPos) { m_vOriginPos = _vPos; }
+    void        Move_to_OriginPos() { m_pTransform->Set_Pos(m_vOriginPos); }
+    POOLINGMODE Get_PoolingMode() { return m_ePoolingMode; }
+    void        Set_Hurdle(bool b) { m_bSet_Hurdle = b; }
 
 private:
-    GameObject* m_pTarget = nullptr;
-    CameraObject* m_pCam = nullptr;
-    bool            m_bTrigger = false;
-    bool            IsIn_Cam = true;
-    _float          m_fTimer = 0.f;
-    IDirect3DTexture9* m_pTexture;
-    int             m_iFalling;
+    GameObject*         m_pTarget = nullptr;
+    CameraObject*       m_pCam = nullptr;
+    bool                m_bTrigger = false;
+    bool                IsIn_Cam = true;
+    _float              m_fTimer = 0.f;
+    _float*             m_pTimer;
+    IDirect3DTexture9*  m_pTexture;
+    int                 m_iFalling;
+    _vec3               m_vOriginPos;
+    POOLINGMODE         m_ePoolingMode = POOLINGMODE::X;
+    Hurdle*             m_pHurdle = nullptr;
+    bool                m_bSet_Hurdle = false;
 };
 
 class CubeFunction

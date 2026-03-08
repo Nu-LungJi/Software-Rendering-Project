@@ -79,6 +79,10 @@
 #include "MiniGameCounter.h"
 #include "Hurdle.h"
 #include "Shadow.h"
+#include "SkyBox.h"
+#include "FireDevilBowChargeEffect.h"
+#include "WhiteOut.h"
+#include "MiniGameDis.h"
 
 #pragma endregion
 
@@ -91,6 +95,7 @@
 #include "DropItemEffect.h"
 
 #pragma endregion
+#include "IntroUI.h"
 #include "Player.h"
 #include "MainUI.h"
 #include "NPCTalk.h"
@@ -117,6 +122,9 @@
 #include "StageBlackOut.h"
 #include "DamageFont.h"
 #include "Artifact.h"
+#include "EndingCredit.h"
+#include "Playerglitter.h"
+#include "Player_Shadow.h"
 //////////////////////////////////////////// Scene List
 
 #include "StartScene.h"
@@ -124,9 +132,9 @@
 #include "MapScene.h"
 
 #include "DoCheolScene.h"
-#include "MiniGameScene.h"
+#include "MiniGameScene.h""
+#include "TempScene.h"
 
-#include "CLoading.h"
 //////////////////////////////////////////// Manager
 
 #include "GUIManager.h"

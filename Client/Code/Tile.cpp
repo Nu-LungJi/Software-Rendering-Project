@@ -55,7 +55,8 @@ INT	Tile::Update_GameObject(const _float& _DT) {
 }
 VOID Tile::LateUpdate_GameObject(const _float& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	if (KEY_DOWN(DIK_F8))
+	if ((KeyManager::GetInstance()->Get_KeyState(DIK_LCONTROL) & 0x8000 &&
+		KeyManager::GetInstance()->Get_KeyState(DIK_S) & 0x8000))
 	{
 		TileManager::GetInstance()->Save_Tile(hWnd);
 	}
@@ -169,7 +170,7 @@ void Tile::Imgui_Setting()
 	//		}
 	//	}
 	//}
-	if (TILE_SIDE::TILE_OTHER != m_eTile) vRotation.x = 45.f;
+	if (TILE_SIDE::TILE_OTHER != m_eTile) vRotation.x = 55.f;
 	else vRotation.x = 0;
 	if (!ImGui::CollapsingHeader("Setting"))
 		return;
@@ -339,7 +340,7 @@ void Tile::Imgui_ModeChanger()
 	static const char* cTIleInstall[]    = { "Install", "MOVE" };
 	static const char* cTileAnimation[]  = {"TRUE", "FALSE"};
 	static const char* cTileSpawner[] = { "NPC1", "NPC2", "ITEM_SPAWN1", "ITEM_SPAWN2", "ITEM_SPAWN3", "ITEM_SPAWN4", "ITEM_SAPWN5","ITEM_SPAWN6", "MONSTER_SPAWN1", "MONSTER_SPAWN2", "MONSTER_SPAWN3", "MONSTER_SPAWN4", "BOSS_SPAWN","CL_SPAWN","SPAWN_RANDOM","SPAWN_UI","SPAWN_END"};
-	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "END" };
+	static const char* cTileNextStage[] = { "STAGE1", "STAGE2", "STAGE3", "STAGE4", "FIRSTBOSS","DOCHER1","DOCHER2","DOCHERBOSS","TILE_DEFENSE" , "TILE_ROADRUN","END" };
 
 	static const char* cSelect_Tile      = nullptr;
 	static const char* cSelect_State     = nullptr;
@@ -415,7 +416,7 @@ void Tile::Imgui_ModeChanger()
 			if (ImGui::BeginCombo("##Choice", cSelect_Stage))
 			{
 				for (_int i = 0; i < IM_ARRAYSIZE(cTileStage); i++)
-				{
+				{	
 					_bool bSelect = (cSelect_Stage == cTileStage[i]);
 					if (ImGui::Selectable(cTileStage[i], bSelect))
 					{
@@ -584,7 +585,8 @@ void Tile::Imgui_ModeChanger()
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[6])) m_eNextStage = TILE_STAGE::TILE_DOCHER2;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[7])) m_eNextStage = TILE_STAGE::TILE_DOCHERBOSS;
 					else if (!strcmp(cSelect_NextStage, cTileNextStage[8])) m_eNextStage = TILE_STAGE::TILE_DEFENSE;
-					else if (!strcmp(cSelect_NextStage, cTileNextStage[9])) m_eNextStage = TILE_STAGE::STAGE_END;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[9])) m_eNextStage = TILE_STAGE::STAGE_ROLARUN;
+					else if (!strcmp(cSelect_NextStage, cTileNextStage[10])) m_eNextStage = TILE_STAGE::STAGE_END;
 				}
 				if (bSelect)
 					ImGui::SetItemDefaultFocus();
@@ -775,6 +777,7 @@ void Tile::Set_AnimationCount(_int* icnt)
 
 	else if (!_tcscmp(m_pTileName, L"Spr_SpecialRoom_Tombstone_RuinsRoom_0%d.dds")) *icnt = 8;
 	else if (!_tcscmp(m_pTileName, L"SupplyBigCat%d.dds")) *icnt = 10;
+	else if (!_tcscmp(m_pTileName, L"Spr_Object_Explosionjar_Stage01_0%d.dds")) *icnt = 33;
 }
 HRESULT Tile::Load_Image(const _tchar* pName, TILE_STATE eid)
 {
@@ -978,7 +981,7 @@ void Tile::Check_TilePoint()
 
 		if (vMouseCheck.x < 1)
 			vMouseCheck.x = 1;
-
+		
 		if (vMouseCheck.z < 1)
 			vMouseCheck.z = 1;
 
@@ -1033,7 +1036,7 @@ void Tile::Check_TilePoint()
 								->Set_TextureID(ResourceManager::GetInstance()->Find_Texture(dynamic_cast<TileInfo*>(pTile->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileTextureName().c_str()));
 					
 						}
-						else if (m_eTileState == STATE_ANIMATION || m_eTileState == STATE_DESTORY || m_eTileState == STATE_POTALEFFECT)
+						else if (m_eTileState == STATE_ANIMATION || m_eTileState == STATE_DESTORY || m_eTileState == STATE_POTALEFFECT || m_eTileState == STATE_BOOM)
 						{
 							_int i(0);
 							Set_AnimationCount(&i);

@@ -25,6 +25,9 @@ public:
 
 	VOID			TalkWithShopKeeper(FLOAT _DT);
 	HRESULT			Make_TextureList(wstring _FileName);
+
+	VOID			Set_QuestState(QUESTSTATE _QSTATE)	{ QuestState  =	 (INT)_QSTATE;	}
+	QUESTSTATE		Get_QuestState()					{ return (QUESTSTATE)QuestState;}
 public:
 	static			ShopKeeper* Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos);
 
@@ -39,7 +42,6 @@ private:
 
 	GameObject* Player;
 	MainUI* PlayerUI;
-	NPCTalk* NPCTalkUI;
 	SpeechBubble* Speech_BubbleUI;
 
 	vector<IDirect3DTexture9*>	Shop_TextureList;
@@ -47,8 +49,11 @@ private:
 	_float  Timer_Shop;
 	_int Shop_AnimIDX;
 
-	BOOL	bQuest;
-	BOOL	Interaction_Possible;
+	
+
+	INT		QuestState;
+	BOOL	Enable_Interaction;
+	BOOL	CamLock;
 
 private:
 	virtual VOID Free();

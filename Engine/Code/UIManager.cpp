@@ -27,12 +27,19 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     D3DXFONT_DESCW FontInfo;
     ZeroMemory(&FontInfo, sizeof(FontInfo));
 
+    //FontInfo.Height = FO->TextScale;
+    //FontInfo.Weight = FO->TextWeight;
+    //FontInfo.CharSet = HANGUL_CHARSET;
+    //FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
+    //FontInfo.Quality = DEFAULT_QUALITY;
+    //FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
+
     FontInfo.Height = FO->TextScale;
     FontInfo.Weight = FO->TextWeight;
-    FontInfo.CharSet = HANGUL_CHARSET;
-    FontInfo.OutputPrecision = OUT_DEFAULT_PRECIS;
-    FontInfo.Quality = DEFAULT_QUALITY;
-    FontInfo.PitchAndFamily = DEFAULT_PITCH | FW_DONTCARE;
+    FontInfo.CharSet = DEFAULT_CHARSET;
+    FontInfo.OutputPrecision = OUT_TT_PRECIS;
+    FontInfo.Quality = CLEARTYPE_QUALITY;// ANTIALIASED_QUALITY;
+    FontInfo.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 
     lstrcpyW(FontInfo.FaceName, FO->FontType.c_str());
 
@@ -75,8 +82,8 @@ VOID UIManager::Render_FontObjects() {
     for (auto& TXT : FontList) {
         if (!TXT.second->Get_Active()) continue;
         if (TXT.second->Visible == TRUE) {
-            FLOAT XPos = TXT.second->Position.x;
-            FLOAT YPos = TXT.second->Position.y;
+            FLOAT XPos = TXT.second->Position.x - 0.5f;
+            FLOAT YPos = TXT.second->Position.y - 0.5f;
             RECT RT = { XPos, YPos, XPos + 1, YPos + 1 };
             TXT.second->DXFont->DrawTextW(DXSprite, TXT.second->Text.c_str(), -1, &RT, TXT.second->FORMAT | DT_NOCLIP, TXT.second->TextColor);
         }
@@ -84,7 +91,35 @@ VOID UIManager::Render_FontObjects() {
 
     DXSprite->End();
 }
+VOID UIManager::Render_GlobalObject() {
+    DXSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
+    for (auto& SOBJ : GlobalSpriteList) {
+        if (SOBJ.second->VISIBLE == TRUE) {
+            RECT RT = { SOBJ.second->Get_Pos().x, SOBJ.second->Get_Pos().y, SOBJ.second->Get_Pos().x + SOBJ.second->Get_Scale().x, SOBJ.second->Get_Pos().y + SOBJ.second->Get_Scale().y };
+            DXSprite->Draw(SOBJ.second->TEXTURE, &RT, NULL, NULL, D3DCOLOR_ARGB(SOBJ.second->OPACITY, 255, 255, 255));
+        }
+    }
+    for (auto& FOBJ : GlobalFontList) {
+        if (FOBJ.second->Visible == TRUE) {
+            RECT RT = { FOBJ.second->Position.x, FOBJ.second->Position.y, FOBJ.second->Position.x + 1, FOBJ.second->Position.y + 1 };
+            FOBJ.second->DXFont->DrawTextW(DXSprite, FOBJ.second->Text.c_str(), -1, &RT, FOBJ.second->FORMAT | DT_NOCLIP, FOBJ.second->TextColor);
+        }
+    }
+    DXSprite->End();
+}
+SpriteINFO* UIManager::Find_GlobalObject(wstring _Tag) {
+    for (auto& FOBJ : GlobalSpriteList) {
+        if (FOBJ.second->KEY == _Tag.c_str())
+            return FOBJ.second;
+   }
+}
+FontObject* UIManager::Find_GlobalFontObject(wstring _Tag) {
+    for (auto& FOBJ : GlobalFontList) {
+        if (FOBJ.second->FontTag == _Tag.c_str())
+            return FOBJ.second;
+    }
+}
 VOID UIManager::Free() {
     for (auto& Item : ItemList)
     {
@@ -96,6 +131,9 @@ VOID UIManager::Free() {
     for (auto& FO : FontList) {
         Safe_Release(FO.second->DXFont);
         Safe_Delete(FO.second);
+    }
+    for (auto& FOBJ : GlobalSpriteList) {
+        Safe_Delete(FOBJ.second);
     }
         
     Safe_Release(DXSprite);

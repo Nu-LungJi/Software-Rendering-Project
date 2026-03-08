@@ -4,7 +4,7 @@
 
 IMPLEMENT_SINGLETON(CollisionManager)
 
-CollisionManager::CollisionManager()	: CollisionLine_Visibility(TRUE) {}
+CollisionManager::CollisionManager()	: CollisionLine_Visibility(FALSE) {}
 CollisionManager::~CollisionManager()									 {}
 
 INT CollisionManager::Update_CollisionManager() {
@@ -52,6 +52,7 @@ BOOL CollisionManager::AABB_Collision() {
 					SOBJ->Delete_CollisionObject(DOBJ);
 					DOBJ->Delete_CollisionObject(SOBJ);
 					SOBJ->OnCollisionExit(DOBJ);
+					DOBJ->OnCollisionExit(SOBJ);
 				}
 			}
 		}

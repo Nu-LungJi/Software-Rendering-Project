@@ -21,6 +21,8 @@ VOID RenderManager::Render_GameObject(LPDIRECT3DDEVICE9& _GRPDEV) {
 	Render_Alpha(_GRPDEV);
 	Render_UI(_GRPDEV);
 
+	EffectManager::GetInstance()->Render_GlobalEffect(_GRPDEV);
+
 	Clear_RenderGroup();
 }
 VOID RenderManager::Clear_RenderGroup()	{
@@ -65,9 +67,9 @@ VOID RenderManager::Render_Alpha(LPDIRECT3DDEVICE9& _GRPDEV) {
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::MONSTER_EFFECT);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::BOSS_FRONT_EFFECT);
 
-	//_GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
 	EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::PLAYER_EFFECT);
-	//_GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
+	_GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
@@ -78,6 +80,7 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 			if (_OBJ->Get_ObjectTag() == L"MainUI") {
 				_OBJ->Render_GameObject();
 				EffectManager::GetInstance()->Render_EffectManager(_GRPDEV, EFFECT_RENDER::UI_EFFECT);
+			
 				UIManager::GetInstance()->Render_FontObjects();
 			}
 			else {
@@ -91,6 +94,8 @@ VOID RenderManager::Render_UI(LPDIRECT3DDEVICE9& _GRPDEV)	{
 	if (pBlackOut != nullptr)
 		pBlackOut->Render_GameObject();
 
+	UIManager::GetInstance()->Render_GlobalObject();
+	
 }
 VOID RenderManager::Render_TILE(LPDIRECT3DDEVICE9& _GRPDEV)
 {

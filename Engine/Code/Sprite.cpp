@@ -10,7 +10,7 @@ SpriteObject::SpriteObject(CONST SpriteObject& _RHS) : Component(_RHS), Sprite(_
 	for (size_t i = 0; i < TextureList.size(); ++i)
 		TextureList[i].TEXTURE->AddRef();
 }
-SpriteObject::~SpriteObject()																									{}
+SpriteObject::~SpriteObject(){}
 
 HRESULT SpriteObject::Ready_Sprite() {
 	D3DXCreateSprite(GRPDEV, &Sprite);
@@ -27,8 +27,10 @@ VOID SpriteObject::Render_Sprite() {
 	Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
 	for (auto& SPR : TextureList) {
-		if(SPR.VISIBLE == TRUE)
-			Sprite->Draw(SPR.TEXTURE, NULL, NULL, &SPR.POS, D3DCOLOR_ARGB(SPR.OPACITY, 255, 255, 255));
+		if (SPR.VISIBLE == TRUE) {
+			D3DXVECTOR3 POS = { SPR.POS.x, SPR.POS.y, 0.f };
+			Sprite->Draw(SPR.TEXTURE, NULL, NULL, &POS, D3DCOLOR_ARGB(SPR.OPACITY, 255, 255, 255));
+		}
 	}
 
 	Sprite->End();

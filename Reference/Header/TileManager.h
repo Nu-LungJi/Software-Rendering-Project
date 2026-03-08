@@ -66,6 +66,15 @@ public:
     void                    Set_Stage() { m_eStage = m_eCurrent; }
     void                    Set_CurStage(TILE_STAGE es) { m_eCurrent = es; }
 
+    void                    Set_BeforeStage() { m_eBefore = m_eStage; }
+    TILE_STAGE              Get_BeforeStage() { return m_eBefore ; }
+
+    void                    Set_BreakDari(_bool Mini) { m_bDari = Mini; }
+    _bool                   Get_BreakDari() { return m_bDari; }
+    void                    Set_MiniGame(_bool Mini) { m_bChangeMiniGame = Mini; }
+    _bool                   Get_MiniGame() { return m_bChangeMiniGame; }
+    _bool                   Get_PotalBgmStart() { return m_bBgm; }
+    void                    Set_PotalBgmStart(_bool Bgm) { m_bBgm = Bgm; }
     TILE_STAGE              Get_CurrentStage() { return m_eCurrent; };
     TILE_STAGE              Get_Stage() { return m_eStage; };
     TILEMODE_CHANGE         Get_Mode() { return m_eMode; }
@@ -87,6 +96,11 @@ private:
     _bool                   m_bCheck;
     _bool                   m_EndLoading;
     _bool                   m_bZeroMonster;
+    _bool                   m_bBgm;
+    _bool                   m_bChangeMiniGame;
+    _bool                   m_bDari;
+
+    TILE_STAGE              m_eBefore;
     TILE_STAGE              m_eCurrent;
     TILE_STAGE              m_eStage;
     TILEMODE_CHANGE         m_eMode;
@@ -94,6 +108,7 @@ private:
 
     vector<GameObject*>     m_vecTileBuffer[TILE_STAGE::STAGE_END][TILEMODE_CHANGE::MODE_END];
     vector<GameObject*>     m_vecDefenseMonster;
+
 private:
     virtual void            Free();
 };

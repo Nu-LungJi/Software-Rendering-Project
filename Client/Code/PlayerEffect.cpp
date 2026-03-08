@@ -49,7 +49,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::CHAOS_PULSE) { Make_TextureList(L"Chaos_Pulse"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::BLACKHOLE_DEATH) { Make_TextureList(L"Spr_Effect_ChaosPhase02Death_"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::SKILL2_HAND) { Make_TextureList(L"Skill2_Hand"); }
-	else if (_SKILLTYPE == PLAYER_SKILL::IRA_HITEFFECT) { Make_TextureList(L"IRA_HitEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::IRA_HITEFFECT) { Make_TextureList(L"Ice_HitEffect"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::IRA_CHARGING) { Make_TextureList(L"IRA_Charging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::IRA_CHARGED) { Make_TextureList(L"IRA_Charged"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::ATOMIC_BOW) { Make_TextureList(L"IRA_Charged"); }
@@ -59,6 +59,10 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) { Make_TextureList(L"IRA_Charged"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED_END) { Make_TextureList(L"IRA_Charging"); }
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC_AREA) { Make_TextureList(L"NPC_Atomic_Area"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::PLAYER_DASHEFFECT) { Make_TextureList(L"Player_DashEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::SUMMON_EFFECT) { Make_TextureList(L"SpawnEffect"); }
+	else if (_SKILLTYPE == PLAYER_SKILL::SPAWN_BOTTOM) { Make_TextureList(L"Spawn_bottom"); }
+
 
 	if (_SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER) {
 		Make_TextureList(player->Get_FileName());
@@ -97,7 +101,7 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 
 		_matrix matSize;
 		D3DXMatrixIdentity(&matSize);
-		D3DXMatrixScaling(&matSize, _effectSize.x, _effectSize.y, _effectSize.z);
+		D3DXMatrixScaling(&matSize, 0.f, 0.f, 0.f);
 
 		_matrix matBillboard;
 		D3DXMatrixLookAtLH(&matBillboard, &eye, &at, &up);
@@ -132,8 +136,6 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 			|| _SKILLTYPE == PLAYER_SKILL::WIND_SPIRIT)
   			CollisionManager::GetInstance()->Add_ColliderObject(this);
 	}
-	
-	PlayTime = _PlayTime;
 
 	ObjectTAG = L"Player_Effect";
 
@@ -143,10 +145,14 @@ HRESULT PlayerEffect::Ready_Effect(PLAYER_SKILL _SKILLTYPE, _vec3* _PlayerPOS, B
 	//CollisionManager::GetInstance()->Add_ColliderObject(this);
 	_alphaRatio = 1.f;
 	if (_SKILLTYPE == PLAYER_SKILL::ICE_SHADER || _SKILLTYPE == PLAYER_SKILL::BLUE_SHADER
-		|| _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER)
+		|| _SKILLTYPE == PLAYER_SKILL::GREEN_SHADER || _SKILLTYPE == PLAYER_SKILL::SHADOW_PARTNER
+		|| _SKILLTYPE == PLAYER_SKILL::PLAYER_DASHEFFECT)
 		_alphaRatio = 0.5f;
 	else if (_SKILLTYPE == PLAYER_SKILL::NPC_ATOMIC)
 		_alphaRatio = 0.f;
+
+	PlayTime = _PlayTime;
+	Critical = false;
 
 	return S_OK;
 }
@@ -161,8 +167,6 @@ HRESULT PlayerEffect::Make_TextureList(wstring _FileName) {
 		if (TEX == nullptr) break;
 		else { TextureList.push_back(TEX); if (SKILL_TYPE == PLAYER_SKILL::SHADOW_PARTNER) break;}
 	}
-
-	
 
 	ENDFRAME = TextureList.size() + 1;
 
@@ -216,6 +220,14 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 			_alphaRatio = max(_alphaRatio, 0.f);
 	}
 
+	if (SKILL_TYPE == PLAYER_SKILL::SUMMON_EFFECT) {
+		_effectPos.z -= _DT * 80.f;
+	}
+	//if (SKILL_TYPE == PLAYER_SKILL::SPAWN_BOTTOM) {
+	//	_alphaRatio -= _DT * 2.f;
+	//	_alphaRatio = max(_alphaRatio, 0.f);
+	//}
+
 	switch (SKILL_TYPE)
 	{
 	case PLAYER_SKILL::ICE_CHARGING :
@@ -258,6 +270,13 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 			ObjectDead = true;
 		}
 		break;
+	case PLAYER_SKILL::SUMMON_EFFECT:
+		_vec3* playerPos = static_cast<Transform*>(player->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position();
+		if (playerPos->z >= _effectPos.z) {
+			ObjectDead = true;
+			player->Set_Start_Effect_Dead(TRUE);
+		}
+		break;
 	}
 	if (true)
 	{
@@ -296,7 +315,7 @@ INT  PlayerEffect::Update_GameObject(CONST FLOAT& _DT) {
 		else matWorld = matSize * matRotX;
 
 		matWorld._41 = (*_playerPos).x;
-		matWorld._42 = (*_playerPos).y + 0.7f;
+		matWorld._42 = (*_playerPos).y;
 		matWorld._43 = (*_playerPos).z;
 
 		if (SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC || SKILL_TYPE == PLAYER_SKILL::NPC_ATOMIC_CHARGED) {
@@ -336,7 +355,7 @@ VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 			CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 				Get_GameObject(L"Camera"));
 			Camera->Camera_Shaking(10.f, 0.5f);
-			SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/BossCav - Explosion.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 		}
 	}
 		
@@ -344,6 +363,11 @@ VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 VOID PlayerEffect::Render_GameObject() {
 	if (ObjectDead)	return;
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+
+	//KJJ 03 06
+	if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+		Monster::BillBoard(Component_Transform, GRPDEV);
+	}
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -384,14 +408,25 @@ BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 	int hp = Component_Collider->Get_Hp();
 	int atk = COLLIDER(_Other)->Get_Att();
 
+	std::random_device rd;
+	std::uniform_int_distribution<int> distribution(0, 100);
+
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+	int originATK = Component_Collider->Get_Att();
+
+	bool _isCritical = false;
+	if (distribution(rd) % 100 <= *player->Get_Critical()) {
+		Component_Collider->Set_Att(originATK * 2.f);
+		_isCritical = true;
+	}
+
 	if (Tag == L"Monster") {
 		atk = 1.f;
 		Component_Collider->Set_Hp(hp - atk);
 		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25 );
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+		Component_Collider->Set_Att(originATK);
 		return TRUE;
 	}
 
@@ -399,23 +434,20 @@ BOOL PlayerEffect::OnCollisionEnter(GameObject* _Other) {
 		atk = 1.f;
 		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
 		Component_Collider->Set_Hp(hp - atk);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+		Component_Collider->Set_Att(originATK);
 		return TRUE;
 	}
 	else if (_Other->Get_ObjectTag() == L"Docheol") {
 		atk = 1.f;
-		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - COLLIDER(_Other)->Get_Att());
+		COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
 		Component_Collider->Set_Hp(hp - atk);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
-		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att() * 0.25);
+		DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+		Component_Collider->Set_Att(originATK);
 
 		return TRUE;
 	}
+	Component_Collider->Set_Att(originATK);
 
 	return FALSE;
 }
@@ -437,7 +469,9 @@ HRESULT	PlayerEffect::Component_Initialize() {
 		if(SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) Component_Collider->Set_Scale(3.f, 3.f, 3.f);
 		else Component_Collider->Set_Scale(5.f, 5.f, 5.f);					// 충돌체의 범위 조절
 		
-		Component_Collider->Set_Att(100.f);
+		if(SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) Component_Collider->Set_Att(43.f);
+		else if(SKILL_TYPE == PLAYER_SKILL::PAREND)Component_Collider->Set_Att(50.f);
+		else if (SKILL_TYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT)Component_Collider->Set_Att(60.f);
 	}
 
 

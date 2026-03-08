@@ -41,10 +41,11 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 	Component_Transform->Set_Pos(vPos);
 	m_bSpawn = true;
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
-	BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::CHLG,this);
-	pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
-	pBossUi->Set_ObjectTag(L"BossUI");
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+	//BossUI* pBossUi = BossUI::Create(GRPDEV, BOSSUI_INFO::CHLG,this);
+	//pBossUi->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_UI);
+	//pBossUi->Set_ObjectTag(L"BossUI");
+	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pBossUi);
+	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
 
 	/////////////obj pooling////////
 	for (_int i = 0; i < 40; ++i)
@@ -89,8 +90,10 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_FOUR].push_back(pAttack);
 	}
+
 	SoundManager::GetInstance()->Stop_AllSound();
-	SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_EFFECT02, 0.4f);
+	SoundManager::GetInstance()->Play_Sound(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_BGM01, 0.4f,FALSE);
+	
 	return S_OK;
 }
 HRESULT	 Cheonlog::Make_TextureList(wstring _FileName, LEAF_ATTACK eid)
@@ -123,12 +126,27 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 {
 	if (m_eStatu == CL_DEAD && m_iFrameCnt >= m_vecCheonlogTexture[m_eStatu].size() - 1)
 	{
+
 		_vec3 vPos = *Component_Transform->Get_Position();
-		vPos.y += 3.f;
-		vPos.z += 5.f;
-		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_POTAL, vPos, FALSE));
-		
-		dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+	
+		//dynamic_cast<BossUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"BossUI"))->Set_Dead();
+		// 광윤 추가 ▼
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(FALSE);
+
+		Spawner* pObj = Spawner::Create(GRPDEV,TILE_SIDE::TILE_FRONT,TILE_SPAWNER::ITEM_SPAWN1,vPos);
+		pObj->Set_ObjectTag(L"SpawnITem");
+		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_ITEM, vPos, FALSE));
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pObj);
+
+		for (_int i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+		{
+			for (auto& iter : m_vecOrignBullet[i])
+			{
+				CollisionManager::GetInstance()->Delete_ColliderObject(iter);
+				Safe_Release(iter);
+			}
+			m_vecOrignBullet[i].clear();
+		}
 		Set_ObjectDead(TRUE);
 	}
 	if (Component_Collider->Get_Hp() <= 0)
@@ -693,7 +711,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 3;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x,6,vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
-		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
 
 		++m_iSkillDelay;
 		break;
@@ -747,7 +765,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 		D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 		vPos += vLook * 8;
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, TRUE));
-		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+		SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT06, 0.2f);
 		++m_iSkillDelay;
 
 		// 광윤 추가 ▼
@@ -767,7 +785,7 @@ void Cheonlog::Create_Cheonlog(const _float& _DT, _vec3 vPos)
 			D3DXVec3TransformNormal(&vLook, &vLook, &matRotY);
 			vPos += vLook * 6;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
-			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Lightning.wav", CHANNELID::SOUND_EFFECT05, 0.2f);
 		}
 		
 	}
@@ -793,7 +811,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 			vPos += vLookReset * 4;
 			EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, CLEffect::Create(GRPDEV, CL_EFFECT::SPAWN_THUNDER, { vPos.x, 6, vPos.z }, TRUE, { 2.3f,11.5f,2.5f }, { 55,0,0 }, 0.02f, { 0,0,1 }, FALSE));
 			vLookReset = { 0,0,0 };
-			if (i == 11) SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Pattern_Range_01_04.wav", CHANNELID::SOUND_EFFECT01, 0.3f);
+			if (i == 11) SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_Pattern_Range_01_04.wav", CHANNELID::SOUND_EFFECT01, 0.5f);
 			vPos = vOrigin;
 		}
 		
@@ -810,7 +828,7 @@ void Cheonlog::Create_Cheonlog_After(const _float& _DT, _vec3 vPos)
 	{
 		// 광윤 추가 ▼
 		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 4.f);
-
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(TRUE);
 
 		m_bStartPattern = true; m_eCheck = IDEL;
 		m_bSpawn = false;
@@ -1049,6 +1067,7 @@ void Cheonlog::Free()
     {
         for (auto& iter : m_vecCheonlogTexture[i])
         {
+			
             Safe_Release(iter);
         }
         m_vecCheonlogTexture[i].clear();
@@ -1083,6 +1102,7 @@ void Cheonlog::Free()
 	{
 		for (auto& iter : m_vecPoolBullet[i])
 		{
+			CollisionManager::GetInstance()->Delete_ColliderObject(iter);
 			Safe_Release(iter);
 		}
 		m_vecPoolBullet[i].clear();

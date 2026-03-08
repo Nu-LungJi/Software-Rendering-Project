@@ -26,6 +26,7 @@ public:
     VOID Set_TargetPos(_vec3 pos) { targetPos = pos; }
     VOID Set_Damage(int dmg) { _Damage = dmg; }
     VOID Set_Size(float size) { _Size = size; }
+    VOID Set_Critical(bool val) { _isCritical = val; }
 
 private:
     virtual  void            Free();
@@ -45,7 +46,7 @@ private:
     _float  _lifeTimer;
     bool    _active;
 
-
+    bool _isCritical;
 
 };
 

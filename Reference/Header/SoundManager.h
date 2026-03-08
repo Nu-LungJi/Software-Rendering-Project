@@ -20,19 +20,25 @@ public:
 	VOID		Update_SoundManager();
 
 	HRESULT	    Play_Sound_Once(CONST TCHAR* _FilePath, CHANNELID _SoundChannel, _float Volume = 0.5f);
-	HRESULT		Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel,_float Volume = 0.5f);
+	HRESULT		Play_Sound(CONST TCHAR* _FilePath, CHANNELID _SoundChannel,_float Volume = 0.5f,_bool ChanelMode = TRUE);
 	HRESULT		Stop_Sound(CHANNELID _SoundChannel);
 	HRESULT		Stop_AllSound();
-	HRESULT		IsPlaying(CHANNELID _SoundChannel);
-	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { SoundChannel[(LONG)_CID]->setVolume(Volume); }
 
+	BOOL		IsPlaying(CHANNELID _SoundChannel);
+	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { SoundChannel[(LONG)_CID]->setVolume(Volume); }
+	VOID		Set_ChannelGroupVolume(CHANNELID _CID, FLOAT Volume) { ChannelGroup[(LONG)_CID]->setVolume(Volume); }
+	FLOAT		Get_ChannelVolume(CHANNELID _CID) {
+		FLOAT F = 0.f;
+		SoundChannel[(LONG)_CID]->getVolume(&F);
+		return F;
+	}
 private:
 	System*	SoundSystem; 
 
 	map<CONST TCHAR*, Sound*>	SoundMap;
 	
-	ChannelGroup* ChannelGroup[(LONG)CHANNELID::SOUND_END];
-	Channel* SoundChannel[(LONG)CHANNELID::SOUND_END];
+	ChannelGroup*	ChannelGroup[(LONG)CHANNELID::SOUND_END];
+	Channel*		SoundChannel[(LONG)CHANNELID::SOUND_END];
 
 private:
 	virtual VOID	Free();

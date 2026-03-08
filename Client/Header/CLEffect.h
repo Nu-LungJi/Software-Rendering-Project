@@ -19,6 +19,7 @@ public:
 	static	CLEffect*			Create(LPDIRECT3DDEVICE9 _GRPDEV, CL_EFFECT eEffect, _vec3 vPos, _bool bDead, _vec3 vScale = { 1.5f,1.5f,1.5f }, _vec3 vRot = { 45,0,0 }, FLOAT fFrame = 0.1f, _vec3 vLook = {0,0,1},_bool bNext = false);
 	
 	virtual BOOL				OnCollisionStay(GameObject* _Other);
+	virtual BOOL				OnCollisionExit(GameObject* _Other);
 
 public:
 	_bool						AlphaStart(CL_EFFECT eid);
@@ -27,9 +28,12 @@ public:
 	void						Move_Normal(const _float& _DT);
 	void						Move_Frame(const _float& _DT);
 	void						Move_Pos();
+	void						Move_ItemEffect(const _float& _DT);
 	void						Effect_Bill();
 	void						Effect_Dead_After(LEAF_ATTACK eid, _vec3 vLook, _bool bSpin = false);
 	void						Pos_Check(_float x ,_float y, _float z);
+	void						Drop_Item(const _float _DT);
+	
 	HRESULT						Make_EffectTextureList(wstring _FileName);
 
 private:
@@ -54,13 +58,19 @@ private:
 	_float							m_fAlpha;
 
 	_bool							m_bNextEffect;
-				
+	
+	_matrix						    m_matWorld;
+
 	Buffer*							Component_Buffer;
 	Transform*						Component_Transform;
 	Texture*						Component_Texture;
 	Collider*						Component_Colider;
 
+	ID3DXSprite*					 m_pSprite;
 	vector<IDirect3DBaseTexture9*> m_vecTextureList;
+	
+	
+	_vec3							m_vOrigin;
 	_vec3							m_vPos;
 	_vec3							m_vScale;
 	_vec3						    m_vLook;

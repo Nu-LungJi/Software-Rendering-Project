@@ -2,6 +2,7 @@
 
 CameraObject*	Monster::m_pCam		= nullptr;
 Player*			Monster::m_pPlayer	= nullptr;
+_vec3			Monster::m_vGravity = { 0.f,-1.f,0.f };	
 
 GameObject* Monster::Set_Target(const TCHAR* _TAG, GameObject*& GameObj)
 {
@@ -76,13 +77,17 @@ FLOAT Monster::BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 v
 	_vec3 vPos = *TransCom->Get_Position();
 	_vec3 vScale = *TransCom->Get_Scale();
 
-	_vec3 vCampos = *dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->
-					Get_EyeVec();
+
+	CameraObject* pCamera = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"));
+	_vec3 vCampos = *pCamera->Get_EyeVec();
+
+	_matrix matView = *pCamera->Get_ViewMatrix();
+	_vec3 vCamRight = { matView._11, matView._21, matView._31 };
 
 	_vec3 vLook = vCampos - vPos;
 	D3DXVec3Normalize(&vLook, &vLook);
 
-	_vec3 vRight = vDir;
+	_vec3 vRight = (vDir != _vec3{ 1.f, 0.f, 0.f }) ? vDir : vCamRight;
 	D3DXVec3Normalize(&vRight, &vRight);
 
 	_vec3 vUp;
@@ -125,12 +130,18 @@ HRESULT Monster::Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer
 	return S_OK;
 }
 
-VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType)
+VOID Monster::Add_Monster_to_Scene(GameObject* pMonster, wstring _TAG, GAMEOBJECT_TYPE eType, Scene* pScene)
 {
 	pMonster->Set_ObjectTag(_TAG.c_str());
 	pMonster->Set_ObjectType(eType);
 
-	SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	if (nullptr == pScene) {
+		SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	}
+	else {
+		pScene->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pMonster);
+	}
+
 	if (pMonster->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER) != nullptr)
 		CollisionManager::GetInstance()->Add_ColliderObject(pMonster);
 }
@@ -204,6 +215,28 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 			}
 		}
 	}
+}
+
+BOOL Monster::Damaged_by_Arrow(GameObject* _pArrow, GameObject* pTarget)
+{
+	if (COLLIDER(_pArrow)->Get_Hp() <= 0.f) return false;
+	
+	int iResult = 0;
+
+	Arrow* pArrow = static_cast<Arrow*>(_pArrow);
+	ArrowType eArrowType = pArrow->Get_ArrowType();
+
+	if (pArrow->Get_DamageTriggerCnt() == 0)
+		++iResult;
+	else if (eArrowType == ArrowType::EvilHeadCharging || eArrowType == ArrowType::IceCharging)
+		++iResult;
+
+	if (iResult) {
+		COLLIDER(pTarget)->Set_Hp(COLLIDER(pTarget)->Get_Hp() - COLLIDER(_pArrow)->Get_Att());
+		pArrow->Add_DamageTriggerCnt();
+	}
+
+	return iResult;
 }
 
 HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)

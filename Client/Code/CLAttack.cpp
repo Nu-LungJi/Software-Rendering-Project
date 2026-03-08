@@ -21,6 +21,7 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
     switch (m_eLeaf)
     {
     case LEAF_ATTACK::LEAF_FIRST:
+        m_fSpeed = 9.f;
          Component_Collider->Set_Att(5.f);
         break;
     case LEAF_ATTACK::LEAF_SECOND:
@@ -47,20 +48,20 @@ HRESULT CLAttack::Ready_GameObject(LEAF_ATTACK eLeaft, _vec3 vPos, _vec3 vLook, 
 
 INT CLAttack::Update_GameObject(const _float& _DT)
 {    
+    if (CHEONLOG->Get_Statu() == CL_DEAD)
+        return 1;
     if (!m_bBgm)
     {
 
         switch (m_eLeaf)
         {
         case LEAF_ATTACK::LEAF_FIRST:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_basicattack.wav", CHANNELID::SOUND_EFFECT02, 0.3f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Chunlog_basicattack.wav", CHANNELID::SOUND_EFFECT07, 0.1f);
             break;
         case LEAF_ATTACK::LEAF_SECOND:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
-            break;
+             break;
 
         case LEAF_ATTACK::LEAF_THIRD:
-            SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
             break;
         case LEAF_ATTACK::LEAF_FOUR:
             break;
@@ -135,7 +136,9 @@ BOOL CLAttack::OnCollisionStay(GameObject* _Other)
 void CLAttack::LateUpdate_GameObject(const _float& _DT)
 {
     GameObject::LateUpdate_GameObject(_DT);
-  
+    if (CHEONLOG->Get_Statu() == CL_DEAD)
+        return;
+
     m_fDeadTick += _DT;
     if (m_fDeadTick > 1)
     {
@@ -143,7 +146,7 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
         ++m_iDeadCnt;
     }
     
-    if (m_iDeadCnt >= 7 || CHEONLOG->Get_Statu() == CL_DEAD && m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
+    if (CHEONLOG == nullptr || m_iDeadCnt >= 7  && m_eLeaf != LEAF_ATTACK::LEAF_BOOM_CIRCLE)
     {
         m_bPoolCheck = true;
     }
@@ -152,6 +155,8 @@ void CLAttack::LateUpdate_GameObject(const _float& _DT)
 
 void CLAttack::Render_GameObject()
 {
+    if (CHEONLOG->Get_Statu() == CL_DEAD)
+        return;
     GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -260,8 +265,8 @@ void CLAttack::Leaf_First(const _float& _DT)
 
     D3DXMatrixScaling(&matScale, 0.7f, 0.2f, 0.4f);
 
-    fAngle = atan2f(m_vLook.z, m_vLook.x); // x ±âÁØÀ¸·Î z°¡ ¾ó¸¶³ª µ¹¾Æ°¡ÀÖ´ÂÁö
-    D3DXMatrixRotationZ(&RotZ, fAngle);    //±×°É·Î z¸¸ µ¹¸®±â
+    fAngle = atan2f(m_vLook.z, m_vLook.x); // x ê¸°ì¤€ìœ¼ë¡œ zê°€ ì–¼ë§ˆë‚˜ ëŒì•„ê°€ìˆëŠ”ì§€
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //ê·¸ê±¸ë¡œ zë§Œ ëŒë¦¬ê¸°
 
     matWorld = matScale * RotZ * matBill; 
     m_vLook.y = 0.f;
@@ -342,7 +347,7 @@ void CLAttack::Leaf_Third(const _float& _DT)
         {
             _int iRand = rand() % 3;
             if (iRand == 0)
-                SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.2f);
+                SoundManager::GetInstance()->Play_Sound_Once(L"CheonLog/Cheonlog_SmallLeaf_Shot_01.wav", CHANNELID::SOUND_EFFECT02, 0.1f);
             m_bBgm = true;
         }
 
@@ -364,8 +369,6 @@ void CLAttack::Leaf_Four(const _float& _DT)
         m_bPoolCheck = true;
     }
     
-    if (m_bPoolCheck == TRUE)
-        return;
 
     matWorld = *Component_Transform->Get_World();
     GRPDEV->GetTransform(D3DTS_VIEW, &matView);
@@ -380,6 +383,8 @@ void CLAttack::Leaf_Four(const _float& _DT)
 
     Component_Transform->Set_World(&matWorld);
     Component_Transform->Set_Pos({ matWorld._41 , 0.1f, matWorld._43 });
+    if (m_bPoolCheck == TRUE)
+        return;
 }
 void CLAttack::Leaf_Explosion(const _float& _DT)
 {
@@ -428,8 +433,8 @@ void CLAttack::Leaf_Bill(const _float& _DT)
 
     D3DXMatrixScaling(&matScale, 0.4f, 0.4f, 0.4f);
 
-    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x ±âÁØÀ¸·Î z°¡ ¾ó¸¶³ª µ¹¾Æ°¡ÀÖ´ÂÁö
-    D3DXMatrixRotationZ(&RotZ, fAngle);    //±×°É·Î z¸¸ µ¹¸®±â
+    fAngle = atan2f(m_vLook.z, m_vLook.x) + D3DXToRadian(270); // x ê¸°ì¤€ìœ¼ë¡œ zê°€ ì–¼ë§ˆë‚˜ ëŒì•„ê°€ìˆëŠ”ì§€
+    D3DXMatrixRotationZ(&RotZ, fAngle);    //ê·¸ê±¸ë¡œ zë§Œ ëŒë¦¬ê¸°
 
     matWorld = matScale * RotZ * matBill;
     m_vLook.y = 0;

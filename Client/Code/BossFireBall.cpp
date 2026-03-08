@@ -11,8 +11,8 @@ HRESULT	BossFireBall::Ready_GameObject() {
 
 	CollisionManager::GetInstance()->Add_ColliderObject(this);
 
-	GameObject* BSS = SceneManager::GetInstance()->Get_GameObject(L"Docheol");
-	if (BSS != nullptr && dynamic_cast<FinalBoss*>(BSS)->Get_ModeState(BOSSMODE::MODE_RAGE) == TRUE)		{ Animation_TexList = &Animation_RageTexList;	}
+	Boss = static_cast<FinalBoss*>(SceneManager::GetInstance()->Get_GameObject(L"Docheol"));
+	if (Boss != nullptr && dynamic_cast<FinalBoss*>(Boss)->Get_ModeState(BOSSMODE::MODE_RAGE) == TRUE)		{ Animation_TexList = &Animation_RageTexList;	}
 	else																									{ Animation_TexList = &Animation_NormalTexList; }
 
 	Animation_Timer			= 0.f;
@@ -33,7 +33,9 @@ HRESULT	BossFireBall::Ready_GameObject() {
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 
 	FireBall_Timer += _DT;
-	if (ObjectDead == TRUE) {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
 		return -1;
 	}
 		
@@ -74,9 +76,28 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	return 0; 
 }
 VOID	BossFireBall::LateUpdate_GameObject(CONST FLOAT& _DT) {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
+		return;
+	}
 	GameObject::LateUpdate_GameObject(_DT);
+	if ((ObjectTAG == L"Sup FireBall0" || ObjectTAG == L"Sup FireBall1" || ObjectTAG == L"Sup FireBall2")) return;
+	if (Boss->Get_ObjectDead() != TRUE 
+		&& Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
+		AlphaZValue = 1.f;
+	}
+	else {
+		AlphaZValue = -1.f;
+	}
 }
 VOID	BossFireBall::Render_GameObject() {
+	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
+		ObjectDead = TRUE;
+		CollisionManager::GetInstance()->Delete_ColliderObject(this);
+		return;
+	}
+
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -121,7 +142,6 @@ HRESULT	BossFireBall::Component_Initialize()	{
 	Component_Transform = ADD_COMPONENT_TRANSFORM;
 	Component_Transform->Set_Pos(0.f, 0.f, 0.f);
 	Component_Transform->Set_Scale(5.f / 2.f, 1.5f / 2.f, 2.f / 2.f);
-	//Component_Transform->Set_Pos({ 28.814f, 0.5f, 34.78f }); // ±¤À± µð¹ö±ë¿ë
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);

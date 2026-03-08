@@ -1,17 +1,27 @@
 #include "CubeFloorTile.h"
 #include "../Include/PCH.h"
 
-CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTexture(nullptr) {}
+CubeFloorTile::CubeFloorTile(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV), m_pBuffer(nullptr), m_pTransform(nullptr), m_pTexture(nullptr), m_pTimer(nullptr) {}
 CubeFloorTile::CubeFloorTile(const GameObject& _RHS) : GameObject(_RHS) {}
 CubeFloorTile::~CubeFloorTile() {}
 
 HRESULT CubeFloorTile::Ready_GameObject() {
 
 	if (FAILED(Component_Initialize())) return E_FAIL;
+	
+	m_pTimer = static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Get_Timer();
 
 	return S_OK;
 }
 INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
+
+
+	if (m_bSet_Hurdle) {
+		m_pHurdle = Hurdle::Create(GRPDEV);
+		Monster::Add_Monster_to_Scene(m_pHurdle, L"Wall", GAMEOBJECT_TYPE::OBJECT_HURDLE);
+		m_pHurdle->Set_bMoved(true);
+		m_bSet_Hurdle = false;
+	}
 
 	if (!m_bTrigger) {
 
@@ -19,9 +29,6 @@ INT	CubeFloorTile::Update_GameObject(const _float& _DT) {
 		m_pCollider->Set_Scale(m_pTransform->Get_Scale()->x, m_pTransform->Get_Scale()->y, m_pTransform->Get_Scale()->z);
 		m_bTrigger = true;
 	}
-
-	m_pBuffer->Update_Component(_DT);
-	//m_pCollider->Update_Component(_DT);
 
 	return 0;
 }
@@ -33,14 +40,39 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 	if (m_pTarget == nullptr)
 		m_pTarget = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
 
+	if (m_pHurdle != nullptr) {
+		_vec3*	pHurdlePos = POS(m_pHurdle);
+		_vec3*	pHurdleScale = SCALE(m_pHurdle);
+		_vec3*	pMyPos = m_pTransform->Get_Position();
+		_vec3*	pMyScale = m_pTransform->Get_Scale();
+
+		m_pHurdle->Set_bMoved(true);
+
+		*pHurdlePos = *pMyPos;
+		*pHurdleScale = *pMyScale;
+
+		switch (m_ePoolingMode)
+		{
+		case POOLINGMODE::X:
+			pHurdlePos->y = pMyPos->y + pMyScale->y * 2.f;
+			pHurdleScale->x = pMyScale->x * 0.5f;
+			break;
+		case POOLINGMODE::Y:
+			pHurdlePos->z = pMyPos->z - pMyScale->z * 2.f;
+			pHurdleScale->y = pMyScale->y * 0.5f;
+			break;
+		case POOLINGMODE::Z:
+			m_pHurdle->Set_ObjectDead(true);
+			m_pHurdle = nullptr;
+			break;
+		}
+
+	}
+
 	Pooling();
 
-	if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 20.f))
-		m_iFalling = 4;
-	else if (m_pTransform->Get_Position()->x < (POS(m_pTarget)->x - 9.f))
-		m_iFalling = 1;
-
-	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
+	if (m_iTileNumber == MINIGAMETILEX * MINIGAMETILEZ - 1)	
+		RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
 
 	if (!m_bTrigger) {
 		CubeFunction::Grid(m_pTransform, m_bGrid);
@@ -48,37 +80,37 @@ VOID CubeFloorTile::LateUpdate_GameObject(const _float& _DT) {
 		m_bTrigger = true;
 	}
 
-	//if (m_iFalling == 1) {
-	//	m_fTimer += _DT;
-	//	_vec3 vRand = { RANDOM::Get_float(-0.05f, 0.05f, this),
-	//					RANDOM::Get_float(-0.05f, 0.05f),
-	//					RANDOM::Get_float(-0.05f, 0.05f) };
-
-	//	m_pTransform->Move_Pos(&vRand, 1.f, _DT);
-	//	Monster::Staic_Obj(GRPDEV, m_pTransform);
-	//	MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
-
-	if (m_iFalling == 1)
-	{
+	if (m_iFalling == 1) {
 		m_fTimer += _DT;
-		_vec3 vDir = { 0.f, -1.f,0.f };
+		_vec3 vDir = Monster::Get_Gravity();
 		m_pTransform->Move_Pos(&vDir, 10, _DT);
+
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
 		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
-		if (m_fTimer > 2.f)
-			m_iFalling = 3;
+
+		if (m_fTimer > 2.f) m_iFalling = 3;
 	}
 
-	if (m_iFalling == 4)
-	{
+	if (m_iFalling == 4) {
 		m_fTimer = 0.f;
 		m_iFalling = 0;
-		m_pTransform->Get_Position()->y = (m_pTransform->Get_Scale()->y * -1.f);
+
+		_vec3* vPos = m_pTransform->Get_Position();
+		_vec3* vScale = m_pTransform->Get_Scale();
+
+		if (m_ePoolingMode == POOLINGMODE::X) {
+			vPos->y = -1.f;
+		}
+		else if (m_ePoolingMode == POOLINGMODE::Y) {
+			vPos->z = 10.f;
+		}
+		else if (m_ePoolingMode == POOLINGMODE::Z) {
+			vPos->y = 60.f;
+		}
+
 		Monster::Staic_Obj(GRPDEV, m_pTransform);
 		MonsterManager::GetInstance()->Update_Tile(m_iTileNumber, m_pTransform);
 	}
-
-	if (!IsIn_Cam) return;
 
 	GameObject::LateUpdate_GameObject(_DT);
 }
@@ -142,58 +174,104 @@ CubeFloorTile* CubeFloorTile::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, 
 
 	return pCubeFloorTile;
 }
-BOOL CubeFloorTile::OnCollisionEnter(GameObject* _Other)
+BOOL CubeFloorTile::OnCollisionStay(GameObject* _Other)
 {
-	return false;
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Player")
+		switch (m_ePoolingMode)
+		{
+		case POOLINGMODE::X:
+			Monster::Hurdle_CollisionStay(this, _Other, 0, 1, 0);
+			return true;
+			break;
+		case POOLINGMODE::Y:
+			Monster::Hurdle_CollisionStay(this, _Other, 0, 0, 1);
+			return true;
+			break;
+		case POOLINGMODE::Z:
+			Monster::Hurdle_CollisionStay(this, _Other, 0, 1, 0);
+			break;
+		}
+	else if (Tag == L"Chaser") {
+		m_iFalling = true;
+	}
+	return 0;
 }
 VOID CubeFloorTile::Free() {
 
-
 	GameObject::Free();
 }
-
 bool CubeFloorTile::Pooling()
 {
-	if (m_pCam == nullptr)return false;
-	bool bVisible = m_pCam->IsIn_Frustum(*m_pTransform->Get_Position(), fabsf(m_pTransform->Get_Scale()->x + 0.5f));
+	_vec3* vPos		= m_pTransform->Get_Position();
+	_vec3* vScale	= m_pTransform->Get_Scale();
 
-	if (bVisible && !IsIn_Cam)		CollisionManager::GetInstance()->Add_ColliderObject(this);
-	else if (!bVisible && IsIn_Cam)	CollisionManager::GetInstance()->Delete_ColliderObject(this);
+	if (m_pTarget == nullptr) 
+		return false;
 
+	_vec3 vTargetPos = *POS(m_pTarget);
+	_vec3 vDir = vTargetPos - *vPos;
+	_float fDisSq = D3DXVec3LengthSq(&vDir);
 
-	IsIn_Cam = bVisible;
+	_int iCol = m_iTileNumber % MINIGAMETILEX;
+	_int iRow = m_iTileNumber / MINIGAMETILEX;
+	_float fSize = vScale->x * 2.f;
+	_float fFullLoop = fSize * MINIGAMETILEX;
+	_float fHalf = fFullLoop * 0.5f;
 
-	if (!bVisible)
-	{
-		_vec3* vPos = m_pTransform->Get_Position();
-		_vec3 vDir = *vPos - *m_pCam->Get_AtVec();
+	_float fLimitX = 50.f;
+	_float fLimitY = 50.f;
+	_float fThresholdX = fLimitX + (fSize * 2.5f);
+	_float fThresholdY = fLimitY + (fSize * 2.5f);
+	_float fEdgeZ = MINIGAMETILEZ * vScale->z * 2.f;
 
-		_float fTileSize = m_pTransform->Get_Scale()->x * 2.f;
-		_float fDiffX = fTileSize * MINIGAMETILEX;
-		//_float fDiffZ = fTileSize * MINIGAMETILEZ;
+	bMoved = false;
 
-		bool bMoved = false;
+	if (m_ePoolingMode == POOLINGMODE::X) {
+		if ((vTargetPos.x - vPos->x > fHalf)||
+		((Monster::Get_Gravity().z == 1.f)&&(fDisSq > 100.f)) ){
+			_float fNextPosX = vPos->x + fFullLoop;
 
-		if (vDir.x < -fDiffX * 0.5f) {
-			vPos->x += fDiffX;
+			if (fNextPosX >= fThresholdX) {
+				m_ePoolingMode = POOLINGMODE::Y;
+				vPos->x = fLimitX + (iRow - 2) * fSize;
+				vPos->y = (float)(iCol - 2.5f) * fSize;
+				vPos->z = 10.f;
+			}
+			else {
+				vPos->x = fNextPosX;
+			}
 			bMoved = true;
-		}
-		else if (vDir.x > fDiffX * 0.5f) {
-			vPos->x -= fDiffX;
-			bMoved = true;
-		}
-		//if (vDir.z < -fDiffZ * 0.5f)		{
-		//	vPos->z += fDiffZ;
-		//	bMoved = true;
-		//}
-		//else if (vDir.z > fDiffZ * 0.5f)	{
-		//	vPos->z -= fDiffZ;
-		//	bMoved = true;
-		//}
-		if (bMoved) {
-			MonsterManager::GetInstance()->Update_Tile((_uint)m_iTileNumber, m_pTransform);
-			Monster::Staic_Obj(GRPDEV, m_pTransform);
 		}
 	}
-	return IsIn_Cam;
+	else if (m_ePoolingMode == POOLINGMODE::Y) {
+		if ((vTargetPos.y > vPos->y + fHalf)|| 
+			((Monster::Get_Gravity().y== 1.f))) {
+			_float fNextPosY = vPos->y + fFullLoop;
+
+			if (fNextPosY >= fThresholdY) {
+				m_ePoolingMode = POOLINGMODE::Z;
+				vPos->x = fLimitX + (iRow - 2) * fSize;
+				vPos->y = 60.f;
+				vPos->z = (iCol- 5) * fSize;
+			}
+			else {
+				vPos->y = fNextPosY;
+			}
+			bMoved = true;
+		}
+	}
+	else if (m_ePoolingMode == POOLINGMODE::Z) {
+		if (vPos->z - 20.f > m_pTransform->Get_Position()->z) {
+				vPos->z += fFullLoop;
+				bMoved = true;
+		}
+	}
+
+	if (bMoved) {
+		MonsterManager::GetInstance()->Update_Tile((_uint)m_iTileNumber, m_pTransform);
+		Monster::Staic_Obj(GRPDEV, m_pTransform);
+		m_iFalling = 4;
+	}
+	return bMoved;
 }

@@ -28,6 +28,7 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 {
 
 	Component_Collider->Update_Component(_DT);
+
 	Monster::Minigame_Update(_DT, &m_tInfo, MYPOS);
 
 	if (m_tInfo.bMiniGame)
@@ -41,22 +42,13 @@ INT	ShotGunEvilSoul::Update_GameObject(const _float& _DT)
 		return 1;
 	}
   
-	if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_IDLE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else if (m_tInfo.eState[0] == MONSTER_STATE_MINIGAME_MOVE) {
-		ObjectDead = false;
-		return 0;
-	}
-	else
-	{
-		MYPOS->y = 0.5f;
-	}
 
-	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->y, MYSCALE->x * 0.5f);
+	if (m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_MOVE &&
+		m_tInfo.eState[0] != MONSTER_STATE_MINIGAME_IDLE)
+		MYPOS->y = MYSCALE->y * 0.5f;
 
-	
+	Component_Collider->Set_Scale(MYSCALE->x * 0.5f, MYSCALE->x* 0.5f, MYSCALE->x * 0.5f);
+
 	if (Component_Collider->Get_Hp() <= 0.f)
 		m_tInfo.eState[0] = MONSTER_STATE_DEAD;
 	switch (m_tInfo.eState[0])
@@ -197,11 +189,20 @@ BOOL ShotGunEvilSoul::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow")	
+	switch (m_tInfo.eState[0])
 	{
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att()); 	
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Evilsoul_Hit.wav", CHANNELID::SOUND_EFFECT04, 0.25f);
-	}	return TRUE;
+	default:
+		if (Tag == L"PlayerArrow") {
+			return Monster::Damaged_by_Arrow(_Other, this);
+		}
+		break;
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case EVILSLIME_FISSION:
+		return 0;
+	}
 
 
 	return FALSE;
@@ -215,8 +216,13 @@ BOOL ShotGunEvilSoul::OnCollisionStay(GameObject* _Other)
 		break;
 	case MONSTER_STATE_MINIGAME_IDLE:
 	case MONSTER_STATE_MINIGAME_MOVE:
-		if (Tag == L"Player")
-			return	Monster::Hurdle_CollisionStay(this, _Other);
+		if (Tag == L"Player") {
+			if (static_cast<Player*>(_Other)->Get_Invincible()) {
+				return false;
+			}
+			_vec3 vGravity = Monster::Get_Gravity();
+			return	Monster::Hurdle_CollisionStay(this, _Other, (!vGravity.x), (!vGravity.y), (!vGravity.z));
+		}
 	}
 	return FALSE;
 }
@@ -323,6 +329,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 			Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[i+1], L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		}
 		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ShotGun_Monster_35_Attack.wav", CHANNELID::SOUND_EFFECT04, 0.1f);
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_EFFECT04, 0.15f);
 	}
 
 
@@ -342,7 +349,7 @@ VOID ShotGunEvilSoul::State_Channeling(const _float& _DT)
 		for (int i = 0; i < SHOTGUNEVILSOUL_BULLET_NUM; ++i)
 		{
 			SHOTGUNEVILSOUL_BULLET_TYPE* pBullet = static_cast<SHOTGUNEVILSOUL_BULLET_TYPE*>(m_tInfo.pGameObj[i + 1]);
-			pBullet->Get_Info()->fSpeed = pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
+			pBullet->Get_Info()->fSpeed = SHOTGUNEVILSOUL_BULLET_SPEEDMULT * pBullet->Get_Info()->fTimer[1] * cosf((D3DX_PI /2.f) * (m_tInfo.fTimer[0] / SHOTGUNEVILSOUL_CHANNELING_TIME));
 		}
 	}
 }
@@ -355,6 +362,7 @@ VOID ShotGunEvilSoul::State_Dead()
 		if (m_tInfo.pGameObj[i] != nullptr)
 			m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 	}
+	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
 	TileManager::GetInstance()->Set_StageArray();
 
 	ObjectDead = true;

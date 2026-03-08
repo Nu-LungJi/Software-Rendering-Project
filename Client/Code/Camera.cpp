@@ -11,7 +11,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	//DefaultEyeVec = { 0.f,10.f * 1.35f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f, 1.35f };
 	DefaultEyeVec = { 0.f,10.f * 1.35f * 1.3f,0.f };	DefaultAtVec = { 0.f,8.f * 1.35f * 1.3f, 1.35f * 1.3f };
 	EyeVec = DefaultEyeVec;			AtVec = DefaultAtVec;				UpVec = { 0.f,1.f,0.f };
-	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 100.f;
+	FOVValue = D3DXToRadian(60.f);		AspectValue = (_float)WINCX / WINCY;	NearValue = 0.1f; FarValue = 1000.f;
 
 	Angle = { 0.f, 0.f, 0.f };			CameraSpeed = 10.f;
 
@@ -37,7 +37,7 @@ HRESULT CameraObject::Ready_GameObject() {
 	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
 
 	m_vVelocity = { 0.f , 0.f, 0.f };
-
+	SmoothCameraDest = { 0.f, 0.f, 0.f };
 	ObjectTAG = L"Camera";
 
 	OriginEye = EyeVec;
@@ -56,29 +56,89 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 		MouseCheck ? MouseCheck = FALSE : MouseCheck = TRUE;
 		Camera_Move ? Camera_Move = FALSE : Camera_Move = TRUE;
 	}
-	if (KEY_DOWN(DIK_F7)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = FALSE;
-	}
-	if (KEY_DOWN(DIK_F8)) {	//	마우스 커서 고정 여부 TRUE = 고정, FALSE = 고정 해제
-		//Velocity_Lock = !Velocity_Lock;
-		Enable_QuickZoom = TRUE;
-	}
-	if (m_eCurrScene == SCENE_TYPE::Minigame) {
-		MiniGame(_DT);
-		return 0;
-	}
+	// KJJ 삭제
+
 
 	CheonLog_Respawn(_DT);
-	Docheol_Spawn(_DT);
+	SmoothCameraMove(_DT, SmoothCameraDest);
 
 	Camera_QuickZoom(_DT);
 
 	if (!Camera_Move) {
-		PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+		//KJJ 03. 03
+		if (PlayerObject == nullptr)
+			PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+
 		_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
 		_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
 		_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+		//KJJ 03. 03
+		if (m_eCurrScene == SCENE_TYPE::Minigame) {
+			_vec3 vGravity = Monster::Get_Gravity();
+			_vec3 vNewTargetEye = m_vTargetEye;
+			atCalc = { 0.f,0.f,0.f };
+
+			switch (*m_pEventTrigger)
+			{
+			case 0:
+				vNewTargetEye = { 0.f,5.f,-5.f };
+				break;
+			case 1:
+				vNewTargetEye = { 5.f,0.f,-5.f };
+				break;
+			case 2:
+				vNewTargetEye = { 0.f, 8.f, 0.f };
+				break;
+			case 3:
+				vNewTargetEye = { 5.f, 0.f, -5.f };
+				break;
+			case 4:
+				vNewTargetEye = { 0.f,-5.f,-5.f };
+				break;
+			case 5:
+				vNewTargetEye = { 0.f, 0.f, 8.f };
+				break;
+			case 6:
+				vNewTargetEye = { 0.f,-5.f,-5.f };
+			}
+
+			if (m_vTargetEye != vNewTargetEye) {
+				m_vStartEye		= m_vCurrEye;
+				m_vStartUp		= m_vCurrUp;
+				m_vTargetEye	= vNewTargetEye;
+				m_vTargetUp		= -vGravity;
+				m_fElapsedTime	= 0.f;
+				Is_Changing		= true;
+				PlayerObject->Set_pState(pState::STATE_IDLE);
+				PlayerObject->Set_EventState(true);
+			}
+
+			if (Is_Changing) {
+				PlayerObject->Set_DefaultSpeed(0.f);
+				m_fElapsedTime += _DT;
+				float fRatio	= m_fElapsedTime / m_fDuration;
+
+				if (fRatio >= 1.f) {
+					fRatio = 1.f;
+					m_vCurrEye	= m_vTargetEye;
+					m_vCurrUp	= m_vTargetUp;
+					Is_Changing = false;
+					PlayerObject->Set_pState(pState::STATE_IDLE);
+					PlayerObject->Set_EventState(false);
+				}
+				else {
+					D3DXVec3Lerp(&m_vCurrEye, &m_vStartEye, &m_vTargetEye, fRatio);
+					D3DXVec3Lerp(&m_vCurrUp, &m_vStartUp, &m_vTargetUp, fRatio);
+				}
+			}
+
+			eyeCalc = m_vCurrEye;
+			UpVec = m_vCurrUp;
+		}
+		else {
+			UpVec = { 0.f,1.f,0.f };
+		}
 
 		EyeVec = (*playerPos) + eyeCalc;
 		AtVec = (*playerPos) + atCalc;
@@ -101,6 +161,7 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 		if (Velocity_Lock == FALSE) {		//  커서가 움직이면 화면도 같이 움직이게 함.(FALSE = 움직이게 하기, TRUE = 고정)
 			_float moveAmount = (distance - offset) * 4;
+			
 			if (distance > offset)
 			{
 				targetEye += dir * moveAmount;
@@ -157,7 +218,11 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 
 }
 VOID CameraObject::LateUpdate_GameObject(const _float& _DT) {
-	Camera_Transform_Control(_DT);
+
+	//KJJ 03 03
+	if (m_eCurrScene != SCENE_TYPE::Minigame) {
+		Camera_Transform_Control(_DT);
+	}
 
 	if (MouseCheck) {
 		POINT       ptMouse{ WINCX >> 1, WINCY >> 1 };
@@ -213,9 +278,6 @@ VOID CameraObject::Camera_Transform_Control(CONST FLOAT& _DT) {
 
 			_vec3 Length = *D3DXVec3Normalize(&UpVector, &UpVector) * _DT * CameraSpeed;
 			EyeVec -= Length; AtVec -= Length;
-		}
-		if (KEY_DOWN(DIK_F1)) {		//	GUI 상태 바 숨김 여부 TRUE = Visible, FALSE = Hide
-			Camera_Show ? Camera_Show = FALSE : Camera_Show = TRUE;
 		}
 	}
 }
@@ -382,8 +444,9 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 
 
 }
-VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
-	if (FocusOn_Boss) {
+VOID CameraObject::SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest) {
+	if		(FocusOn_Boss == 3) return;
+	else if (FocusOn_Boss == 1) {
 		Focusing_Timer += _DT;
 
 		if (Focusing_Timer < 0.15f) {
@@ -392,8 +455,8 @@ VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 		}
 
 		if (Focusing_Timer > 1.f && Focusing_Timer < 3.f) {
-			_vec3 CameraEyeDEST = { 63.6f, 18.55f, 95.105f };
-			_vec3 CameraAtDEST = { 63.6f, 15.04f, 96.105f };
+			_vec3 CameraEyeDEST = _EyeDest;// { 63.6f, 18.55f, 95.105f };
+			_vec3 CameraAtDEST = { _EyeDest.x, _EyeDest.y - 3.5f, _EyeDest.z + 1.f };
 			_vec3 ActionCameraVec = CameraEyeDEST - OriginCameraPos;
 
 			EyeVec.x = OriginCameraPos.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
@@ -402,17 +465,50 @@ VOID CameraObject::Docheol_Spawn(CONST FLOAT& _DT) {
 			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 		}
+		else if (Focusing_Timer > 3.f) {
+			Focusing_Timer = 0.f;
+		}
+	}
+	else if (FocusOn_Boss == 2) {
+		Focusing_Timer += _DT;
+
+		if (Focusing_Timer > 1.f && Focusing_Timer < 2.f) {
+			if (PlayerObject == nullptr)
+				PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			_vec3 CurrentEye = { 63.6f, 18.55f, 95.105f };
+			_vec3 CurrentAt = { 63.6f, 15.05f, 96.105f };
+
+			_vec3 CameraEyeDEST = (*playerPos) + eyeCalc;//_EyeDest;// 
+			_vec3 CameraAtDEST	= (*playerPos) + atCalc;// { _EyeDest.x, _EyeDest.y - 3.5f, _EyeDest.z + 1.f };
+			_vec3 ActionCameraVec = CameraEyeDEST - CurrentEye;
+
+			EyeVec.x = CurrentEye.x + ActionCameraVec.x * (1.f - (1.f - (Focusing_Timer - 1.f)));
+			EyeVec.z = CurrentEye.z + ActionCameraVec.z * (1.f - (1.f - (Focusing_Timer - 1.f)));
+
+			AtVec.x = CurrentAt.x + ActionCameraVec.x * (1.f - (1.f - (Focusing_Timer - 1.f)));
+			AtVec.z = CurrentAt.z + ActionCameraVec.z * (1.f - (1.f - (Focusing_Timer - 1.f)));
+		}
+		else if (Focusing_Timer > 2.f) {
+			Focusing_Timer = 0.f;
+			Set_SmoothCamera(FALSE);
+		}
 	}
 }
-VOID CameraObject::Set_FocusOnBoss(BOOL _FOB) {
+VOID CameraObject::Set_SmoothCamera(INT _FOB) {
 	FocusOn_Boss = _FOB;
-	if (FocusOn_Boss) {
+	if (FocusOn_Boss == TRUE) {
 		MouseCheck = FALSE;
 		Velocity_Lock = TRUE;
 		Camera_Move = TRUE;
 		Button_Lock = TRUE;
 	}
-	else {
+	else if (FocusOn_Boss == FALSE) {
 		MouseCheck = FALSE;
 		Velocity_Lock = FALSE;
 		Camera_Move = FALSE;
@@ -511,39 +607,20 @@ VOID CameraObject::Free() {
 
 HRESULT CameraObject::MiniGame(const _float& _DT)
 {
-	D3DXMatrixPerspectiveFovLH(&ProjMatrix, D3DX_PI / 3, (_float)(WINCX / WINCY), 0.1, 1000.f);
-	GRPDEV->SetTransform(D3DTS_PROJECTION, &ProjMatrix);
-	if (m_pTarget) {
-		_vec3 vPos = *POS(m_pTarget);
-		_vec3 vEyeOffset = { 0.f, 8.66f, -5.f };
-		_vec3 vAtOffset = { 0.f,0.f,0.f };
+	return 1;
+}
 
-		_vec3 vTargetEye = vPos + vEyeOffset;
-		_vec3 vTargetAt = vPos + vAtOffset;
+void	CameraObject::Start_MiniGame() {
+	NearValue = 5.f;
+	m_eCurrScene = SCENE_TYPE::Minigame;
+	Button_Lock = true;
+	Velocity_Lock = true;
+}
 
-		_float fDis = m_pTarget->Get_MouseDistance();
-		_float fOffset = 2.f;
-
-		if (fDis > fOffset)
-		{
-			_vec3 vMouseDir = m_pTarget->Get_MouseDir();
-			_float fMouseAmount = (fDis - fOffset) * 4.f;
-			vTargetEye += vMouseDir * fMouseAmount;
-			vTargetAt += vMouseDir * fMouseAmount;
-		}
-
-		_float	fStiff = 40.f;
-		_float	fDamping = 12.649f;
-
-		_vec3 vEyeToTarget = vTargetEye - EyeVec;
-		_vec3 vEyeAccel = (vEyeToTarget * fStiff) - (m_vVelocity * fDamping);
-		m_vVelocity += vEyeAccel * _DT;
-		EyeVec += m_vVelocity * _DT;
-
-		AtVec = EyeVec + (vTargetAt - vTargetEye);
-
-		D3DXMatrixLookAtLH(&ViewMatrix, &EyeVec, &AtVec, &UpVec);
-		GRPDEV->SetTransform(D3DTS_VIEW, &ViewMatrix);
-	}
-	return S_OK;
+void CameraObject::Exit_MiniGame()
+{
+	NearValue = 0.1f;
+	m_eCurrScene = SCENE_TYPE::SCENE_END;
+	Button_Lock = false;
+	Velocity_Lock = false;
 }
