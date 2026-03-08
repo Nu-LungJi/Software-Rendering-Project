@@ -288,6 +288,7 @@ void ShopUI::Show_Item()
         }
         else
         {
+            InteractionUI->PopUp_Interaction_Notice(L"", FALSE);
             isActive = false;
         }
         ++iter;

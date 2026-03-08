@@ -98,6 +98,7 @@ private:
 	VOID	Animation_Disappear_Staging(CONST FLOAT& _DT);
 
 	VOID	BoobieTrap(CONST FLOAT& _DT);
+	VOID	BGM_Player(CONST FLOAT& _DT);
 
 	virtual	VOID	Free();
 
@@ -138,12 +139,14 @@ public:
 		SOUND_PLAY1, SOUND_PLAY2, SOUND_PLAY3, SOUND_PLAY4, END_FIREBALL };
 
 	enum class BOSSTIMER { TIMER_STAGING, TIMER_ACTION, TIMER_EXP, TIMER_MEXP, TIMER_RSWING, TIMER_FSWING, TIMER_RAGEUP, TIMER_SUPPORT, TIMER_DEATH, TIMER_RUSH, TIMER_SOUND, TIMER_END };
+
+	enum class SOUNDPLAYER { ESCAPING_DUNGEON, ENTERING_BC, STAY_BC, ESCAPING_BC, ENTERING_WC, STAY_WC, ESCAPING_WC,};
 private:
-	Player* PlayerObject;
-	Transform* PlayerTransform;
+	Player*			PlayerObject;
+	Transform*		 PlayerTransform;
 	_vec3			PlayerPos;
 
-	CameraObject* Camera;
+	CameraObject*	Camera;
 
 	BOOL			BossMode[(INT)BOSSMODE::MODE_END];
 
@@ -169,8 +172,11 @@ private:
 	INT				Enable_SupporterFlame;
 	INT				Enable_ExplosionRush;
 
-	Transform* MeteorTransform[4];
-	FLOAT			RanPosX[4], RanPosZ[4];
+	Transform*			MeteorTransform[4];
+	FLOAT				RanPosX[4], RanPosZ[4];
+	INT					SoundTransition;
+	FLOAT				SoundVolume;
+
 	vector<GameObject*>	ObjectPool_RageUp;
 	vector<GameObject*>	ObjectPool_Supporter;
 	vector<GameObject*>	ObjectPool_RSwing;
@@ -204,12 +210,11 @@ private:
 	vector<LPDIRECT3DTEXTURE9>	Animation_Rage_Rush_TexList;
 
 private:
-	Buffer* Component_Buffer;
-	Texture* Component_Texture;
-	Transform* Component_Transform;
-	Collider* Component_Collider;
-
-	StateMachine* FSM;
+	Buffer*			Component_Buffer;
+	Texture*		Component_Texture;
+	Transform*		Component_Transform;
+	Collider*		Component_Collider;
+	StateMachine*	Component_FSM;
 
 private:
 	BOOL Enable_BBTrap;
