@@ -95,11 +95,11 @@ HRESULT Player::Ready_GameObject() {
 
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_SpeedUp");
 		_artifactSlot[0] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_SpeedUp"));
-		_artifactSlot[0]->Set_ItemIdx(0);
+		_artifactSlot[0]->Set_ItemIdx(-1);
 
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_AtkUp");
 		_artifactSlot[1] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_AtkUp"));
-		_artifactSlot[1]->Set_ItemIdx(1);
+		_artifactSlot[1]->Set_ItemIdx(-1);
     
 		SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Bow>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::OBJECT_PLAYER, L"IceBow");
 		dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"))->Set_PlayerPos(Component_Transform->Get_Position());
@@ -150,13 +150,14 @@ INT	Player::Update_GameObject(const _float& _DT) {
 
 	_vec3 pPos = *Component_Transform->Get_Position();
 	Component_Transform->Set_Pos(pPos);
-
+	
 	// 플레이어 소환
-	if (KEY_DOWN(DIK_N)) {
+	if (Enable_PlayerSummon || KEY_DOWN(DIK_N)) {
 		SummonStart = true;
 		CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 			Get_GameObject(L"Camera"));
 		Camera->Set_VelocityLock(true);
+		Enable_PlayerSummon = FALSE;
 	}
 
 	if (SummonStart) {

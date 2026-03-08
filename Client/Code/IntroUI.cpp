@@ -26,6 +26,7 @@ HRESULT		IntroUI::Ready_GameObject(){
 	Enable_MenuBar		= FALSE;
 	Enable_GameStart	= FALSE;
 	Enable_ClickToStart = FALSE;
+	Enable_PlayerSummon = FALSE;
 
 	return S_OK;
 }
@@ -71,10 +72,10 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, 0.5f - FadeTimer / 10);
 		if (FadeTimer > 5.f) {
 			Enable_GameStart = FALSE;
-			ObjectDead = TRUE;
-
+			Enable_PlayerSummon = TRUE;
+			FadeTimer = 0.f;
 			dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(FALSE);
-			dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(FALSE);
+			dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_VelocityLock(TRUE);
 
 			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(TRUE);
 			UIManager::GetInstance()->Find_FontObject(L"CoinCountText")->Set_Visible(TRUE);
@@ -84,9 +85,19 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 
 			static_cast<StartScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Set_BGMPlayer(TRUE);
 			dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 1.f);
+
+			Component_Sprite->Get_Texture(L"BackGround")->Set_Visible(FALSE);
+			Component_Sprite->Get_Texture(L"Logo")->Set_Visible(FALSE);
+			Component_Sprite->Get_Texture(L"MenuBar")->Set_Visible(FALSE);
 		}
 	}
-	
+	if (Enable_PlayerSummon) {
+		FadeTimer += _DT;
+		if (FadeTimer > 7.f) {
+			ObjectDead = TRUE;
+			dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerSummon(TRUE);
+		}
+	}
 	
 	return 0;
 }
