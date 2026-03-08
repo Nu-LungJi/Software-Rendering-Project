@@ -222,6 +222,14 @@ void Cheonlog::Render_GameObject() {
 	if (m_eStatu == SPAWN)
 		return;
 
+	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+	{
+		for (auto iter = m_vecOrignBullet[i].begin(); iter != m_vecOrignBullet[i].end(); iter++)
+		{
+			RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, (*iter));
+		}
+	}
+
 	
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());

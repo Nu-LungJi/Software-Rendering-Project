@@ -30,7 +30,7 @@ private:
 private:
 	SpriteObject*	Component_Sprite;
 	ID3DXSprite*	IntroSprite;
-	BOOL	Enable_FadeIn, Enable_FadeOut, Enable_MenuBar, Enable_GameStart, Enable_ClickToStart;
+	BOOL	Enable_FadeIn, Enable_FadeOut, Enable_MenuBar, Enable_GameStart, Enable_ClickToStart, Enable_PlayerSummon;
 
 	FontObject*		StartBTN;
 	SpriteINFO*		Filter;

@@ -7,7 +7,7 @@ Artifact::~Artifact() {}
 
 HRESULT Artifact::Ready_GameObject()
 {
-	
+	itemIdx = -1;
 	return S_OK;
 }
 
