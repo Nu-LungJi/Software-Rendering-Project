@@ -681,6 +681,7 @@ VOID	FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(TRUE);
 			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(TRUE);
 
+
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossClearUI(TRUE);
 		}
 	
@@ -1817,7 +1818,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_BC) { // DEC BEFORE COMBAT
 		if (SoundVolume >= 0.f) {
-			SoundVolume -= _DT / 4.f;
+			SoundVolume -= _DT / 2.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
@@ -1829,7 +1830,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ENTERING_WC) { // INC COMBAT
 		if (SoundVolume <= 0.8f) {
-			SoundVolume += _DT / 4.f;
+			SoundVolume += _DT / 2.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
@@ -1847,7 +1848,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
-			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
+			//SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
 			SoundVolume = 0.f;
 		}
 	}

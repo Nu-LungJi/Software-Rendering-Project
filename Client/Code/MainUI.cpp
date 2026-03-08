@@ -486,7 +486,7 @@ VOID MainUI::Reset_Relic()
 
 VOID MainUI::Set_RelicIcon()
 {
-	_float Posy(610.f), PosX(560.f), PivotX(40.f);
+	_float Posy(650.f), PosX(560.f), PivotX(40.f);
 	for (int i = 0; i < 4; i++) {
 		_relicIcons[i] = Component_Sprite->Get_Texture(L"Relic_Info" + to_wstring(i + 1));
 		_relicIcons[i]->Set_Visible(FALSE);
