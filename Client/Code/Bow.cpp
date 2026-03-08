@@ -198,6 +198,8 @@ VOID Bow::Render_GameObject()
 
 		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
+		GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
+
 		SetGrahpic();
 
 		Component_Buffer->Render_Buffer();
@@ -208,6 +210,7 @@ VOID Bow::Render_GameObject()
 		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
 		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 	}
 	
 	return VOID();
@@ -400,8 +403,8 @@ void Bow::CreateEffect(const _float& _DT)
 	else if (_type == BowType::IceBow) radius = 1.6f;
 	else if (_type == BowType::EvilHeadBow) radius = 1.0f;
 	else if (_type == BowType::WindBow) {
-		if (_attackDelay > 0.25f) radius = 1.6f;
-		else radius = 2.5f;
+		//if (_attackDelay > 0.25f) radius = 1.6f;
+		radius = 2.5f;
 	}
 
 	float offsetX = cosf(angle) * radius;
@@ -553,7 +556,7 @@ void Bow::Late_Ready()
 	case BowType::FairyBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
-		_Stat.maxAtk = 23;
+		_Stat.maxAtk = 28;
 		_Stat.maxArrow = 10000;
 		_Stat.curArrow = 10000;
 		_Stat.range = 10.f;
@@ -563,7 +566,7 @@ void Bow::Late_Ready()
 	case BowType::IceBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
-		_Stat.maxAtk = 23;
+		_Stat.maxAtk = 28;
 		_Stat.maxArrow = 180;
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;
@@ -573,7 +576,7 @@ void Bow::Late_Ready()
 	case BowType::EvilHeadBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
-		_Stat.maxAtk = 23;
+		_Stat.maxAtk = 28;
 		_Stat.maxArrow = 150;
 		_Stat.curArrow = 150;
 		_Stat.range = 10.f;
@@ -583,7 +586,7 @@ void Bow::Late_Ready()
 	case BowType::WindBow:
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
-		_Stat.maxAtk = 23;
+		_Stat.maxAtk = 28;
 		_Stat.maxArrow = 180;
 		_Stat.curArrow = 180;
 		_Stat.range = 10.f;

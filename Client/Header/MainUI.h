@@ -113,6 +113,9 @@ private:
 	FontObject*			FO_ArrowCount;		// 화살 카운트
 	int					Cur_BowIMGIDX;		// 현재 활 이미지 인덱스
 	vector<SpriteINFO*> BowIMG_List;		// 활 스프라이트 모음
+	SpriteINFO*			MousePoint1;			// 마우스
+	SpriteINFO*			MousePoint2;			// 마우스
+	bool				MouseOpacity;
 
 ////////////RelicEffect//
 	vector<SpriteINFO*> relicEffectList;

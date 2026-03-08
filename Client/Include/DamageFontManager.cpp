@@ -50,6 +50,10 @@ VOID DamageFontManager::Add_DamageFont(GameObject* obj, int damage, bool isCriti
 {
 	_vec3 targetPos = *(static_cast<Transform*>(obj->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position());
 
+	if (obj->Get_ObjectTag() == L"Docheol") {
+		targetPos.z -= 6.f;
+	}
+
 	DamageFont* DamageFont = nullptr;
 
 	_vec3 destPos = { 0.f, 0.f, 0.f };
