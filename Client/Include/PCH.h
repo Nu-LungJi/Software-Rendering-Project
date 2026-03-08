@@ -82,6 +82,7 @@
 #include "SkyBox.h"
 #include "FireDevilBowChargeEffect.h"
 #include "WhiteOut.h"
+#include "MiniGameDis.h"
 
 #pragma endregion
 

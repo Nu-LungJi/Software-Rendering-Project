@@ -161,12 +161,17 @@ HRESULT MiniGameScene::Start_MiniGame()
 	m_pMainUI = nullptr;
 	
 	// 디버그 키 진입 하고싶을때 킬것
-	//SceneManager::GetInstance()->Set_CurrentScene(this);
+	SceneManager::GetInstance()->Set_CurrentScene(this);
+
+	m_pDis = MiniGameDis::Create(GRPDEV);
+	LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Add_GameObject(m_pDis);
+
 	return S_OK;
 }
 
 HRESULT MiniGameScene::End_MiniGame()
 {
+	LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Delete_Object(m_pDis);
 	if (!m_bEffect)
 	{
 		TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);

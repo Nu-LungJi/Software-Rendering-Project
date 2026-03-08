@@ -417,7 +417,7 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
         if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
         {
-            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Lightning_Critical.wav", CHANNELID::SOUND_EFFECT04, 0.2f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Lightning_Critical.wav", CHANNELID::SOUND_EFFECT04, 0.4f);
         }
         else
          SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.2f);

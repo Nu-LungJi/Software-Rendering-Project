@@ -210,12 +210,12 @@ HRESULT   StartScene::Ready_Scene() {
 	}
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
-	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
-	//TileManager::GetInstance()->Set_Stage();
+	TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
+	TileManager::GetInstance()->Set_Stage();
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
-    return S_OK;
+	 return S_OK;
 
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -251,7 +251,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
-	
+
     return Scene::Update_Scene(_DT);
 }
 VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
@@ -262,11 +262,11 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
     CollisionManager::GetInstance()->Render_CollisionManager();
 
 
-   //if (KEY_DOWN(DIK_P)) {
-   //    pMiniGame = MiniGameScene::Create(GRPDEV, this);
-   //    pMiniGame->Start_MiniGame();
-   //    return;
-   //}
+   if (KEY_DOWN(DIK_P)) {
+       pMiniGame = MiniGameScene::Create(GRPDEV, this);
+       pMiniGame->Start_MiniGame();
+       return;
+   }
 }
 VOID StartScene::Render_Scene() {
 
