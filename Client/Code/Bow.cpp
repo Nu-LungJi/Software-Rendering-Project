@@ -553,6 +553,8 @@ void Bow::Late_Ready()
 {
 	TCHAR txt[128] = L"";
 
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
 	wstring name = L"";
 	switch (_type) {
 	case BowType::FairyBow:
@@ -570,7 +572,7 @@ void Bow::Late_Ready()
 		_Stat.minAtk = 10;
 		_Stat.maxAtk = 18;
 		_Stat.maxArrow = 300;
-		_Stat.curArrow = 300;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 1;
@@ -580,7 +582,7 @@ void Bow::Late_Ready()
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 28;
 		_Stat.maxArrow = 200;
-		_Stat.curArrow = 200;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 2;
@@ -590,7 +592,7 @@ void Bow::Late_Ready()
 		_Stat.minAtk = 13;
 		_Stat.maxAtk = 21;
 		_Stat.maxArrow = 300;
-		_Stat.curArrow = 300;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 3;
