@@ -281,7 +281,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
         if (_type == ArrowType::Wind_Arrow || _type == ArrowType::FairyCharging) {
             _searchDelay += _DT;
 
-            turnSpeed = D3DXToRadian(3.f);
+            turnSpeed = D3DXToRadian(4.f);
             if(_type == ArrowType::FairyCharging) turnSpeed = D3DXToRadian(2.f);
             Search_Target_Object(30.f);
 
@@ -448,8 +448,22 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 
                 if (_target != nullptr) {
                     int targetHp = static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Get_Hp();
-                    static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(targetHp - 42.f);
-                    DamageFontManager::GetInstance()->Add_DamageFont(_target, 42.f);
+
+                    std::random_device rd;
+                    std::uniform_int_distribution<int> distribution(0, 100);
+
+                    Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
+                    int originATK = 42.f;
+
+                    bool _isCritical = false;
+                    if (distribution(rd) % 100 <= *player->Get_Critical()) {
+                        originATK *= 2.f;
+                        _isCritical = true;
+                    }
+
+                    static_cast<Collider*>(_target->Get_Component(COMPONENT_TYPE::COMPONENT_COLLIDER))->Set_Hp(targetHp - originATK);
+                    DamageFontManager::GetInstance()->Add_DamageFont(_target, originATK, _isCritical);
                 }
             }
             break;
@@ -680,8 +694,14 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         return TRUE;
     }
     else if (_Other->Get_ObjectTag() == L"Docheol") {
-        COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
-        DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+        if (static_cast<FinalBoss*>(_Other)->Get_ModeState(BOSSMODE::MODE_INVALIDATE)) {
+            DamageFontManager::GetInstance()->Add_DamageFont(_Other,0, false);
+        }
+        else {
+            COLLIDER(_Other)->Set_Hp(COLLIDER(_Other)->Get_Hp() - Component_Collider->Get_Att());
+            DamageFontManager::GetInstance()->Add_DamageFont(_Other, Component_Collider->Get_Att(), _isCritical);
+        }
+
         if (_type == ArrowType::IceCharging) {
             _vec3 Size = { 2.f, 2.f, 2.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.3f, Size, false);
