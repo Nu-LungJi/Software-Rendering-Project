@@ -109,13 +109,13 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		Animation_Timer = 0.f;
 	}
 	Animation_Timer += _DT;
-	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE || BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
+	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE && BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] += _DT;
 
 	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.5f) {
 		srand(time(NULL));
 		if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE)		{ Action_Selector = rand() % 4 + 1; }
-		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
+		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 100 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
 
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 	}
@@ -230,7 +230,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Component_FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 		// < Stand -> RSwing >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 1) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector >= 1 && Action_Selector <= 40)) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_RSwing_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
@@ -240,7 +240,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Normal Slam >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 2) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 40 && Action_Selector <= 70)) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Slam_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
@@ -250,7 +250,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Rush >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 3 && BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] <= 1.f) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 70 && Action_Selector <= 85) && BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] <= 1.f) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Rush_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_RUSH_FRAMECOUNT;
@@ -261,7 +261,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Supporter >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 4 && BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] <= 1.f) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 85 && Action_Selector <= 100) && BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] <= 1.f) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Charge_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_CHARGE_FRAMECOUNT;
@@ -316,24 +316,25 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	//	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 	//	memset(BBTrap, TRUE, sizeof(BBTrap));
 	//}
-	//
-	//if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-	//	Component_Collider->Set_Hp(10);
-	//	//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-	//	//Animation_TexList = &Animation_Stunning_TexList;
-	//	//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
-	//	//Animation_CurrentIndex = 0;
-	//}
-	//else if (KEY_DOWN(DIK_P)) {
-	//	Component_Collider->Set_Hp(5000);
-	//	BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-	//	Animation_TexList = &Animation_Rage_Stand_TexList;
-	//	Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
-	//	Animation_CurrentIndex = 0;
-	//}
+	
+	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_0)) {
+		Component_Collider->Set_Hp(10);
+		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+		//Animation_TexList = &Animation_Stunning_TexList;
+		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
+		//Animation_CurrentIndex = 0;
+	}
+	else if (KEY_DOWN(DIK_0)) {
+		Component_Collider->Set_Hp(5000);
+		BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+		Animation_TexList = &Animation_Rage_Stand_TexList;
+		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+		Animation_CurrentIndex = 0;
+	}
 }
 VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -341,6 +342,7 @@ VOID	FinalBoss::Render_GameObject() {
 
 	Component_Buffer->Render_Buffer();
 
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
@@ -1791,7 +1793,7 @@ VOID	FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 }
 
 VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
-	if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
+	if		(SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
 		STOP_ALLSOUND;
 		SoundTransition = (INT)SOUNDPLAYER::ENTERING_BC;
 		SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_BeforeCombat.wav", CHANNELID::SOUND_BGM03, 0.f, FALSE);

@@ -15,11 +15,11 @@ HRESULT MiniGameCounter::Ready_GameObject() {
 	m_bEndWave = false;
 	m_bAugment = false;
 	m_iKeyCnt = 0;
-	m_StageCnt[0] = 1;
-	m_StageCnt[1] = 2;
-	m_StageCnt[2] = 3;
-	m_StageCnt[3] = 4;
-	m_StageCnt[4] = 5;
+	m_StageCnt[0] = 10;
+	m_StageCnt[1] = 20;
+	m_StageCnt[2] = 30;
+	m_StageCnt[3] = 40;
+	m_StageCnt[4] = 50;
 	m_iMaxWave = 5;
 	wstring Font = L"Gowun Dodum";
 	UIManager::GetInstance()->Add_FontSprite(GRPDEV, L"¶ó¿îµå :", { 423.14f, 10.f }, 35, L"STAGE_NAME", Font.c_str(), D3DCOLOR_ARGB(200, 255, 255, 255));
