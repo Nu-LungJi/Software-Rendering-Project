@@ -1223,6 +1223,7 @@ VOID	FinalBoss::Skill_RageUpFireBall	(CONST FLOAT& _DT) {
 			}
 			BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
 			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
+
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_RageUpFireBall = FALSE;
 		}

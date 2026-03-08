@@ -198,6 +198,8 @@ public:
 	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
 
 	VOID	Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
+
+	int		Get_Equipnum() { return _equipNum; }
 	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }

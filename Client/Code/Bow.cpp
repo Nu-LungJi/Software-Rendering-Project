@@ -557,8 +557,8 @@ void Bow::Late_Ready()
 	switch (_type) {
 	case BowType::FairyBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
+		_Stat.minAtk = 15;
+		_Stat.maxAtk = 23;
 		_Stat.maxArrow = 10000;
 		_Stat.curArrow = 10000;
 		_Stat.range = 10.f;
@@ -567,8 +567,8 @@ void Bow::Late_Ready()
 		break;
 	case BowType::IceBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
+		_Stat.minAtk = 10;
+		_Stat.maxAtk = 18;
 		_Stat.maxArrow = 300;
 		_Stat.curArrow = 300;
 		_Stat.range = 10.f;
@@ -587,8 +587,8 @@ void Bow::Late_Ready()
 		break;
 	case BowType::WindBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
+		_Stat.minAtk = 13;
+		_Stat.maxAtk = 21;
 		_Stat.maxArrow = 300;
 		_Stat.curArrow = 300;
 		_Stat.range = 10.f;
@@ -640,13 +640,13 @@ void Bow::Reset_MaxArrow()
 		_Stat.maxArrow = 10000;
 		break;
 	case BowType::IceBow:
-		_Stat.maxArrow = 180;
+		_Stat.maxArrow = 300;
 		break;
 	case BowType::EvilHeadBow:
-		_Stat.maxArrow = 150;
+		_Stat.maxArrow = 200;
 		break;
 	case BowType::WindBow:
-		_Stat.maxArrow = 180;
+		_Stat.maxArrow = 300;
 		break;
 	}
 }

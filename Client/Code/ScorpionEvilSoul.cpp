@@ -79,7 +79,7 @@ INT	ScorpionEvilSoul::Update_GameObject(const _float& _DT)
 	case MONSTER_STATE_DISAPPEAR:
 		if (m_tInfo.Textureinfo._frame >= m_tInfo.Textureinfo._Endframe)
 		{
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
+			// SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 			ObjectDead = true;
 		}
 		break;
