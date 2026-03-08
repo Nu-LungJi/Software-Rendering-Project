@@ -90,6 +90,7 @@ BOOL DropItem::OnCollisionStay(GameObject* _Other){
 					static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
 					m_iPickUpEvent = 1;
 					*m_pEventTrigger = -1;	//Temp;
+
 					return true;
 				}
 			}

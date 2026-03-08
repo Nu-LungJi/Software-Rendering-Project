@@ -12,7 +12,7 @@ HRESULT StageBlackOut::Ready_Effect(_vec3* vPos, _bool bDocheol) {
 	
 		Make_TextureList(L"../../Tile/Frame/frame_black_L_to_R", WINCX, WINCY, 255, 46,SCENE_EFFECT::SCENE_STAGE);
 		Make_TextureList(L"../../Tile/Frame/Spr_Effect_ChaosSwordBlackHole_Start_",WINCX,WINCY,255,46,SCENE_EFFECT::SCENE_BOSS);
-
+		m_bLastBgm = false;
 	m_fFrame = 0;
 	m_fBossDelay = 0;
 	m_iFrameCnt = 0;
@@ -50,6 +50,8 @@ HRESULT StageBlackOut::Make_TextureList(wstring _FileName, UINT _WIDTH, UINT _HE
 
 INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 	
+	BackGround_Volume(_DT);
+
 	if (!m_bRestart)
 	{
 
@@ -139,7 +141,6 @@ INT  StageBlackOut::Update_GameObject(CONST FLOAT& _DT) {
 
 	}
 
-	BackGround_Volume(_DT);
 	return 0;
 }
 VOID StageBlackOut::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -172,14 +173,21 @@ void StageBlackOut::BackGround_Volume(const _float _DT)
 	
 	if (TileManager::GetInstance()->Get_CurrentStage() == TILE_STAGE::TILE_FIRSTBOSS && m_bCheonLog)
 	{
-		if (m_fVolume01 >= 0)
+		if (m_fVolume02 >= 0)
 		{
-			m_fVolume01 -= _DT / 24;
-			m_bCheonLog = false;
-		}
 			
-		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume01);
-		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, m_fVolume01);
+			m_fVolume02 -= (_DT / 8);
+		}
+
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume02);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, m_fVolume02);
+		
+		if (m_fVolume02 <= 0)
+		{
+			m_fVolume02 = 0;
+			m_bCheonLog = false;
+			return;
+		}
 	}
 
 	if (TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::TILE_DEFENSE)
@@ -189,7 +197,11 @@ void StageBlackOut::BackGround_Volume(const _float _DT)
 		{
 			m_fVolume02 += _DT / 6;
 		}
-		else return;
+		else
+		{
+			return;
+			
+		}
 			
 		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume02);
 		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, m_fVolume02);
@@ -197,18 +209,34 @@ void StageBlackOut::BackGround_Volume(const _float _DT)
 
 	if (TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::STAGE_ROLARUN)
 	{
-		if (m_fVolume03 <= 0.4f)
+		if (m_fVolume03 <= 0.5f)
+		{
+			m_fVolume03 += _DT / 6;
+		}
+		else
 			return;
 
-		if(m_fVolume03 <= 0)
-			SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, m_fVolume03, FALSE);
-		else 
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume03);
-
-		m_fVolume03 += _DT / 6;
-		m_fVolume01 = 0;
 	}
-	
+	if (!m_bLastBgm && TileManager::GetInstance()->Get_Stage() == TILE_STAGE::TILE_DOCHERBOSS && TileManager::GetInstance()->Get_BeforeStage() == TILE_STAGE::TILE_DOCHER1)
+	{
+		if (m_fVolume03 >= 0.f)
+		{
+			m_fVolume03 -= _DT / 6;
+		}
+		else
+
+			if (m_fVolume03 <= 0)
+				m_fVolume03 = 0.f;
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM01, m_fVolume03);
+
+		if (m_fVolume03 <= 0)
+		{
+			STOP_ALLSOUND;
+			m_bLastBgm = true;
+		}
+			
+	}
 
 }
 StageBlackOut* StageBlackOut::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3* vPos, _bool bDocheol) {
