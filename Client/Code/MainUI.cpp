@@ -773,9 +773,7 @@ VOID MainUI::Synchronize_BossHPBar() {
 	}
 	else if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
 		
-		_float fProgressRatio = 0.f;
-
-		fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
+		_float fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
 
 		if		(fProgressRatio > 1)		fProgressRatio = 1.f;
 		else if (fProgressRatio < 0)		fProgressRatio = 0.f;

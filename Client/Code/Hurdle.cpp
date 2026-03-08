@@ -51,15 +51,19 @@ VOID Hurdle::LateUpdate_GameObject(const _float& _DT)
 		m_bMoved = false;
 	}
 	//GameObject::LateUpdate_GameObject(_DT);
-	RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
+	if (Monster::Get_Camera()->IsIn_Frustum(*Component_Transform->Get_Position(), 2.f))
+	{
+		if (*static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Get_EventTrigger() != 2)
+		{
+			RenderManager::GetInstance()->Add_RenderGroup(RENDER_NONALPHA, this);
+		}
+	}
 }
-
 
 VOID Hurdle::Render_GameObject()
 {
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 	GRPDEV->SetTexture(0, m_pTexture);
-	//GRPDEV->SetTexture(0, (*m_tInfo.Textureinfo.pTexture)[0]);
 	Component_Buffer->Render_Buffer();
 }
 
