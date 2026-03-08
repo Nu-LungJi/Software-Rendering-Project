@@ -17,9 +17,9 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
 
-    if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
-    if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
-    if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
+    if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
+    if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
+    if (FAILED(Ready_UserInterface_Layer()))    return E_FAIL;
 
     //Load Tile 천록
 	{
@@ -210,12 +210,12 @@ HRESULT   StartScene::Ready_Scene() {
 	}
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
-	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
-	//TileManager::GetInstance()->Set_Stage();
     KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
     CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+	//TileManager::GetInstance()->Set_Stage();
 
-    return S_OK;
+	return S_OK;
 
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
@@ -307,7 +307,7 @@ HRESULT StartScene::Ready_UserInterface_Layer() {
 	//pCL->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER);
 	//pCL->Set_ObjectTag(L"CheonLog");
 	//SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_DYNAMIC_OBJECT)->Add_GameObject(pCL);
-    //Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
+    Add_GameObjectToScene<IntroUI>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"IntroUI");
     //Add_GameObjectToScene<SpeechBubble>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"NpcField");
     //Add_GameObjectToScene<PlayerInven>(LAYER_TYPE::LAYER_USER_INTERFACE, GAMEOBJECT_TYPE::OBJECT_UI, L"Player_Inven");
 

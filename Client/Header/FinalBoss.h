@@ -147,7 +147,7 @@ private:
 	_vec3			PlayerPos;
 
 	CameraObject*	Camera;
-
+	
 	BOOL			BossMode[(INT)BOSSMODE::MODE_END];
 
 	FLOAT			BossTimer[(INT)BOSSTIMER::TIMER_END];

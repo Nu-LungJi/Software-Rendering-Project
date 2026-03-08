@@ -97,7 +97,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	Skill_SupporterFlame(_DT);
 	Skill_ExplosionRush(_DT);
 	BoobieTrap(_DT);
-
+	BGM_Player(_DT);
 	
 	Animation_Appear_Staging(_DT);
 	Animation_Disappear_Staging(_DT);
@@ -307,7 +307,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	BGM_Player(_DT);
+	
 	//if (KEY_DOWN(DIK_O)) Enable_ExplosionRush = TRUE;
 	//if (KEY_DOWN(DIK_I)) {
 	//	Enable_ExplosionRush = FALSE;
@@ -1222,6 +1222,7 @@ VOID	FinalBoss::Skill_RageUpFireBall	(CONST FLOAT& _DT) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[12 * 3 + IDX]);
 			}
 			BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
+			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_RageUpFireBall = FALSE;
 		}
@@ -1790,16 +1791,17 @@ VOID	FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 
 VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 	if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
+		STOP_ALLSOUND;
 		SoundTransition = (INT)SOUNDPLAYER::ENTERING_BC;
-		SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_BeforeCombat.wav", CHANNELID::SOUND_BGM02, 0.f);
-		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.f);
+		SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_BeforeCombat.wav", CHANNELID::SOUND_BGM03, 0.f, FALSE);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, 0.f);
 
 		SoundVolume = 0.f;
 	}
 	else if		(SoundTransition == (INT)SOUNDPLAYER::ENTERING_BC	)	{ // INC BEFORE COMBAT
-		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) <= 0.8f) {
+		if (SoundVolume <= 0.8f) {
 			SoundVolume += _DT / 4.f;
-			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
 			SoundTransition = (INT)SOUNDPLAYER::STAY_BC;
@@ -1807,25 +1809,25 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 		}
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::STAY_BC		)		{ // STAY BEFORE COMBAT
-		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.8f);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		SoundVolume = 0.8f;
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_BC	)	{ // DEC BEFORE COMBAT
-		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) >= 0.f) {
+		if (SoundVolume >= 0.f) {
 			SoundVolume -= _DT / 4.f;
-			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
 			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
 			SoundVolume = 0.f;
 			STOP_ALLSOUND;
-			SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_Start.wav", CHANNELID::SOUND_BGM02, SoundVolume);
+			SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_Start.wav", CHANNELID::SOUND_BGM03, SoundVolume, FALSE);
 		}
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ENTERING_WC	)	{ // INC COMBAT
-		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) <= 0.8f) {
+		if (SoundVolume <= 0.8f) {
 			SoundVolume += _DT / 4.f;
-			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
 			SoundTransition = (INT)SOUNDPLAYER::STAY_WC;
@@ -1833,13 +1835,13 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 		}
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::STAY_WC		)		{ // STAY COMBAT
-		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.8f);
+		SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, 0.8f);
 		SoundVolume = 0.8f;
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_WC	)	{ // DEC COMBAT
-		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) >= 0.f) {
+		if (SoundVolume >= 0.f) {
 			SoundVolume -= _DT / 4.f;
-			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
 			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;

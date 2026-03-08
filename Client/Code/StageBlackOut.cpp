@@ -232,7 +232,7 @@ void StageBlackOut::BackGround_Volume(const _float _DT)
 
 		if (m_fVolume03 <= 0)
 		{
-			STOP_ALLSOUND;
+			//STOP_ALLSOUND;
 			m_bLastBgm = true;
 		}
 			
