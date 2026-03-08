@@ -25,6 +25,8 @@ HRESULT NPC::Ready_GameObject() {
 
 	Component_Transform->Rotation(ROT_X, 90.f - _cameraAngle);
 
+	CollisionManager::GetInstance()->Add_ColliderObject(this);
+
 	return S_OK;
 }
 INT	NPC::Update_GameObject(const _float& _DT) {

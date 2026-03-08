@@ -443,7 +443,7 @@ void CLEffect::Drop_Item(const _float _DT)
 	D3DXVec3Project(&Screen, &vPos, &viewPort, &matProj, &matView, &m_matWorld);
 	
 	
-	D3DXMatrixScaling(&matScale, 1.f, 1.f, 1.f);
+	D3DXMatrixScaling(&matScale, 1.f, 0.8f, 1.f);
 	D3DXMatrixTranslation(&matTrans, Screen.x-100, Screen.y-160, 0);
 	
 	m_matWorld = matScale * matTrans;

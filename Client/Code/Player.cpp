@@ -131,6 +131,10 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	_vec3 pPos = *Component_Transform->Get_Position();
 	Component_Transform->Set_Pos(pPos);
 	
+	if (KEY_DOWN(DIK_F8)) {
+		Set_Coin(200);
+	}
+
 	// 플레이어 소환
 	if (Enable_PlayerSummon || KEY_DOWN(DIK_N)) {
 		SummonStart = true;
