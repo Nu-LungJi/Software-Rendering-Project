@@ -608,6 +608,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_ArrowCount"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"				));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IceBow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HPBar_Frame"));
 		
