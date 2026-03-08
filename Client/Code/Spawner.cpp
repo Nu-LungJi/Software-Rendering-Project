@@ -296,7 +296,6 @@ void Spawner::CL_Spawn()
 	
 	if (!m_bTrigger)
 	{
-		SoundManager::GetInstance()->Stop_AllSound();
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Set_CameraMove(true);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->CheonLog_Respawn(0);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Obj(this, vPos);

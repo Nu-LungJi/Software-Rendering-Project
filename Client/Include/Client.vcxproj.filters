@@ -776,9 +776,6 @@
     <ClCompile Include="DamageFontManager.cpp">
       <Filter>07. Font\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\IntroUI.cpp">
-      <Filter>04. UI\99. IntroUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Tesseract.cpp">
       <Filter>03. GameObject\02. Monster\02. Monster\06. Tesseract</Filter>
     </ClCompile>

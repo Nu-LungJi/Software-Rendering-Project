@@ -15,9 +15,9 @@ HRESULT	FinalBoss::Ready_GameObject() {
 
 	Camera = static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"));
 
-	FSM = StateMachine::Create(GRPDEV);
-	FSM->FSM_StateInit(StandState::GetInstance()->Instance()); // NO ACTION
-	FSM->FSM_SetOwner(this);
+	Component_FSM = StateMachine::Create(GRPDEV);
+	Component_FSM->FSM_StateInit(StandState::GetInstance()->Instance()); // NO ACTION
+	Component_FSM->FSM_SetOwner(this);
 
 	ObjectTAG = L"Docheol";
 	dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossMaxHP(Component_Collider->Get_Hp());
@@ -62,24 +62,25 @@ HRESULT	FinalBoss::Ready_GameObject() {
 	memset(ERUSH_TRIGGER	, TRUE, sizeof(ERUSH_TRIGGER));
 	memset(BBTrap			, TRUE, sizeof(BBTrap));
 
-	STOP_ALLSOUND;
-
-	PLAY_SOUND(L"Docheol/BackGround_Sound.wav", CHANNELID::SOUND_BGM03);
+	SoundTransition = FALSE;
+	SoundVolume = 0.f;
 	return S_OK;
 }
 INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead) return -1;
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	FSM->Update_GameObject(_DT);
+	Component_FSM->Update_GameObject(_DT);
 
 	if (Animation_TexList == &Animation_NonAnim_TexList 
 		&& PlayerTransform->Get_Position()->z >= 88.5f && PlayerTransform->Get_Position()->x >= 51.5f
-		&& FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
+		&& Component_FSM->FSM_GetCurrentState() != AppearState::GetInstance()->Instance()) {
 
-		FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
+		Component_FSM->FSM_StateChange(AppearState::GetInstance()->Instance());
 		Camera->Set_SmoothCamera(TRUE);
 		Enable_BossAppearStaging = TRUE;
+
+		SoundTransition = (INT)SOUNDPLAYER::ESCAPING_BC;
 	}
 
 	if (Animation_TexList == &Animation_Death_TexList && Animation_CurrentIndex == ANIMATION_DEATH_FRAMECOUNT - 1) {
@@ -111,7 +112,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE || BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] += _DT;
 
-	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 4.f) {
+	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.5f) {
 		srand(time(NULL));
 		if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE)		{ Action_Selector = rand() % 4 + 1; }
 		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
@@ -126,7 +127,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Normal_RSwing_TexList;
 			Animation_FrameCount = ANIMATION_NORMAL_RSWING_FRAMECOUNT;
 
-			FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(RSwingState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -136,7 +137,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Normal_FSwing_TexList;
 			Animation_FrameCount = ANIMATION_NORMAL_FSWING_FRAMECOUNT;
 
-			FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(FSwingState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -146,7 +147,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Normal_Slam_TexList;
 			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
-			FSM->FSM_StateChange(NormalSlamState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(NormalSlamState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 			//DoubleSlam = TRUE;
@@ -157,7 +158,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Normal_Slam_TexList;
 			Animation_FrameCount = ANIMATION_NORMAL_SLAM_FRAMECOUNT;
 
-			FSM->FSM_StateChange(MeteorSlamState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(MeteorSlamState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -170,7 +171,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
-			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(StandState::GetInstance()->Instance());
 		}
 
 		// < Appear -> Stand >
@@ -179,7 +180,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Normal_Stand_TexList;
 			Animation_FrameCount = ANIMATION_NORMAL_STAND_FRAMECOUNT;
 
-			FSM->FSM_StateChange(StandState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(StandState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
 		}
@@ -190,7 +191,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
 			Animation_Interval = 0.25f;
 
-			FSM->FSM_StateChange(StunState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(StunState::GetInstance()->Instance());
 			PLAY_SOUND_ONCE(L"Docheol/Stun_State.wav", CHANNELID::SOUND_EFFECT09);
 			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = TRUE;
 			BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
@@ -226,7 +227,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 				ORU->Set_ObjectDead(TRUE);
 			for (auto& ORU : ObjectPool_FSwing)
 				ORU->Set_ObjectDead(TRUE);
-			FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 		// < Stand -> RSwing >
 		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 1) {
@@ -234,7 +235,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Rage_RSwing_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
 
-			FSM->FSM_StateChange(Rage_RSwingState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_RSwingState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -244,7 +245,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_TexList = &Animation_Rage_Slam_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
 
-			FSM->FSM_StateChange(Rage_NormalSlamState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_NormalSlamState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -255,7 +256,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Animation_FrameCount = ANIMATION_RAGE_RUSH_FRAMECOUNT;
 
 			Enable_ExplosionRush = TRUE;
-			FSM->FSM_StateChange(Rage_ExplosionRushState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_ExplosionRushState::GetInstance()->Instance());
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
 		}
@@ -269,7 +270,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			PLAY_SOUND_ONCE(L"Docheol/Supporter_Bump.wav", CHANNELID::SOUND_EFFECT02, 10.f);
 			Camera->Camera_Shaking(70, 0.5f);
 
-			FSM->FSM_StateChange(Rage_SupporterState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_SupporterState::GetInstance()->Instance());
 			Enable_SupporterFlame = TRUE;
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = TRUE;
 			Action_Selector = 0;
@@ -290,15 +291,15 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			|| (Animation_TexList == &Animation_RageUp_TexList && Animation_CurrentIndex == ANIMATION_RAGEUP_FRAMECOUNT - 1)
 			//|| (Animation_TexList == &Animation_Rage_Charge_TexList && Animation_CurrentIndex == ANIMATION_RAGE_CHARGE_FRAMECOUNT - 1)
 			|| (Animation_TexList == &Animation_Rage_Stand_TexList && Animation_CurrentIndex == ANIMATION_RAGE_STAND_FRAMECOUNT - 1
-				&& FSM->FSM_GetCurrentState() != Rage_SupporterState::GetInstance()->Instance() )
+				&& Component_FSM->FSM_GetCurrentState() != Rage_SupporterState::GetInstance()->Instance() )
 			|| (Animation_TexList == &Animation_Rage_Stand_TexList && Animation_CurrentIndex == ANIMATION_RAGE_STAND_FRAMECOUNT - 1
-				&& FSM->FSM_GetCurrentState() != Rage_ExplosionRushState::GetInstance()->Instance())) {
+				&& Component_FSM->FSM_GetCurrentState() != Rage_ExplosionRushState::GetInstance()->Instance())) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Stand_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
 			Animation_Interval = 0.07f;
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
-			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
 		}
 	}
 
@@ -306,30 +307,30 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-
-	if (KEY_DOWN(DIK_O)) Enable_ExplosionRush = TRUE;
-	if (KEY_DOWN(DIK_I)) {
-		Enable_ExplosionRush = FALSE;
-		BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] = 0.f;
-		BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
-		memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
-		memset(BBTrap, TRUE, sizeof(BBTrap));
-	}
-
-	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(10);
-		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-		//Animation_TexList = &Animation_Stunning_TexList;
-		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
-		//Animation_CurrentIndex = 0;
-	}
-	else if (KEY_DOWN(DIK_P)) {
-		Component_Collider->Set_Hp(5000);
-		BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-		Animation_TexList = &Animation_Rage_Stand_TexList;
-		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
-		Animation_CurrentIndex = 0;
-	}
+	BGM_Player(_DT);
+	//if (KEY_DOWN(DIK_O)) Enable_ExplosionRush = TRUE;
+	//if (KEY_DOWN(DIK_I)) {
+	//	Enable_ExplosionRush = FALSE;
+	//	BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] = 0.f;
+	//	BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
+	//	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
+	//	memset(BBTrap, TRUE, sizeof(BBTrap));
+	//}
+	//
+	//if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
+	//	Component_Collider->Set_Hp(10);
+	//	//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+	//	//Animation_TexList = &Animation_Stunning_TexList;
+	//	//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
+	//	//Animation_CurrentIndex = 0;
+	//}
+	//else if (KEY_DOWN(DIK_P)) {
+	//	Component_Collider->Set_Hp(5000);
+	//	BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+	//	Animation_TexList = &Animation_Rage_Stand_TexList;
+	//	Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+	//	Animation_CurrentIndex = 0;
+	//}
 }
 VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -343,19 +344,19 @@ VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-BOOL	FinalBoss::OnCollisionEnter(GameObject* _Other) {
+BOOL	FinalBoss::OnCollisionEnter	(GameObject* _Other) {
 	if (_Other->Get_ObjectTag() == L"Supporter1" || _Other->Get_ObjectTag() == L"Supporter2" || _Other->Get_ObjectTag() == L"Supporter3") {
 		Animation_CurrentIndex = 0;
 		Animation_TexList		= &Animation_RageUp_TexList;
 		Animation_FrameCount	= ANIMATION_RAGEUP_FRAMECOUNT;
 		Animation_Interval = 0.1f;
 
-		FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
+		Component_FSM->FSM_StateChange(RageUpState::GetInstance()->Instance());
 	}
 	return TRUE;
 }
-BOOL	FinalBoss::OnCollisionStay(GameObject* _Other) { return TRUE; }
-BOOL	FinalBoss::OnCollisionExit(GameObject* _Other) { return TRUE; }
+BOOL	FinalBoss::OnCollisionStay	(GameObject* _Other) { return TRUE; }
+BOOL	FinalBoss::OnCollisionExit	(GameObject* _Other) { return TRUE; }
 
 HRESULT	FinalBoss::Component_Initialize() {
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
@@ -448,7 +449,7 @@ HRESULT FinalBoss::Texture_Initialize() {
 	return S_OK;
 }
 
-VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
+VOID	FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 	if (Enable_BossAppearStaging) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] += _DT;
 		_vec3 GlobalPosition = { Component_Transform->Get_Position()->x, Component_Transform->Get_Position()->y - 1.5f,  Component_Transform->Get_Position()->z - 6.5f };
@@ -580,7 +581,7 @@ VOID FinalBoss::Animation_Appear_Staging(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
+VOID	FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 	if (Enable_BossDisappearStaging) {
 
 		BossTimer[(LONG)BOSSTIMER::TIMER_STAGING] += _DT;
@@ -589,6 +590,8 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 
 		if		(STAGING_TRIGGER[(INT)DEATH_STAGING::SPOOL_APPEAR]) {
 			Camera->Camera_Shaking(10.f, 3.f);
+			SoundTransition == (INT)SOUNDPLAYER::ESCAPING_WC;
+
 			_vec3 SpoolAppearSca = { 250.f / 100.f * GloabalScale * 1.8f, 112.5f / 100.f * GloabalScale * 1.8f , 300.f / 100.f * GloabalScale * 1.8f };
 			_vec3 SpoolAppearPos = { GlobalPosition.x - 0.2f, GlobalPosition.y + 0.3f, GlobalPosition.z };
 			PLAY_BOSS_BACKEFFECT_ONCE(BOSS_EFFECT::SPOOL_APPEAR_EFFECT, L"SPOOL_APPEAR_EFFECT", &SpoolAppearPos, SpoolAppearSca, 1.f);
@@ -695,7 +698,7 @@ VOID FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 	}
 }
 
-VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 	if		(Enable_GroundExplosion == 0 && Enable_GroundQuadExplosion == 0) return;
 	else if (Enable_GroundExplosion == 1) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_EXP] += _DT;
@@ -875,7 +878,7 @@ VOID FinalBoss::Skill_GroundExplosion(CONST FLOAT& _DT) {
 	//	}
 	//}
 }
-VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 	if (Enable_MeteorExplosion == 0) return;
 	if (Enable_MeteorExplosion == 1) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_MEXP] += _DT;
@@ -974,7 +977,7 @@ VOID FinalBoss::Skill_MeteorExplosion(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_RSwingFireBall	(CONST FLOAT& _DT) {
 	if		(Enable_CreateFireBall == 0) return;
 	else if (Enable_CreateFireBall == 1) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_RSWING] += _DT;
@@ -1123,7 +1126,7 @@ VOID FinalBoss::Skill_RSwingFireBall(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_FSwingFireBall(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_FSwingFireBall	(CONST FLOAT& _DT) {
 	if (Enable_FSwingFireBall) {
 		BossTimer[(INT)BOSSTIMER::TIMER_RSWING] += _DT;
 		if (BossTimer[(INT)BOSSTIMER::TIMER_RSWING] <= 0.05f && ObjectPool_FSwing.size() <= 0) {
@@ -1157,7 +1160,7 @@ VOID FinalBoss::Skill_FSwingFireBall(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_RageUpFireBall	(CONST FLOAT& _DT) {
 	if (Enable_RageUpFireBall == FALSE)	return;
 	if (Enable_RageUpFireBall == TRUE) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] += _DT;
@@ -1224,7 +1227,7 @@ VOID FinalBoss::Skill_RageUpFireBall(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_SupporterFlame	(CONST FLOAT& _DT) {
 	if (Enable_SupporterFlame) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] += _DT;
 		_vec3 EmblemScale = { 1.f, 1.f, 1.f };
@@ -1369,7 +1372,7 @@ VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
 			Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
 			BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] = 0.f;
 			Enable_SupporterFlame = FALSE;
-			FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
+			Component_FSM->FSM_StateChange(Rage_StandState::GetInstance()->Instance());
 		}
 	
 		//////////////////////////////////////////////////// SOUNDPLAY ////////////////////////////////////////////////////
@@ -1405,7 +1408,7 @@ VOID FinalBoss::Skill_SupporterFlame(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID FinalBoss::Skill_ExplosionRush(CONST FLOAT& _DT) {
+VOID	FinalBoss::Skill_ExplosionRush	(CONST FLOAT& _DT) {
 	if (Enable_ExplosionRush) {
 		BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] += _DT;
 
@@ -1486,7 +1489,7 @@ VOID FinalBoss::Skill_ExplosionRush(CONST FLOAT& _DT) {
 	}
 }
 
-VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
+VOID	FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 	if (Enable_BBTrap) {
 		_vec3 BossBottomPos = { Component_Transform->Get_Position()->x, 1.f, Component_Transform->Get_Position()->z - 7.f };
 
@@ -1785,6 +1788,66 @@ VOID FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 	}
 }
 
+VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
+	if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
+		SoundTransition = (INT)SOUNDPLAYER::ENTERING_BC;
+		SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_BeforeCombat.wav", CHANNELID::SOUND_BGM02, 0.f);
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.f);
+
+		SoundVolume = 0.f;
+	}
+	else if		(SoundTransition == (INT)SOUNDPLAYER::ENTERING_BC	)	{ // INC BEFORE COMBAT
+		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) <= 0.8f) {
+			SoundVolume += _DT / 4.f;
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+		}
+		else {
+			SoundTransition = (INT)SOUNDPLAYER::STAY_BC;
+			SoundVolume = 0.8f;
+		}
+	}
+	else if (SoundTransition == (INT)SOUNDPLAYER::STAY_BC		)		{ // STAY BEFORE COMBAT
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.8f);
+		SoundVolume = 0.8f;
+	}
+	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_BC	)	{ // DEC BEFORE COMBAT
+		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) >= 0.f) {
+			SoundVolume -= _DT / 4.f;
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+		}
+		else {
+			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
+			SoundVolume = 0.f;
+			STOP_ALLSOUND;
+			SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_Start.wav", CHANNELID::SOUND_BGM02, SoundVolume);
+		}
+	}
+	else if (SoundTransition == (INT)SOUNDPLAYER::ENTERING_WC	)	{ // INC COMBAT
+		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) <= 0.8f) {
+			SoundVolume += _DT / 4.f;
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+		}
+		else {
+			SoundTransition = (INT)SOUNDPLAYER::STAY_WC;
+			SoundVolume = 0.5f;
+		}
+	}
+	else if (SoundTransition == (INT)SOUNDPLAYER::STAY_WC		)		{ // STAY COMBAT
+		SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, 0.8f);
+		SoundVolume = 0.8f;
+	}
+	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_WC	)	{ // DEC COMBAT
+		if (SoundManager::GetInstance()->Get_ChannelVolume(CHANNELID::SOUND_BGM02) >= 0.f) {
+			SoundVolume -= _DT / 4.f;
+			SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+		}
+		else {
+			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
+			SoundVolume = 0.f;
+		}
+	}
+}
+
 FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	FinalBoss* FBS = new FinalBoss(_GRPDEV);
 	if (FAILED(FBS->Ready_GameObject())) {
@@ -1795,7 +1858,7 @@ FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	return FBS;
 }
 VOID		FinalBoss::Free() {
-	Safe_Release(FSM);
+	Safe_Release(Component_FSM);
 	for (auto& i : ObjectPool_Supporter)
 		Safe_Release(i);
 	GameObject::Free();

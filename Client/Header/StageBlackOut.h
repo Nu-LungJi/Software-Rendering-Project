@@ -41,7 +41,7 @@ private:
 	_bool						     m_bRestart;
 	_bool							 m_bCheonLog;
 	_bool							 m_bDocheol;
-
+	_bool							 m_bLastBgm;
 	_bool							 m_bBgm;
 	SCENE_EFFECT					 m_eSceneID;
 

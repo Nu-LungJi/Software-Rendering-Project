@@ -225,6 +225,7 @@ INT	 MapScene::Update_Scene(CONST FLOAT& _DT) {
 			{
 				pMiniGame = MiniGameScene::Create(GRPDEV, this);
 				pMiniGame->Start_MiniGame();
+				TileManager::GetInstance()->Set_CurStage(TILE_STAGE::STAGE_ROLARUN);
 				TileManager::GetInstance()->Set_EndLoading(TRUE);
 				TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
 				TileManager::GetInstance()->Set_MiniGame(false);

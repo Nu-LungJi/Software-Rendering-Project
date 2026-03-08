@@ -783,6 +783,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 			L"DIC_InfoFrame_IceBow"
 		};
 		item->ItemPrice = 68;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
 		Append_Item(item);
@@ -806,6 +807,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		};
 
 		item->ItemPrice = 10;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
@@ -829,6 +831,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		};
 
 		item->ItemPrice = 30;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
@@ -850,6 +853,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 			L"DIC_InfoFrame_DarkBow"
 		};
 		item->ItemPrice = 68;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 		Append_Item(item);
 		break;
