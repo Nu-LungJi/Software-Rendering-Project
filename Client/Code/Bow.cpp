@@ -52,11 +52,12 @@ INT Bow::Update_GameObject(const _float& _DT)
 		_attackDelay = 0.4 * (*_playerAttackSpped);
 		if (_type == BowType::WindBow) _attackDelay = 1.f * (*_playerAttackSpped);
 
+		_Stat.curArrow = min(_Stat.curArrow, _Stat.maxArrow);
 		_Stat.maxArrow *= (player->Get_AddMaxArrow());
 		_chargingTime = 2.f;
 		_chargingTime *= *_playerChargingSpeed;
 
-		_Stat.curArrow = max(0, _Stat.maxArrow);
+		
 
 		float alphaSpeed = 3.f;
 
