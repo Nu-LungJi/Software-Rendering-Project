@@ -355,18 +355,12 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
                 _vec3 vPos = m_pTileInfo->Get_NextPos();
                 if (TileManager::GetInstance()->Get_PotalBgmStart())
                 {
-<<<<<<< HEAD
-                  
+
                     if(m_pTileInfo->Get_NextStage() != TILE_STAGE::TILE_DOCHERBOSS)
                      SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
                       
                     TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
-=======
-                    if (m_pTileInfo->Get_NextStage() != TILE_STAGE::TILE_DOCHERBOSS) {
-                        SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
-                        TileManager::GetInstance()->Set_PotalBgmStart(FALSE);
-                    }
->>>>>>> cdd6c4a8470c96d1cd86ea0db2a343228998207c
+
                 }
 
                 dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos(vPos, false, 0, false);
@@ -424,7 +418,7 @@ void CXZTile::Tile_Gasi_Destory(CONST FLOAT& _DT)
         EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::UI, TileDestoryEffect::Create(GRPDEV, OBJECT_DESTORY::POTALEFFECT, 7, Pos, Scale, Rot));
         if (m_pTileInfo->Get_TileStage() == TILE_STAGE::TILE_STAGE4)
         {
-            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Lightning_Critical.wav", CHANNELID::SOUND_EFFECT04, 0.2f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Lightning_Critical.wav", CHANNELID::SOUND_EFFECT04, 0.4f);
         }
         else
          SoundManager::GetInstance()->Play_Sound_Once(L"Object/Hit_Wood_Normal_03.wav", CHANNELID::SOUND_EFFECT03, 0.2f);

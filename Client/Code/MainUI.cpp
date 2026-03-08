@@ -409,7 +409,7 @@ VOID MainUI::Reset_Relic()
 VOID MainUI::Set_RelicIcon()
 {
 	SpriteINFO* sprite = nullptr;
-	
+	_float Posy(610.f), PosX(560.f),PivotX(40.f);
 	for (int i = 0; i < 4; i++) {
 		int idx = PlayerObject->Get_Relic_ImgIdx(i);
 		if (idx == -1) continue;
@@ -418,27 +418,27 @@ VOID MainUI::Set_RelicIcon()
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info1");			
 			_relicIcons[i] = sprite;
 			_relicIcons[i]->Set_Visible(TRUE);
-      _relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicIcons[i]->Set_Opacity(255);
+			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar1");			
 			_relicBars[i] = sprite;
 			_relicBars[i]->Set_Visible(TRUE);
 			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 		case 1:
 			sprite = Component_Sprite->Get_Texture(L"Relic_Info2");
 			_relicIcons[i] = sprite;
 			_relicIcons[i]->Set_Visible(TRUE);
 			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar2");
 			_relicBars[i] = sprite;
 			_relicBars[i]->Set_Visible(TRUE);
 			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			break;
 		case 2:
@@ -446,13 +446,13 @@ VOID MainUI::Set_RelicIcon()
 			_relicIcons[i] = sprite;
 			_relicIcons[i]->Set_Visible(TRUE);
 			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar3");
 			_relicBars[i] = sprite;
 			_relicBars[i]->Set_Visible(TRUE);
 			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			break;
 		case 3:
@@ -460,13 +460,13 @@ VOID MainUI::Set_RelicIcon()
 			_relicIcons[i] = sprite;
 			_relicIcons[i]->Set_Visible(TRUE);
 			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
 			sprite = Component_Sprite->Get_Texture(L"Relic_Bar4");
 			_relicBars[i] = sprite;
 			_relicBars[i]->Set_Visible(TRUE);
 			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
+			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 			break;		
 		default:
 			break;

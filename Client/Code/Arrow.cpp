@@ -610,6 +610,14 @@ void Arrow::Destory_Tile()
           
             if (vPos.x > vTilePos.x - 1 && vPos.x < vTilePos.x + 1 && vPos.z > vTilePos.z -1 && vPos.z < vTilePos.z + 1 )
             {
+                _int i = 2 + rand() % 2;
+                if (dynamic_cast<TileInfo*>(iter->Get_Component(COMPONENT_TYPE::COMPONENT_TILEINFO))->Get_TileStateName() == TILE_STATE::STATE_DESTORY)
+                {
+                    Player* pPlayer = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+                    pPlayer->Set_Coin(pPlayer->Get_Coin() + i);
+
+                }
+                
                 _hp = 0;
                 dynamic_cast<CXZTile*>(iter)->Set_Destory();
             }
