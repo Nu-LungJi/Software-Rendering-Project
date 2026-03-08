@@ -23,7 +23,7 @@ HRESULT StageBlackOut::Ready_Effect(_vec3* vPos, _bool bDocheol) {
 	m_bRestart = true;
 	m_fVolume01 = 0.5f;
 	m_fVolume02 = 0.f;
-	m_fVolume03 = 0.f;
+	m_fVolume03 = 0.5f;
 	m_bCheonLog = true;
 	return S_OK;
 }
