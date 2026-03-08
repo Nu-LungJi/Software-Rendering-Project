@@ -637,6 +637,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
 
     wstring Tag = _Other->Get_ObjectTag();
     int hp = Component_Collider->Get_Hp();
+    if (hp <= 0)    return false;
 
     std::random_device rd;
     std::uniform_int_distribution<int> distribution(0, 100);

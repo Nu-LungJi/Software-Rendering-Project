@@ -78,13 +78,13 @@
 #define SCORPIONEVILSOUL_SPEED					2.f			//	이속
 #define SCORPIONEVILSOUL_HP						100.f		//	체력
 
-#define SCORPIONEVILSOUL_TRACKINGDIS			20.f		//	추적&이동	시작거리
+#define SCORPIONEVILSOUL_TRACKINGDIS			15.f		//	추적&이동	시작거리
 #define SCORPIONEVILSOUL_TRACKINGMIN			10.f			//  이동			종료거리
 #define SCORPIONEVILSOUL_TRACKING_TIME			1.f			//	공격 쿨타임
 #define SCORPIONEVILSOUL_LOST_TIME				1.f			//	추격 실패 시간				TRACKING	-> IDLE
 
-#define SCORPIONEVILSOUL_CASTING_TIME			1.5f		//	선딜				CASTING		-> CHANNELING
-#define SCORPIONEVILSOUL_CHANNELING_TIME		0.5f		//	후딜
+#define SCORPIONEVILSOUL_CASTING_TIME			1.f		//	선딜				CASTING		-> CHANNELING
+#define SCORPIONEVILSOUL_CHANNELING_TIME		4.f		//	후딜
 
 #define SCORPIONEVILSOUL_BULLET_TYPE			ScorpionBullet			//	총알 종류
 #define SCORPIONEVILSOUL_BULLET_SPEEDMULT		1.f						//	총알 속도 배수
@@ -348,7 +348,11 @@ public:
 	static	FLOAT			BillBoard(Transform* TransCom, LPDIRECT3DDEVICE9 _GRPDEV, _vec3 vDir = { 1.f, 0.f,0.f }, BOOL OffSet = true);
 	static	HRESULT			Flip_Horizontal(Transform* TransCom, _vec3* pDir, _float Buffer);
 	static	VOID			BillBoard_Standard(LPDIRECT3DDEVICE9 GRPDEV, Transform* Component_Transform);
+
+
+public:
 	static	VOID			Destory_Tile(GameObject* pObj);
+	static	BOOL			Damaged_by_Arrow(GameObject* _pArrow, GameObject* pTarget);
 	
 public:
 	static	HRESULT			Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos);

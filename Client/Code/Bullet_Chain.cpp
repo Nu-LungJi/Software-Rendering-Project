@@ -122,12 +122,8 @@ Bullet_Chain* Bullet_Chain::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Bullet_Chain::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-	if (Tag == L"PlayerArrow") {
 
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player") {
+	if (Tag == L"Player") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
 		return true;
 	}

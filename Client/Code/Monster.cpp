@@ -217,6 +217,28 @@ VOID Monster::Destory_Tile(GameObject* pObj)
 	}
 }
 
+BOOL Monster::Damaged_by_Arrow(GameObject* _pArrow, GameObject* pTarget)
+{
+	if (COLLIDER(_pArrow)->Get_Hp() <= 0.f) return false;
+	
+	int iResult = 0;
+
+	Arrow* pArrow = static_cast<Arrow*>(_pArrow);
+	ArrowType eArrowType = pArrow->Get_ArrowType();
+
+	if (pArrow->Get_DamageTriggerCnt() == 0)
+		++iResult;
+	else if (eArrowType == ArrowType::EvilHeadCharging || eArrowType == ArrowType::IceCharging)
+		++iResult;
+
+	if (iResult) {
+		COLLIDER(pTarget)->Set_Hp(COLLIDER(pTarget)->Get_Hp() - COLLIDER(_pArrow)->Get_Att());
+		pArrow->Add_DamageTriggerCnt();
+	}
+
+	return iResult;
+}
+
 HRESULT Monster::Minigame_Update(const _float& _DT, MONINFO* _pInfo, _vec3* vPos)
 {
 

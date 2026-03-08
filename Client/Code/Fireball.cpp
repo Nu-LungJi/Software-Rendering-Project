@@ -32,7 +32,7 @@ INT	Fireball::Update_GameObject(const _float& _DT)
 		vPos += m_tInfo.vDirection * MYSCALE->x * 0.5f;
 
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, vPos, MYSCALE->x * 0.5f, 1.2f, false, m_tInfo.vDirection);
-
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/FireballDeath.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
 		EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
 
 		m_tInfo.bTrigger[0] = false;
@@ -109,13 +109,12 @@ Fireball* Fireball::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 BOOL Fireball::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
-	if (Tag == L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
-		return true;
+
+	if (Tag == L"Player") {
+		if (COLLIDER(_Other)->Get_Hp() > 0) {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+			return TRUE;
+		}
 	}
 	return FALSE;
 }

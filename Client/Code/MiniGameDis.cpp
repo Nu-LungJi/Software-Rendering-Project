@@ -36,14 +36,14 @@ INT MiniGameDis::Update_GameObject(const FLOAT& _DT)
 	wstring DisStr = L"";
 
 	m_fTimer += _DT;
-	if (m_fTimer > 1.f) {
+	if (m_fTimer > 2.f) {
 		if (!m_bSound[0]) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"MiniGameDis.wav", CHANNELID::SOUND_EFFECT08, 1.f);
 			m_bSound[0] = 1;
 		}
 		DisStr += L"남은 거리 :";
 	}
-	if (m_fTimer < 2.f) {}
+	if (m_fTimer < 3.f) {}
 	else if (m_fTimer < 4.f) {
 		if (!m_bSound[1]) {
 			SoundManager::GetInstance()->Play_Sound_Once(L"MiniGameDis.wav", CHANNELID::SOUND_EFFECT08, 1.f);
