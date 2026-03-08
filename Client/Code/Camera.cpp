@@ -82,25 +82,25 @@ INT	CameraObject::Update_GameObject(const _float& _DT) {
 			switch (*m_pEventTrigger)
 			{
 			case 0:
-				vNewTargetEye = { 0.f,10.f,-10.f };
+				vNewTargetEye = { 0.f,5.f,-5.f };
 				break;
 			case 1:
-				vNewTargetEye = { 10.f,0.f,-10.f };
+				vNewTargetEye = { 5.f,0.f,-5.f };
 				break;
 			case 2:
-				vNewTargetEye = { 0.f, 16.f, 0.f };
+				vNewTargetEye = { 0.f, 8.f, 0.f };
 				break;
 			case 3:
-				vNewTargetEye = { 10.f, 0.f, -10.f };
+				vNewTargetEye = { 5.f, 0.f, -5.f };
 				break;
 			case 4:
-				vNewTargetEye = { 0.f,-10.f,-10.f };
+				vNewTargetEye = { 0.f,-5.f,-5.f };
 				break;
 			case 5:
-				vNewTargetEye = { 0.f, 0.f, 16.f };
+				vNewTargetEye = { 0.f, 0.f, 8.f };
 				break;
 			case 6:
-				vNewTargetEye = { 0.f,-10.f,-10.f };
+				vNewTargetEye = { 0.f,-5.f,-5.f };
 			}
 
 			if (m_vTargetEye != vNewTargetEye) {

@@ -172,7 +172,7 @@ HRESULT MiniGameScene::Start_MiniGame()
 	m_pMainUI = nullptr;
 	
 	// 디버그 키 진입 하고싶을때 킬것
-	//SceneManager::GetInstance()->Set_CurrentScene(this);
+	SceneManager::GetInstance()->Set_CurrentScene(this);
 	return S_OK;
 }
 
