@@ -4,7 +4,7 @@
 
 IMPLEMENT_SINGLETON(CollisionManager)
 
-CollisionManager::CollisionManager()	: CollisionLine_Visibility(TRUE) {}
+CollisionManager::CollisionManager()	: CollisionLine_Visibility(FALSE) {}
 CollisionManager::~CollisionManager()									 {}
 
 INT CollisionManager::Update_CollisionManager() {

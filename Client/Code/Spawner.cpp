@@ -190,13 +190,18 @@ void Spawner::Frame_Move(const FLOAT& _DT)
 					}
 				}
 				else {
-
-					if (Crash_Player() != nullptr && KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z))
-					{
-						dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
-						dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
-						Set_ObjectDead(TRUE);
+					if (Crash_Player() != nullptr) {
+						dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - Ç³¼öÀÇ È°", TRUE);
+						if (KeyManager::GetInstance()->KEY_STATE_DOWN(DIK_Z)) {
+							dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Buy_item(6);
+							dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Buy_Item(6);
+							ItemINFO* PungSuArrow = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"PlayerInven"))->Get_Item(6);
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableItemPopUP(TRUE, PungSuArrow, L"DIC_InfoFrame_DarkBow");
+							dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+							Set_ObjectDead(TRUE);
+						}
 					}
+					
         }
 		}
 		break;
@@ -291,7 +296,6 @@ void Spawner::CL_Spawn()
 	
 	if (!m_bTrigger)
 	{
-		SoundManager::GetInstance()->Stop_AllSound();
 		dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"))->Set_CameraMove(true);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->CheonLog_Respawn(0);
 		dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Camera"))->Set_Obj(this, vPos);

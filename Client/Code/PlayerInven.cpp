@@ -302,7 +302,6 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it06 = new ItemINFO;
 	it06->ItemDesc = {
-		L"" ,
 		L"헤르메스의 신발",
 		L"아티펙트/노말",
 
@@ -311,9 +310,8 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"",
 
 		L"",
-
-
 		L"" ,
+
 		L"DIC_InvenFrame_Relic_Item1",
 		L"DIC_InfoFrame_Relic_Item1"
 	};
@@ -323,7 +321,6 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it07 = new ItemINFO;
 	it07->ItemDesc = {
-		L"",
 		L"호크룩스",
 		L"아티펙트/노말",
 
@@ -338,11 +335,11 @@ HRESULT PlayerInven::Item_Initialize() {
 		L"DIC_InfoFrame_Relic_Horcrux"
 	};
 	it07->ItemPrice = 70;
+	it07->TEXTURE = Component_Sprite->Get_Texture(it07->ItemDesc[it07->INFFRAME])->TEXTURE;
 	it07->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
 
 	ItemINFO* it03 = new ItemINFO;
 	it03->ItemDesc = {
-		L"",
 		L"선현궁",
 		L"무기/노말",
 
@@ -363,7 +360,6 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it04 = new ItemINFO;
 	it04->ItemDesc = {
-		L"",
 		L"선현궁",
 		L"무기/노말",
 
@@ -384,7 +380,6 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it05 = new ItemINFO;
 	it05->ItemDesc = {
-		L"",
 		L"선현궁",
 		L"무기/노말",
 
@@ -405,7 +400,6 @@ HRESULT PlayerInven::Item_Initialize() {
 
 	ItemINFO* it08 = new ItemINFO;
 	it08->ItemDesc = {
-		L"",
 		L"선현궁",
 		L"무기/노말",
 
@@ -645,10 +639,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"EQP_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[IDX]->ItemDesc[7])->TEXTURE;
 	}
 	if (Equip_ItemList[EquipedItemIndex - 1] != nullptr && FocusOn_EquipedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[9])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[8])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Equip_ItemList[EquipedItemIndex - 1]->ItemDesc[1];
@@ -675,10 +669,10 @@ HRESULT PlayerInven::Display_ItemInfo() {
 			Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = nullptr;
 			continue;
 		}
-		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[8])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INV_ItemSpace" + to_wstring(IDX + 1))->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[IDX]->ItemDesc[7])->TEXTURE;
 	}
 	if (Saved_ItemList[SavedItemIndex - 1] != nullptr && FocusOn_SavedItem) {
-		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[9])->TEXTURE;
+		Component_Sprite->Get_Texture(L"INFO_ItemSpace")->TEXTURE = Component_Sprite->Get_Texture(Saved_ItemList[SavedItemIndex - 1]->ItemDesc[8])->TEXTURE;
 
 		ItemInfo_Text[0]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[0];
 		ItemInfo_Text[1]->Text = Saved_ItemList[SavedItemIndex - 1]->ItemDesc[1];
@@ -774,7 +768,6 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 3:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"",
 			L"얼음 정령의 활",
 			L"무기/희귀",
 
@@ -790,6 +783,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 			L"DIC_InfoFrame_IceBow"
 		};
 		item->ItemPrice = 68;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 
 		Append_Item(item);
@@ -797,7 +791,6 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 4:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"",
 			L"맥스 퀴버",
 			L"유물/희귀",
 
@@ -814,6 +807,7 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		};
 
 		item->ItemPrice = 10;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
@@ -821,7 +815,6 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 	case 5:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"",
 			L"라이트닝 글러브",
 			L"유물/희귀",
 
@@ -838,13 +831,13 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		};
 
 		item->ItemPrice = 30;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
 		Append_Item(item);
 		break;
 	case 6 :
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"",
 			L"풍수의 활",
 			L"무기/희귀",
 
@@ -860,13 +853,13 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 			L"DIC_InfoFrame_DarkBow"
 		};
 		item->ItemPrice = 68;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
 		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
 		Append_Item(item);
 		break;
 	case 7:
 		item = new ItemINFO;
 		item->ItemDesc = {
-			L"",
 			L"파르쿠나스",
 			L"무기/희귀",
 
@@ -893,6 +886,156 @@ HRESULT PlayerInven::Buy_Item(INT itemIdx)
 		Comp->Set_Visible(FALSE);
 
 	return S_OK;
+}
+ItemINFO* PlayerInven::Get_Item(INT itemIdx) {
+	ItemINFO* item = nullptr;
+	switch (itemIdx) {
+	case 0:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"헤르메스의 신발",
+			L"아티펙트/노말",
+
+			L"이동속도가 20% 증가합니다.",
+			L"",
+			L"",
+
+			L"",
+			L"" ,
+
+			L"DIC_InvenFrame_Relic_Item1",
+			L"DIC_InfoFrame_Relic_Item1"
+		};
+		item->ItemPrice = 70;
+		item->TEXTURE = Component_Sprite->Get_Texture(item->ItemDesc[item->INFFRAME])->TEXTURE;
+		item->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
+		return item;
+	case 1:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"호크룩스",
+			L"아티펙트/노말",
+
+			L"공격력이 10 증가합니다.",
+			L"",
+			L"",
+
+			L"",
+			L"" ,
+
+			L"DIC_InvenFrame_Relic_Horcrux",
+			L"DIC_InfoFrame_Relic_Horcrux"
+		};
+		item->ItemPrice = 70;
+		item->ItemType = (int)ITEM_TYPE::NORMAL_UTILITY;
+
+		return item;
+	case 3:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"얼음 정령의 활",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"일반 공격력 14 - 16",
+			L"공격 속도 2",
+
+			L"얼음의 화살 : 3 발의 얼음의 화살을 발사합니다. \n화살에 맞은 적에게 3초 간 빙결을 부여합니다.",
+
+			L"\"얼음정령의 힘이 담긴 활. 쥐고 있음 손이 얼어버릴 것 같다.",
+
+			L"DIC_InvenFrame_IceBow",
+			L"DIC_InfoFrame_IceBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+
+		return item;
+	case 4:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"맥스 퀴버",
+			L"유물/희귀",
+
+			L"",
+			L"유물/희귀",
+			L"최대 화살 개수 2배 증가",
+
+			L"",
+
+			L"",
+
+			L"DIC_InvenFrame_Relic_quiver",
+			L"DIC_InfoFrame_Relic_quiver"
+		};
+
+		item->ItemPrice = 10;
+		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
+		return item;
+
+	case 5:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"라이트닝 글러브",
+			L"유물/희귀",
+
+			L"",
+			L"유물/희귀",
+			L"공격속도 2배 증가",
+
+			L"",
+
+			L"",
+
+			L"DIC_InvenFrame_Relic_Glove",
+			L"DIC_InfoFrame_Relic_Glove"
+		};
+
+		item->ItemPrice = 30;
+		item->ItemType = (int)ITEM_TYPE::RARE_UTILITY;
+		return item;
+	case 6:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"풍수의 활",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"이동 속도 + 20%",
+			L"공격 속도 2.5",
+
+			L"그냥 빨라집니다.",
+
+			L"",
+
+			L"DIC_InvenFrame_DarkBow",
+			L"DIC_InfoFrame_DarkBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		return item;
+	case 7:
+		item = new ItemINFO;
+		item->ItemDesc = {
+			L"파르쿠나스",
+			L"무기/희귀",
+
+			L"일반 공격",
+			L"일반 공격력 24 ~ 26",
+			L"공격 속도 2.5",
+
+			L"치명타 확률이 +3% 증가합니다.",
+
+			L"" ,
+
+			L"DIC_InvenFrame_MichaelBow",
+			L"DIC_InfoFrame_MichaelBow"
+		};
+		item->ItemPrice = 68;
+		item->ItemType = (int)ITEM_TYPE::RARE_WEAPON;
+		return item;
+	}
+	return nullptr;
 }
 SpriteINFO* PlayerInven::Get_InvenFrameSprite(wstring _TAG) {
 	for (auto& INV : ItemDictionary_InvenFrame) {

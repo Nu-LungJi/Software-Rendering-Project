@@ -90,7 +90,8 @@ HRESULT Cheonlog::Ready_GameObject(_vec3 vPos) {
 		pAttack->Set_ObjectType(GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
 		m_vecPoolBullet[(int)LEAF_ATTACK::LEAF_FOUR].push_back(pAttack);
 	}
-	
+
+	SoundManager::GetInstance()->Stop_AllSound();
 	SoundManager::GetInstance()->Play_Sound(L"CheonLog/Stage1-2_chunlog_normal__Start.wav", CHANNELID::SOUND_BGM01, 0.4f,FALSE);
 	
 	return S_OK;

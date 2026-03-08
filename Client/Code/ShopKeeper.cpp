@@ -104,8 +104,13 @@ BOOL ShopKeeper::OnCollisionEnter(GameObject* _Other) {
 	return FALSE;
 }
 BOOL ShopKeeper::OnCollisionStay(GameObject* _Other) {
-	if (KEY_DOWN(DIK_E))
-		Enable_Interaction = TRUE;
+	if (_Other->Get_ObjectTag() == L"Player") {
+		static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"대화하기 - 상점 주인", TRUE);
+		if (KEY_DOWN(DIK_E))
+			Enable_Interaction = TRUE;
+		return TRUE;
+	}
+
 
 	return FALSE;
 }
@@ -122,7 +127,7 @@ VOID ShopKeeper::TalkWithShopKeeper(FLOAT _DT) {
 	if (Enable_Interaction) {
 		if (CamLock == FALSE) {
 			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SCamDest({ 22.767F, 17.05f, 112.95f });
-			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Ready_SmoothCamera(TRUE);
+			static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SmoothCamera(TRUE);
 			CamLock = TRUE;
 		}
 		if (ObjectTAG == L"ShopNPC") {

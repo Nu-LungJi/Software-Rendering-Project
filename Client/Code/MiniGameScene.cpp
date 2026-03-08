@@ -51,17 +51,6 @@ INT	 MiniGameScene::Update_Scene(CONST FLOAT& _DT) {
 		}
 	
 	}
-	
-	if (!TileManager::GetInstance()->Get_Loading())
-	{
-		TileManager::GetInstance()->Set_Stage();
-		TileManager::GetInstance()->Stage_Update(0.1);
-
-		TileManager::GetInstance()->Set_EndLoading(TRUE);
-		TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
-
-		End_MiniGame();
-	}
 
 	CollisionManager::GetInstance()->Update_CollisionManager();
 	return Scene::Update_Scene(_DT);
@@ -180,37 +169,44 @@ HRESULT MiniGameScene::End_MiniGame()
 {
 	if (!m_bEffect)
 	{
-		dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 60.671,0.5f,43.405 }, false, 0, false);
 		TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+
+		dynamic_cast<StageBlackOut*>(EffectManager::GetInstance()->Get_Scene())->Set_Pos({ 60.671,0.5f,43.405 }, false, 0, false);
 		m_bEffect = true;
 	}
+	
 	if (!TileManager::GetInstance()->Get_Loading())
 	{
+		TileManager::GetInstance()->Set_BeforeStage();
 		TileManager::GetInstance()->Set_Stage();
 		TileManager::GetInstance()->Stage_Update(0.1);
 		TileManager::GetInstance()->Set_EndLoading(TRUE);
 		TileManager::GetInstance()->Set_PotalBgmStart(TRUE);
-	}
 
-	if (nullptr != Monster::Get_Player())
-		Monster::Get_Player()->MiniGameExit();
-	if (nullptr != Monster::Get_Camera())
-		Monster::Get_Camera()->Exit_MiniGame();
+		if (nullptr != Monster::Get_Player())
+			Monster::Get_Player()->MiniGameExit();
+		if (nullptr != Monster::Get_Camera())
+			Monster::Get_Camera()->Exit_MiniGame();
 
-	for (auto& pLayer : LayerList)
-	{
-		for (auto pObj : *pLayer->Get_GameObjectList()) {
-			for (auto& pObj : *pLayer->Get_GameObjectList()) {
-				CollisionManager::GetInstance()->Delete_ColliderObject(pObj);
+		for (auto& pLayer : LayerList)
+		{
+			for (auto pObj : *pLayer->Get_GameObjectList()) {
+				for (auto& pObj : *pLayer->Get_GameObjectList()) {
+					CollisionManager::GetInstance()->Delete_ColliderObject(pObj);
+				}
 			}
 		}
+		CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
+		SoundManager::GetInstance()->Stop_AllSound();
+		m_pMainUI->Set_EnableDisplayHPBar(false);
+		m_pMainUI = nullptr;
+		MonsterManager::GetInstance()->Release_Static_Batich();
+		SoundManager::GetInstance()->Stop_AllSound();
+		SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, 0.f, FALSE);
+		SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
+	
 	}
-	CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
-	SoundManager::GetInstance()->Stop_AllSound();
-	m_pMainUI->Set_EnableDisplayHPBar(false);
-	m_pMainUI = nullptr;
-	MonsterManager::GetInstance()->Release_Static_Batich();
-	SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
+
 	return S_OK;
 }
 HRESULT MiniGameScene::Ready_Enviroment_Layer() {

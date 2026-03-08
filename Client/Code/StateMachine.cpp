@@ -63,7 +63,7 @@ VOID AppearState::FSM_StateEnter(GameObject* _Owner) {
 	static_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"))->Set_PlayerStop(TRUE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(TRUE, 2.f);
 	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SCamDest({63.6f, 18.55f, 95.105f });
-	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Ready_SmoothCamera(TRUE);
+	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SmoothCamera(TRUE);
 }
 VOID AppearState::FSM_StateUpdate(GameObject* _Owner) {
 	if (dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_CurrentIndex() == 4 && dynamic_cast<FinalBoss*>(_Owner)->Get_Animation_PreviousIndex() != 4) {
@@ -79,7 +79,7 @@ VOID AppearState::FSM_StateExit(GameObject* _Owner) {
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_FadeOption(FALSE, 1.f);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_EnableDisplayHPBar(TRUE);
 	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Speech_PopUp(L"조심해요 연! 굉장히 위험한 \n사념체에요, 빠르게 처치하죠!");
-	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Ready_SmoothCamera(FALSE);
+	static_cast<CameraObject*>(SceneManager::GetInstance()->Get_GameObject(L"Camera"))->Set_SmoothCamera(2);
 }
 
 VOID DeadState::FSM_StateEnter(GameObject* _Owner) {

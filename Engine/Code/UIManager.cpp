@@ -38,7 +38,7 @@ FontObject* UIManager::Add_FontSprite(LPDIRECT3DDEVICE9 _GRPDEV, wstring _Text, 
     FontInfo.Weight = FO->TextWeight;
     FontInfo.CharSet = DEFAULT_CHARSET;
     FontInfo.OutputPrecision = OUT_TT_PRECIS;
-    FontInfo.Quality = ANTIALIASED_QUALITY;
+    FontInfo.Quality = CLEARTYPE_QUALITY;// ANTIALIASED_QUALITY;
     FontInfo.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 
     lstrcpyW(FontInfo.FaceName, FO->FontType.c_str());
@@ -82,8 +82,8 @@ VOID UIManager::Render_FontObjects() {
     for (auto& TXT : FontList) {
         if (!TXT.second->Get_Active()) continue;
         if (TXT.second->Visible == TRUE) {
-            FLOAT XPos = TXT.second->Position.x;
-            FLOAT YPos = TXT.second->Position.y;
+            FLOAT XPos = TXT.second->Position.x - 0.5f;
+            FLOAT YPos = TXT.second->Position.y - 0.5f;
             RECT RT = { XPos, YPos, XPos + 1, YPos + 1 };
             TXT.second->DXFont->DrawTextW(DXSprite, TXT.second->Text.c_str(), -1, &RT, TXT.second->FORMAT | DT_NOCLIP, TXT.second->TextColor);
         }

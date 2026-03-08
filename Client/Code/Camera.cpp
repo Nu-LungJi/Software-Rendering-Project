@@ -445,7 +445,8 @@ void CameraObject::CheonLog_Respawn(CONST FLOAT& _DT)
 
 }
 VOID CameraObject::SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest) {
-	if (FocusOn_Boss) {
+	if		(FocusOn_Boss == 3) return;
+	else if (FocusOn_Boss == 1) {
 		Focusing_Timer += _DT;
 
 		if (Focusing_Timer < 0.15f) {
@@ -464,17 +465,50 @@ VOID CameraObject::SmoothCameraMove(CONST FLOAT& _DT, _vec3 _EyeDest) {
 			AtVec.x = OriginCameraAt.x + ActionCameraVec.x * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 			AtVec.z = OriginCameraAt.z + ActionCameraVec.z * (1.f - (2.f - (Focusing_Timer - 1.f)) / 2.f);
 		}
+		else if (Focusing_Timer > 3.f) {
+			Focusing_Timer = 0.f;
+		}
+	}
+	else if (FocusOn_Boss == 2) {
+		Focusing_Timer += _DT;
+
+		if (Focusing_Timer > 1.f && Focusing_Timer < 2.f) {
+			if (PlayerObject == nullptr)
+				PlayerObject = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_GameObject(L"Player"));
+
+			_vec3* playerPos = (dynamic_cast<Transform*>(PlayerObject->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM)))->Get_Position();
+
+			_vec3 eyeCalc = { 0.f, DefaultEyeVec.y - 1.f, -5.f };
+			_vec3 atCalc = { 0.f, DefaultAtVec.y - 1.f, -4.f };
+
+			_vec3 CurrentEye = { 63.6f, 18.55f, 95.105f };
+			_vec3 CurrentAt = { 63.6f, 15.05f, 96.105f };
+
+			_vec3 CameraEyeDEST = (*playerPos) + eyeCalc;//_EyeDest;// 
+			_vec3 CameraAtDEST	= (*playerPos) + atCalc;// { _EyeDest.x, _EyeDest.y - 3.5f, _EyeDest.z + 1.f };
+			_vec3 ActionCameraVec = CameraEyeDEST - CurrentEye;
+
+			EyeVec.x = CurrentEye.x + ActionCameraVec.x * (1.f - (1.f - (Focusing_Timer - 1.f)));
+			EyeVec.z = CurrentEye.z + ActionCameraVec.z * (1.f - (1.f - (Focusing_Timer - 1.f)));
+
+			AtVec.x = CurrentAt.x + ActionCameraVec.x * (1.f - (1.f - (Focusing_Timer - 1.f)));
+			AtVec.z = CurrentAt.z + ActionCameraVec.z * (1.f - (1.f - (Focusing_Timer - 1.f)));
+		}
+		else if (Focusing_Timer > 2.f) {
+			Focusing_Timer = 0.f;
+			Set_SmoothCamera(FALSE);
+		}
 	}
 }
-VOID CameraObject::Ready_SmoothCamera(BOOL _FOB) {
+VOID CameraObject::Set_SmoothCamera(INT _FOB) {
 	FocusOn_Boss = _FOB;
-	if (FocusOn_Boss) {
+	if (FocusOn_Boss == TRUE) {
 		MouseCheck = FALSE;
 		Velocity_Lock = TRUE;
 		Camera_Move = TRUE;
 		Button_Lock = TRUE;
 	}
-	else {
+	else if (FocusOn_Boss == FALSE) {
 		MouseCheck = FALSE;
 		Velocity_Lock = FALSE;
 		Camera_Move = FALSE;

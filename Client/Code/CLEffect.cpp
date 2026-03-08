@@ -451,13 +451,24 @@ void CLEffect::Drop_Item(const _float _DT)
 
 BOOL	CLEffect::OnCollisionStay(GameObject* _Other)
 {
-	if (_Other->Get_ObjectTag() == L"Player" && KeyManager::GetInstance()->Get_KeyState(DIK_E))
-	{
-		m_bDead = true;
-		return true;
+	if (_Other->Get_ObjectTag() == L"Player") {
+		if (KeyManager::GetInstance()->Get_KeyState(DIK_E)) {
+			dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+			m_bDead = true;
+			return true;
+		}
+		else if(m_bDead == FALSE){
+			dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"입장 - 파괴된 천계 입구", TRUE);
+		}
 	}
-
+	
 	return false;
+}
+BOOL CLEffect::OnCollisionExit(GameObject* _Other) {
+	if (_Other->Get_ObjectTag() == L"Player") {
+		dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+	}
+	return true;
 }
 HRESULT	CLEffect::Component_Initialize(CL_EFFECT eEffect) {
 	
