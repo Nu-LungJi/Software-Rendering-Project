@@ -437,8 +437,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 if (_targetPos != nullptr) {
                     effectPos = *_targetPos;
                 }
-                effectPos.y += 2.f;
-                effectPos.z += 5.f;
+                effectPos.z += 7.f;
+
+                if (_target != nullptr && _target->Get_ObjectTag() == L"Docheol")effectPos.z -= 7.f;
+                if (_target != nullptr && _target->Get_ObjectTag() == L"CheonLog")effectPos.z -= 2.f;
+
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 0.8f, Size, false);
                 SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Hit_Lightning_Strike.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
                 _ThunderDelay = 0.f;

@@ -1054,7 +1054,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 void Player::SKILL_NONE(const _float& _DT)
 {
 	_skillTimer = 0.f;
-	if (KEY_DOWN(DIK_Q) && _token > 0) {
+	if (KEY_DOWN(DIK_Q)) {
 		_vec3 Size = { 0.2f, 0.2f, 0.2f };
 		_NPC_Pos = *Component_Transform->Get_Position();
 		_NPC_Pos.y += 1.f;

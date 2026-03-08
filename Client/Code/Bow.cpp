@@ -198,6 +198,8 @@ VOID Bow::Render_GameObject()
 
 		GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
+		GRPDEV->SetRenderState(D3DRS_ZENABLE, FALSE);
+
 		SetGrahpic();
 
 		Component_Buffer->Render_Buffer();
@@ -208,6 +210,7 @@ VOID Bow::Render_GameObject()
 		GRPDEV->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
 		GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 		GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		GRPDEV->SetRenderState(D3DRS_ZENABLE, TRUE);
 	}
 	
 	return VOID();
