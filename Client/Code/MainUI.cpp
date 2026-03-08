@@ -62,6 +62,8 @@ HRESULT	MainUI::Ready_GameObject() {
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"));
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 
+	Set_RelicIcon();
+
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -72,7 +74,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	PopUp_Speech_Bubble_Skill(SpeechBubble_Text, _DT, skillType);
   
 	Timer02 += _DT; 
-	if(Timer02 > 0.04f){
+	if(Timer02 > 0.02f){
 		Player_KeyModify();
 		Player_MoneyModify();
 		Player_CrystalModify();
@@ -100,11 +102,8 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	}
 
 	Reset_Relic();
-	Set_RelicIcon();
+	
 
-	if (KEY_DOWN(DIK_J)) {
-		Enable_BossClearUI = TRUE;
-	}
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -418,85 +417,56 @@ VOID MainUI::Reset_Relic()
 	{
 		int relicIdx = PlayerObject->Get_Relic_ImgIdx(i);
 
-		if (_relicIcons[i] == nullptr) continue;
 		if (relicIdx == -1)
 		{
-			_relicIcons[i]->Set_Visible(FALSE);
-			if (_relicBars[i]) _relicBars[i]->Set_Visible(FALSE);
+			if (_relicIcons[i]->OPACITY > 2 && _relicIcons[i]->VISIBLE == TRUE) {
+				_relicIcons[i]->OPACITY -= 3;
+			}
+			else {
+				_relicIcons[i]->OPACITY = 0;
+				_relicIcons[i]->VISIBLE = FALSE;
+			}
+			if (_relicBars[i]->OPACITY > 2 && _relicBars[i]->VISIBLE == TRUE) {
+				_relicBars[i]->OPACITY -= 3;
+			}
+			else {
+				_relicBars[i]->OPACITY = 0;
+				_relicBars[i]->VISIBLE = FALSE;
+			}
 		}
 		else
 		{
-			_relicIcons[i]->Set_Visible(TRUE);
-			if (_relicBars[i]) _relicBars[i]->Set_Visible(TRUE);
+			if (_relicIcons[i]->VISIBLE == FALSE) _relicIcons[i]->VISIBLE = TRUE;
+			if (_relicBars[i]->VISIBLE == FALSE)  _relicBars [i]->VISIBLE = TRUE;
+			if (_relicIcons[i]->OPACITY < 253 &&  _relicIcons[i]->VISIBLE == TRUE) {
+				_relicIcons[i]->OPACITY += 3;
+			}
+			else {
+				_relicIcons[i]->OPACITY = 255;
+			}
+			if (_relicBars[i]->OPACITY < 253 && _relicBars[i]->VISIBLE == TRUE) {
+				_relicBars[i]->OPACITY += 3;
+			}
+			else {
+				_relicBars[i]->OPACITY = 255;
+			}
 		}
 	}
 }
 
 VOID MainUI::Set_RelicIcon()
 {
-	SpriteINFO* sprite = nullptr;
-	_float Posy(610.f), PosX(560.f),PivotX(40.f);
+	_float Posy(610.f), PosX(560.f), PivotX(40.f);
 	for (int i = 0; i < 4; i++) {
-		int idx = PlayerObject->Get_Relic_ImgIdx(i);
-		if (idx == -1) continue;
-		switch (idx) {
-		case 0:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info1");			
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
+		_relicIcons[i] = Component_Sprite->Get_Texture(L"Relic_Info" + to_wstring(i + 1));
+		_relicIcons[i]->Set_Visible(FALSE);
+		_relicIcons[i]->Set_Opacity(0);
+		_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar1");			
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-		case 1:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info2");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar2");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-			break;
-		case 2:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info3");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar3");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-			break;
-		case 3:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info4");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar4");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
-			break;		
-		default:
-			break;
-		}
+		_relicBars[i] = Component_Sprite->Get_Texture(L"Relic_Bar" + to_wstring(i + 1));
+		_relicBars[i]->Set_Visible(FALSE);
+		_relicBars[i]->Set_Opacity(0);
+		_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 	}
 }
 
@@ -616,10 +586,10 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar3"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar4"));
 
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info1"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info2"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
 
 
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT1")));
@@ -900,11 +870,13 @@ VOID MainUI::Display_Tutorial(CONST FLOAT& _DT) {
 		if (Tutorial_Sequencer == 8 && Tutorial_Timer >= SpeechInterval * 6.f + 0.01f) {
 			ItemINFO* Hermes = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(0);
 			Set_EnableItemPopUP(TRUE, Hermes, L"DIC_InfoFrame_Relic_Item1");
+			PlayerObject->Get_Artifact(0)->Set_ItemIdx(0);
 			Tutorial_Sequencer = 9;
 		}
 		if (Tutorial_Sequencer == 9 && Tutorial_Timer >= SpeechInterval * 6.f + 0.99f) {
 			ItemINFO* Horcrux = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(1);
 			Set_EnableItemPopUP(TRUE, Horcrux, L"DIC_InfoFrame_Relic_Horcrux");
+			PlayerObject->Get_Artifact(1)->Set_ItemIdx(1);
 			Tutorial_Sequencer = 10;
 		}
 		else if (Tutorial_Timer >= SpeechInterval * 7.f && Tutorial_Timer < SpeechInterval * 8.f && Tutorial_Sequencer == 10) {

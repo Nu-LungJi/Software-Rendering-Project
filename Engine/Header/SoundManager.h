@@ -25,7 +25,11 @@ public:
 	HRESULT		Stop_AllSound();
 
 	BOOL		IsPlaying(CHANNELID _SoundChannel);
-	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { SoundChannel[(LONG)_CID]->setVolume(Volume); }
+	VOID		Set_ChannelVolume(CHANNELID _CID, FLOAT Volume) { 
+		SoundChannel[(LONG)_CID]->setVolume(Volume);
+		int a = 0;
+		return;
+	}
 	VOID		Set_ChannelGroupVolume(CHANNELID _CID, FLOAT Volume) { ChannelGroup[(LONG)_CID]->setVolume(Volume); }
 	FLOAT		Get_ChannelVolume(CHANNELID _CID) {
 		FLOAT F = 0.f;
