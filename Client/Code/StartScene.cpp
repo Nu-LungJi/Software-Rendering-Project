@@ -251,6 +251,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
+	
     return Scene::Update_Scene(_DT);
 }
 VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {

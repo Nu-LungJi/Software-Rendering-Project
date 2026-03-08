@@ -77,13 +77,17 @@ BOOL DropItem::OnCollisionEnter(GameObject* _Other)
 {
 	return 0;
 }
-BOOL DropItem::OnCollisionStay(GameObject* _Other)
-{
+BOOL DropItem::OnCollisionStay(GameObject* _Other){
+
 	if (m_iPickUpEvent == 0) {
 		wstring Tag = _Other->Get_ObjectTag();
 		if (Tag == L"Player") {
+			// ±¤À± Ãß°¡ ¡å
+			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - ÆÄ¸£Äí³ª½º", TRUE);
 			if (KEY_DOWN(DIK_Z)) {
 				if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+					// ±¤À± Ãß°¡ ¡å
+					static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
 					m_iPickUpEvent = 1;
 					*m_pEventTrigger = -1;	//Temp;
 
@@ -96,6 +100,8 @@ BOOL DropItem::OnCollisionStay(GameObject* _Other)
 }
 BOOL DropItem::OnCollisionExit(GameObject* _Other)
 {
+	// ±¤À± Ãß°¡ ¡å
+	static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
 	return 0;
 }
 VOID DropItem::Free() {
