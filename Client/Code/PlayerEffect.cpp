@@ -366,7 +366,7 @@ VOID PlayerEffect::Render_GameObject() {
 
 	//KJJ 03 06
 	if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		Monster::BillBoard(Component_Transform, GRPDEV);
+		Monster::BillBoard(Component_Transform, GRPDEV, { 1.f,0.f,0.f},0);
 	}
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());

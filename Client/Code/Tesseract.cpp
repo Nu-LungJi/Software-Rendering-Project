@@ -34,13 +34,8 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             {
                 float fSpeed = (m_fTimer > 3.f) ? -10.f : 30.f;
 
-                if (m_fTimer > 3.f && !m_bCheck) {
-                    SoundManager::GetInstance()->Play_Sound_Once(L"Object/Tesseract_Woosh.wav", CHANNELID::SOUND_EFFECT03, 1.f);
-                    m_bCheck = true;
-                }
-
                 m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
-                if (m_pTransform->Get_Position()->x > 100.f) {
+                if (m_pTransform->Get_Position()->x > 70.f) {
                     m_fTimer = 0.f;
                     *m_pSceneEvent = 3;
                     m_pTransform->Set_Pos(50.f, -10.f, 7.5f);
@@ -59,6 +54,9 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             vMoveDir = { 0.f,1.f,0.f };
             {
                 m_fTimer += _DT;
+                _float fTargetVolume = 1 - m_fTimer / 3.f;
+                if (fTargetVolume < 0.f) fTargetVolume = 0.f;
+                SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM01, fTargetVolume);
                 float fSpeed = (m_fTimer > 5.f) ? -10.f : 30.f;
                 m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
                 if (m_pTransform->Get_Position()->y > 100.f) {
