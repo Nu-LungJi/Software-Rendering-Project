@@ -1100,6 +1100,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		_atomicTotal = 0;
 		_atomicReady = 0;
 
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/NPC_Appear.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
 		wstring txt = L"할아버지 힘을 빌려줘요!";
@@ -1158,6 +1159,7 @@ void Player::SKILL_ATOMIC(const _float& _DT)
 	if (_skillTimer > 0.5f && !_skillArea_On) {
 		_vec3 Size = { 5.f, 5.f, 5.f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_ATOMIC_AREA, &_NPC_Pos, 0.8f, Size, false);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/AtomicRazer.wav", CHANNELID::SOUND_EFFECT06, 0.3f);
 		_skillArea_On = true;
 	}
 

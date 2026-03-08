@@ -12,6 +12,7 @@ HRESULT GameManager::Ready_GameManager() {
 	//ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../UI");
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::SCENE, StageBlackOut::Create(GRPDEV, nullptr));
 	DamageFontManager::GetInstance()->Ready_DamageFontManager();
+	SetCursor(NULL);
 
 	return S_OK;
 }

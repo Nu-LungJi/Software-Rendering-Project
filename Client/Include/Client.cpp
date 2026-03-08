@@ -26,6 +26,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     MyRegisterClass(hInstance);
 
     if (!InitInstance(hInstance, nCmdShow)) return FALSE;
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     GameManager* GM = GameManager::Create();
     GUIManager::GetInstance()->Ready_GUIManager();
