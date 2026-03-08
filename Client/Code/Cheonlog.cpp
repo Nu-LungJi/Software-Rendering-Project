@@ -180,7 +180,11 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 		else
 			Component_Transform->Set_Pos({ matWorld._41 , 0.8f , matWorld._43 });
 	}
-
+	if (!m_bDead)
+	{
+		Change_Pattern(_DT);
+		Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
+	}
 	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 	{
 		for (auto iter = m_vecOrignBullet[i].begin(); iter != m_vecOrignBullet[i].end();)
@@ -207,11 +211,8 @@ void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 	
-	if (!m_bDead)
-	{
-		Change_Pattern(_DT);
-		Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
-	}
+
+
 	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 	{
 		for (auto& iter : m_vecOrignBullet[i])
@@ -443,7 +444,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 4 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 12)
+		if (m_framePattern > 15)
 		{
 			Reset_Pattern(ATTACK_B, CL_IDELR);
 			return;
