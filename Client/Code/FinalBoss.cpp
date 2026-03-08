@@ -1859,6 +1859,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 				SoundVolume = 0.f;
 			}
 		}
+	}
 }
 
 FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
