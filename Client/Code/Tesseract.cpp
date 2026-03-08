@@ -33,6 +33,12 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             m_fTimer += _DT;
             {
                 float fSpeed = (m_fTimer > 3.f) ? -10.f : 30.f;
+
+                if (m_fTimer > 3.f && !m_bCheck) {
+                    SoundManager::GetInstance()->Play_Sound_Once(L"Object/Tesseract_Woosh.wav", CHANNELID::SOUND_EFFECT03, 1.f);
+                    m_bCheck = true;
+                }
+
                 m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
                 if (m_pTransform->Get_Position()->x > 100.f) {
                     m_fTimer = 0.f;
@@ -59,8 +65,8 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                     *m_pSceneEvent = 6;
                     m_fTimer = 0.f;
                     m_pTransform->Set_Pos(50.f, 49.f, 30.f);
-                    m_pCollider->Set_Scale(0.5f, 0.5f, 0.5f);
                     m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
+                    CollisionManager::GetInstance()->Delete_ColliderObject(this);
                     SoundManager::GetInstance()->Stop_Sound(CHANNELID::SOUND_BGM01);
                     SoundManager::GetInstance()->Play_Sound_Once(L"/Docheol/UI_Stage clear.wav",CHANNELID::SOUND_BGM01);
                 }
@@ -79,14 +85,16 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                 if (m_fScale <= 3.0f) {
                     m_fScale = 3.0f;
                     m_fTimer = 0.f;
-                    return -1;
                 }
             }
             m_pTransform->Set_Pos(50.f, fCurrentY, 30.f);
             if (m_fScale <= 4.0f) {
                 if (nullptr == m_pWhiteOut) {
                     m_pWhiteOut = StageWhiteOut::Create(GRPDEV);
-                    SceneManager::GetInstance()->Get_CurrentScene()->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE)->Add_GameObject(m_pWhiteOut);
+                    MiniGameScene* pScene = static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene());
+                    pScene->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE)->Add_GameObject(m_pWhiteOut);
+                    pScene->Get_MainScene()->Get_Layer(LAYER_TYPE::LAYER_USER_INTERFACE)->Add_GameObject(m_pWhiteOut);
+                    m_pWhiteOut->AddRef();
                 }
                 _float fSP = 0.01f + (m_fTimer * 0.05f);
                 if (fSP > 0.001f) {
@@ -103,6 +111,8 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             }
         }
         break;
+        case 7:
+            return -1;
         }
     }
 
@@ -127,7 +137,6 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
         m_fVertexBuffer->Unlock();
     }
 
-    //AlphaSorting(m_pTransform->Get_Position());
     RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
     return GameObject::Update_GameObject(_DT);
 }

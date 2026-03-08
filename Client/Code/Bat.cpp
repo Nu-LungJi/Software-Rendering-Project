@@ -188,11 +188,9 @@ BOOL Bat::OnCollisionEnter(GameObject* _Other)
 	{
 	default:
 		if (Tag == L"PlayerArrow") {
-			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
-				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-				return TRUE;
-			}
+			return Monster::Damaged_by_Arrow(_Other, this);
 		}
+		break;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_DEAD:

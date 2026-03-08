@@ -1619,6 +1619,7 @@ HRESULT Player::MiniGameExit()
 {
 	_defaultSpeed = 6.f;
 	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
+
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;

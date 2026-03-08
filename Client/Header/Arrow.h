@@ -99,5 +99,15 @@ private:
 	bool		_isReady;
 
 	bool		_isCritical;
+
+	//KJJ 03 08
+
+public:
+	ArrowType	Get_ArrowType() { return _type; }
+	void		Add_DamageTriggerCnt(int i = 1) { m_iDamageTriggerCnt += i; }
+	int			Get_DamageTriggerCnt() { return m_iDamageTriggerCnt; }
+
+private:
+	int		m_iDamageTriggerCnt = 0;
 };
 

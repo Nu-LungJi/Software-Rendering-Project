@@ -7,10 +7,6 @@ DropItem::~DropItem() {}
 HRESULT DropItem::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-	SoundManager::GetInstance()->Play_Sound_Once(L"Object/MiniGameItemDrop.wav", CHANNELID::SOUND_BGM03);
-
-	m_pEventTrigger = static_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Get_EventTrigger();
-
 	return S_OK;
 }
 INT	DropItem::Update_GameObject(const _float& _DT)
@@ -22,7 +18,8 @@ INT	DropItem::Update_GameObject(const _float& _DT)
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	}
 	else if (m_iPickUpEvent == 1) {
-		Monster::Get_Camera()->Camera_Shaking(30, 3);
+		Monster::Get_Camera()->Camera_Shaking(30, 1);
+		return -1;
 	}
 
 	return 0;
@@ -53,11 +50,11 @@ HRESULT DropItem::Component_Initialize() {
 
 	Component_Transform->Set_Pos(10.f, 0.112f, 10.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(0.5f, 0.5f, 0.5f);
+	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);
+	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
 
 	uint16_t ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Tile, 2, 0);
 	m_pTexture = *MonsterManager::GetInstance()->Find_Textures(ID)->begin();
@@ -85,14 +82,11 @@ BOOL DropItem::OnCollisionStay(GameObject* _Other){
 			// ±¤À± Ãß°¡ ¡å
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - ÆÄ¸£Äí³ª½º", TRUE);
 			if (KEY_DOWN(DIK_Z)) {
-				if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
 					// ±¤À± Ãß°¡ ¡å
 					static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
 					m_iPickUpEvent = 1;
-					*m_pEventTrigger = -1;	//Temp;
-
+					ObjectDead = true;
 					return true;
-				}
 			}
 		}
 	}

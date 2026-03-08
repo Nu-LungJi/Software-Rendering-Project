@@ -128,7 +128,15 @@ HRESULT EvilSlimeGroundIce::Component_Initialize() {
 }
 BOOL EvilSlimeGroundIce::OnCollisionEnter(GameObject* _Other)
 {
-	return 0;
+	wstring Tag = _Other->Get_ObjectTag();
+
+	if (Tag == L"Player") {
+		if (COLLIDER(_Other)->Get_Hp() > 0) {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 BOOL EvilSlimeGroundIce::OnCollisionStay(GameObject* _Other)
 {

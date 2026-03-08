@@ -229,20 +229,25 @@ VOID EvilFrog::State_Dead() {
 }
 BOOL EvilFrog::OnCollisionEnter(GameObject* _Other) {
 	wstring Tag = _Other->Get_ObjectTag();
-	if (Tag == L"Player")
+	switch (m_tInfo.eState[0])
 	{
-		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
-		mainUI->Player_LostHP();
-		return TRUE;
+	default:
+		if (Tag == L"PlayerArrow") {
+			return Monster::Damaged_by_Arrow(_Other, this);
+		}
+		break;
+	case MONSTER_STATE_SUMMON:
+	case MONSTER_STATE_APPEAR:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DISAPPEAR:
+	case MONSTER_STATE_CASTING:
+	case EVILSLIME_FISSION:
+		return 0;
 	}
+
 	return FALSE;
 }
 BOOL EvilFrog::OnCollisionStay(GameObject* _Other) {
-  wstring Tag = _Other->Get_ObjectTag();
-
-	if(Tag== L"PlayerArrow") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-  }
 	return FALSE;
 }
 BOOL EvilFrog::OnCollisionExit(GameObject* _Other) {

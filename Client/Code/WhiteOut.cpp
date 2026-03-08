@@ -19,18 +19,26 @@ HRESULT StageWhiteOut::Ready_Effect() {
 INT  StageWhiteOut::Update_GameObject(CONST FLOAT& _DT) {
 
 
-	m_fTimer += _DT;
 	m_fAlpha += _DT * 60.f;
 
-	if (m_fTimer > 1.5f) {
-		m_pDropitem = DropItem::Create(GRPDEV);
-		*POS(m_pDropitem) = *POS(Monster::Get_Player());
-		m_fTimer = 0.f;
+	if (m_fAlpha >= 255.f - 60.f) {
+		if (m_fTimer == 0.f) {
+			MiniGameScene* pScene = dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene());
+			SoundManager::GetInstance()->Stop_AllSound();
+			SoundManager::GetInstance()->Play_Sound_Once(L"Object/MiniGameItemDrop.wav", CHANNELID::SOUND_BGM03);
+			if (pScene != nullptr)
+				*pScene->Get_EventTrigger() = -1;
+		}
+		m_fTimer += _DT;
+	}
+	if (m_fTimer >= 2.6f) {
+		SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, 0.f, FALSE);
+		return -1;
 	}
 
-	if (m_fAlpha > 255.f) {
-		Monster::Add_Monster_to_Scene(m_pDropitem, L"DropItem", GAMEOBJECT_TYPE::OBJECT_END);
-		return -1;
+
+	if (m_fAlpha >= 255.f) {
+		m_fAlpha = 255.f;
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);

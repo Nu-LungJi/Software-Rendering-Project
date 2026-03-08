@@ -7,8 +7,6 @@ ScorpionBullet::~ScorpionBullet() {}
 HRESULT ScorpionBullet::Ready_GameObject() {
 	if (FAILED(Component_Initialize())) return E_FAIL;
 
-
-
 	return S_OK;
 }
 INT	ScorpionBullet::Update_GameObject(const _float& _DT)
@@ -28,14 +26,15 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
-		m_tInfo.ID = MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Death);
-		if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
 
 		m_tInfo.fTimer[1] += _DT;
 		ObjectDead = m_tInfo.fTimer[1] >= 2.f;
 
 		if (!m_tInfo.bTrigger[1])
 		{
+			m_tInfo.ID = MonsterManager::Update_Key(m_tInfo.ID, (uint8_t)MONSTER_ANIM::Death);
+			if (FAILED(Monster::Set_TextureList(m_tInfo.ID, &m_tInfo.Textureinfo))) ObjectDead = true;
+			CollisionManager::GetInstance()->Delete_ColliderObject(this);
 			m_tInfo.fSpeed *= 0.3f;
 			for (int i = 0; i < SCORPIONBULLET_CHAINBULLET_NUM; ++i)
 			{
@@ -50,7 +49,7 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 				m_tInfo.pGameObj[1] = nullptr;
 			}
 			m_tInfo.bTrigger[1] = true;
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Scorpion_Chain.wav", CHANNELID::SOUND_EFFECT08, 0.3f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ScorpionBullet_Explosion.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
 		}
 	}
 
@@ -113,7 +112,7 @@ HRESULT ScorpionBullet::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Hp(1.f);
+	Component_Collider->Set_Hp(50.f);
 	Component_Collider->Set_Att(1.f);
 
 	m_tInfo.fSpeed = SCORPIONBULLET_SPEED;
@@ -128,13 +127,16 @@ BOOL ScorpionBullet::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 	if (Tag == L"PlayerArrow") {
-
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
+		if (COLLIDER(_Other)->Get_Hp() > 0) {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
+			return TRUE;
+		}
 	}
 	else if (Tag == L"Player") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
-		return true;
+		if (COLLIDER(_Other)->Get_Hp() > 0) {
+			Component_Collider->Set_Hp(0.f);
+			return TRUE;
+		}
 	}
 	return FALSE;
 
