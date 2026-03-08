@@ -185,7 +185,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
 		}
 		// <<< RageMode >>>
-		if (Component_Collider->Get_Hp() <= 5000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
+		if (Component_Collider->Get_Hp() <= 10000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Stunning_TexList;
 			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -371,7 +371,7 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
-	Component_Collider->Set_Hp(10000.f);
+	Component_Collider->Set_Hp(20000.f);
 	return S_OK;
 }
 HRESULT FinalBoss::Texture_Initialize() {
@@ -1803,8 +1803,8 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 			SoundVolume += _DT / 4.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
-		else {
-			SoundTransition = (INT)SOUNDPLAYER::STAY_BC;
+		else if (SoundTransition == (INT)SOUNDPLAYER::STAY_BC) { // STAY BEFORE COMBAT
+			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, SoundVolume);
 			SoundVolume = 0.8f;
 		}
 	}
@@ -1829,9 +1829,15 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 			SoundVolume += _DT / 4.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
-		else {
-			SoundTransition = (INT)SOUNDPLAYER::STAY_WC;
-			SoundVolume = 0.5f;
+		else if (SoundTransition == (INT)SOUNDPLAYER::ENTERING_WC) { // INC COMBAT
+			if (SoundVolume <= 0.8f) {
+				SoundVolume += _DT / 4.f;
+				SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			}
+			else {
+				SoundTransition = (INT)SOUNDPLAYER::STAY_WC;
+				SoundVolume = 0.5f;
+			}
 		}
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::STAY_WC		)		{ // STAY COMBAT
@@ -1843,11 +1849,16 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 			SoundVolume -= _DT / 4.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
-		else {
-			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
-			SoundVolume = 0.f;
+		else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_WC) { // DEC COMBAT
+			if (SoundVolume >= 0.f) {
+				SoundVolume -= _DT / 4.f;
+				SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM02, SoundVolume);
+			}
+			else {
+				SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
+				SoundVolume = 0.f;
+			}
 		}
-	}
 }
 
 FinalBoss*	FinalBoss::Create(LPDIRECT3DDEVICE9 _GRPDEV) {

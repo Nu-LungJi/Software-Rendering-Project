@@ -56,6 +56,8 @@ INT Bow::Update_GameObject(const _float& _DT)
 		_chargingTime = 2.f;
 		_chargingTime *= *_playerChargingSpeed;
 
+		_Stat.curArrow = max(0, _Stat.curArrow);
+
 		float alphaSpeed = 3.f;
 
 		bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
@@ -567,8 +569,8 @@ void Bow::Late_Ready()
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 180;
-		_Stat.curArrow = 180;
+		_Stat.maxArrow = 300;
+		_Stat.curArrow = 300;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 1;
@@ -577,8 +579,8 @@ void Bow::Late_Ready()
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 150;
-		_Stat.curArrow = 150;
+		_Stat.maxArrow = 200;
+		_Stat.curArrow = 200;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 2;
@@ -587,8 +589,8 @@ void Bow::Late_Ready()
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 180;
-		_Stat.curArrow = 180;
+		_Stat.maxArrow = 300;
+		_Stat.curArrow = 300;
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 3;

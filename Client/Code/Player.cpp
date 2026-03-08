@@ -171,12 +171,16 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (_isStop)
 		return S_OK;
 
-	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
-	if (m_eCurrScene != SCENE_TYPE::Minigame)
+	if (m_eCurrScene != SCENE_TYPE::Minigame) {
+		Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 		pPos.y = 0.5f;
+		_defaultSpeed = 6.f;
+	}
+	else {
+		_defaultSpeed = 3.f;
+	}
 
-	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
 	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
@@ -187,7 +191,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-    SoundManager::GetInstance()->Stop_AllSound();
+		// SoundManager::GetInstance()->Stop_AllSound();
 		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Death_Sound.mp3", CHANNELID::SOUND_EFFECT01, 1.0f);
 	}
 
@@ -216,7 +220,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
-		SoundManager::GetInstance()->Stop_AllSound();
+		//SoundManager::GetInstance()->Stop_AllSound();
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
@@ -1602,6 +1606,7 @@ HRESULT Player::MiniGameInit()
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
 
 	Is_Falling = true;
+	_defaultSpeed = 3.f;
 
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
@@ -1612,6 +1617,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
+	_defaultSpeed = 6.f;
 	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;

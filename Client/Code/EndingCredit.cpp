@@ -67,7 +67,12 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 		GameObject::Update_GameObject(_DT);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 		
-		if (!Start) Update_Ready();
+		if (!Start) {
+			Update_Ready();
+			SoundManager::GetInstance()->Stop_AllSound();
+			SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.6f);
+			Start = true;
+		}
 
 		// 집 위치 조절
 		if (Timer < 5.f) {
@@ -80,6 +85,7 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 			WhiteScreenOpacity -= _DT * 100.f;
 			WhiteScreenOpacity = max(0, WhiteScreenOpacity);
 			_WhiteScreen->Set_Opacity(WhiteScreenOpacity);
+
 		}
 
 		if (POSX >= -150) {
@@ -90,10 +96,10 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 		}
 
 		if (FrameSpeed >= 255) {
-			Credit1->Set_Pos(Credit1->Get_Pos().x, Credit1->Get_Pos().y - _DT * 40.f);
+			Credit1->Set_Pos(Credit1->Get_Pos().x, Credit1->Get_Pos().y - _DT * 80.f);
 		}
 		if (Credit1->Get_Pos().y <= WINCY - 520.f) {
-			Credit2->Set_Pos(Credit2->Get_Pos().x, Credit2->Get_Pos().y - _DT * 40.f);
+			Credit2->Set_Pos(Credit2->Get_Pos().x, Credit2->Get_Pos().y - _DT * 80.f);
 		}
 
 		// 텍스트

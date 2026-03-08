@@ -53,11 +53,11 @@ HRESULT DropItem::Component_Initialize() {
 
 	Component_Transform->Set_Pos(10.f, 0.112f, 10.f);
 	Component_Transform->Set_Rotation(0.f, 0.f, 0.f);
-	Component_Transform->Set_Scale(1.f, 1.f, 1.f);
+	Component_Transform->Set_Scale(0.5f, 0.5f, 0.5f);
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Scale(1.f, 1.f, 1.f);
+	Component_Collider->Set_Scale(0.5f, 0.5f, 0.5f);
 
 	uint16_t ID = MonsterManager::Make_Key((uint8_t)MONSTER_SEP::Tile, 2, 0);
 	m_pTexture = *MonsterManager::GetInstance()->Find_Textures(ID)->begin();
