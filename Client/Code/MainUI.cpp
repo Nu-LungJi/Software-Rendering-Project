@@ -621,6 +621,10 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
 
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock3"));
+
 
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT1")));
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT2")));
@@ -963,6 +967,9 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock1", -43.f, -13.f, 175.f, 175.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock2", -10.5f, -13.f, 175.f, 175.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock3", 23.f, -13.f, 175.f, 175.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Crystal.png", L"CRYSTAL", 18.f, 175.f, 20, 20, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Key.png", L"KEY", 18.f, 103.f, 18, 18, TRUE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////

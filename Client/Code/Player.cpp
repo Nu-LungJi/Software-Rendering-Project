@@ -1757,12 +1757,14 @@ void Player::Buy_item(int itemIdx)
 		for (int idx = 0; idx < 4; idx++) {
 			if (nullptr == _weaponSlot[idx]) {
 				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"));
+				_weaponSlot[idx]->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				return;
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
 			if (nullptr == _inventory[idx]) {
 				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"IceBow"));
+				dynamic_cast<Bow*>(_inventory[idx])->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				break;
 			}
 		}
@@ -1773,6 +1775,7 @@ void Player::Buy_item(int itemIdx)
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<Artifact>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, GAMEOBJECT_TYPE::ARTIFACT, L"Artifact_Quiver");
 				_artifactSlot[idx] = dynamic_cast<Artifact*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Artifact_Quiver"));
 				_artifactSlot[idx]->Set_ItemIdx(2);// 최대 화살수
+				_MaxArrow *= 2;
 				return; 
 			}
 		}
@@ -1808,12 +1811,14 @@ void Player::Buy_item(int itemIdx)
 		for (int idx = 0; idx < 4; idx++) {
 			if (nullptr == _weaponSlot[idx]) {
 				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"));
+				_weaponSlot[idx]->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				return;
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
 			if (nullptr == _inventory[idx]) {
 				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"EvilHeadBow"));
+				dynamic_cast<Bow*>(_inventory[idx])->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				break;
 			}
 		}
@@ -1822,12 +1827,14 @@ void Player::Buy_item(int itemIdx)
 		for (int idx = 0; idx < 4; idx++) {
 			if (nullptr == _weaponSlot[idx]) {
 				_weaponSlot[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"));
+				_weaponSlot[idx]->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				return;
 			}
 		}
 		for (int idx = 0; idx < 10; idx++) {
 			if (nullptr == _inventory[idx]) {
 				_inventory[idx] = dynamic_cast<Bow*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"WindBow"));
+				dynamic_cast<Bow*>(_inventory[idx])->Get_Bow_Stat()->curArrow *= _MaxArrow;
 				break;
 			}
 		}

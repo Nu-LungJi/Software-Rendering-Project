@@ -56,7 +56,7 @@ INT Bow::Update_GameObject(const _float& _DT)
 		_chargingTime = 2.f;
 		_chargingTime *= *_playerChargingSpeed;
 
-		_Stat.curArrow = max(0, _Stat.curArrow);
+		_Stat.curArrow = max(0, _Stat.maxArrow);
 
 		float alphaSpeed = 3.f;
 
