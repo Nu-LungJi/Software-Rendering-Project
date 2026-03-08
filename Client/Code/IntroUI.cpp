@@ -50,7 +50,7 @@ INT			IntroUI::Update_GameObject(CONST FLOAT& _DT){
 		StartBTN->Set_Color(Component_Sprite->Get_Texture(L"MenuBar")->Get_Opacity(), 255, 255, 255);
 	}
 	
-	if (KEY_DOWN(DIK_2)) {			// 시작 버튼
+	if (KEY_DOWN(DIK_F1)) {			// 시작 버튼
 		if (Enable_FadeIn == FALSE) {
 			static_cast<StartScene*>(SceneManager::GetInstance()->Get_CurrentScene())->Set_BGMPlayer(2);
 			UIManager::GetInstance()->Find_FontObject(L"KeyCountText")->Set_Visible(FALSE);
