@@ -211,9 +211,8 @@ HRESULT   StartScene::Ready_Scene() {
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
 	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
-	CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
-
+	TileManager::GetInstance()->Set_Stage();
 	return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
