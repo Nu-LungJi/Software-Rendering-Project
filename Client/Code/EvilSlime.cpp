@@ -433,6 +433,15 @@ VOID EvilSlime::State_Dead()
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
 	// SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 	TileManager::GetInstance()->Set_StageArray();
+
+	if (TileManager::GetInstance()->Get_Stage() != TILE_STAGE::TILE_DEFENSE) {
+		std::random_device rd;
+		std::uniform_int_distribution<int> distribution(0, 180);
+
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		player->Set_Coin(player->Get_Coin() + 10 + (distribution(rd) % 5));
+	}
+
 	ObjectDead = true;
 }
 

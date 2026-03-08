@@ -357,6 +357,14 @@ VOID Bat::State_Channeling(const _float& _DT)
 
 VOID Bat::State_Dead()
 {
+	if (TileManager::GetInstance()->Get_Stage() != TILE_STAGE::TILE_DEFENSE) {
+		std::random_device rd;
+		std::uniform_int_distribution<int> distribution(0, 180);
+
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		player->Set_Coin(player->Get_Coin() + 10 + (distribution(rd) % 5));
+	}
+
 	MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, MYSCALE->x * 2.f, MONSTER_DEATH_PLAYTTIME);
 	//SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
 	EffectManager::GetInstance()->Append_Effect(EFFECT_OWNER::MONSTER, pEffect);
