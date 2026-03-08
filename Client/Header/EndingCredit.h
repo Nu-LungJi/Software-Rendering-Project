@@ -33,6 +33,7 @@ private:
 	SpriteINFO* BlackFont_Frame;
 	SpriteINFO* Credit1;
 	SpriteINFO* Credit2;
+	SpriteINFO* Credit3;
 	
 
 	// 참조 변수

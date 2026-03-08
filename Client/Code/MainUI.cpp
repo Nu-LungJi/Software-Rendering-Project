@@ -89,7 +89,9 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	Display_FadeFilter(_DT);
 	Display_ClearBossUI(_DT);
 
-	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
+	if (PlayerObject->Get_Equipnum() == 0) ArrowCountText = L"∞ / ∞";
+	else ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
+
 	FO_ArrowCount->Set_Text(ArrowCountText);
 
 	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();

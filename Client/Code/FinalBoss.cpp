@@ -1222,6 +1222,7 @@ VOID	FinalBoss::Skill_RageUpFireBall	(CONST FLOAT& _DT) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[12 * 3 + IDX]);
 			}
 			BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
+			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = false;
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_RageUpFireBall = FALSE;
 		}
