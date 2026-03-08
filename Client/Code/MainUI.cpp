@@ -109,6 +109,32 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
+
+	POINT mousePoint{ 0, 0 };
+	GetCursorPos(&mousePoint);
+	ScreenToClient(hWnd, &mousePoint);
+
+	MousePoint1->Set_Pos((int)mousePoint.x - 30.f, (int)mousePoint.y - 30.f);
+	MousePoint2->Set_Pos((int)mousePoint.x - 30.f, (int)mousePoint.y - 30.f);
+
+	bool mouseLB = KeyManager::GetInstance()->Get_MouseState(DIM_LB) & 0x80;
+
+	if (mouseLB ) {
+		MouseOpacity = false;
+	}
+	if (!MouseOpacity) {
+		float op = MousePoint2->Get_Opacity();
+		op += _DT * 2000.f;
+		op = min(op, 255);
+		MousePoint2->Set_Opacity(255);
+		if (!mouseLB && op == 255) MouseOpacity = true;
+	}
+	if(MouseOpacity && !mouseLB) {
+		float op = MousePoint2->Get_Opacity();
+		op -= _DT * 500.f;
+		op = max(op, 0);
+		MousePoint2->Set_Opacity(op);
+	}
 }
 VOID	MainUI::Render_GameObject() {
 	_matrix matWorld, matScale, matTrans;
@@ -747,9 +773,7 @@ VOID MainUI::Synchronize_BossHPBar() {
 	}
 	else if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
 		
-		_float fProgressRatio = 0.f;
-
-		fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
+		_float fProgressRatio = (POS(PlayerObject)->x + POS(PlayerObject)->y) * 0.01f;
 
 		if		(fProgressRatio > 1)		fProgressRatio = 1.f;
 		else if (fProgressRatio < 0)		fProgressRatio = 0.f;
@@ -1024,6 +1048,9 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-26.png", L"Relic_Info2", 780.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-02.png", L"Relic_Info3", 600.f, 290.f, 40, 40, FALSE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_PerkIcon_1-05.png", L"Relic_Info4", 600.f, 290.f, 40, 40, FALSE, 0);
+
+	MousePoint1 = Component_Sprite->Import_Sprite(L"../../Resource/Extra/Cursor1.png", L"Cursor1", 0.f, 0.f, 60, 60, TRUE, 255);
+	MousePoint2 = Component_Sprite->Import_Sprite(L"../../Resource/Extra/Cursor2.png", L"Cursor2", 0.f, 0.f, 60, 60, TRUE, 0);
 
 	return S_OK;
 }

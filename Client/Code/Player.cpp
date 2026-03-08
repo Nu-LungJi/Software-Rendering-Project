@@ -170,12 +170,16 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (_isStop)
 		return S_OK;
 
-	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
-	if (m_eCurrScene != SCENE_TYPE::Minigame)
+	if (m_eCurrScene != SCENE_TYPE::Minigame) {
+		Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 		pPos.y = 0.5f;
+		_defaultSpeed = 6.f;
+	}
+	else {
+		_defaultSpeed = 3.f;
+	}
 
-	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
 	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
@@ -1056,7 +1060,7 @@ void Player::Idle_Final_Input(const _float& _DT)
 void Player::SKILL_NONE(const _float& _DT)
 {
 	_skillTimer = 0.f;
-	if (KEY_DOWN(DIK_Q) && _token > 0) {
+	if (KEY_DOWN(DIK_Q)) {
 		_vec3 Size = { 0.2f, 0.2f, 0.2f };
 		_NPC_Pos = *Component_Transform->Get_Position();
 		_NPC_Pos.y += 1.f;
@@ -1102,6 +1106,7 @@ void Player::SKILL_NONE(const _float& _DT)
 		_atomicTotal = 0;
 		_atomicReady = 0;
 
+		SoundManager::GetInstance()->Play_Sound_Once(L"Player/NPC_Appear.wav", CHANNELID::SOUND_EFFECT06, 0.5f);
 		MainUI* mainUI = dynamic_cast<MainUI*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"MainUI"));
 		mainUI->Player_UseSkill();
 		wstring txt = L"할아버지 힘을 빌려줘요!";
@@ -1160,6 +1165,7 @@ void Player::SKILL_ATOMIC(const _float& _DT)
 	if (_skillTimer > 0.5f && !_skillArea_On) {
 		_vec3 Size = { 5.f, 5.f, 5.f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::NPC_ATOMIC_AREA, &_NPC_Pos, 0.8f, Size, false);
+		SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/AtomicRazer.wav", CHANNELID::SOUND_EFFECT06, 0.3f);
 		_skillArea_On = true;
 	}
 
@@ -1599,6 +1605,7 @@ HRESULT Player::MiniGameInit()
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
 
 	Is_Falling = true;
+	_defaultSpeed = 3.f;
 
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
@@ -1609,6 +1616,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
+	_defaultSpeed = 6.f;
 	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;

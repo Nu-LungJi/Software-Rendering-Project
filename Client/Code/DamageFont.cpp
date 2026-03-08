@@ -13,14 +13,14 @@ HRESULT DamageFont::Ready_GameObject(int Damage, _vec3* vec3Pos)
 
 	offsetX = rand - 30.f;
 
-	if (damageFontCnt % 2 == 0) offsetY = rand * 0.5 + 30.f;
-	else offsetY = rand * 0.5 - 30.f;
+	if (damageFontCnt % 2 == 0) offsetY = rand * 0.5 + 40.f;
+	else offsetY = rand * 0.5 - 40.f;
 
 	
 	targetPos = *vec3Pos;
 	_Pos = Matrix_Calc(targetPos);
-	_Pos.x += 20.f + offsetX;
-	_Pos.y -= 30.f + offsetY;
+	_Pos.x += 10.f + offsetX;
+	_Pos.y -= 10.f + offsetY;
 	_Size = 110.f;
 	
 	_lifeTimer = 0.f;
@@ -68,9 +68,10 @@ INT DamageFont::Update_GameObject(const FLOAT& _DT)
 	_Pos.y -= 50.f + offsetY;
 	_FO->Set_Pos(_Pos.x, _Pos.y);
 	_FO->Set_Text(to_wstring(_Damage));
+	if (_Damage == 0) { _FO->Set_Text(L"¹æ¾îÇÔ"); }
 	_FO->Set_Active(true);
 
-	if (!_isCritical) _FO->Set_Color(_alpha, 255, 255, 255);
+	if (!_isCritical || _Damage == 0) _FO->Set_Color(_alpha, 255, 255, 255);
 	else _FO->Set_Color(_alpha, 247, 230, 0);
 
 	if (_lifeTimer > 0.75f) {

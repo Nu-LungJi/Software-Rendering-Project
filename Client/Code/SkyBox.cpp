@@ -39,7 +39,7 @@ HRESULT SkyBox::Component_Initialize() {
 
 	m_pBuffer		= ADD_COMPONENT_CUBE;
 	m_pTransform	= ADD_COMPONENT_TRANSFORM;
-	m_pTransform->Set_Scale(100.f, 100.f, 100.f);
+	m_pTransform->Set_Scale(300.f, 300.f, 300.f);
 	m_pTransform->Set_Pos(25.f, 25.f, 25.f);
 
 	m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"MiniGameBack.dds");

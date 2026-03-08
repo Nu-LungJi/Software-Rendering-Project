@@ -355,7 +355,7 @@ VOID PlayerEffect::LateUpdate_GameObject(CONST FLOAT& _DT) {
 			CameraObject* Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
 				Get_GameObject(L"Camera"));
 			Camera->Camera_Shaking(10.f, 0.5f);
-			//SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
+			SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/BossCav - Explosion.wav", CHANNELID::SOUND_EFFECT05, 0.5f);
 		}
 	}
 		

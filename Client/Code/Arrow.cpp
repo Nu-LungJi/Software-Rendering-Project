@@ -223,6 +223,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
             Camera = dynamic_cast<CameraObject*>(SceneManager::GetInstance()->Get_CurrentScene()->
                 Get_GameObject(L"Camera"));
             Camera->Camera_Shaking(30.f, 1.f);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_52_Storm.wav", CHANNELID::SOUND_EFFECT05, 0.4f);
             break;
         default:
             break;
@@ -418,7 +419,6 @@ INT Arrow::Update_GameObject(const _float& _DT)
             if (_effectDelay > 0.1f) {
                 Size = { 1.f, 1.f, 1.f };
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ICE_SHADER, &effectPos, 0.8f, Size, false);
-                //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
                 _effectDelay = 0.f;
             }
             break;
@@ -437,8 +437,11 @@ INT Arrow::Update_GameObject(const _float& _DT)
                 if (_targetPos != nullptr) {
                     effectPos = *_targetPos;
                 }
-                effectPos.y += 2.f;
-                effectPos.z += 5.f;
+                effectPos.z += 7.f;
+
+                if (_target != nullptr && _target->Get_ObjectTag() == L"Docheol")effectPos.z -= 7.f;
+                if (_target != nullptr && _target->Get_ObjectTag() == L"CheonLog")effectPos.z -= 2.f;
+
                 PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::EVIL_THUNDER, &effectPos, 0.8f, Size, false);
                 SoundManager::GetInstance()->Play_Sound_Once(L"Bow/EvilHead_Bow/Hit_Lightning_Strike.wav", CHANNELID::SOUND_EFFECT05, 0.7f);
                 _ThunderDelay = 0.f;
@@ -459,7 +462,7 @@ INT Arrow::Update_GameObject(const _float& _DT)
     if (_arrowLength > _atomicRange * 0.5 && _speed == 0.f && !_isReady) {
         _vec3 Size = { 4.f, 4.f, 4.f };
         PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::ATOMIC_READY, Component_Transform->Get_Position() , 0.5f, Size, false);
-        SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
+        //SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Wind_Bow/Weapon_67_WindSword_ChargedFire.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
         ObjectDead = true;
     }
         
@@ -661,6 +664,7 @@ BOOL Arrow::OnCollisionEnter(GameObject* _Other)
         if (_type == ArrowType::IceCharging) {
             _vec3 Size = { 2.f, 2.f, 2.f };
             PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::IRA_HITEFFECT, Component_Transform->Get_Position(), 0.3f, Size, false);
+            SoundManager::GetInstance()->Play_Sound_Once(L"Bow/Ice_Bow/Weapon_14_2_IceThorns.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
         }
         Component_Collider->Set_Att(originATK);
         if (_type == ArrowType::EvilHeadCharging || _type == ArrowType::IceCharging) return TRUE;

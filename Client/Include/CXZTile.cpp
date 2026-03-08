@@ -355,7 +355,6 @@ void CXZTile::Tile_Potal(CONST FLOAT& _DT)
                 _vec3 vPos = m_pTileInfo->Get_NextPos();
                 if (TileManager::GetInstance()->Get_PotalBgmStart())
                 {
-
                     if(m_pTileInfo->Get_NextStage() != TILE_STAGE::TILE_DOCHERBOSS)
                      SoundManager::GetInstance()->Play_Sound_Once(L"Stage/Portal.mp3", CHANNELID::SOUND_EFFECT05, 0.3f);
                       
