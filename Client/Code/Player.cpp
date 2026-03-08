@@ -190,7 +190,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
 		_weaponSlot[_equipNum]->Set_Bow_Equip(false);
-    SoundManager::GetInstance()->Stop_AllSound();
+		// SoundManager::GetInstance()->Stop_AllSound();
 		SoundManager::GetInstance()->Play_Sound_Once(L"Player/Death_Sound.mp3", CHANNELID::SOUND_EFFECT01, 1.0f);
 	}
 
@@ -219,7 +219,7 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (Component_Collider->Get_Hp() <= 0 && _eState != eState::STATE_DEAD) {
 		_frame = 1;
 		_pState = pState::STATE_DEATH;
-		SoundManager::GetInstance()->Stop_AllSound();
+		//SoundManager::GetInstance()->Stop_AllSound();
 	}
 
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
