@@ -103,6 +103,34 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
 
+	int DashStock = PlayerObject->Get_DashStock();
+	UIEffect* stock1 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT1"));
+	UIEffect* stock2 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT2"));
+	UIEffect* stock3 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT3"));
+	switch (DashStock) {
+	case 0:
+		stock1->Set_All_Visible(false);
+		stock2->Set_All_Visible(false);
+		stock3->Set_All_Visible(false);
+		break;
+	case 1:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(false);
+		stock3->Set_All_Visible(false);
+		break;
+	case 2:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(true);
+		stock3->Set_All_Visible(false);
+		break;
+	case 3:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(true);
+		stock3->Set_All_Visible(true);
+		break;
+	}
+	
+
 	Reset_Relic();
 	
 
