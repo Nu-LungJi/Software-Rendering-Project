@@ -27,7 +27,7 @@ INT	Bullet_Chain_Head::Update_GameObject(const _float& _DT)
 	if (Component_Collider->Get_Hp() <= 0.f)
 	{
 		MonsterEffect* pEffect = MonsterEffect::Create(GRPDEV, MONSTER_EFFECT::BULLET_STANDARD_DEATH, *MYPOS, FALSE, 1.2f);
-		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ChainBullet.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
+		
 
 		_vec3 vEffectScale = { MYSCALE->x, MYSCALE->x, MYSCALE->x };
 		*static_cast<Transform*>(pEffect->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Scale() = vEffectScale;
@@ -66,8 +66,7 @@ VOID Bullet_Chain_Head::LateUpdate_GameObject(const _float& _DT) {
 		pBulletinfo->pGameObj[0] = m_tInfo.pGameObj[0];
 
 		Monster::Add_Monster_to_Scene(m_tInfo.pGameObj[1],L"MonsterBullet", GAMEOBJECT_TYPE::OBJECT_MONSTER_BULLET);
-		SoundManager::GetInstance()->Play_Sound(L"Monster/Scorpion_Chain.mp3", CHANNELID::SOUND_EFFECT08, 0.3f);
-
+		SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ChainBullet.wav", CHANNELID::SOUND_EFFECT08, 0.2f);
 		m_tInfo.pGameObj[1] = nullptr;
 	}
 
@@ -130,13 +129,10 @@ Bullet_Chain_Head* Bullet_Chain_Head::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 }
 BOOL Bullet_Chain_Head::OnCollisionEnter(GameObject* _Other)
 {
-	wstring Tag = _Other->Get_ObjectTag();
-	if (Tag == L"PlayerArrow") {
+	if (m_tInfo.fTimer[0] <= 1.f)	return false;
 
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player") {
+	wstring Tag = _Other->Get_ObjectTag();
+	if (Tag == L"Player") {
 		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
 		return true;
 	}

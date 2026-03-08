@@ -45,7 +45,7 @@ private:
     float           m_fTargetGreen      = 0.f;
     float           m_fTargetBlue       = 0.f;
 
-    bool            m_bColorState[3] = { 1,0,0 };
+    bool            m_bCheck = false;
 
     IDirect3DTexture9* m_pTexture = nullptr;
     Transform*      m_pTransform = nullptr;

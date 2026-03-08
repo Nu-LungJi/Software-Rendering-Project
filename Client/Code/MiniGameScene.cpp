@@ -73,6 +73,8 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	}
 	else if (POS(m_pPlayer)->y > 10.f && m_iEventTrigger == 1) {
 		m_iEventTrigger = 2;
+
+		SoundManager::GetInstance()->Play_Sound_Once(L"Object/Tesseract_Woosh.wav", CHANNELID::SOUND_EFFECT08, 1.f);
 	}
 	else if ((POS(m_pPlayer)->y > 49.f) && (m_iEventTrigger == 3)) {
 		m_iEventTrigger = 4;
@@ -171,7 +173,11 @@ HRESULT MiniGameScene::Start_MiniGame()
 
 HRESULT MiniGameScene::End_MiniGame()
 {
-	LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Delete_Object(m_pDis);
+	LayerList[(long)LAYER_TYPE::LAYER_USER_INTERFACE]->Delete_Object(m_pDis);		
+	DropItem* pDropItem = DropItem::Create(GRPDEV);
+	*POS(pDropItem) = *POS(Monster::Get_Player());
+	Monster::Add_Monster_to_Scene(pDropItem, L"DropItem", GAMEOBJECT_TYPE::OBJECT_END, m_pMainScene);
+
 	if (!m_bEffect)
 	{
 		TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
@@ -202,14 +208,12 @@ HRESULT MiniGameScene::End_MiniGame()
 			}
 		}
 		CollisionManager::GetInstance()->Add_ColliderObject(Monster::Get_Player());
-		SoundManager::GetInstance()->Stop_AllSound();
 		m_pMainUI->Set_EnableDisplayHPBar(false);
 		m_pMainUI = nullptr;
 		MonsterManager::GetInstance()->Release_Static_Batich();
-		SoundManager::GetInstance()->Stop_AllSound();
-		SoundManager::GetInstance()->Play_Sound(L"DoCheol/Docheol's area_Start.wav", CHANNELID::SOUND_BGM01, 0.f, FALSE);
 		SceneManager::GetInstance()->Scene_Transition(m_pMainScene);
-	
+
+
 	}
 
 	return S_OK;

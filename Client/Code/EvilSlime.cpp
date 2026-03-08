@@ -224,17 +224,14 @@ EvilSlime* EvilSlime::Create(LPDIRECT3DDEVICE9 _GRPDEV,_vec3 vPos, BOOL bMini) {
 }
 BOOL EvilSlime::OnCollisionEnter(GameObject* _Other)
 {
-	wstring Tag;
+	wstring Tag = _Other->Get_ObjectTag();
 	switch (m_tInfo.eState[0])
 	{
 	default:
-		Tag = _Other->Get_ObjectTag();
 		if (Tag == L"PlayerArrow") {
-			if (COLLIDER(_Other)->Get_Hp() > 0.f) {
-				Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-				return TRUE;
-			}
+			return Monster::Damaged_by_Arrow(_Other, this);
 		}
+		break;
 	case MONSTER_STATE_SUMMON:
 	case MONSTER_STATE_APPEAR:
 	case MONSTER_STATE_DEAD:
@@ -448,7 +445,7 @@ VOID EvilSlime::State_Dead()
 VOID EvilSlime::State_Fission(const _float& _DT)
 {
 	m_tInfo.fTimer[0] += _DT;
-	if (m_tInfo.fTimer[0] <= 0.5f) {
+	if (m_tInfo.fTimer[0] <= 1.5f) {
 		_float fHeight = (m_vFissionDst.y - MYSCALE->y * 0.5f) * sinf(D3DX_PI * (m_tInfo.fTimer[0] / 0.5f));
 		MYPOS->y += fHeight;
 	}

@@ -123,14 +123,11 @@ BOOL Bullet_Standard::OnCollisionEnter(GameObject* _Other)
 {
 	wstring Tag = _Other->Get_ObjectTag();
 
-	if (Tag == L"PlayerArrow") {
-		
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - COLLIDER(_Other)->Get_Att());
-		return TRUE;
-	}
-	else if (Tag == L"Player") {
-		Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
-		return true;
+	if (Tag == L"Player") {
+		if (COLLIDER(_Other)->Get_Hp() > 0) {
+			Component_Collider->Set_Hp(Component_Collider->Get_Hp() - 1.f);
+			return TRUE;
+		}
 	}
 	return FALSE;
 }

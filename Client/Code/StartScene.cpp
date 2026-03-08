@@ -211,6 +211,8 @@ HRESULT   StartScene::Ready_Scene() {
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
   KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
+  TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
+  TileManager::GetInstance()->Set_Stage();
   CollisionManager::GetInstance()->Get_AllObjectOfScene();
 
 	return S_OK;
@@ -261,6 +263,8 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 
    if (KEY_DOWN(DIK_P)) {
        pMiniGame = MiniGameScene::Create(GRPDEV, this);
+	   SoundManager::GetInstance()->Stop_AllSound();
+	   SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
        pMiniGame->Start_MiniGame();
        return;
    }

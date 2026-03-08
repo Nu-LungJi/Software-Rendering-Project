@@ -39,6 +39,7 @@ public:
 	virtual void Free();
 	Tesseract* Get_Chaser() { return m_pChaser; }
 	int*		Get_EventTrigger() { return &m_iEventTrigger; }
+	Scene* Get_MainScene() { return m_pMainScene; }
 
 private:
 	Player* m_pPlayer = nullptr;

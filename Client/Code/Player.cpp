@@ -733,7 +733,15 @@ void Player::DASH_STATE(const _float& _DT)
 		_vec3 Size = { 2.f, 2.f, 2.f };
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::SHADOW_PARTNER, &dest, min(0.3f, _speed), Size, false);
 		Size = { 0.5f, 0.5f, 0.5f };
-		dest.z -= 1.3f;
+
+		if (nullptr == dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
+			dest.z -= 1.3f;
+		}
+		else
+		{
+			Size = { 0.25f,0.25f,0.25f };
+			dest += Monster::Get_Gravity() * 0.65;
+		}
 		PLAY_PLAYER_EFFECT_ONCE(PLAYER_SKILL::PLAYER_DASHEFFECT, &dest, 0.2, Size, false);
 		_partnerTimer = 0.f;
 	}
@@ -1599,6 +1607,7 @@ HRESULT Player::MiniGameExit()
 {
 	_defaultSpeed = 6.f;
 	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
+
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;
 	return S_OK;
