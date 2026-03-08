@@ -794,6 +794,9 @@
     <ClCompile Include="..\Code\MiniGameDis.cpp">
       <Filter>04. UI\06. MiniGameUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\IntroUI.cpp">
+      <Filter>04. UI\99. IntroUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

@@ -40,7 +40,7 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                 }
 
                 m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
-                if (m_pTransform->Get_Position()->x > 100.f) {
+                if (m_pTransform->Get_Position()->x > 70.f) {
                     m_fTimer = 0.f;
                     *m_pSceneEvent = 3;
                     m_pTransform->Set_Pos(50.f, -10.f, 7.5f);

@@ -112,7 +112,7 @@ VOID EffectManager::Render_EffectManager(LPDIRECT3DDEVICE9 _GRPDEV, EFFECT_RENDE
 		for (auto& UE : Container_UIEffect)
 			UE->Render_GameObject();
 	}
-	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	_GRPDEV->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 
 	_GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	_GRPDEV->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);

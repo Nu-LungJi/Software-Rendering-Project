@@ -1,11 +1,11 @@
 #include "../Include/PCH.h"
 #include "Supporter.h"
 
-Supporter::Supporter(LPDIRECT3DDEVICE9 _GRPDEV)	: GameObject(_GRPDEV)	{}
-Supporter::Supporter(CONST GameObject& _RHS)	: GameObject(_RHS)		{}
-Supporter::~Supporter()													{}
+Supporter::Supporter(LPDIRECT3DDEVICE9 _GRPDEV) : GameObject(_GRPDEV) {}
+Supporter::Supporter(CONST GameObject& _RHS) : GameObject(_RHS) {}
+Supporter::~Supporter() {}
 
-HRESULT	Supporter::Ready_GameObject(){
+HRESULT	Supporter::Ready_GameObject() {
 	if (FAILED(Component_Initialize()))	return E_FAIL;
 	if (FAILED(Texture_Initialize()))	return E_FAIL;
 
@@ -41,7 +41,7 @@ HRESULT	Supporter::Ready_GameObject(){
 
 	return S_OK;
 }
-INT		Supporter::Update_GameObject(CONST FLOAT& _DT) { 
+INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		for (auto& BFB : BFBVec) {
 			BFB->Set_ObjectDead(TRUE);
@@ -51,10 +51,10 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 		ObjectDead = TRUE;
 		return -1;
 	}
-	
+
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
-	
+
 	Animation_Timer += _DT;
 
 	Animation_PreviousIndex = Animation_CurrentIndex;
@@ -66,7 +66,7 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 
 	Scale_Increment(_DT);
 
-	if		(Supporter_Type == 1)
+	if (Supporter_Type == 1)
 		Normal_Supporter_Action(_DT);
 	else if (Supporter_Type == 2)
 		Rage_Supporter_Action(_DT);
@@ -80,7 +80,7 @@ INT		Supporter::Update_GameObject(CONST FLOAT& _DT) {
 
 	return 0;
 }
-VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
+VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		for (auto& BFB : BFBVec) {
 			BFB->Set_ObjectDead(TRUE);
@@ -94,11 +94,11 @@ VOID	Supporter::LateUpdate_GameObject(CONST FLOAT& _DT){
 	if (Supporter_Type == 1 && Component_Transform->Get_Position()->z > static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
 		AlphaZValue = 1.f;
 	}
-	else if (Supporter_Type == 1){
+	else if (Supporter_Type == 1) {
 		AlphaZValue = -1.f;
 	}
 }
-VOID	Supporter::Render_GameObject(){
+VOID	Supporter::Render_GameObject() {
 	if (ObjectDead == TRUE || Boss->Get_ObjectDead() == TRUE) {
 		for (auto& BFB : BFBVec) {
 			BFB->Set_ObjectDead(TRUE);
@@ -119,7 +119,7 @@ VOID	Supporter::Render_GameObject(){
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-BOOL	Supporter::OnCollisionEnter(GameObject* _Other)	{ 
+BOOL	Supporter::OnCollisionEnter(GameObject* _Other) {
 	if (Supporter_Type == 1) {
 		if (_Other->Get_ObjectTag() == L"Docheol") {
 			ObjectDead = TRUE;
@@ -130,7 +130,7 @@ BOOL	Supporter::OnCollisionEnter(GameObject* _Other)	{
 			else {
 				PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Disappear Effect", Component_Transform->Get_Position(), Scale, 0.5f);
 			}
-			
+
 			return FALSE;
 		}
 		if (_Other->Get_ObjectTag() == L"PlayerArrow") {
@@ -141,12 +141,12 @@ BOOL	Supporter::OnCollisionEnter(GameObject* _Other)	{
 			return FALSE;
 		}
 	}
-	return TRUE; 
+	return TRUE;
 }
-BOOL	Supporter::OnCollisionStay(GameObject* _Other)	{ return TRUE; }
-BOOL	Supporter::OnCollisionExit(GameObject* _Other)	{ return TRUE; }
+BOOL	Supporter::OnCollisionStay(GameObject* _Other) { return TRUE; }
+BOOL	Supporter::OnCollisionExit(GameObject* _Other) { return TRUE; }
 
-HRESULT	Supporter::Component_Initialize()	{ 
+HRESULT	Supporter::Component_Initialize() {
 	Component_Buffer = ADD_COMPONENT_RECTTEX;
 	Component_Texture = ADD_COMPONENT_TEXTURE;
 
@@ -159,9 +159,9 @@ HRESULT	Supporter::Component_Initialize()	{
 	Component_Collider->Set_Scale(1.5f, 0.5f, 1.5f);
 	Component_Collider->Set_Hp(1.f);
 
-	return S_OK; 
+	return S_OK;
 }
-HRESULT Supporter::Texture_Initialize()		{ 
+HRESULT Supporter::Texture_Initialize() {
 	wstring Base = L"";
 	for (INT PIC = 1; PIC <= ANIMATION_SUPPORTER_IDLE; ++PIC) {
 		Base = L"Rage_Supporter_Idle" + to_wstring(PIC) + L".png";
@@ -175,9 +175,9 @@ HRESULT Supporter::Texture_Initialize()		{
 		Base = L"DumpTexture" + to_wstring(PIC) + L".png";
 		Animation_NonAnimTexList.push_back(ResourceManager::GetInstance()->Find_Texture(Base.c_str()));
 	}
-	return S_OK; 
+	return S_OK;
 }
-Supporter* Supporter::Create(LPDIRECT3DDEVICE9 _GRPDEV) { 
+Supporter* Supporter::Create(LPDIRECT3DDEVICE9 _GRPDEV) {
 	Supporter* SPT = new Supporter(_GRPDEV);
 	if (FAILED(SPT->Ready_GameObject())) {
 		MSG_BOX("Cannot Create Supporter.");
@@ -204,12 +204,12 @@ VOID Supporter::Scale_Increment(CONST FLOAT& _DT) {
 VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 	Effect_Timer += _DT;
 
-	if (Effect_Timer > 1.5f){
+	if (Effect_Timer > 1.5f) {
 		BOOL ISPLAYING = CHECK_SOUNDPLAYING(CHANNELID::SOUND_EFFECT10);
-		if (ISPLAYING == FALSE && ObjectTAG == L"Supporter1" ) {
+		if (ISPLAYING == FALSE && ObjectTAG == L"Supporter1") {
 			PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
 		}
-		
+
 		_vec3 Scale = { 4.f, 4.f, 4.f };
 		_vec3 Pos = { Component_Transform->Get_Position()->x,  Component_Transform->Get_Position()->y + 2.f,  Component_Transform->Get_Position()->z + 2.f };
 		if (Pos.z >= static_cast<Transform*>(Boss->Get_Component(COMPONENT_TYPE::COMPONENT_TRANSFORM))->Get_Position()->z - 7.f) {
@@ -218,7 +218,7 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 		else {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::SUPPORTER_EFFECT, L"Supporter Effect", Component_Transform->Get_Position(), Scale, 0.5f);
 		}
-		
+
 
 		for (INT IDX = 0; IDX < 6; IDX++) {
 			wstring FBTag = ObjectTAG + L"_FireBall" + to_wstring(FBNumbering++);
@@ -229,7 +229,7 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 			FB->Set_FireBall_Speed(0.15f);
 			FB->Set_FireBall_Duration(10.f);
 
-			if		(IDX == 0)	FB->Set_FireBall_Angle(CurrentAngle);
+			if (IDX == 0)	FB->Set_FireBall_Angle(CurrentAngle);
 			else if (IDX == 1)	FB->Set_FireBall_Angle(CurrentAngle - 60);
 			else if (IDX == 2)	FB->Set_FireBall_Angle(CurrentAngle + 60);
 			else if (IDX == 3)	FB->Set_FireBall_Angle(CurrentAngle - 120);
@@ -240,13 +240,13 @@ VOID Supporter::Normal_Supporter_Action(CONST FLOAT& _DT) {
 		Effect_Timer = 0.f;
 	}
 	CurrentAngle += TickAngle;
-	
+
 	Direction = { 5.f * sinf(D3DXToRadian(CurrentAngle)), 0.f, 5.f * cosf(D3DXToRadian(CurrentAngle)) };
 
 	Component_Transform->Move_Pos(&Direction, 0.5f, _DT);
 }
 VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
-	if		(Rage_Movement) {
+	if (Rage_Movement) {
 		Effect_Timer += _DT;
 		BOOL ISPLAYING = CHECK_SOUNDPLAYING(CHANNELID::SOUND_EFFECT10);
 		if (ISPLAYING == FALSE && ObjectTAG == L"Supporter_Bullet1" && SoundChecker) {
@@ -279,7 +279,7 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 		Effect_Timer += _DT;
 		if (Effect_Timer <= 2.0f) {
 			if (BFBVec.size() == 0) {
-				if(ObjectTAG == L"Supporter_Bullet1")
+				if (ObjectTAG == L"Supporter_Bullet1")
 					PLAY_SOUND_ONCE(L"Docheol/Supporter_FireBall.wav", CHANNELID::SOUND_EFFECT10);
 				for (INT IDX = 0; IDX < 3; ++IDX) {
 					wstring FBallTAG = L"Sup FireBall" + to_wstring(IDX);
@@ -334,6 +334,6 @@ VOID Supporter::Rage_Supporter_Action(CONST FLOAT& _DT) {
 		}
 	}
 }
-VOID		Supporter::Free(){
+VOID		Supporter::Free() {
 	GameObject::Free();
 }
