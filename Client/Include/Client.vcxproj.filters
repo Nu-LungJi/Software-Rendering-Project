@@ -259,6 +259,9 @@
     <Filter Include="03. GameObject\06. Effect\06. WhiteOut">
       <UniqueIdentifier>{e0410cb3-55f6-4fe4-a6fc-5e781b2fe2eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. UI\06. MiniGameUI">
+      <UniqueIdentifier>{03c7bdfa-62e8-432c-a945-8d50730231f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header\GameManager.h">
@@ -532,6 +535,9 @@
     <ClInclude Include="..\Header\WhiteOut.h">
       <Filter>03. GameObject\06. Effect\06. WhiteOut</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\MiniGameDis.h">
+      <Filter>04. UI\06. MiniGameUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GameManager.cpp">
@@ -785,8 +791,8 @@
     <ClCompile Include="..\Code\WhiteOut.cpp">
       <Filter>03. GameObject\06. Effect\06. WhiteOut</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\IntroUI.cpp">
-      <Filter>04. UI\99. IntroUI</Filter>
+    <ClCompile Include="..\Code\MiniGameDis.cpp">
+      <Filter>04. UI\06. MiniGameUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

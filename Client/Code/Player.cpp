@@ -170,12 +170,16 @@ INT	Player::Update_GameObject(const _float& _DT) {
 	if (_isStop)
 		return S_OK;
 
-	Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 
-	if (m_eCurrScene != SCENE_TYPE::Minigame)
+	if (m_eCurrScene != SCENE_TYPE::Minigame) {
+		Component_Transform->Set_Scale(2.5f, 2.5f, 2.5f);
 		pPos.y = 0.5f;
+		_defaultSpeed = 6.f;
+	}
+	else {
+		_defaultSpeed = 3.f;
+	}
 
-	_defaultSpeed = 6.f;
 	Component_Collider->Set_Att(1);
 	_attackSpeed = _defaultAttackSpeed;
 	Reset_MaxArrow();
@@ -1601,6 +1605,7 @@ HRESULT Player::MiniGameInit()
 	Component_Transform->Set_Pos(2.5f, 0.7f, 2.5f);
 
 	Is_Falling = true;
+	_defaultSpeed = 3.f;
 
 	m_vBackUpPos = *Component_Transform->Get_Position();
 	m_vBackupScale = Component_Collider->Get_Scale();
@@ -1611,6 +1616,7 @@ HRESULT Player::MiniGameInit()
 }
 HRESULT Player::MiniGameExit()
 {
+	_defaultSpeed = 6.f;
 	Component_Transform->Set_Pos({ 60.671f, 0.5f, 43.405f });
 	Component_Collider->Set_Scale(m_vBackupScale.x, m_vBackupScale.y, m_vBackupScale.z);
 	m_eCurrScene = SCENE_TYPE::SCENE_END;

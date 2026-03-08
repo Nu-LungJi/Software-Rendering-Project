@@ -21,7 +21,7 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             if (m_fTimer > 5.f) {
                 vMoveDir = { 1.f,0.f,0.f };
                 m_pTransform->Get_Position()->y = 0.f;
-                m_pTransform->Move_Pos(&vMoveDir, 6.f, _DT);
+                m_pTransform->Move_Pos(&vMoveDir, 3.f, _DT);
             }
             break;
         case 1:
@@ -32,9 +32,9 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
             vMoveDir = { 1.f,0.f,0.f };
             m_fTimer += _DT;
             {
-                float fSpeed = (m_fTimer > 3.f) ? -10.f : 60.f;
+                float fSpeed = (m_fTimer > 3.f) ? -10.f : 30.f;
                 m_pTransform->Move_Pos(&vMoveDir, fSpeed, _DT);
-                if (m_pTransform->Get_Position()->x > 80.f) {
+                if (m_pTransform->Get_Position()->x > 100.f) {
                     m_fTimer = 0.f;
                     *m_pSceneEvent = 3;
                     m_pTransform->Set_Pos(50.f, -10.f, 7.5f);
@@ -44,7 +44,7 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
         case 3:
             vMoveDir = { 0.f,1.f,0.f };
             m_pTransform->Get_Position()->x = 50.f;
-            m_pTransform->Move_Pos(&vMoveDir, 8.f, _DT);
+            m_pTransform->Move_Pos(&vMoveDir, 3.5f, _DT);
             break;
         case 4:
             m_pTransform->Set_Pos(50.f, 20.f, 7.5f);
@@ -58,9 +58,11 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                 if (m_pTransform->Get_Position()->y > 100.f) {
                     *m_pSceneEvent = 6;
                     m_fTimer = 0.f;
-                    m_pTransform->Set_Pos(50.f, 49.f, 50.f);
+                    m_pTransform->Set_Pos(50.f, 49.f, 30.f);
                     m_pCollider->Set_Scale(0.5f, 0.5f, 0.5f);
                     m_pTexture = ResourceManager::GetInstance()->Find_Texture(L"Cyan.png");
+                    SoundManager::GetInstance()->Stop_Sound(CHANNELID::SOUND_BGM01);
+                    SoundManager::GetInstance()->Play_Sound_Once(L"/Docheol/UI_Stage clear.wav",CHANNELID::SOUND_BGM01);
                 }
             }
             break;
@@ -80,7 +82,7 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                     return -1;
                 }
             }
-            m_pTransform->Set_Pos(50.f, fCurrentY, 50.f);
+            m_pTransform->Set_Pos(50.f, fCurrentY, 30.f);
             if (m_fScale <= 4.0f) {
                 if (nullptr == m_pWhiteOut) {
                     m_pWhiteOut = StageWhiteOut::Create(GRPDEV);
@@ -91,12 +93,12 @@ INT	Tesseract::Update_GameObject(const _float& _DT) {
                     _vec3 vShake = {
                         RANDOM::Get_float(-fSP, fSP) + 50.f,
                         RANDOM::Get_float(-fSP, fSP) + fCurrentY,
-                        RANDOM::Get_float(-fSP, fSP) + 50.f
+                        RANDOM::Get_float(-fSP, fSP) + 30.f
                     };
                     m_pTransform->Set_Pos(vShake);
                 }
                 else {
-                    m_pTransform->Set_Pos(50.f, 58.f, 50.f);
+                    m_pTransform->Set_Pos(50.f, 58.f, 30.f);
                 }
             }
         }
