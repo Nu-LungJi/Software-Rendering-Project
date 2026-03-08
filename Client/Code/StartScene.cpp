@@ -210,10 +210,9 @@ HRESULT   StartScene::Ready_Scene() {
 	}
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
-  KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
-  TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_DOCHER1);
-  TileManager::GetInstance()->Set_Stage();
-  CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
+	CollisionManager::GetInstance()->Get_AllObjectOfScene();
+
 
 	return S_OK;
 }

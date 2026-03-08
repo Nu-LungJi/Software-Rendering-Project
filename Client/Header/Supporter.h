@@ -34,7 +34,7 @@ public:
 	VOID	Set_StartPos(_vec3 _Pos)		{ Component_Transform->Set_Pos(_Pos); }
 	VOID	Scale_Increment(CONST FLOAT& _DT);
 
-	VOID	Set_SupporterType(INT _TYPE)	{ Supporter_Type = _TYPE;	}
+	VOID	Set_SupporterType(INT _TYPE)	{ Supporter_Type = _TYPE; }
 	INT		Get_SupporterType()				{ return Supporter_Type;	}
 
 	VOID	Set_ScaleInc(BOOL _INC)			{ Enable_ScaleInc = _INC;	}
@@ -80,6 +80,7 @@ private:
 	vector<GameObject*> BFBVec;
 
 	BOOL	SoundChecker;
+	INT		FBallInit;
 private:
 	Buffer*			Component_Buffer;
 	Transform*		Component_Transform;

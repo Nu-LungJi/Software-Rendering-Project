@@ -786,9 +786,11 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 	if (Enable_BossClearUI) {
 		BossClearTimer += _DT;
 		FLOAT Delay = 3.f, BackGroundOPC = 180.f;
-		SpriteINFO* FadeBG = Component_Sprite->Get_Texture(L"BossClearBG");
+		SpriteINFO* FadeBG = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter");
+		//Enable_FadeFilter = TRUE;
 		if (BossClearTimer > Delay  && BossClearTimer < Delay + 6.f) {
 			if (BossClearTimer <= 5.f) {
+				FadeBG->Set_Visible(true);
 				SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM03, 0.5f - BossClearTimer / 10);
 			}
 			else {}

@@ -29,6 +29,7 @@ HRESULT	BossFireBall::Ready_GameObject() {
 	FireBall_Timer = 0.f;
 
 	ObjectTAG = L"BossFB";
+
 	return S_OK;
 }
 INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) { 
@@ -42,7 +43,7 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	if (FireBall_Timer >= FireBall_Duration) {
 		ObjectDead = TRUE;
 		_vec3 Scale = { 2.f, 2.f, 2.f };
-		if (Boss != nullptr && Boss->Get_ModeState(BOSSMODE::MODE_RAGE) == TRUE) {
+		if		(Boss != nullptr && Boss->Get_ModeState(BOSSMODE::MODE_RAGE) == TRUE) {
 			PLAY_BOSS_FRONTEFFECT_ONCE(BOSS_EFFECT::RAGE_FIREBALL_EFFECT, L"FireBall Disappear", Component_Transform->Get_Position(), Scale, 0.8f);
 		}
 		else if (Boss != nullptr && Boss->Get_ModeState(BOSSMODE::MODE_RAGE) == FALSE) {
@@ -61,10 +62,8 @@ INT		BossFireBall::Update_GameObject(CONST FLOAT& _DT) {
 	GameObject::Update_GameObject(_DT);
 	RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
 	
-	if (ObjectTAG == L"FireBall2") {
-		int a = 0;
-	}
 	FireBall_Linear_Movement(&Direction, FireBall_DirectionAngle, FireBall_Speed);
+
 	Animation_Timer += _DT;
 	Animation_PreviousIndex = Animation_CurrentIndex;
 	if (Animation_Timer > Animation_Interval) {
