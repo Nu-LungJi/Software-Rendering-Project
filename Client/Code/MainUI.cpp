@@ -281,7 +281,7 @@ VOID MainUI::PopUp_Speech_Bubble(wstring _Text, FLOAT _DT) {
 			Font->Set_Color(0, 255, 255, 255);
 
 			BackGround->Set_Pos(0.f, 560.f);
-			Character->Set_Pos(0.f, 560.f);
+			Character->Set_Pos(0.f, 558.f);
 			Frame->Set_Pos(0.f, 533.f);
 			Font->Set_Pos( 140.f, 577.f );
 		}
@@ -519,7 +519,9 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		}
 	}
 	else if (Enable_MainUIFade == FALSE) {
-		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE) {
+		if (Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE == FALSE 
+			&& (TileManager::GetInstance()->Get_Stage() == TILE_DOCHERBOSS 
+				|| TileManager::GetInstance()->Get_Stage() == TILE_FIRSTBOSS)) {
 			Component_Sprite->Get_Texture(L"HPBar_Frame")->Set_Opacity(0);
 			Component_Sprite->Get_Texture(L"HPBar_Frame")->VISIBLE = TRUE;
 			HPBarFill->VISIBLE = TRUE;
@@ -828,7 +830,7 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 }
 
 VOID MainUI::Display_Tutorial(CONST FLOAT& _DT) {
-	if (Enable_Tutorial) {
+ 	if (Enable_Tutorial) {
 		Tutorial_Timer += _DT;
 
 		SpeechBubble_FadeInTime = 1.f;
@@ -938,7 +940,7 @@ HRESULT MainUI::Sprite_Initialize() {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// SPEECH ///////////////////////////////////////////////////////
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_BG.png", L"SpeechBubble_BG", 0.f, 529.f + 30.f, 360, 62, TRUE, 0);
-	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Tif.png", L"SpeechBubble_Tif", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Tif.png", L"SpeechBubble_Tif", 0.f, 528.f + 30.f, 153, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_TimeStop.png", L"SpeechBubble_TimeStop", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Angry.png", L"SpeechBubble_Angry", 0.f, 529.f + 30.f, 153, 62, TRUE, 0);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/SpeechBubble_Frame.png", L"SpeechBubble_Frame", 0.f, 503.f + 30.f, 566 * 0.7f, 126 * 0.7f, TRUE, 0);
