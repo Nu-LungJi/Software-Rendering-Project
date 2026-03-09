@@ -82,8 +82,14 @@ BOOL DropItem::OnCollisionStay(GameObject* _Other){
 			// ±¤À± Ãß°¡ ¡å
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"½Àµæ - ÆÄ¸£Äí³ª½º", TRUE);
 			if (KEY_DOWN(DIK_Z)) {
-					// ±¤À± Ãß°¡ ¡å
 					static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->PopUp_Interaction_Notice(L"", FALSE);
+					
+					Player* pPlayer = Monster::Get_Player();
+					pPlayer->Buy_item(7);
+					
+					PlayerInven* pPlayerinven = static_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"));
+					pPlayerinven->Buy_Item(7);
+					
 					m_iPickUpEvent = 1;
 					ObjectDead = true;
 					return true;

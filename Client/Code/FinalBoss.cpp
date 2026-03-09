@@ -97,7 +97,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 	Skill_SupporterFlame(_DT);
 	Skill_ExplosionRush(_DT);
 	BoobieTrap(_DT);
-
+	BGM_Player(_DT);
 	
 	Animation_Appear_Staging(_DT);
 	Animation_Disappear_Staging(_DT);
@@ -109,13 +109,13 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 		Animation_Timer = 0.f;
 	}
 	Animation_Timer += _DT;
-	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE || BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
+	if (BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] == FALSE && BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] == FALSE)
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] += _DT;
 
 	if (BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] > 3.5f) {
 		srand(time(NULL));
 		if		(BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE)		{ Action_Selector = rand() % 4 + 1; }
-		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 4 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
+		else if (BossMode[(LONG)BOSSMODE::MODE_RAGE] == TRUE)		{ Action_Selector = rand() % 100 + 1; } //rand() % 5 + 1; } 보스 패턴 추가 시 적용
 
 		BossTimer[(LONG)BOSSTIMER::TIMER_ACTION] = 0.f;
 	}
@@ -185,7 +185,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			BossMode[(LONG)BOSSMODE::MODE_ACTION_AVAILABLE] = FALSE;
 		}
 		// <<< RageMode >>>
-		if (Component_Collider->Get_Hp() <= 5000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
+		if (Component_Collider->Get_Hp() <= 10000.f && BossMode[(LONG)BOSSMODE::MODE_RAGE] == FALSE) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Stunning_TexList;
 			Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
@@ -230,7 +230,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Component_FSM->FSM_StateChange(DeadState::GetInstance()->Instance());
 		}
 		// < Stand -> RSwing >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 1) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector >= 1 && Action_Selector <= 40)) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_RSwing_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_RSWING_FRAMECOUNT;
@@ -240,7 +240,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Normal Slam >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 2) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 40 && Action_Selector <= 70)) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Slam_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_SLAM_FRAMECOUNT;
@@ -250,7 +250,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Rush >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 3 && BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] <= 1.f) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 70 && Action_Selector <= 85) && BossTimer[(LONG)BOSSTIMER::TIMER_RUSH] <= 1.f) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Rush_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_RUSH_FRAMECOUNT;
@@ -261,7 +261,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 			Action_Selector = 0;
 		}
 		// < Stand -> Supporter >
-		if (Animation_TexList == &Animation_Rage_Stand_TexList && Action_Selector == 4 && BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] <= 1.f) {
+		if (Animation_TexList == &Animation_Rage_Stand_TexList && (Action_Selector > 85 && Action_Selector <= 100) && BossTimer[(LONG)BOSSTIMER::TIMER_SUPPORT] <= 1.f) {
 			Animation_CurrentIndex = 0;
 			Animation_TexList = &Animation_Rage_Charge_TexList;
 			Animation_FrameCount = ANIMATION_RAGE_CHARGE_FRAMECOUNT;
@@ -307,7 +307,7 @@ INT		FinalBoss::Update_GameObject(CONST FLOAT& _DT) {
 }
 VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	GameObject::LateUpdate_GameObject(_DT);
-	BGM_Player(_DT);
+	
 	//if (KEY_DOWN(DIK_O)) Enable_ExplosionRush = TRUE;
 	//if (KEY_DOWN(DIK_I)) {
 	//	Enable_ExplosionRush = FALSE;
@@ -316,24 +316,25 @@ VOID	FinalBoss::LateUpdate_GameObject(CONST FLOAT& _DT) {
 	//	memset(ERUSH_TRIGGER, TRUE, sizeof(ERUSH_TRIGGER));
 	//	memset(BBTrap, TRUE, sizeof(BBTrap));
 	//}
-	//
-	//if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_P)) {
-	//	Component_Collider->Set_Hp(10);
-	//	//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-	//	//Animation_TexList = &Animation_Stunning_TexList;
-	//	//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
-	//	//Animation_CurrentIndex = 0;
-	//}
-	//else if (KEY_DOWN(DIK_P)) {
-	//	Component_Collider->Set_Hp(5000);
-	//	BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
-	//	Animation_TexList = &Animation_Rage_Stand_TexList;
-	//	Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
-	//	Animation_CurrentIndex = 0;
-	//}
+	
+	if (KEY_HOLD(DIK_LSHIFT) && KEY_DOWN(DIK_0)) {
+		Component_Collider->Set_Hp(10);
+		//BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+		//Animation_TexList = &Animation_Stunning_TexList;
+		//Animation_FrameCount = ANIMATION_STUNNING_FRAMECOUNT;
+		//Animation_CurrentIndex = 0;
+	}
+	else if (KEY_DOWN(DIK_0)) {
+		Component_Collider->Set_Hp(5000);
+		BossMode[(LONG)BOSSMODE::MODE_RAGE] = TRUE;
+		Animation_TexList = &Animation_Rage_Stand_TexList;
+		Animation_FrameCount = ANIMATION_RAGE_STAND_FRAMECOUNT;
+		Animation_CurrentIndex = 0;
+	}
 }
 VOID	FinalBoss::Render_GameObject() {
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
 
@@ -341,6 +342,7 @@ VOID	FinalBoss::Render_GameObject() {
 
 	Component_Buffer->Render_Buffer();
 
+	GRPDEV->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
@@ -371,7 +373,7 @@ HRESULT	FinalBoss::Component_Initialize() {
 	Component_Collider->Set_CenterPos(Component_Transform);
 	Component_Collider->Set_Offset({ -0.5f, -1.75f, -3.5f });
 	Component_Collider->Set_Scale(2.5f, 1.5f, 3.f);
-	Component_Collider->Set_Hp(10000.f);
+	Component_Collider->Set_Hp(20000.f);
 	return S_OK;
 }
 HRESULT FinalBoss::Texture_Initialize() {
@@ -678,6 +680,7 @@ VOID	FinalBoss::Animation_Disappear_Staging(CONST FLOAT& _DT) {
 			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_CHARGE"))->Set_All_Visible(TRUE);
 			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_MARK"))->Set_All_Visible(TRUE);
 			//dynamic_cast<UIEffect*>(EffectManager::GetInstance()->Find_GlobalEffect(L"CLEAR_LINE"))->Set_All_Visible(TRUE);
+
 
 			static_cast<MainUI*>(SceneManager::GetInstance()->Get_GameObject(L"MainUI"))->Set_BossClearUI(TRUE);
 		}
@@ -1222,6 +1225,8 @@ VOID	FinalBoss::Skill_RageUpFireBall	(CONST FLOAT& _DT) {
 				SceneManager::GetInstance()->Get_CurrentScene()->Add_GameObjectToScene<BossFireBall>(LAYER_TYPE::LAYER_DYNAMIC_OBJECT, ObjectPool_RageUp[12 * 3 + IDX]);
 			}
 			BossTimer[(LONG)BOSSTIMER::TIMER_RAGEUP] = 0.f;
+			BossMode[(LONG)BOSSMODE::MODE_INVALIDATE] = FALSE;
+
 			memset(FIREBALL_TRIGGER, TRUE, sizeof(FIREBALL_TRIGGER));
 			Enable_RageUpFireBall = FALSE;
 		}
@@ -1789,7 +1794,7 @@ VOID	FinalBoss::BoobieTrap(CONST FLOAT& _DT) {
 }
 
 VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
-	if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
+	if		(SoundTransition == (INT)SOUNDPLAYER::ESCAPING_DUNGEON) { // INC BEFORE COMBA
 		STOP_ALLSOUND;
 		SoundTransition = (INT)SOUNDPLAYER::ENTERING_BC;
 		SoundManager::GetInstance()->Play_Sound(L"Docheol/BackGround_BeforeCombat.wav", CHANNELID::SOUND_BGM03, 0.f, FALSE);
@@ -1813,7 +1818,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ESCAPING_BC) { // DEC BEFORE COMBAT
 		if (SoundVolume >= 0.f) {
-			SoundVolume -= _DT / 4.f;
+			SoundVolume -= _DT / 2.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
@@ -1825,7 +1830,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 	}
 	else if (SoundTransition == (INT)SOUNDPLAYER::ENTERING_WC) { // INC COMBAT
 		if (SoundVolume <= 0.8f) {
-			SoundVolume += _DT / 4.f;
+			SoundVolume += _DT / 2.f;
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
@@ -1843,7 +1848,7 @@ VOID	FinalBoss::BGM_Player(CONST FLOAT& _DT) {
 			SoundManager::GetInstance()->Set_ChannelGroupVolume(CHANNELID::SOUND_BGM03, SoundVolume);
 		}
 		else {
-			SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
+			//SoundTransition = (INT)SOUNDPLAYER::ENTERING_WC;
 			SoundVolume = 0.f;
 		}
 	}

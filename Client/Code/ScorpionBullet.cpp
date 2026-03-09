@@ -49,7 +49,8 @@ INT	ScorpionBullet::Update_GameObject(const _float& _DT)
 				m_tInfo.pGameObj[1] = nullptr;
 			}
 			m_tInfo.bTrigger[1] = true;
-			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/ScorpionBullet_Explosion.wav", CHANNELID::SOUND_EFFECT08, 0.5f);
+      
+			SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Scorpion_Chain.wav", CHANNELID::SOUND_EFFECT08, 0.1f);
 		}
 	}
 

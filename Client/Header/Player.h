@@ -189,11 +189,17 @@ public:
 	float*	Get_AttackSpeed() { return &_attackSpeed; }
 	VOID	Set_AttackSpeed(float val) { _attackSpeed = val; }
 
+	// 광윤 추가 ▼
+	VOID	Set_PlayerSummon(BOOL _SMN) { Enable_PlayerSummon = _SMN; }
+	BOOL	Get_PlayerSummon()			{ return Enable_PlayerSummon; }
+
 	pState	Get_pState() { return _pState; }
 
 	VOID	Set_AtkUpgrad(float val) { _atkUpgrade = val; }
 
 	VOID	Set_DefaultAttackSpeed(float val) { _defaultAttackSpeed = val; }
+
+	int		Get_Equipnum() { return _equipNum; }
 	
 	void			Set_CameraMove(bool Came) { CameraMove = Came; }
 	bool			Get_CameraMove()		  { return CameraMove; }
@@ -216,6 +222,7 @@ public:
 
 		return _artifactSlot[slotIdx]->Get_ItemIdx();
 	}
+	Artifact*	Get_Artifact(INT _IDX) { return _artifactSlot[_IDX]; }
 	/// 인벤용
 	void		Artifact_Effect();
 	void		Chage_Item(int src, int dst);
@@ -315,6 +322,8 @@ private:
 	float			LandingTimer;
 	bool			StartEffectDead;
 	bool			SummonStart;
+	// 광윤 추가 ▼
+	BOOL			Enable_PlayerSummon;
 
 	////////////////// UI
 	int				_hp;			// 플레이어 HP

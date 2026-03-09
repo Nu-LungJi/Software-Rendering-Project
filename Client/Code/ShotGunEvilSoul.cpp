@@ -362,7 +362,15 @@ VOID ShotGunEvilSoul::State_Dead()
 		if (m_tInfo.pGameObj[i] != nullptr)
 			m_tInfo.pGameObj[i]->Set_ObjectDead(true);
 	}
-	SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.6f);
+	// SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Monster_Death.wav", CHANNELID::SOUND_EFFECT05, 0.3f);
+	if (TileManager::GetInstance()->Get_Stage() != TILE_STAGE::TILE_DEFENSE) {
+		std::random_device rd;
+		std::uniform_int_distribution<int> distribution(0, 180);
+
+		Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+		player->Set_Coin(player->Get_Coin() + 10 + (distribution(rd) % 5));
+	}
+
 	TileManager::GetInstance()->Set_StageArray();
 
 	ObjectDead = true;

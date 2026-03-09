@@ -73,6 +73,8 @@ VOID MiniGameScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 	}
 	else if (POS(m_pPlayer)->y > 10.f && m_iEventTrigger == 1) {
 		m_iEventTrigger = 2;
+
+		SoundManager::GetInstance()->Play_Sound_Once(L"Object/Tesseract_Woosh.wav", CHANNELID::SOUND_EFFECT08, 1.f);
 	}
 	else if ((POS(m_pPlayer)->y > 49.f) && (m_iEventTrigger == 3)) {
 		m_iEventTrigger = 4;

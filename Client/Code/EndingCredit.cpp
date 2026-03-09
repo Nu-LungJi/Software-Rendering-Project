@@ -67,7 +67,12 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 		GameObject::Update_GameObject(_DT);
 		RenderManager::GetInstance()->Add_RenderGroup(RENDER_UI, this);
 		
-		if (!Start) Update_Ready();
+		if (!Start) {
+			Update_Ready();
+			SoundManager::GetInstance()->Stop_AllSound();
+			SoundManager::GetInstance()->Play_Sound(L"Stage/Bgm_Stage1-2_Loop.wav", CHANNELID::SOUND_BGM01, 0.6f);
+			Start = true;
+		}
 
 		// 집 위치 조절
 		if (Timer < 5.f) {
@@ -80,6 +85,7 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 			WhiteScreenOpacity -= _DT * 100.f;
 			WhiteScreenOpacity = max(0, WhiteScreenOpacity);
 			_WhiteScreen->Set_Opacity(WhiteScreenOpacity);
+
 		}
 
 		if (POSX >= -150) {
@@ -90,10 +96,13 @@ INT EndingCredit::Update_GameObject(const FLOAT& _DT)
 		}
 
 		if (FrameSpeed >= 255) {
-			Credit1->Set_Pos(Credit1->Get_Pos().x, Credit1->Get_Pos().y - _DT * 40.f);
+			Credit1->Set_Pos(Credit1->Get_Pos().x, Credit1->Get_Pos().y - _DT * 80.f);
 		}
 		if (Credit1->Get_Pos().y <= WINCY - 520.f) {
-			Credit2->Set_Pos(Credit2->Get_Pos().x, Credit2->Get_Pos().y - _DT * 40.f);
+			Credit2->Set_Pos(Credit2->Get_Pos().x, Credit2->Get_Pos().y - _DT * 80.f);
+		}
+		if (Credit2->Get_Pos().y <= WINCY - 520.f) {
+			Credit3->Set_Pos(Credit3->Get_Pos().x, Credit3->Get_Pos().y - _DT * 80.f);
 		}
 
 		// 텍스트
@@ -185,6 +194,7 @@ HRESULT EndingCredit::Sprite_Initialize()
 
 	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Credit1.png", L"Credit1", WINCX - 520.f, WINCY, 520.f, 520.f, FALSE, 255);
 	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Credit2.png", L"Credit2", WINCX - 520.f, WINCY, 520.f, 520.f, FALSE, 255);
+	Component_Sprite->Import_Sprite(L"../../UI/EndingCredit/Credit3.png", L"Credit3", WINCX - 520.f, WINCY, 520.f, 520.f, FALSE, 255);
 
 	return S_OK;
 }
@@ -201,6 +211,8 @@ HRESULT EndingCredit::Update_Ready()
 	Credit1->Set_Visible(TRUE);
 	Credit2 = Component_Sprite->Get_Texture(L"Credit2");
 	Credit2->Set_Visible(TRUE);
+	Credit3 = Component_Sprite->Get_Texture(L"Credit3");
+	Credit3->Set_Visible(TRUE);
 
 	return S_OK;
 }

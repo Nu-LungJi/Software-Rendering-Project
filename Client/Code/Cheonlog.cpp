@@ -180,7 +180,11 @@ INT   Cheonlog::Update_GameObject(const _float& _DT)
 		else
 			Component_Transform->Set_Pos({ matWorld._41 , 0.8f , matWorld._43 });
 	}
-
+	if (!m_bDead)
+	{
+		Change_Pattern(_DT);
+		Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
+	}
 	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 	{
 		for (auto iter = m_vecOrignBullet[i].begin(); iter != m_vecOrignBullet[i].end();)
@@ -207,11 +211,8 @@ void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 
 	GameObject::LateUpdate_GameObject(_DT);
 	
-	if (!m_bDead)
-	{
-		Change_Pattern(_DT);
-		Change_Statu(_DT, m_vecCheonlogTexture[m_eStatu].size());
-	}
+
+
 	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
 	{
 		for (auto& iter : m_vecOrignBullet[i])
@@ -221,6 +222,14 @@ void Cheonlog::LateUpdate_GameObject(const _float& _DT) {
 void Cheonlog::Render_GameObject() {
 	if (m_eStatu == SPAWN)
 		return;
+
+	for (size_t i = 0; i < (int)LEAF_ATTACK::LEAF_END; ++i)
+	{
+		for (auto iter = m_vecOrignBullet[i].begin(); iter != m_vecOrignBullet[i].end(); iter++)
+		{
+			RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, (*iter));
+		}
+	}
 
 	
 	GRPDEV->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -249,7 +258,7 @@ HRESULT Cheonlog::Component_Initialize() {
 
 	Component_Collider = ADD_COMPONENT_COLLIDER;
 	Component_Collider->Set_CenterPos(Component_Transform);
-	Component_Collider->Set_Hp(3000);
+	Component_Collider->Set_Hp(12000);
 
 	Component_Collider->Set_Scale(2.f, 1.5f, 2.f);
 
@@ -306,33 +315,6 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 	Component_Transform->Get_Info(INFO_POS, &vPos);
 	vScale = *Component_Transform->Get_Scale();
 
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_Z))
-	{
-		vPos.x += 0.5;
-		Component_Transform->Set_Pos(vPos);
-	}
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_X))
-	{
-		vPos.z += 0.5;
-		Component_Transform->Set_Pos(vPos);
-	}
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
-	{
-		m_eStatu = CL_RJUMP;
-	}
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_L))
-	{
-		Component_Collider->Set_Hp(0);
-	}
-	if (m_bStartPattern)
-	{
-		Change_Pattern(_DT);
-	}
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_M))
-	{
-		//m_eCheck = ATTACK_B;
-		//m_eStatu = SPAWN;
-	}
 	//이동 모션 관련
 	switch (m_eStatu)
 	{
@@ -431,14 +413,7 @@ void Cheonlog::Change_Statu(const _float& _DT, _int iMaxCnt)
 		AttackLeaf_Four(_DT, vPos);
 		break;
 	}
-	
 
-	if (KeyManager::GetInstance()->Get_KeyState(DIK_K))
-	{
-		vPos = { 0,0,0 };
-		m_eCheck = ATTACK_A;
-		m_EndEffect = true;
-	}
 
 }
 
@@ -457,7 +432,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 3 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 12)
+		if (m_framePattern > 9)
 		{
 			if(m_eCurr == CL_LJUMP)
 				Reset_Pattern(IDEL, CL_RJUMP);
@@ -469,7 +444,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 4 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 18)
+		if (m_framePattern > 15)
 		{
 			Reset_Pattern(ATTACK_B, CL_IDELR);
 			return;
@@ -478,7 +453,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 5 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 28)
+		if (m_framePattern > 21)
 		{
 
 			Reset_Pattern(ATTACK_C, CL_IDELR);
@@ -488,7 +463,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill < 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern >35)
+		if (m_framePattern >25)
 		{
 			Reset_Pattern(ATTACK_A, CL_IDELR);
 			return;
@@ -497,7 +472,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill == 8 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern >45)
+		if (m_framePattern > 30)
 		{
 			Reset_Pattern(ATTACK_D, CL_IDELR);
 			return;
@@ -506,7 +481,7 @@ void Cheonlog::Change_Pattern(const _float& _DT)
 	if (m_iNextSkill >= 9 && m_eCheck == IDEL && m_eStatu == CL_IDELR)
 	{
 		m_framePattern += _DT;
-		if (m_framePattern > 15)
+		if (m_framePattern > 10)
 		{
 			m_iNextSkill = 0;
 			m_framePattern = 0;
@@ -586,7 +561,7 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 			D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 90));
 			D3DXVec3TransformNormal(&vLookReset, &vLook, &matRotY);
 		
-			vPos += vLookReset * 6;
+			vPos += vLookReset * 8;
 		
 			Create_Pool(LEAF_ATTACK::LEAF_BOOM_CIRCLE, { vPos.x,-0.2f,vPos.z + _float(i * 0.001) }, { 0,0,0 }, 0.08f);
 			Create_Pool(LEAF_ATTACK::LEAF_EXPLOSION, { vPos.x  , 2.f, vPos.z }, { 0,0,1 });
@@ -606,7 +581,7 @@ void Cheonlog::AttackLeaf_Second(const _float& _DT, _vec3 vPos)
 				D3DXMatrixRotationY(&matRotY, D3DXToRadian(i * 40));
 				D3DXVec3TransformNormal(&vLookReset, &vLook, &matRotY);
 
-				vPos += vLookReset * 13;
+				vPos += vLookReset * 16;
 
 				Create_Pool(LEAF_ATTACK::LEAF_BOOM_CIRCLE, { vPos.x,-0.2f,vPos.z + _float(i * 0.001) }, { 0,0,0 }, 0.08f);
 				Create_Pool(LEAF_ATTACK::LEAF_EXPLOSION,{ vPos.x  , 2.f, vPos.z },{0,0,1});

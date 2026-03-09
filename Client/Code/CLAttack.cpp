@@ -99,7 +99,7 @@ INT CLAttack::Update_GameObject(const _float& _DT)
     Move_Frame(_DT);
     Move_Leaf(_DT);
 
-    RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
+    //RenderManager::GetInstance()->Add_RenderGroup(RENDER_ALPHA, this);
     return S_OK;
 }
 BOOL CLAttack::OnCollisionEnter(GameObject* _Other)

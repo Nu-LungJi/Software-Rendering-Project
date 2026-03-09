@@ -224,7 +224,7 @@ VOID EvilFrog::State_Channeling(const _float& _DT) {
 
 VOID EvilFrog::State_Dead() {
 	PLAY_MONSTER_EFFECT_ONCE(MONSTER_EFFECT::MONSTER_DEATH, *MYPOS, 1.f);
-  SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Frog_Death.mp3", CHANNELID::SOUND_EFFECT07, 0.5f);
+	//SoundManager::GetInstance()->Play_Sound_Once(L"Monster/Frog_Death.mp3", CHANNELID::SOUND_EFFECT07, 0.3f);
 	ObjectDead = TRUE;
 }
 BOOL EvilFrog::OnCollisionEnter(GameObject* _Other) {

@@ -366,7 +366,7 @@ VOID PlayerEffect::Render_GameObject() {
 
 	//KJJ 03 06
 	if (nullptr != dynamic_cast<MiniGameScene*>(SceneManager::GetInstance()->Get_CurrentScene())) {
-		Monster::BillBoard(Component_Transform, GRPDEV);
+		Monster::BillBoard(Component_Transform, GRPDEV, { 1.f,0.f,0.f},0);
 	}
 
 	GRPDEV->SetTransform(D3DTS_WORLD, Component_Transform->Get_World());
@@ -470,8 +470,8 @@ HRESULT	PlayerEffect::Component_Initialize() {
 		else Component_Collider->Set_Scale(5.f, 5.f, 5.f);					// 충돌체의 범위 조절
 		
 		if(SKILL_TYPE == PLAYER_SKILL::WIND_SPIRIT) Component_Collider->Set_Att(43.f);
-		else if(SKILL_TYPE == PLAYER_SKILL::PAREND)Component_Collider->Set_Att(50.f);
-		else if (SKILL_TYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT)Component_Collider->Set_Att(60.f);
+		else if(SKILL_TYPE == PLAYER_SKILL::PAREND)Component_Collider->Set_Att(60.f);
+		else if (SKILL_TYPE == PLAYER_SKILL::ATOMIC_BOMB_EFFECT)Component_Collider->Set_Att(80.f);
 	}
 
 

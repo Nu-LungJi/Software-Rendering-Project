@@ -52,9 +52,12 @@ INT Bow::Update_GameObject(const _float& _DT)
 		_attackDelay = 0.4 * (*_playerAttackSpped);
 		if (_type == BowType::WindBow) _attackDelay = 1.f * (*_playerAttackSpped);
 
+		_Stat.curArrow = min(_Stat.curArrow, _Stat.maxArrow);
 		_Stat.maxArrow *= (player->Get_AddMaxArrow());
 		_chargingTime = 2.f;
 		_chargingTime *= *_playerChargingSpeed;
+
+		
 
 		float alphaSpeed = 3.f;
 
@@ -551,12 +554,14 @@ void Bow::Late_Ready()
 {
 	TCHAR txt[128] = L"";
 
+	Player* player = dynamic_cast<Player*>(SceneManager::GetInstance()->Get_CurrentScene()->Get_GameObject(L"Player"));
+
 	wstring name = L"";
 	switch (_type) {
 	case BowType::FairyBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
+		_Stat.minAtk = 15;
+		_Stat.maxAtk = 23;
 		_Stat.maxArrow = 10000;
 		_Stat.curArrow = 10000;
 		_Stat.range = 10.f;
@@ -565,10 +570,10 @@ void Bow::Late_Ready()
 		break;
 	case BowType::IceBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 180;
-		_Stat.curArrow = 180;
+		_Stat.minAtk = 10;
+		_Stat.maxAtk = 18;
+		_Stat.maxArrow = 300;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 1;
@@ -577,18 +582,18 @@ void Bow::Late_Ready()
 		_Stat.bowLv = 1;
 		_Stat.minAtk = 20;
 		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 150;
-		_Stat.curArrow = 150;
+		_Stat.maxArrow = 200;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 2;
 		break;
 	case BowType::WindBow:
 		_Stat.bowLv = 1;
-		_Stat.minAtk = 20;
-		_Stat.maxAtk = 28;
-		_Stat.maxArrow = 180;
-		_Stat.curArrow = 180;
+		_Stat.minAtk = 13;
+		_Stat.maxAtk = 21;
+		_Stat.maxArrow = 300;
+		_Stat.curArrow = (_Stat.maxArrow * (player->Get_AddMaxArrow()));
 		_Stat.range = 10.f;
 		_Stat.delay = 0.6f;
 		_imgIDX = 3;
@@ -638,13 +643,13 @@ void Bow::Reset_MaxArrow()
 		_Stat.maxArrow = 10000;
 		break;
 	case BowType::IceBow:
-		_Stat.maxArrow = 180;
+		_Stat.maxArrow = 300;
 		break;
 	case BowType::EvilHeadBow:
-		_Stat.maxArrow = 150;
+		_Stat.maxArrow = 200;
 		break;
 	case BowType::WindBow:
-		_Stat.maxArrow = 180;
+		_Stat.maxArrow = 300;
 		break;
 	}
 }

@@ -17,9 +17,9 @@ HRESULT   StartScene::Ready_Scene() {
     ResourceManager::GetInstance()->GlobalImport_Texture(GRPDEV, L"../../Resource");
 	
 
-    if (FAILED(Ready_Enviroment_Layer()))      return E_FAIL;
-    if (FAILED(Ready_GameLogic_Layer()))      return E_FAIL;
-    if (FAILED(Ready_UserInterface_Layer()))      return E_FAIL;
+    if (FAILED(Ready_Enviroment_Layer()))		return E_FAIL;
+    if (FAILED(Ready_GameLogic_Layer()))		return E_FAIL;
+    if (FAILED(Ready_UserInterface_Layer()))    return E_FAIL;
 
     //Load Tile 천록
 	{
@@ -210,13 +210,10 @@ HRESULT   StartScene::Ready_Scene() {
 	}
 	PlayingSound = FALSE;
 	TileManager::GetInstance()->Set_StageCnt();
-	//TileManager::GetInstance()->Set_CurStage(TILE_STAGE::TILE_STAGE1);
-	//TileManager::GetInstance()->Set_Stage();
-    KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
-    CollisionManager::GetInstance()->Get_AllObjectOfScene();
+	KeyManager::GetInstance()->Ready_KeyManager(hInst, hWnd);
 
-    return S_OK;
-
+	TileManager::GetInstance()->Set_Stage();
+	return S_OK;
 }
 INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
     
@@ -251,7 +248,7 @@ INT    StartScene::Update_Scene(CONST FLOAT& _DT) {
 
         TileManager::GetInstance()->Stage_Update(_DT);
     CollisionManager::GetInstance()->Update_CollisionManager();
-	
+
     return Scene::Update_Scene(_DT);
 }
 VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
@@ -264,6 +261,8 @@ VOID StartScene::LateUpdate_Scene(CONST FLOAT& _DT) {
 
    if (KEY_DOWN(DIK_P)) {
        pMiniGame = MiniGameScene::Create(GRPDEV, this);
+	   SoundManager::GetInstance()->Stop_AllSound();
+	   SoundManager::GetInstance()->Play_Sound(L"Stage/BGM_CrossyRoad.wav", CHANNELID::SOUND_BGM01, 1.f);
        pMiniGame->Start_MiniGame();
        return;
    }

@@ -62,6 +62,8 @@ HRESULT	MainUI::Ready_GameObject() {
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"));
 	BowIMG_List.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 
+	Set_RelicIcon();
+
 	return S_OK;
 }
 INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
@@ -72,7 +74,7 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	PopUp_Speech_Bubble_Skill(SpeechBubble_Text, _DT, skillType);
   
 	Timer02 += _DT; 
-	if(Timer02 > 0.04f){
+	if(Timer02 > 0.02f){
 		Player_KeyModify();
 		Player_MoneyModify();
 		Player_CrystalModify();
@@ -89,7 +91,9 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 	Display_FadeFilter(_DT);
 	Display_ClearBossUI(_DT);
 
-	ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
+	if (PlayerObject->Get_Equipnum() == 0) ArrowCountText = L"∞ / ∞";
+	else ArrowCountText = to_wstring(PlayerObject->Get_CurArrowCount()) + L" / " +  to_wstring(PlayerObject->Get_MaxArrow());
+
 	FO_ArrowCount->Set_Text(ArrowCountText);
 
 	int cur_Equip_BowIDX = PlayerObject->Get_Bow_ImgIDX();
@@ -99,12 +103,37 @@ INT		MainUI::Update_GameObject(CONST FLOAT& _DT) {
 		Cur_BowIMGIDX = cur_Equip_BowIDX;
 	}
 
-	Reset_Relic();
-	Set_RelicIcon();
-
-	if (KEY_DOWN(DIK_J)) {
-		Enable_BossClearUI = TRUE;
+	int DashStock = PlayerObject->Get_DashStock();
+	UIEffect* stock1 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT1"));
+	UIEffect* stock2 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT2"));
+	UIEffect* stock3 = static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"DASHSTOCK_EFFECT3"));
+	switch (DashStock) {
+	case 0:
+		stock1->Set_All_Visible(false);
+		stock2->Set_All_Visible(false);
+		stock3->Set_All_Visible(false);
+		break;
+	case 1:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(false);
+		stock3->Set_All_Visible(false);
+		break;
+	case 2:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(true);
+		stock3->Set_All_Visible(false);
+		break;
+	case 3:
+		stock1->Set_All_Visible(true);
+		stock2->Set_All_Visible(true);
+		stock3->Set_All_Visible(true);
+		break;
 	}
+	
+
+	Reset_Relic();
+	
+
 	return 0;
 }
 VOID	MainUI::LateUpdate_GameObject(CONST FLOAT& _DT) {
@@ -418,85 +447,56 @@ VOID MainUI::Reset_Relic()
 	{
 		int relicIdx = PlayerObject->Get_Relic_ImgIdx(i);
 
-		if (_relicIcons[i] == nullptr) continue;
 		if (relicIdx == -1)
 		{
-			_relicIcons[i]->Set_Visible(FALSE);
-			if (_relicBars[i]) _relicBars[i]->Set_Visible(FALSE);
+			if (_relicIcons[i]->OPACITY > 2 && _relicIcons[i]->VISIBLE == TRUE) {
+				_relicIcons[i]->OPACITY -= 3;
+			}
+			else {
+				_relicIcons[i]->OPACITY = 0;
+				_relicIcons[i]->VISIBLE = FALSE;
+			}
+			if (_relicBars[i]->OPACITY > 2 && _relicBars[i]->VISIBLE == TRUE) {
+				_relicBars[i]->OPACITY -= 3;
+			}
+			else {
+				_relicBars[i]->OPACITY = 0;
+				_relicBars[i]->VISIBLE = FALSE;
+			}
 		}
 		else
 		{
-			_relicIcons[i]->Set_Visible(TRUE);
-			if (_relicBars[i]) _relicBars[i]->Set_Visible(TRUE);
+			if (_relicIcons[i]->VISIBLE == FALSE) _relicIcons[i]->VISIBLE = TRUE;
+			if (_relicBars[i]->VISIBLE == FALSE)  _relicBars [i]->VISIBLE = TRUE;
+			if (_relicIcons[i]->OPACITY < 253 &&  _relicIcons[i]->VISIBLE == TRUE) {
+				_relicIcons[i]->OPACITY += 3;
+			}
+			else {
+				_relicIcons[i]->OPACITY = 255;
+			}
+			if (_relicBars[i]->OPACITY < 253 && _relicBars[i]->VISIBLE == TRUE) {
+				_relicBars[i]->OPACITY += 3;
+			}
+			else {
+				_relicBars[i]->OPACITY = 255;
+			}
 		}
 	}
 }
 
 VOID MainUI::Set_RelicIcon()
 {
-	SpriteINFO* sprite = nullptr;
-	
+	_float Posy(650.f), PosX(560.f), PivotX(40.f);
 	for (int i = 0; i < 4; i++) {
-		int idx = PlayerObject->Get_Relic_ImgIdx(i);
-		if (idx == -1) continue;
-		switch (idx) {
-		case 0:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info1");			
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-      _relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
+		_relicIcons[i] = Component_Sprite->Get_Texture(L"Relic_Info" + to_wstring(i + 1));
+		_relicIcons[i]->Set_Visible(FALSE);
+		_relicIcons[i]->Set_Opacity(0);
+		_relicIcons[i]->Set_Pos(PosX + i * PivotX, Posy);
 
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar1");			
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-		case 1:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info2");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar2");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-			break;
-		case 2:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info3");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar3");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-			break;
-		case 3:
-			sprite = Component_Sprite->Get_Texture(L"Relic_Info4");
-			_relicIcons[i] = sprite;
-			_relicIcons[i]->Set_Visible(TRUE);
-			_relicIcons[i]->Set_Opacity(255);
-			_relicIcons[i]->Set_Pos(530 + i * 50.f, 500.f);
-
-			sprite = Component_Sprite->Get_Texture(L"Relic_Bar4");
-			_relicBars[i] = sprite;
-			_relicBars[i]->Set_Visible(TRUE);
-			_relicBars[i]->Set_Opacity(255);
-			_relicBars[i]->Set_Pos(530 + i * 50.f, 500.f);
-			break;		
-		default:
-			break;
-		}
+		_relicBars[i] = Component_Sprite->Get_Texture(L"Relic_Bar" + to_wstring(i + 1));
+		_relicBars[i]->Set_Visible(FALSE);
+		_relicBars[i]->Set_Opacity(0);
+		_relicBars[i]->Set_Pos(PosX + i * PivotX, Posy);
 	}
 }
 
@@ -608,6 +608,7 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"WeaponBG_ArrowCount"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"FairyBow_IMG"				));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"EvilHeadBow_IMG"				));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IceBow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"IRABow_IMG"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"HPBar_Frame"));
 		
@@ -616,10 +617,14 @@ VOID MainUI::MainUI_FadeAction(CONST FLOAT& _DT, FLOAT _SPEED) {
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar3"));
 		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Bar4"));
 
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info1"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info2"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
-    AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info3"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Relic_Info4"));
+
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock1"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock2"));
+		AllSpriteOBJ.push_back(Component_Sprite->Get_Texture(L"Bin_DashStock3"));
 
 
 		AllUIEffect.push_back(static_cast<UIEffect*>(EffectManager::GetInstance()->Get_Effect(EFFECT_OWNER::UI, L"HP_EFFECT1")));
@@ -786,9 +791,11 @@ VOID MainUI::Display_ClearBossUI(CONST FLOAT& _DT) {
 	if (Enable_BossClearUI) {
 		BossClearTimer += _DT;
 		FLOAT Delay = 3.f, BackGroundOPC = 180.f;
-		SpriteINFO* FadeBG = Component_Sprite->Get_Texture(L"BossClearBG");
+		SpriteINFO* FadeBG = UIManager::GetInstance()->Find_GlobalObject(L"FadeFilter");
+		//Enable_FadeFilter = TRUE;
 		if (BossClearTimer > Delay  && BossClearTimer < Delay + 6.f) {
 			if (BossClearTimer <= 5.f) {
+				FadeBG->Set_Visible(true);
 				SoundManager::GetInstance()->Set_ChannelVolume(CHANNELID::SOUND_BGM03, 0.5f - BossClearTimer / 10);
 			}
 			else {}
@@ -900,11 +907,13 @@ VOID MainUI::Display_Tutorial(CONST FLOAT& _DT) {
 		if (Tutorial_Sequencer == 8 && Tutorial_Timer >= SpeechInterval * 6.f + 0.01f) {
 			ItemINFO* Hermes = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(0);
 			Set_EnableItemPopUP(TRUE, Hermes, L"DIC_InfoFrame_Relic_Item1");
+			PlayerObject->Get_Artifact(0)->Set_ItemIdx(0);
 			Tutorial_Sequencer = 9;
 		}
 		if (Tutorial_Sequencer == 9 && Tutorial_Timer >= SpeechInterval * 6.f + 0.99f) {
 			ItemINFO* Horcrux = dynamic_cast<PlayerInven*>(SceneManager::GetInstance()->Get_GameObject(L"PlayerInven"))->Get_Item(1);
 			Set_EnableItemPopUP(TRUE, Horcrux, L"DIC_InfoFrame_Relic_Horcrux");
+			PlayerObject->Get_Artifact(1)->Set_ItemIdx(1);
 			Tutorial_Sequencer = 10;
 		}
 		else if (Tutorial_Timer >= SpeechInterval * 7.f && Tutorial_Timer < SpeechInterval * 8.f && Tutorial_Sequencer == 10) {
@@ -959,6 +968,9 @@ HRESULT MainUI::Sprite_Initialize() {
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Spr_Ui_EmptyHpStock.png",	L"EHP_SPRITE5", 75.f, -60.f, 180, 180, FALSE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// UTILITY //////////////////////////////////////////////////////
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock1", -43.f, -13.f, 175.f, 175.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock2", -10.5f, -13.f, 175.f, 175.f, TRUE);
+	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Bin_DashStock.png", L"Bin_DashStock3", 23.f, -13.f, 175.f, 175.f, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Crystal.png", L"CRYSTAL", 18.f, 175.f, 20, 20, TRUE);
 	Component_Sprite->Import_Sprite(L"../../UI/MainUI/Key.png", L"KEY", 18.f, 103.f, 18, 18, TRUE);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
