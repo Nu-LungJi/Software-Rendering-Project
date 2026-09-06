@@ -1,6 +1,6 @@
 # IRA 모작 — DirectX 9 팀 프로젝트
 
-![IRA 타이틀 이미지](./README THUMBNAIL - SR TEAM.png)
+![IRA 타이틀 이미지](<./README THUMBNAIL - SR TEAM.png>)
 
 쿼터뷰 탄막 액션 게임 **IRA(이라)를 모작한 C++ · DirectX 9 팀 프로젝트**입니다. 
 **공통 프레임워크의 구성/확장**, **최종보스**, **메인·상호작용 UI**를 담당하고 **인벤토리 공동 구현**과 **팀 코드 통합**에 참여했습니다.
