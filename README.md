@@ -6,8 +6,8 @@
 **공통 프레임워크의 구성/확장**, **최종보스**, **메인·상호작용 UI**를 담당하고 **인벤토리 공동 구현**과 **팀 코드 통합**에 참여했습니다.
 
 
-[GitHub Repository](https://github.com/Nu-LungJi/Software-Rendering-Project)
-[게임 시연 영상](https://youtu.be/kG5w627sZeI)
+## [**GitHub Repository**](https://github.com/Nu-LungJi/Software-Rendering-Project)
+## [**게임 시연 영상 (Demo Video) **](https://youtu.be/kG5w627sZeI)
 
 | 항목      | 내용                                                                 |
 | ------- | ------------------------------------------------------------------ |
