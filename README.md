@@ -7,7 +7,7 @@
 
 
 ## [**GitHub Repository**](https://github.com/Nu-LungJi/Software-Rendering-Project)
-## [**게임 시연 영상 (Demo Video) **](https://youtu.be/kG5w627sZeI)
+## [게임 시연 영상 (Demo Video)](https://youtu.be/kG5w627sZeI)
 
 | 항목      | 내용                                                                 |
 | ------- | ------------------------------------------------------------------ |
